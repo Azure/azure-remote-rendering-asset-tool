@@ -73,11 +73,11 @@ ViewportModel::~ViewportModel()
     deinitializeD3D();
 }
 
-void ViewportModel::setClient(RR::RemoteManager* client)
+void ViewportModel::setSession(RR::ApiHandle<RR::AzureSession> session)
 {
-    if (m_client != client)
+    if (m_session != session)
     {
-        if (m_client)
+        if (m_session)
         {
             deinitializeClient();
         }
@@ -88,8 +88,8 @@ void ViewportModel::setClient(RR::RemoteManager* client)
             updateProxyTextures();
             Q_EMIT videoResolutionChanged();
         }
-        m_client = client;
-        if (m_client)
+        m_session = std::move(session);
+        if (m_session)
         {
             initializeClient();
         }
@@ -98,12 +98,13 @@ void ViewportModel::setClient(RR::RemoteManager* client)
 
 void ViewportModel::initializeClient()
 {
-    m_graphicsBinding = std::make_shared<RR::GraphicsBindingSimD3d11>(m_client->Handle());
-    if (auto* binding = getBinding())
+    m_client = m_session->Actions();
+    m_graphicsBinding = m_session->GetGraphicsBinding().as<RR::GraphicsBindingSimD3d11>();
+    if (auto&& binding = getBinding())
     {
         const auto refreshRate = m_videoSettings->getRefreshRate();
         auto result = binding->InitSimulation(m_device, m_proxyDepthTarget, m_proxyColorTarget, refreshRate, false, false);
-        if (result != RR::Result::Success)
+        if (!result || result.value() != RR::Result::Success)
         {
             return;
         }
@@ -121,7 +122,7 @@ void ViewportModel::initializeClient()
 
 void ViewportModel::deinitializeClient()
 {
-    if (auto* binding = getBinding())
+    if (auto&& binding = getBinding())
     {
         binding->DeinitSimulation();
     }
@@ -268,31 +269,29 @@ void ViewportModel::pick(int x, int y)
     rc.CollisionMask = 0xffffffff;
     QPointer<ViewportModel> thisPtr = this;
     int idx = m_queryCounter++;
-    auto async = m_rayCastQueries[idx] = m_client->RayCastQueryAsync(rc);
-    async->Completed([thisPtr, idx](const std::shared_ptr<RR::RaycastQueryAsync>& finishedAsync) {
-        if (thisPtr)
-        {
-            thisPtr->m_rayCastQueries.remove(idx);
-        }
-        std::shared_ptr<RR::Entity> hit = nullptr;
-        const auto result = finishedAsync->Result();
-        if (result.size() > 0)
-        {
-            hit = finishedAsync->Result()[0].HitObject;
-        }
+    if (auto async = m_client->RayCastQueryAsync(rc))
+    {
+        (*async)->Completed([thisPtr, idx](const RR::ApiHandle<RR::RaycastQueryAsync>& finishedAsync) {
+            RR::ApiHandle<RR::Entity> hit = nullptr;
+            const auto result = finishedAsync->Result().value();
+            if (result.size() > 0)
+            {
+                hit = result[0].HitObject;
+            }
 
-        if (thisPtr && thisPtr->m_selectionModel)
-        {
-            if (hit == nullptr)
+            if (thisPtr && thisPtr->m_selectionModel)
             {
-                thisPtr->m_selectionModel->deselectAll();
+                if (hit == nullptr)
+                {
+                    thisPtr->m_selectionModel->deselectAll();
+                }
+                else
+                {
+                    thisPtr->m_selectionModel->select(hit);
+                }
             }
-            else
-            {
-                thisPtr->m_selectionModel->select(hit);
-            }
-        }
-    });
+        });
+    }
 }
 
 void ViewportModel::setCameraSpeed(float lateral, float forward, float updown)
@@ -375,7 +374,7 @@ void ViewportModel::onRefreshTimer()
         stepCamera();
         update();
 
-        if (auto* binding = getBinding())
+        if (auto&& binding = getBinding())
         {
             D3D11_VIEWPORT viewport;
             viewport.TopLeftX = 0;
@@ -397,7 +396,7 @@ void ViewportModel::onRefreshTimer()
 
 void ViewportModel::render()
 {
-    if (auto* binding = getBinding())
+    if (auto&& binding = getBinding())
     {
         binding->ReprojectProxy();
     }
@@ -413,7 +412,7 @@ void ViewportModel::setSelectionModel(EntitySelection* selectionModel)
     m_selectionModel = selectionModel;
     if (m_selectionModel)
     {
-        QList<std::shared_ptr<RR::Entity>> selected;
+        QList<RR::ApiHandle<RR::Entity>> selected;
         for (auto&& entity : *m_selectionModel)
         {
             selected.push_back(entity);
@@ -421,15 +420,15 @@ void ViewportModel::setSelectionModel(EntitySelection* selectionModel)
         updateSelection(selected, {});
 
         QObject::connect(m_selectionModel, &EntitySelection::selectionChanged, this,
-                         [this](const QList<std::shared_ptr<RR::Entity>>& selected, const QList<std::shared_ptr<RR::Entity>>& deselected) {
-                             updateSelection(selected, deselected);
+                         [this](const QList<RR::ApiHandle<RR::Entity>>& selected, const QList<RR::ApiHandle<RR::Entity>>& deselected) {
+                             updateSelection(std::move(selected), std::move(deselected));
                          });
     }
 }
 
 void ViewportModel::update()
 {
-    if (auto* binding = getBinding())
+    if (auto&& binding = getBinding())
     {
         RR::SimulationUpdate outputUpdate;
         m_simUpdate.frameId++;
@@ -450,40 +449,46 @@ void ViewportModel::update()
     }
 }
 
-RR::GraphicsBindingSimD3d11* ViewportModel::getBinding() const
+RR::ApiHandle<RR::GraphicsBindingSimD3d11>& ViewportModel::getBinding()
 {
-    return m_graphicsBinding.get();
+    return m_graphicsBinding;
 }
 
-void ViewportModel::updateSelection(const QList<std::shared_ptr<RR::Entity>>& selected, const QList<std::shared_ptr<RR::Entity>>& deselected)
+void ViewportModel::updateSelection(const QList<RR::ApiHandle<RR::Entity>>& selected, const QList<RR::ApiHandle<RR::Entity>>& deselected)
 {
     if (!m_client)
     {
         return;
     }
 
-    for (const std::shared_ptr<RR::Entity>& entity : deselected)
+    for (const RR::ApiHandle<RR::Entity>& entity : deselected)
     {
-        if (entity->Valid())
+        const auto validEx = entity->Valid();
+        if (validEx && validEx.value())
         {
-            for (auto&& comp : entity->Components())
+            if (auto components = entity->Components())
             {
-                if (comp->Valid() && comp->Type() == RR::ObjectType::HierarchicalStateOverrideComponent)
+                for (auto&& comp : components.value())
                 {
-                    comp->Destroy();
-                    break;
+                    if (comp->Type().value() == RR::ObjectType::HierarchicalStateOverrideComponent)
+                    {
+                        comp->Destroy();
+                        break;
+                    }
                 }
             }
         }
     }
 
-    for (const std::shared_ptr<RR::Entity>& entity : selected)
+    for (const RR::ApiHandle<RR::Entity>& entity : selected)
     {
-        if (std::shared_ptr<RR::HierarchicalStateOverrideComponent> component =
-                std::static_pointer_cast<RR::HierarchicalStateOverrideComponent>(m_client->CreateComponent(
-                    RR::ObjectType::HierarchicalStateOverrideComponent, entity)))
+        if (auto component = m_client->CreateComponent(
+                RR::ObjectType::HierarchicalStateOverrideComponent, entity))
         {
-            component->SetState(RR::HierarchicalStates::Selected, RR::HierarchicalEnableState::ForceOn);
+            if (auto hierarchicalComp = component->as<RR::HierarchicalStateOverrideComponent>())
+            {
+                hierarchicalComp->SetState(RR::HierarchicalStates::Selected, RR::HierarchicalEnableState::ForceOn);
+            }
         }
     }
 }

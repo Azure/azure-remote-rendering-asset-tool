@@ -16,7 +16,7 @@ class MaterialProvider : public QObject
     Q_OBJECT
 
 public:
-    MaterialProvider(const Value<std::shared_ptr<RR::Material>>* material, ArrSessionManager* sessionManager, QObject* parent = nullptr);
+    MaterialProvider(const Value<RR::ApiHandle<RR::Material>>* material, ArrSessionManager* sessionManager, QObject* parent = nullptr);
 
     const QList<ParameterModel*>& getControls() const;
 
@@ -25,7 +25,7 @@ signals:
 
 private:
     ArrSessionManager* const m_sessionManager;
-    const Value<std::shared_ptr<RR::Material>>* const m_material;
+    const Value<RR::ApiHandle<RR::Material>>* const m_material;
     MaterialModel* const m_emptyMaterial;
     MaterialPBR* const m_materialPBR;
     /* QColorMaterial* m_materialPBR;

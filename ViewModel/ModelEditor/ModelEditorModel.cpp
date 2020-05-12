@@ -25,7 +25,7 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
     QObject::connect(m_materialListSelectionModel, &QItemSelectionModel::selectionChanged, this,
                      [this](const QItemSelection& /*selected*/, const QItemSelection& /*deselected*/) {
                          QModelIndexList selectedIdx = m_materialListSelectionModel->selection().indexes();
-                         std::shared_ptr<RR::Material> material = {};
+                         RR::ApiHandle<RR::Material> material = {};
 
                          if (selectedIdx.empty())
                          {
@@ -33,7 +33,7 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
                              // the editing material is set to that one
                              if (m_materialListModel->isFiltered() && m_materialListModel->getFilteredMaterialSet().size() == 1)
                              {
-                                 material = std::make_shared<RR::Material>(*m_materialListModel->getFilteredMaterialSet().begin());
+                                 material = *m_materialListModel->getFilteredMaterialSet().begin();
                              }
                              else
                              {
@@ -42,7 +42,7 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
                          }
                          else
                          {
-                             material = selectedIdx.front().data(MaterialListModel::OBJECT_MATERIAL_ROLE).value<std::shared_ptr<RR::Material>>();
+                             material = selectedIdx.front().data(MaterialListModel::OBJECT_MATERIAL_ROLE).value<RR::ApiHandle<RR::Material>>();
                          }
                          m_selectedMaterial.set(material);
                      });
@@ -58,7 +58,7 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
         else
         {
             // if there is more than one material and the editing material is not one of them, then deselect it
-            if (m_materialListModel->isFiltered() && m_selectedMaterial.get() && !m_materialListModel->getFilteredMaterialSet().contains(m_selectedMaterial.get()->Handle()))
+            if (m_materialListModel->isFiltered() && m_selectedMaterial.get() && !m_materialListModel->getFilteredMaterialSet().contains(m_selectedMaterial.get()))
             {
                 m_materialListSelectionModel->clearSelection();
             }
@@ -83,7 +83,7 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
             });
 
     connect(m_entitySelection, &EntitySelection::selectionChanged, this,
-            [this](const QList<std::shared_ptr<RR::Entity>>& added, const QList<std::shared_ptr<RR::Entity>>& removed) {
+            [this](const QList<RR::ApiHandle<RR::Entity>>& added, const QList<RR::ApiHandle<RR::Entity>>& removed) {
                 if (!m_updatingSelection)
                 {
                     m_updatingSelection = true;
@@ -92,12 +92,12 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
                 }
 
                 // filter on the materials
-                QList<std::shared_ptr<RR::Entity>> selectedEntities;
+                QList<RR::ApiHandle<RR::Entity>> selectedEntities;
                 for (const auto& entity : *m_entitySelection)
                 {
                     selectedEntities.push_back(entity);
                 }
-                m_materialListModel->filterBasedOnEntities(m_sessionManager->getClientApi(), selectedEntities);
+                m_materialListModel->filterBasedOnEntities(selectedEntities);
             });
 
 
@@ -145,7 +145,7 @@ void ModelEditorModel::onSelectionChanged(const QItemSelection& /*selected*/, co
 {
     auto indexes = m_treeSelectionModel->selection().indexes();
 
-    QList<std::shared_ptr<RR::Entity>> entities;
+    QList<RR::ApiHandle<RR::Entity>> entities;
     entities.reserve(indexes.size());
 
     for (const QModelIndex& index : indexes)
@@ -155,12 +155,12 @@ void ModelEditorModel::onSelectionChanged(const QItemSelection& /*selected*/, co
     m_entitySelection->setSelection(entities);
 }
 
-void ModelEditorModel::onEntitySelectionChanged(const QList<std::shared_ptr<RR::Entity>>& added, const QList<std::shared_ptr<RR::Entity>>& removed)
+void ModelEditorModel::onEntitySelectionChanged(const QList<RR::ApiHandle<RR::Entity>>& added, const QList<RR::ApiHandle<RR::Entity>>& removed)
 {
     // potentially slow
     {
         QItemSelection addedSelection;
-        for (const std::shared_ptr<RR::Entity>& entity : added)
+        for (const RR::ApiHandle<RR::Entity>& entity : added)
         {
             QModelIndex index = m_sceneTreeModel->getIndexFromEntity(entity);
             addedSelection.select(index, index);
@@ -170,7 +170,7 @@ void ModelEditorModel::onEntitySelectionChanged(const QList<std::shared_ptr<RR::
 
     {
         QItemSelection removedSelection;
-        for (const std::shared_ptr<RR::Entity>& entity : removed)
+        for (const RR::ApiHandle<RR::Entity>& entity : removed)
         {
             QModelIndex index = m_sceneTreeModel->getIndexFromEntity(entity);
             removedSelection.select(index, index);

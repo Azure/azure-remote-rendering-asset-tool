@@ -10,7 +10,7 @@ namespace Microsoft::Azure::RemoteRendering
 {
     struct AzureSession;
     class RemoteRenderingClient;
-    using LoadResult = std::function<void(Result, std::shared_ptr<Entity>)>;
+    using LoadResult = std::function<void(Result, ApiHandle<Entity>)>;
     using LoadProgress = std::function<void(float)>;
 } // namespace Microsoft::Azure::RemoteRendering
 
@@ -94,7 +94,7 @@ public:
     bool extendMaxSessionTime();
 
     // Result of the currently loaded model
-    std::shared_ptr<RR::LoadModelResult> loadedModel() const { return m_loadedModel; }
+    RR::ApiHandle<RR::LoadModelResult> loadedModel() const { return m_loadedModel; }
 
     // Load a model asynchronously. Unloads the currently loaded model, and on completion the RootID will be changed
     RR::Result loadModelAsync(const QString& modelName, const char* assetSAS, RR::LoadResult result, RR::LoadProgress progressCallback = {});
@@ -108,7 +108,7 @@ public:
     // return the model used for the viewport
     ViewportModel* getViewportModel() const { return m_viewportModel; }
 
-    RR::RemoteManager* getClientApi() const;
+    RR::ApiHandle<RR::RemoteManager>& getClientApi();
 
     // start the arrInspector on the running session
     void startInspector();
@@ -132,7 +132,7 @@ Q_SIGNALS:
 private:
     static SessionStatus::Status convertStatus(RR::RenderingSessionStatus status);
 
-    void setLoadedModel(std::shared_ptr<RR::LoadModelResult> loadResult);
+    void setLoadedModel(RR::ApiHandle<RR::LoadModelResult> loadResult);
 
     // called from the main thread, whenever the status is returned by service.
     void updateSessionProperties(RR::RenderingSessionProperties props);
@@ -141,7 +141,7 @@ private:
     void onStatusUpdated();
 
     // set the current running session, which is also persisted in the configuration
-    void setRunningSession(const std::shared_ptr<RR::AzureSession>& session);
+    void setRunningSession(const RR::ApiHandle<RR::AzureSession>& session);
 
     // update the status asynchronously and execute the callback when the status is updated
     // It has to be called from the main thread
@@ -157,8 +157,8 @@ private:
 
     ArrFrontend* const m_frontend;
     Configuration* const m_configuration;
-    std::shared_ptr<RR::RemoteManager> m_api = nullptr;
-    std::shared_ptr<RR::AzureSession> m_session = nullptr;
+    RR::ApiHandle<RR::RemoteManager> m_api = nullptr;
+    RR::ApiHandle<RR::AzureSession> m_session = nullptr;
 
     QElapsedTimer m_connectingElapsedTime;
 
@@ -171,20 +171,20 @@ private:
     QTimer* m_updateTimer = nullptr;
     QTimer* m_clientUpdateTimer = nullptr;
 
-    std::shared_ptr<RR::LoadModelResult> m_loadedModel = nullptr;
+    RR::ApiHandle<RR::LoadModelResult> m_loadedModel = nullptr;
 
     QString m_modelName;
 
     ViewportModel* m_viewportModel;
 
     // Async holders
-    std::shared_ptr<RR::SessionAsync> m_renewAsync = nullptr;
-    std::shared_ptr<RR::SessionPropertiesAsync> m_getPropertiesAsync = nullptr;
-    std::shared_ptr<RR::LoadModelAsync> m_loadModelAsync = nullptr;
-    std::shared_ptr<RR::ArrInspectorAsync> m_connectToArrInspector = nullptr;
-    std::shared_ptr<RR::CreateSessionAsync> m_startRequested = nullptr;
-    std::shared_ptr<RR::SessionAsync> m_stopRequested = nullptr;
-    std::shared_ptr<RR::ConnectToRuntimeAsync> m_connecting = nullptr;
+    RR::ApiHandle<RR::SessionAsync> m_renewAsync = nullptr;
+    RR::ApiHandle<RR::SessionPropertiesAsync> m_getPropertiesAsync = nullptr;
+    RR::ApiHandle<RR::LoadModelAsync> m_loadModelAsync = nullptr;
+    RR::ApiHandle<RR::ArrInspectorAsync> m_connectToArrInspector = nullptr;
+    RR::ApiHandle<RR::CreateSessionAsync> m_startRequested = nullptr;
+    RR::ApiHandle<RR::SessionAsync> m_stopRequested = nullptr;
+    RR::ApiHandle<RR::ConnectToRuntimeAsync> m_connecting = nullptr;
 
     // Registered callback tokens
     RR::event_token m_statusChangedToken;

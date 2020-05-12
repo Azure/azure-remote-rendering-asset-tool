@@ -227,22 +227,22 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
     }
 
     QPointer<ConversionManager> thisPtr = this;
-    auto onConversionStartRequestFinished = [thisPtr, newConversionId](const std::shared_ptr<RR::StartAssetConversionAsync>& finishedAsync) {
-        logContext(finishedAsync->Context());
+    auto onConversionStartRequestFinished = [thisPtr, newConversionId](const RR::ApiHandle<RR::StartAssetConversionAsync>& finishedAsync) {
+        logContext(finishedAsync->Context().value());
         QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, newConversionId, async = finishedAsync]() {
             if (thisPtr)
             {
                 if (Conversion* conversion = thisPtr->getConversion(newConversionId))
                 {
-                    if (async->Status() == RR::Result::Success)
+                    if (async->Status().value() == RR::Result::Success)
                     {
-                        conversion->m_activeSessionUUID = async->Result();
+                        conversion->m_activeSessionUUID = async->Result().value();
                         conversion->updateConversionStatus(Conversion::SYNCHRONIZING);
                     }
                     else
                     {
                         conversion->m_endConversionTime.start();
-                        conversion->updateConversionStatus(Conversion::SYNCHRONIZATION_FAILED, tr("Failure reason: %1.").arg(RR::ResultToString(async->Status())));
+                        conversion->updateConversionStatus(Conversion::SYNCHRONIZATION_FAILED, tr("Failure reason: %1.").arg(RR::ResultToString(async->Status().value())));
                     }
                 }
                 Q_EMIT thisPtr->conversionUpdated(newConversionId);
@@ -275,12 +275,12 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
     output.ContainerWriteSas = outputSasToken.toStdString();
     output.OutputAssetPath = newConversion->m_output_asset_relative_path;
 
-    newConversion->m_conversionCall = m_frontend->getFrontend().StartAssetConversionSasAsync(input, output);
-    newConversion->m_conversionCall->Completed(std::move(onConversionStartRequestFinished));
-
-    if (newConversion->m_conversionCall &&
-        (newConversion->m_conversionCall->Status() == RR::Result::InProgress || newConversion->m_conversionCall->Status() == RR::Result::Success))
+    const auto async = m_frontend->getFrontend()->StartAssetConversionSasAsync(input, output);
+    if (async)
     {
+        newConversion->m_conversionCall = async.value();
+        newConversion->m_conversionCall->Completed(std::move(onConversionStartRequestFinished));
+
         newConversion->m_startConversionTime.start();
         newConversion->m_endConversionTime = newConversion->m_startConversionTime;
         newConversion->updateConversionStatus(Conversion::START_REQUESTED);
@@ -338,11 +338,16 @@ void ConversionManager::updateConversions(bool updateRemotely)
             {
                 //query conversion
                 QPointer<ConversionManager> thisPtr = this;
-                conversion->m_statusAsync = m_frontend->getFrontend().GetAssetConversionStatusAsync(conversion->m_activeSessionUUID);
+                const auto async = m_frontend->getFrontend()->GetAssetConversionStatusAsync(conversion->m_activeSessionUUID);
+                if (!async)
+                {
+                    return;
+                }
+                conversion->m_statusAsync = async.value();
 
-                conversion->m_statusAsync->Completed([id, thisPtr](const std::shared_ptr<RR::ConversionStatusAsync>& async) {
-                    logContext(async->Context());
-                    QMetaObject::invokeMethod(QApplication::instance(), [id, thisPtr, message = async->Message(), status = async->Status(), result = async->Result()]() {
+                conversion->m_statusAsync->Completed([id, thisPtr](const RR::ApiHandle<RR::ConversionStatusAsync>& async) {
+                    logContext(async->Context().value());
+                    QMetaObject::invokeMethod(QApplication::instance(), [id, thisPtr, message = async->Message().value(), status = async->Status().value(), result = async->Result().value()]() {
                         if (thisPtr)
                         {
                             if (Conversion* conversion = thisPtr->getConversion(id))

@@ -20,21 +20,21 @@ public:
     virtual int columnCount(const QModelIndex& /*parent = {}*/) const override { return 1; }
     virtual int rowCount(const QModelIndex& /*parent = {}*/) const override;
 
-    std::shared_ptr<RR::Entity> getEntityFromIndex(const QModelIndex& index) const;
-    QModelIndex getIndexFromEntity(const std::shared_ptr<RR::Entity>& entity) const;
+    RR::ApiHandle<RR::Entity> getEntityFromIndex(const QModelIndex& index) const;
+    QModelIndex getIndexFromEntity(const RR::ApiHandle<RR::Entity>& entity) const;
 
 private:
     ArrSessionManager* const m_sessionManager;
 
     struct EntityCache
     {
-        EntityCache(std::shared_ptr<RR::Entity> entity, QModelIndex parent);
+        EntityCache(RR::ApiHandle<RR::Entity> entity, QModelIndex parent);
         ~EntityCache();
         QVariant data(ArrSessionManager* sessionManager, int role = Qt::DisplayRole) const;
 
         QVector<EntityCache*> m_children;
         QModelIndex m_parent;
-        std::shared_ptr<RR::Entity> m_entity;
+        RR::ApiHandle<RR::Entity> m_entity;
         bool m_childrenComputed = false;
 
         void ensureChildrenComputed(const SceneTreeModel* model, QModelIndex thisModelIndex);
@@ -46,5 +46,5 @@ private:
     EntityCache* toCachedItem(const QModelIndex& index) const;
     QScopedPointer<EntityCache> m_rootItem;
 
-    mutable QMap<unsigned long long, QModelIndex> m_indices;
+    mutable QMap<RR::ApiHandle<RR::Entity>, QModelIndex> m_indices;
 };

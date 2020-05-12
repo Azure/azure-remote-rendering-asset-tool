@@ -23,21 +23,24 @@ void MaterialListModel::reset()
     clear();
     if (m_sessionManager->loadedModel())
     {
-        for (auto&& res : m_sessionManager->loadedModel()->GetLoadedResourceOfType(RR::ObjectType::Material))
+        if (auto materials = m_sessionManager->loadedModel()->GetLoadedResourceOfType(RR::ObjectType::Material))
         {
-            auto material = std::static_pointer_cast<RR::Material>(res);
-            auto* newItem = new QStandardItem(QString::fromUtf8(material->Name().c_str()));
-            newItem->setData(QVariant::fromValue(material), OBJECT_MATERIAL_ROLE);
-            appendRow(newItem);
+            for (auto&& res : materials.value())
+            {
+                auto material = res.as<RR::Material>();
+                auto* newItem = new QStandardItem(QString::fromUtf8(material->Name()->c_str()));
+                newItem->setData(QVariant::fromValue(material), OBJECT_MATERIAL_ROLE);
+                appendRow(newItem);
+            }
         }
     }
 }
 
-void MaterialFilteredListModel::filterBasedOnEntities(RR::RemoteManager* /*client*/, const QList<std::shared_ptr<RR::Entity>>& entityIds)
+void MaterialFilteredListModel::filterBasedOnEntities(const QList<RR::ApiHandle<RR::Entity>>& entityIds)
 {
     m_materials.clear();
 
-    for (const std::shared_ptr<RR::Entity>& entity : entityIds)
+    for (const RR::ApiHandle<RR::Entity>& entity : entityIds)
     {
         if (!entity->Valid())
         {
@@ -46,17 +49,22 @@ void MaterialFilteredListModel::filterBasedOnEntities(RR::RemoteManager* /*clien
         else
         {
             //find all of the materials
-
-            for (auto&& component : entity->Components())
+            if (auto components = entity->Components())
             {
-                if (component->Type() == RR::ObjectType::MeshComponent)
+                for (auto&& component : components.value())
                 {
-                    const std::shared_ptr<RR::MeshComponent> meshComponent = std::static_pointer_cast<RR::MeshComponent>(component);
-                    for (auto&& material : meshComponent->UsedMaterials())
+                    if (*component->Type() == RR::ObjectType::MeshComponent)
                     {
-                        if (material->Valid())
+                        const RR::ApiHandle<RR::MeshComponent> meshComponent = component.as<RR::MeshComponent>();
+                        if (auto materials = meshComponent->UsedMaterials())
                         {
-                            m_materials.insert(material->Handle());
+                            for (auto&& material : materials.value())
+                            {
+                                if (material->Valid().value())
+                                {
+                                    m_materials.insert(material);
+                                }
+                            }
                         }
                     }
                 }
@@ -73,7 +81,7 @@ bool MaterialFilteredListModel::isFiltered() const
     return !m_materials.empty();
 }
 
-const QSet<unsigned long long>& MaterialFilteredListModel::getFilteredMaterialSet() const
+const QSet<RR::ApiHandle<RR::Material>>& MaterialFilteredListModel::getFilteredMaterialSet() const
 {
     return m_materials;
 }
@@ -85,6 +93,6 @@ bool MaterialFilteredListModel::filterAcceptsRow(int sourceRow, const QModelInde
         return true;
     }
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
-    const auto material = index.data(MaterialListModel::OBJECT_MATERIAL_ROLE).value<std::shared_ptr<RR::Material>>();
-    return m_materials.contains(material->Handle());
+    const auto material = index.data(MaterialListModel::OBJECT_MATERIAL_ROLE).value<RR::ApiHandle<RR::Material>>();
+    return m_materials.contains(material);
 }

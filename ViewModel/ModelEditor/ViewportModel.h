@@ -82,7 +82,7 @@ public:
     ViewportModel(VideoSettings* videoSettings, CameraSettings* cameraSettings, QObject* parent);
     virtual ~ViewportModel();
 
-    void setClient(RR::RemoteManager* client);
+    void setSession(RR::ApiHandle<RR::AzureSession> session);
 
     void setCameraSpeed(float lateral, float forward, float updown);
     void setCameraRotationSpeed(float x, float y);
@@ -115,12 +115,11 @@ private:
     void updateProjection();
 
     void onRefreshTimer();
-    RR::GraphicsBindingSimD3d11* getBinding() const;
+    RR::ApiHandle<RR::GraphicsBindingSimD3d11>& getBinding();
 
     void stepCamera();
 
     int m_queryCounter = 0;
-    QMap<int, std::shared_ptr<Microsoft::Azure::RemoteRendering::RaycastQueryAsync>> m_rayCastQueries;
 
 private:
     int m_proxyTextureWidth = 0;
@@ -145,8 +144,9 @@ private:
     ID3D11RenderTargetView* m_proxyColorView = nullptr;
     ID3D11DepthStencilView* m_proxyDepthView = nullptr;
 
-    RR::RemoteManager* m_client = nullptr;
-    std::shared_ptr<RR::GraphicsBindingSimD3d11> m_graphicsBinding = nullptr;
+    RR::ApiHandle<RR::AzureSession> m_session = nullptr;
+    RR::ApiHandle<RR::RemoteManager> m_client = nullptr;
+    RR::ApiHandle<RR::GraphicsBindingSimD3d11> m_graphicsBinding = nullptr;
     float m_targetCameraLateralSpeed = 0.0f;
     float m_targetCameraForwardSpeed = 0.0f;
     float m_targetCameraUpdownSpeed = 0.0f;
@@ -174,7 +174,7 @@ private:
     void initializeClient();
     void deinitializeClient();
 
-    void updateSelection(const QList<std::shared_ptr<RR::Entity>>& selected, const QList<std::shared_ptr<RR::Entity>>& deselected);
+    void updateSelection(const QList<RR::ApiHandle<RR::Entity>>& selected, const QList<RR::ApiHandle<RR::Entity>>& deselected);
 
     void initializeD3D();
     void deinitializeD3D();

@@ -25,8 +25,8 @@ int main(int argc, char* argv[])
         QApplication a(argc, argv);
 
         QApplication::setStyle(new ArrtStyle());
-        qRegisterMetaType<std::shared_ptr<RR::Material>>();
-        qRegisterMetaType<std::shared_ptr<RR::Entity>>();
+        qRegisterMetaType<RR::ApiHandle<RR::Material>>();
+        qRegisterMetaType<RR::ApiHandle<RR::Entity>>();
         qRegisterMetaType<RR::Float2>();
         qRegisterMetaType<RR::Color4>();
         qRegisterMetaType<RR::PbrMaterialFeatures>();

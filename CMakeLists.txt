@@ -53,7 +53,7 @@ add_definitions(-DNOMINMAX)
 
 # Enable all warnings and turn it into errors
 if(MSVC)
-    target_compile_options(Arrt PRIVATE /W4 /WX /wd4505 /wd4068 /MP)
+    target_compile_options(Arrt PRIVATE /W4 /WX /wd4505 /wd4068 /MP /bigobj)
 else()
     target_compile_options(Arrt PRIVATE -Wall -Wextra -pedantic -Werror -Wno-extra-semi -Wno-unused-function -Wno-language-extension-token -Wno-delete-non-abstract-non-virtual-dtor)
 endif()

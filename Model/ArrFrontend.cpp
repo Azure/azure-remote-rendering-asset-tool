@@ -59,29 +59,39 @@ void ArrFrontend::connect()
         fi.AccountId = m_accountId;
         fi.AccountKey = m_accountKey;
 
-        auto frontend = std::make_shared<RR::AzureFrontend>(fi);
+        auto frontend = RR::ApiHandle(RR::AzureFrontend(fi));
         frontend->MessageLogged(&qArrSdkMessage);
         frontend->LogLevel(RR::LogLevel::Debug);
         QPointer<ArrFrontend> thisPtr = this;
-        std::shared_ptr<RR::SessionPropertiesArrayAsync> async = frontend->GetCurrentRenderingSessionsAsync();
-        m_sessionPropertiesAsync = async;
-        async->Completed([thisPtr, frontend](const std::shared_ptr<Microsoft::Azure::RemoteRendering::SessionPropertiesArrayAsync>& /*async*/) {
-            {
-                std::unique_lock<std::mutex> lk(thisPtr->m_mutex);
-                thisPtr->m_condVar.notify_one();
-            }
-            QMetaObject::invokeMethod(QApplication::instance(),
-                                      [thisPtr, frontend]() {
-                                          if (thisPtr != nullptr)
-                                          {
-                                              const RR::Result result = thisPtr->m_sessionPropertiesAsync->Status();
-                                              const RR::SessionGeneralContext context = thisPtr->m_sessionPropertiesAsync->Context();
-                                              thisPtr->m_sessionPropertiesAsync = nullptr;
-                                              thisPtr->m_rrFrontend = frontend;
-                                              thisPtr->setStatus(result == RR::Result::Success && context.Result == RR::Result::Success ? AccountConnectionStatus::Connected : AccountConnectionStatus::FailedToConnect);
-                                          }
-                                      });
-        });
+        auto async = frontend->GetCurrentRenderingSessionsAsync();
+        if (async)
+        {
+            m_sessionPropertiesAsync = async.value();
+            m_sessionPropertiesAsync->Completed([thisPtr, frontend](const RR::ApiHandle<RR::SessionPropertiesArrayAsync>& /*async*/) {
+                {
+                    std::unique_lock<std::mutex> lk(thisPtr->m_mutex);
+                    thisPtr->m_condVar.notify_one();
+                }
+                QMetaObject::invokeMethod(QApplication::instance(),
+                                          [thisPtr, frontend]() {
+                                              if (thisPtr != nullptr)
+                                              {
+                                                  auto status = thisPtr->m_sessionPropertiesAsync->Status();
+                                                  auto context = thisPtr->m_sessionPropertiesAsync->Context();
+
+                                                  const RR::Result result = status ? status.value() : RR::Result::Fail;
+                                                  const RR::Result contextResult = context ? context.value().Result : RR::Result::Fail;
+                                                  thisPtr->m_sessionPropertiesAsync = nullptr;
+                                                  thisPtr->m_rrFrontend = frontend;
+                                                  thisPtr->setStatus(result == RR::Result::Success && contextResult == RR::Result::Success ? AccountConnectionStatus::Connected : AccountConnectionStatus::FailedToConnect);
+                                              }
+                                          });
+            });
+        }
+        else
+        {
+            qWarning(LoggingCategory::configuration) << tr("Failed to get rendering sessions. Possibly invalid account data.");
+        }
     }
 
 #ifndef NDEBUG
@@ -93,9 +103,15 @@ ArrFrontend::~ArrFrontend()
 {
     // Wait for current rendering sessions query to complete.
     std::unique_lock<std::mutex> lk(m_mutex);
-    if (m_sessionPropertiesAsync && m_sessionPropertiesAsync->Status() == RR::Result::InProgress)
+    if (m_sessionPropertiesAsync)
     {
-        m_condVar.wait(lk);
+        if (auto asyncStatus = m_sessionPropertiesAsync->Status())
+        {
+            if (asyncStatus.value() == RR::Result::InProgress)
+            {
+                m_condVar.wait(lk);
+            }
+        }
     }
 
     m_rrFrontend = nullptr;

@@ -46,19 +46,19 @@ public:
     ARRT_PROPERTY(RR::Float2, TexCoordScale);
     ARRT_PROPERTY(RR::Float2, TexCoordOffset);
     ARRT_PROPERTY(RR::Color4, AlbedoColor);
-    ARRT_PROPERTY(std::shared_ptr<RR::Texture>, AlbedoTexture);
+    ARRT_PROPERTY(RR::ApiHandle<RR::Texture>, AlbedoTexture);
     ARRT_PROPERTY(PbrVertexAlphaMode, PbrVertexAlphaMode);
-    ARRT_PROPERTY(std::shared_ptr<RR::Texture>, NormalMap);
+    ARRT_PROPERTY(RR::ApiHandle<RR::Texture>, NormalMap);
     ARRT_PROPERTY(float, AOScale);
-    ARRT_PROPERTY(std::shared_ptr<RR::Texture>, AOMap);
+    ARRT_PROPERTY(RR::ApiHandle<RR::Texture>, AOMap);
     ARRT_PROPERTY(float, Roughness);
-    ARRT_PROPERTY(std::shared_ptr<RR::Texture>, RoughnessMap);
+    ARRT_PROPERTY(RR::ApiHandle<RR::Texture>, RoughnessMap);
     ARRT_PROPERTY(float, Metalness);
-    ARRT_PROPERTY(std::shared_ptr<RR::Texture>, MetalnessMap);
+    ARRT_PROPERTY(RR::ApiHandle<RR::Texture>, MetalnessMap);
     ARRT_PROPERTY(float, AlphaClipThreshold);
     ARRT_PROPERTY(float, FadeOut);
 
 private:
-    const RR::PbrMaterial* getMaterial() const;
-    RR::PbrMaterial* getMaterial();
+    const RR::ApiHandle<RR::PbrMaterial> getMaterial() const;
+    RR::ApiHandle<RR::PbrMaterial> getMaterial();
 };

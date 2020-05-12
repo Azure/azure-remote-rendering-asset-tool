@@ -20,7 +20,7 @@ public:
     ~ArrFrontend();
 
     // return the underlying RR::AzureFrontEnd instance
-    RR::AzureFrontend& getFrontend() const { return *m_rrFrontend.get(); }
+    RR::ApiHandle<RR::AzureFrontend>& getFrontend() { return m_rrFrontend; }
 
     void connectAccount(const char* accountID, const char* accountKey, const char* region);
     void reconnectAccount();
@@ -35,8 +35,8 @@ private:
     std::string m_accountId;
     std::string m_accountKey;
 
-    std::shared_ptr<RR::AzureFrontend> m_rrFrontend;
-    std::shared_ptr<RR::SessionPropertiesArrayAsync> m_sessionPropertiesAsync;
+    RR::ApiHandle<RR::AzureFrontend> m_rrFrontend;
+    RR::ApiHandle<RR::SessionPropertiesArrayAsync> m_sessionPropertiesAsync;
 
     AccountConnectionStatus m_status = AccountConnectionStatus::Disconnected;
 

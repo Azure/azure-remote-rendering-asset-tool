@@ -29,21 +29,34 @@ MaterialPBR::MaterialPBR(ArrSessionManager* sessionManager, QObject* parent)
     m_controls.push_back(new FloatModel(tr("Fade Out"), this, "FadeOut"sv));
 }
 
-RR::PbrMaterial* MaterialPBR::getMaterial()
+RR::ApiHandle<RR::PbrMaterial> MaterialPBR::getMaterial()
 {
-    if (m_material && m_material->Valid() && m_material->MaterialSubType() == RR::MaterialType::Pbr)
+    if (m_material)
     {
-        return std::static_pointer_cast<RR::PbrMaterial>(m_material).get();
+        if (auto type = m_material->MaterialSubType())
+        {
+            if (type.value() == RR::MaterialType::Pbr)
+            {
+                return m_material.as<RR::PbrMaterial>();
+            }
+        }
     }
-    return nullptr;
+    return {};
 }
 
 
-const RR::PbrMaterial* MaterialPBR::getMaterial() const
+const RR::ApiHandle<RR::PbrMaterial> MaterialPBR::getMaterial() const
 {
-    if (m_material && m_material->Valid() && m_material->MaterialSubType() == RR::MaterialType::Pbr)
+    if (m_material && *m_material->MaterialSubType() == RR::MaterialType::Pbr)
     {
-        return std::static_pointer_cast<RR::PbrMaterial>(m_material).get();
+        if (auto type = m_material->MaterialSubType())
+        {
+            if (type.value() == RR::MaterialType::Pbr)
+            {
+                auto material = m_material;
+                return material.as<RR::PbrMaterial>();
+            }
+        }
     }
-    return nullptr;
+    return {};
 }

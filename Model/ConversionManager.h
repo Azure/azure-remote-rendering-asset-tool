@@ -114,8 +114,8 @@ struct Conversion
         }
     }
 
-    std::shared_ptr<RR::ConversionStatusAsync> m_statusAsync = nullptr;
-    std::shared_ptr<RR::StartAssetConversionAsync> m_conversionCall = nullptr;
+    RR::ApiHandle<RR::ConversionStatusAsync> m_statusAsync = nullptr;
+    RR::ApiHandle<RR::StartAssetConversionAsync> m_conversionCall = nullptr;
 };
 
 // class used to control conversions in ARRT. It will keep track of the current conversions and the past ones, and allow the user to start new ones or

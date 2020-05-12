@@ -17,22 +17,20 @@ public:
         SelectExclusively // change the selection to contain just the passed element
     };
 
-    bool isSelected(const std::shared_ptr<RR::Entity>& object) const;
-    void select(const std::shared_ptr<RR::Entity>& object, SelectionType type = SelectionType::SelectExclusively);
-    void deselect(const std::shared_ptr<RR::Entity>& object);
+    bool isSelected(const RR::ApiHandle<RR::Entity>& object) const;
+    void select(const RR::ApiHandle<RR::Entity>& object, SelectionType type = SelectionType::SelectExclusively);
+    void deselect(const RR::ApiHandle<RR::Entity>& object);
     void deselectAll();
 
-    void setSelection(const QList<std::shared_ptr<RR::Entity>>& newSelection);
+    void setSelection(const QList<RR::ApiHandle<RR::Entity>>& newSelection);
 
-    QList<std::shared_ptr<RR::Entity>>::const_iterator begin() const;
-    QList<std::shared_ptr<RR::Entity>>::const_iterator end() const;
+    QSet<RR::ApiHandle<RR::Entity>>::const_iterator begin() const;
+    QSet<RR::ApiHandle<RR::Entity>>::const_iterator end() const;
 
 Q_SIGNALS:
     // notification that the selection has changed
-    void selectionChanged(QList<std::shared_ptr<RR::Entity>> m_added, QList<std::shared_ptr<RR::Entity>> m_removed);
+    void selectionChanged(QList<RR::ApiHandle<RR::Entity>> m_added, QList<RR::ApiHandle<RR::Entity>> m_removed);
 
 private:
-    QSet<unsigned long long> m_selected;
-    // To enable RR::Entity in public methods
-    QList<std::shared_ptr<RR::Entity>> m_selectedE;
+    QSet<RR::ApiHandle<RR::Entity>> m_selected;
 };

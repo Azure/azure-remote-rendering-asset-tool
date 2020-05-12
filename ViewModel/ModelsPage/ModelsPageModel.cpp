@@ -158,7 +158,7 @@ bool ModelsPageModel::loadModelImpl(const QString& path, const QString& sasUri, 
     {
         setCurrentLoadingModel(path, fromExplorer);
 
-        RR::LoadResult loadResult = [this](RR::Result result, const std::shared_ptr<RR::Entity>& /*root*/) {
+        RR::LoadResult loadResult = [this](RR::Result result, const RR::ApiHandle<RR::Entity>& /*root*/) {
             qDebug() << tr("LOADED RESULT ") << result;
             const bool loaded = result == RR::Result::Success;
             setCurrentLoadingStatus(loaded ? BlobsListModel::LoadingStatus::LOADED : BlobsListModel::LoadingStatus::FAILED);

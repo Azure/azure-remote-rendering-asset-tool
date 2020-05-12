@@ -46,7 +46,7 @@ private:
     MaterialFilteredListModel* m_materialListModel = nullptr;
     QItemSelectionModel* m_materialListSelectionModel = nullptr;
     MaterialProvider* m_editingMaterial = nullptr;
-    Value<std::shared_ptr<RR::Material>> m_selectedMaterial;
+    Value<RR::ApiHandle<RR::Material>> m_selectedMaterial;
 
     QItemSelectionModel* m_treeSelectionModel = nullptr;
 
@@ -56,5 +56,5 @@ private:
     bool m_updatingSelection = false;
 
     void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    void onEntitySelectionChanged(const QList<std::shared_ptr<RR::Entity>>& added, const QList<std::shared_ptr<RR::Entity>>& removed);
+    void onEntitySelectionChanged(const QList<RR::ApiHandle<RR::Entity>>& added, const QList<RR::ApiHandle<RR::Entity>>& removed);
 };
