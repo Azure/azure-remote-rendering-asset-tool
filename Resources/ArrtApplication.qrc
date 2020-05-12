@@ -1,0 +1,46 @@
+<RCC>
+    <qresource prefix="/ArrtApplication">
+        <file>Icons/conversion.svg</file>
+        <file>Icons/critical.svg</file>
+        <file>Icons/debug.svg</file>
+        <file>Icons/details.svg</file>
+        <file>Icons/directory.svg</file>
+        <file>Icons/directorymode.svg</file>
+        <file>Icons/error.svg</file>
+        <file>Icons/info.svg</file>
+        <file>Icons/log.svg</file>
+        <file>Icons/model.svg</file>
+        <file>Icons/rendering.svg</file>
+        <file>Icons/settings.svg</file>
+        <file>Icons/simple.svg</file>
+        <file>Icons/start.svg</file>
+        <file>Icons/stop.svg</file>
+        <file>Icons/warning.svg</file>
+        <file>Icons/inspector.svg</file>
+        <file>Icons/new.svg</file>
+        <file>Icons/upload.svg</file>
+        <file>Icons/autoextendtime.svg</file>
+        <file>Icons/extendtime.svg</file>
+        <file>Icons/parentdir.svg</file>
+        <file>Icons/remove.svg</file>
+        <file>Icons/conversion_canceled.svg</file>
+        <file>Icons/conversion_failed.svg</file>
+        <file>Icons/conversion_running.svg</file>
+        <file>Icons/conversion_succeeded.svg</file>
+        <file>Icons/collapse.svg</file>
+        <file>Icons/expand.svg</file>
+        <file>Icons/newfolder.svg</file>
+        <file>Icons/showblobs.svg</file>
+        <file>Icons/expanded.svg</file>
+        <file>Icons/notexpanded.svg</file>
+        <file>Icons/session_connected.svg</file>
+        <file>Icons/session_connecting.svg</file>
+        <file>Icons/session_error.svg</file>
+        <file>Icons/session_expired.svg</file>
+        <file>Icons/session_not_active.svg</file>
+        <file>Icons/session_ready.svg</file>
+        <file>Icons/session_starting.svg</file>
+        <file>Icons/session_stop_requested.svg</file>
+        <file>Icons/session_stopped.svg</file>
+    </qresource>
+</RCC>
