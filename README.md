@@ -23,21 +23,21 @@ It can be used as a sample application to learn how to implement a front end for
 
 ## General Prerequisites
 
-To use ARRT, you need a working remote rendering account. See [Azure Remote Rendering account](https://docs.microsoft.com/en-us/azure/remote-rendering/how-tos/create-an-account) to create an ARR account.
+To use ARRT, you need a working remote rendering account. See [Azure Remote Rendering account](https://docs.microsoft.com/azure/remote-rendering/how-tos/create-an-account) to create an ARR account.
 
 You need to be familiar with the following key concepts:
 
-* [Sessions](https://docs.microsoft.com/en-us/azure/remote-rendering/concepts/sessions)
-* [Models](https://docs.microsoft.com/en-us/azure/remote-rendering/concepts/models)
-* [Model conversion](https://docs.microsoft.com/en-us/azure/remote-rendering/how-tos/conversion/model-conversion)
+* [Sessions](https://docs.microsoft.com/azure/remote-rendering/concepts/sessions)
+* [Models](https://docs.microsoft.com/azure/remote-rendering/concepts/models)
+* [Model conversion](https://docs.microsoft.com/azure/remote-rendering/how-tos/conversion/model-conversion)
 
 ## Prerequisites to compile and run ARRT from git repo
 
 * Visual studio 2017 or newer
 * Qt 5.13.1 or newer. Find the installation on the [website](https://www.qt.io/download-qt-installer). Use the default installation options. If you want to debug the Qt code, select the source code. Make sure the Qt5_DIR environment variable is set
-* CMake version 3.16. Find the installation [here](https://cmake.org/download/). Make sure CMake is in the PATH
-* Command-line NuGet from [here](https://www.nuget.org/downloads). Make sure Nuget.exe is in the PATH
-* HEVC driver (if not present already). For more information about the system requirements for ARR, see [System requirements](https://docs.microsoft.com/en-us/azure/remote-rendering/overview/system-requirements)
+* CMake version 3.16. Find the installation [here](https://cmake.org/download/). Make sure CMake is in the PATH environment variable
+* Command-line NuGet from [here](https://www.nuget.org/downloads). Make sure Nuget.exe is in the PATH environment variable
+* HEVC driver (if not present already). For more information about the system requirements for ARR, see [System requirements](https://docs.microsoft.com/azure/remote-rendering/overview/system-requirements)
 
 ## Compiling ARRT
 

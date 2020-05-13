@@ -16,7 +16,6 @@ To convert a file, click on "New". Now the view is split between a conversion li
 ## Input model selection
 
 If you click on the button "Select" on the right of the input field, a panel will show the content of your blob storage. To choose the model to convert, first choose the blob container, then select an input model.
-You can also select a directory using the 
 
 The blob list visualization has two modes:
 
@@ -34,7 +33,7 @@ Before starting the conversion, all of the files in the chosen root and its subd
 
 ## Conversion configuration parameters
 
-If the input model has been selected, you can visualize and edit all of the parameters for your conversion. See the page [Configure the model conversion](https://docs.microsoft.com/en-us/azure/remote-rendering/how-tos/conversion/configure-model-conversion) for more information on each parameter.
+If the input model has been selected, you can visualize and edit all of the parameters for your conversion. See the page [Configure the model conversion](https://docs.microsoft.com/azure/remote-rendering/how-tos/conversion/configure-model-conversion) for more information on each parameter.
 
 The configuration is written to a blob named "ConversionSettings.json" and stored on the input directory.
 

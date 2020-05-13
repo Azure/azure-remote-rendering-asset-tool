@@ -11,7 +11,7 @@ ms.topic: article
 
 ![ARRT material editing view](media/ARRT.png)
 
-ARRT (Azure Remote Rendering asset tool) is an application using Azure Remote Rendering service to upload, visualize, and edit 3D models.
+ARRT (Azure Remote Rendering asset tool) is an application using Azure Remote Rendering service (ARR) to upload, visualize, and edit 3D models.
 
 ARRT can be used by technical artists or contents creators to:
 
@@ -20,6 +20,8 @@ ARRT can be used by technical artists or contents creators to:
 * render the model remotely
 * modify its materials
 
+For more information on the input formats supported by ARR, see [Supported source formats](https://docs.microsoft.com/en-gb/azure/remote-rendering/how-tos/conversion/model-conversion#supported-source-formats)
+
 ## Setting up your accounts
 
 To use ARRT, you can access the configuration panel by clicking on the gear icon on the toolbar.
@@ -27,9 +29,9 @@ You'll have to set up two subscriptions:
 
 ### Azure Remote Rendering subscription
 
-If you don't have a subscription, follow the steps in [Create an Azure Remote Rendering account](https://docs.microsoft.com/en-us/azure/remote-rendering/how-tos/create-an-account#create-an-account).
+If you don't have a subscription, follow the steps in [Create an Azure Remote Rendering account](https://docs.microsoft.com/azure/remote-rendering/how-tos/create-an-account#create-an-account).
 
-Once you gain access to the subscription, you need to retrieve **domain**, **ID**, and **key** from your [account credentials](https://docs.microsoft.com/en-us/azure/remote-rendering/how-tos/create-an-account#retrieve-the-account-information) and enter them in the configuration panel.
+Once you gain access to the subscription, you need to retrieve **domain**, **ID**, and **key** from your [account credentials](https://docs.microsoft.com/azure/remote-rendering/how-tos/create-an-account#retrieve-the-account-information) and enter them in the configuration panel.
 
 ### Azure Storage Account (for asset conversion)
 
