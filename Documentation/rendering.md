@@ -35,7 +35,8 @@ From the panel you can:
 * set up an automatic time extension by clicking on "Auto Extend"
 
 Whenever the session will be near expiration time, if "Auto Extend" is active the lease time will be extended by the amount of time entered in the text field.
-> [!NOTE]
+
+> Note:
 > the lease time cannot be reduced. Be careful when using the extend time function.
 
 To have more details on the running session, you can click on "Inspect Session". This action will open the ArrInspector tool in a default browser. For more information about the ArrInspector, see the [ArrInspector tool documentation](https://docs.microsoft.com/en-us/azure/remote-rendering/resources/tools/arr-inspector).
