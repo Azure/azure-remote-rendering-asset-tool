@@ -39,7 +39,7 @@ To create an account, see [Create an Azure Storage Account](https://docs.microso
 
 To upload files, you need one or more Blob containers in your storage account. See [Quickstart: Upload, download, and list blobs with the Azure portal](https://docs.microsoft.com/azure/storage/blobs/storage-quickstart-blobs-portal)
 
-To find the credentials to enter in the ARRT configuration panel open the Azure portal and open your storage account. Look in "Access Key" and "Properties" under the "Settings" group on the left column. Find **Name**, **Key** under Access Key, and **Primary Blob Service Endpoint** under Properties.
+To find the credentials to enter in the ARRT configuration panel, open the Azure portal and open your storage account. Look in "Access Key" and "Properties" under the "Settings" group on the left column. Find **Name**, **Key** under Access Key, and **Primary Blob Service Endpoint** under Properties.
 
 An alternative way to configure your storage account is to use the [Microsoft Azure Storage Explorer](https://azure.microsoft.com/features/storage-explorer/)
 
