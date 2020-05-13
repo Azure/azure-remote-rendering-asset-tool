@@ -3,19 +3,17 @@ SET OUTPUT_DIR=%1
 SET CACHEFILE=%OUTPUT_DIR%\CMakeCache.txt
 
 @echo off
-IF [%1]==[] (
+IF [%1] EQU [] ( 
     CALL :USAGE
-) ELSE IF [%2]==[] (
+) ELSE IF [%2] EQU [] (
     CALL :GENERATE
-) ELSE IF /I %~2 == -vs2017 (
+) ELSE IF /I "%~2"=="-vs2017" (
     IF EXIST %CACHEFILE% DEL %CACHEFILE%
     CALL :GENERATE -G "Visual Studio 15 2017" -A x64
-) ELSE IF /I %~2 == -vs2019 (
+) ELSE IF /I "%~2"=="-vs2019" (
     IF EXIST %cachefile% DEL %cachefile%
     CALL :GENERATE -G "Visual Studio 16 2019" -A x64
-) ELSE (
-    CALL :USAGE
-)
+) ELSE CALL :USAGE
 EXIT /b 0
 
 :GENERATE
