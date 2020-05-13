@@ -43,7 +43,7 @@ An alternative way to configure your storage account is to use the [Microsoft Az
 
 ## The main toolbar
 
-![Main toolbar](media/Toolbar.png)
+![Main toolbar](media/toolbar.png)
 All the main panels are accessible from the main toolbar on the top side.
 
 From left to right you have:
