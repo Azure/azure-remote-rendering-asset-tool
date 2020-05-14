@@ -230,7 +230,7 @@ bool ArrSessionManager::startSession(const RR::RenderingSessionCreationParams& i
             const auto statusEx = completedAsync->Status();
             const auto status = statusEx ? statusEx.value() : RR::Result::Fail;
             const auto sessionEx = completedAsync->Result();
-            QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, session = sessionEx ? std::move(sessionEx.value()) : nullptr, status] {
+            QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, session = sessionEx ? sessionEx.value() : nullptr, status] {
                 if (thisPtr)
                 {
                     thisPtr->m_startRequested = nullptr;

@@ -1,12 +1,5 @@
 #include <Model/ModelEditor/EntitySelection.h>
 
-namespace
-{
-    uint qHash(const RR::ApiHandle<RR::Entity>& e)
-    {
-        return static_cast<uint>(std::hash<unsigned long long>()(e ? e->Handle() : 0));
-    }
-} // namespace
 EntitySelection::EntitySelection(QObject* parent)
     : QObject(parent)
 {

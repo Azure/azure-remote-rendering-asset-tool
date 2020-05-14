@@ -268,10 +268,9 @@ void ViewportModel::pick(int x, int y)
     rc.MaxHits = 1;
     rc.CollisionMask = 0xffffffff;
     QPointer<ViewportModel> thisPtr = this;
-    int idx = m_queryCounter++;
     if (auto async = m_client->RayCastQueryAsync(rc))
     {
-        (*async)->Completed([thisPtr, idx](const RR::ApiHandle<RR::RaycastQueryAsync>& finishedAsync) {
+        (*async)->Completed([thisPtr](const RR::ApiHandle<RR::RaycastQueryAsync>& finishedAsync) {
             RR::ApiHandle<RR::Entity> hit = nullptr;
             const auto result = finishedAsync->Result().value();
             if (result.size() > 0)
@@ -421,7 +420,7 @@ void ViewportModel::setSelectionModel(EntitySelection* selectionModel)
 
         QObject::connect(m_selectionModel, &EntitySelection::selectionChanged, this,
                          [this](const QList<RR::ApiHandle<RR::Entity>>& selected, const QList<RR::ApiHandle<RR::Entity>>& deselected) {
-                             updateSelection(std::move(selected), std::move(deselected));
+                             updateSelection(selected, deselected);
                          });
     }
 }

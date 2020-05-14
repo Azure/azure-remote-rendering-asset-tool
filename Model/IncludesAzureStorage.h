@@ -1,4 +1,5 @@
 #pragma once
+#define _TURN_OFF_PLATFORM_STRING
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wsign-compare"
 #pragma clang diagnostic ignored "-Wreorder"

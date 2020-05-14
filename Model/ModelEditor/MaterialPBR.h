@@ -38,7 +38,6 @@ public:
                                  ///< on see-through devices like Hololens but has less GPU cost associated with it.
     };
 
-    //Q_ENUM(VertexColorMode)
     Q_ENUM(PbrVertexAlphaMode)
     Q_ENUM(PbrMaterialFeatures)
 
