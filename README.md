@@ -42,7 +42,7 @@ You need to be familiar with the following key concepts:
 ## Building ARRT
 
 * Clone the GitHub Repository [Azure Remote Rendering Asset Tool](https://github.com/Azure/azure-remote-rendering-asset-tool)
-* From the root directory, run the script *GenerateSolution.bat OutputDirectory -vs2017 (or -vs2019)*. The script will run CMake and generate a Visual Studio solution in *OutputDirectory*.
+* From the root directory, run the script *GenerateSolution.bat \<OutputDirectory\> -vs2017 (or -vs2019)*. The script will run CMake and generate a Visual Studio solution in *OutputDirectory*.
 * Open it with Visual Studio 2017 or Visual Studio 2019
 * Compile (Debug or Release)
 * Run
@@ -56,7 +56,7 @@ You need to be familiar with the following key concepts:
 If Clang and Ninja are installed locally, you have access a few useful dev tools:
 
 * **clang-format**. It can be triggered on the whole codebase, running *FormatSourceCode.bat* 
-* **Ninja build**. By running *BuildWithNinja.bat OutputDirectory*, ARRT will be automatically built in the output directory specified using Ninja.
+* **Ninja build**. By running *BuildWithNinja.bat \<OutputDirectory\>*, ARRT will be automatically built in the output directory specified using Ninja.
 * **clang-tidy**. You can call *RunClangTidy.bat* which will build with ninja and then run clang-tidy on all of the .cpp source files of ARRT.
 
 You can download Clang from the [LLVM Download Page](https://releases.llvm.org/download.html). And Ninja-build from the [Ninja-build GitHub repo](https://github.com/ninja-build/ninja/releases)
