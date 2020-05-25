@@ -2,16 +2,6 @@
 #include <QDebug>
 #include <ViewModel/ModelEditor/SceneTreeModel.h>
 
-namespace
-{
-    uint qHash(const RR::ApiHandle<RR::Entity>& e)
-    {
-        return static_cast<uint>(std::hash<unsigned long long>()(e ? e->Handle() : 0));
-    }
-
-    inline bool operator<(const RR::ApiHandle<RR::Entity>& lhs, const RR::ApiHandle<RR::Entity>& rhs) { return lhs->Handle() < rhs->Handle(); }
-} // namespace
-
 SceneTreeModel::SceneTreeModel(ArrSessionManager* sessionManager, QObject* parent)
     : QAbstractItemModel(parent)
     , m_sessionManager(sessionManager)

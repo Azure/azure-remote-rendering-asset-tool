@@ -8,21 +8,22 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wreorder"
+#pragma clang diagnostic ignored "-Wsign-compare"
 #pragma warning(push)
 #pragma warning(disable : 4100)
 #include <AzureRemoteRendering.inl>
 #pragma warning(pop)
 #pragma clang diagnostic pop
 
-int main(int argc, char* argv[])
+int WinMain(HINSTANCE, HINSTANCE, char*, int)
 {
     try
     {
         QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, false);
         QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
 
-        QApplication a(argc, argv);
+        int argc = 0;
+        QApplication a(argc, 0);
 
         QApplication::setStyle(new ArrtStyle());
         qRegisterMetaType<RR::ApiHandle<RR::Material>>();

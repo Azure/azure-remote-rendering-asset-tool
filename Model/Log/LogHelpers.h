@@ -44,20 +44,35 @@ inline QDebug& operator<<(QDebug& logger, const RR::Status& arrStatus)
     }
     else
     {
-#define logCase(val)        \
-    case RR::Status::##val: \
-        logger << #val;     \
-        break;
         switch (arrStatus)
         {
-            logCase(OK)
-                logCase(Failed)
-                    logCase(ObjectDisposed)
-                        logCase(OutOfMemory)
-                            logCase(InvalidArgument)
-                                logCase(OutOfRange)
-                                    logCase(NotImplemented)
-                                        logCase(KeyNotFound)
+            case RR::Status::OK:
+                logger << "OK";
+                break;
+            case RR::Status::Failed:
+                logger << "Failed";
+                break;
+            case RR::Status::ObjectDisposed:
+                logger << "ObjectDisposed";
+                break;
+            case RR::Status::OutOfMemory:
+                logger << "OutOfMemory";
+                break;
+            case RR::Status::InvalidArgument:
+                logger << "InvalidArgument";
+                break;
+            case RR::Status::OutOfRange:
+                logger << "OutOfRange";
+                break;
+            case RR::Status::NotImplemented:
+                logger << "NotImplemented";
+                break;
+            case RR::Status::KeyNotFound:
+                logger << "KeyNotFound";
+                break;
+            default:
+                logger << (int)arrStatus;
+                break;
         }
     }
 #undef logCase

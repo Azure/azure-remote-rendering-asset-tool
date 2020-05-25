@@ -6,13 +6,7 @@
 #include <QStandardItemModel>
 
 class ArrSessionManager;
-namespace
-{
-    uint qHash(const RR::ApiHandle<RR::Material>& m)
-    {
-        return static_cast<uint>(std::hash<unsigned long long>()(m && *m->Valid() ? m->Handle() : 0));
-    }
-} // namespace
+
 // List model for the material list. It contains all of the materials in the scene
 
 class MaterialListModel : public QStandardItemModel

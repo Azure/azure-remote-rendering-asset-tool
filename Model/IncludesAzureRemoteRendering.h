@@ -1,7 +1,6 @@
 #pragma once
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wreorder"
 #pragma warning(push)
 #pragma warning(disable : 4100 4002)
 #include <AzureRemoteRendering.h>
@@ -20,3 +19,7 @@ Q_DECLARE_METATYPE(RR::PbrMaterialFeatures);
 Q_DECLARE_METATYPE(RR::Result);
 Q_DECLARE_METATYPE(RR::ApiHandle<RR::Material>);
 Q_DECLARE_METATYPE(RR::ApiHandle<RR::Entity>);
+
+bool operator<(const RR::ApiHandle<RR::Entity>& lhs, const RR::ApiHandle<RR::Entity>& rhs);
+uint qHash(const RR::ApiHandle<RR::Entity>& e);
+uint qHash(const RR::ApiHandle<RR::Material>& m);
