@@ -1,10 +1,8 @@
-#include <QApplication>
 #include <QComboBox>
 #include <QDebug>
 #include <QFormLayout>
 #include <QLabel>
 #include <QLineEdit>
-#include <QPointer>
 #include <Utils/DpiUtils.h>
 #include <Utils/ScopedBlockers.h>
 #include <Utils/SimpleVerticalLayout.h>
