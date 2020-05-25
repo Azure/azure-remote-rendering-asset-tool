@@ -8,6 +8,7 @@ FlatButton::FlatButton(const QString& text, QWidget* parent)
 {
     setText(text);
     setAccessibleName(text);
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 void FlatButton::setIcon(const QIcon& icon, bool keepText)

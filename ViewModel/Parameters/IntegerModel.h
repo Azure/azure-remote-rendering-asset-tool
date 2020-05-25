@@ -25,7 +25,7 @@ public:
     {
         return ParameterModel::getValue().value<int>();
     }
-    void setValue(float value)
+    void setValue(int value)
     {
         ParameterModel::setValue(QVariant::fromValue<int>(value));
     }

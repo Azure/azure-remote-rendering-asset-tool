@@ -1,8 +1,10 @@
+#include <QApplication>
 #include <QComboBox>
 #include <QDebug>
 #include <QFormLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QPointer>
 #include <Utils/DpiUtils.h>
 #include <Utils/ScopedBlockers.h>
 #include <Utils/SimpleVerticalLayout.h>
@@ -203,7 +205,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
     m_startConversionButton = new FlatButton(tr("Start conversion"));
     m_startConversionButton->setToolTip(tr("Start conversion"), tr("Trigger the conversion using the selected configuration"));
     m_startConversionButton->setIcon(ArrtStyle::s_startIcon, true);
-    QObject::connect(m_startConversionButton, &FlatButton::pressed, this, [this]() {
+    QObject::connect(m_startConversionButton, &FlatButton::clicked, this, [this]() {
         m_model->startConversion();
     });
     toolButtonsLayout->addWidget(m_startConversionButton);
