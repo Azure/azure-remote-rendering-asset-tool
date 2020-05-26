@@ -203,7 +203,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
     m_startConversionButton = new FlatButton(tr("Start conversion"));
     m_startConversionButton->setToolTip(tr("Start conversion"), tr("Trigger the conversion using the selected configuration"));
     m_startConversionButton->setIcon(ArrtStyle::s_startIcon, true);
-    QObject::connect(m_startConversionButton, &FlatButton::pressed, this, [this]() {
+    QObject::connect(m_startConversionButton, &FlatButton::clicked, this, [this]() {
         m_model->startConversion();
     });
     toolButtonsLayout->addWidget(m_startConversionButton);

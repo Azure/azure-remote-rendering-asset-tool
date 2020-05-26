@@ -331,7 +331,7 @@ void ConversionModel::loadConfigFileForConversion(const Conversion* conversion)
         }
         else
         {
-            QString inputFolder = QString::fromUtf8(conversion->m_input_folder.c_str(), static_cast<int>(conversion->m_input_folder.size()));
+            QString inputFolder = QString::fromStdString(conversion->getInputModelDirectory());
             m_conversionConfigModel->load(inputFolder.toStdWString(), conversion->m_inputContainer);
         }
     }
