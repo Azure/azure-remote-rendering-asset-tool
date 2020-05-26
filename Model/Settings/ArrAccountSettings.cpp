@@ -1,7 +1,10 @@
 #include <Model/Settings/ArrAccountSettings.h>
+
+#include <Model/Log/LogHelpers.h>
 #include <QMetaEnum>
 #include <QMetaObject>
 #include <Utils/JsonUtils.h>
+#include <Utils/StringEncrypter.h>
 
 ArrAccountSettings::ArrAccountSettings(QObject* parent)
     : QObject(parent)
@@ -32,4 +35,32 @@ QJsonObject ArrAccountSettings::saveToJson() const
     arrAccountConfig[QLatin1String("key")] = m_key;
     arrAccountConfig[QLatin1String("region")] = QMetaEnum::fromType<Region>().valueToKey(static_cast<int>(m_region));
     return arrAccountConfig;
+}
+
+QString ArrAccountSettings::getKey() const
+{
+    QString key;
+    if (StringEncrypter::decrypt(m_key, key))
+    {
+        return key;
+    }
+    else
+    {
+        qWarning(LoggingCategory::configuration) << tr("Error decrypting ARR account key");
+        return {};
+    }
+}
+
+bool ArrAccountSettings::setKey(QString key)
+{
+    if (StringEncrypter::encrypt(key, m_key))
+    {
+        Q_EMIT changed();
+        return true;
+    }
+    else
+    {
+        qWarning(LoggingCategory::configuration) << tr("Error encrypting ARR account key");
+        return false;
+    }
 }

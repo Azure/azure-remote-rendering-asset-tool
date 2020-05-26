@@ -102,7 +102,7 @@ if(DEFINED ENV{EXTRA_ARR_ZONE})
     add_definitions( -DEXTRA_ARR_ZONE=$ENV{EXTRA_ARR_ZONE} )
 endif()
 
-target_link_libraries(Arrt d3d11.lib DXGI.lib)
+target_link_libraries(Arrt d3d11.lib DXGI.lib crypt32.lib)
 
 get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)

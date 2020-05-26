@@ -9,9 +9,10 @@ class TextModel : public ParameterModel
     Q_OBJECT
 
 public:
-    TextModel(QString name, QObject* object, const std::string_view& parameterName, bool updateOnEditingFinished = false)
+    TextModel(QString name, QObject* object, const std::string_view& parameterName, bool updateOnEditingFinished = false, bool isPassword = false)
         : ParameterModel(name, object, parameterName)
         , m_updateOnEditingFinished(updateOnEditingFinished)
+        , m_isPassword(isPassword)
     {
     }
 
@@ -25,4 +26,5 @@ public:
     }
 
     const bool m_updateOnEditingFinished;
+    const bool m_isPassword;
 };

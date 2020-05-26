@@ -4,6 +4,11 @@ BoundText::BoundText(TextModel* model, QWidget* parent)
     : QLineEdit(parent)
     , m_model(model)
 {
+    if (m_model->m_isPassword)
+    {
+        setEchoMode(QLineEdit::Password);
+    }
+
     BoundText::updateFromModel();
 
     if (m_model->m_updateOnEditingFinished)

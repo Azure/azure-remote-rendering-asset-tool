@@ -12,7 +12,7 @@ StorageAccountSettingsModel::StorageAccountSettingsModel(AzureStorageAccountSett
 {
     using namespace std::literals;
     m_controls.push_back(new TextModel(tr("Name"), m_azureStorageAccountSettings, "name"sv, true));
-    m_controls.push_back(new TextModel(tr("Key"), m_azureStorageAccountSettings, "key"sv, true));
+    m_controls.push_back(new TextModel(tr("Key"), m_azureStorageAccountSettings, "key"sv, true, true));
     m_controls.push_back(new TextModel(tr("Blob endpoint (e.g. https://[s.a. name].blob.core.windows.net/)"), m_azureStorageAccountSettings, "blobEndpoint"sv, true));
 
     connect(m_storageManager, &AzureStorageManager::onStatusChanged, this, [this]() {
