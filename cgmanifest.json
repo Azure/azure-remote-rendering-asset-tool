@@ -1,0 +1,31 @@
+{
+  "Registrations": [
+    {
+      "component": {
+        "type": "git",
+        "git": {
+          "repositoryUrl": "https://github.com/qt/qt5",
+          "commitHash": "80791b03ee245b893e638a78508f1fa957f0b08d"
+        }
+      }
+    },
+    {
+      "component": {
+        "type": "git",
+        "git": {
+          "repositoryUrl": "https://github.com/Azure/azure-storage-cpp",
+          "commitHash": "76cb553249ede1e6f05456d936c9a36753cc1597"
+        }
+      }
+    },
+    {
+      "component": {
+        "type": "git",
+        "git": {
+          "repositoryUrl": "https://github.com/microsoft/cpprestsdk",
+          "commitHash": "aecf8f1712203b119f58a7ff157c16f66885adcb"
+        }
+      }
+    }
+  ]
+}
