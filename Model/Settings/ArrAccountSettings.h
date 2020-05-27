@@ -25,14 +25,15 @@ public:
 
 private:
     Q_PROPERTY(QString id MEMBER m_id NOTIFY changed);
-    Q_PROPERTY(QString key MEMBER m_key NOTIFY changed);
+    Q_PROPERTY(QString key READ getKey WRITE setKey);
     Q_PROPERTY(Region region MEMBER m_region NOTIFY changed);
 
 public:
     ArrAccountSettings(QObject* parent);
 
     const QString& getId() const { return m_id; }
-    const QString& getKey() const { return m_key; }
+    QString getKey() const;
+    bool setKey(QString key);
     Region getRegion() const { return m_region; }
 
     void loadFromJson(const QJsonObject& arrAccountConfig);

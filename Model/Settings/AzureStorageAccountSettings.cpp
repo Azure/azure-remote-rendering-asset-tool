@@ -1,7 +1,10 @@
 #include <Model/Settings/AzureStorageAccountSettings.h>
+
+#include <Model/Log/LogHelpers.h>
 #include <QMetaEnum>
 #include <QMetaObject>
 #include <Utils/JsonUtils.h>
+#include <Utils/StringEncrypter.h>
 
 AzureStorageAccountSettings::AzureStorageAccountSettings(QObject* parent)
     : QObject(parent)
@@ -22,4 +25,32 @@ QJsonObject AzureStorageAccountSettings::saveToJson() const
     azureStorageAccountSettings[QLatin1String("key")] = m_key;
     azureStorageAccountSettings[QLatin1String("blobendpoint")] = m_blobEndpoint;
     return azureStorageAccountSettings;
+}
+
+QString AzureStorageAccountSettings::getKey() const
+{
+    QString key;
+    if (StringEncrypter::decrypt(m_key, key))
+    {
+        return key;
+    }
+    else
+    {
+        qWarning(LoggingCategory::configuration) << tr("Error decrypting Azure Storage account key");
+        return {};
+    }
+}
+
+bool AzureStorageAccountSettings::setKey(QString key)
+{
+    if (StringEncrypter::encrypt(key, m_key))
+    {
+        Q_EMIT changed();
+        return true;
+    }
+    else
+    {
+        qWarning(LoggingCategory::configuration) << tr("Error encrypting ARR account key");
+        return false;
+    }
 }

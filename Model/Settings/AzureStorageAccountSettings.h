@@ -10,14 +10,15 @@ class AzureStorageAccountSettings : public QObject
 
 private:
     Q_PROPERTY(QString name MEMBER m_name NOTIFY changed);
-    Q_PROPERTY(QString key MEMBER m_key NOTIFY changed);
+    Q_PROPERTY(QString key READ getKey WRITE setKey NOTIFY changed);
     Q_PROPERTY(QString blobEndpoint MEMBER m_blobEndpoint NOTIFY changed);
 
 public:
     AzureStorageAccountSettings(QObject* parent);
 
     const QString& getName() const { return m_name; }
-    const QString& getKey() const { return m_key; }
+    QString getKey() const;
+    bool setKey(QString key);
     const QString& getBlobEndpoint() const { return m_blobEndpoint; }
 
     void loadFromJson(const QJsonObject& storageAccountConfig);
