@@ -32,7 +32,7 @@ steps:
 - task: PowerShell@2
   displayName: 'Check Clang-format'
   inputs:
-    filePath: '$(Build.SourcesDirectory)\azure-remote-rendering-asset-tool\pipelines\CheckFormatCompliant.ps1'
+    filePath: '$(Build.SourcesDirectory)\azure-remote-rendering-asset-tool\.pipelines\CheckFormatCompliant.ps1'
     arguments: '"C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\vcpackages\"'
 
 - task: ea576cd4-c61f-48f8-97e7-a3cb07b90a6f@2
