@@ -1,0 +1,71 @@
+environment:
+  host:
+    os: 'windows'
+    flavor: 'server'
+    version: '2016'
+  runtime:
+    provider: 'appcontainer'
+    image: 'cdpxwin1809.azurecr.io/global/vse2017:latest'
+    source_mode: 'link'
+
+workspace_options:
+  enable_legacy_networking: false
+
+version:
+  name: 'ARRT'
+  major: 0
+  minor: 1
+  tag: 'alpha'
+  system: 'patch'
+
+restore:
+  commands:
+    - !!defaultcommand
+      name: 'Checkout Dependencies'
+      command: '.pipelines\checkout_arrt_dependencies.cmd'
+
+# An optional user defined stage for performing any compilation, code generation etc.
+# All files in the artifacts sections will be collected, saved off and signed.
+# The signed files will be restored back to the original locations before the next stage is invoked.
+# Eventually, network access will be limited or cut-off in this stage.
+build:
+  commands:
+    - !!buildcommand
+      name: 'Build ARRT'
+      command: '.pipelines\build.cmd'
+      logs:
+        - include:
+            - '**/*.log'
+      artifacts:
+        - from: 'Debug'
+          to: 'binaryOutput'
+          include:
+            - '**/*'
+        - from: 'Release'
+          to: 'binaryOutput.Release'
+          include:
+            - '**/*'
+package:
+  commands:
+test:
+  commands:
+#   - !!testcommand
+#     name: 'Test'
+#     command: '.pipeline\test.cmd'
+#     testresults:                                                      # Sequence of entries indicating which test results files to collect.
+#       - from: 'src\WindowsServerSample\VisualStudio'
+#         title: 'Even-Odd-Tests'                                       # Test run title. Used by VSTS.
+#         configuration: 'Debug'                                        # Optional build configuration.
+#         platform: 'Debug'                                             # Optional build platform.
+#         type: 'vstest'                                                # Test engine type. Used by VSTS. Supported values are JUnit, NUnit
+#                                                                       # VSTest and xUnit.
+#         include:                                                      # Sequence of glob patterns indicating which test results file to
+#                                                                       # associate with this test run.
+#           - '**\*.trx'                                                # Include all TRX files under any TestResults folder under the src
+#                                                                       # folder.
+
+publish:
+  commands:
+user_cleanup:
+  commands:
+

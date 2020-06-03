@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required (VERSION 3.12)
 
 set(CMAKE_SUPPRESS_REGENERATION true)
 
@@ -58,17 +58,19 @@ else()
     target_compile_options(Arrt PRIVATE -Wall -Wextra -pedantic -Werror -Wno-extra-semi -Wno-unused-function -Wno-language-extension-token -Wno-delete-non-abstract-non-virtual-dtor)
 endif()
 
-find_program(NUGET nuget PATHS "$ENV{NUGET_PATH}")
-if(NOT NUGET)
-    message(FATAL "CMake could not find the nuget command line tool. Please install it!")
-else()
-    # Copy the Nuget config file from source location to the CMake build directory.
-    configure_file("packages.config" packages.config COPYONLY)
-    # Run Nuget using the .config file to installing any missing dependencies to the build directory.
-    execute_process(COMMAND 
-        ${NUGET} restore packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    )
+if (NOT "$ENV{NUGET_RESTORE}" STREQUAL "false") 
+    find_program(NUGET nuget PATHS "$ENV{NUGET_PATH}")
+    if(NOT NUGET)
+        message(FATAL "CMake could not find the nuget command line tool. Please install it!")
+    else()
+        # Copy the Nuget config file from source location to the CMake build directory.
+        configure_file("packages.config" packages.config COPYONLY)
+        # Run Nuget using the .config file to installing any missing dependencies to the build directory.
+        execute_process(COMMAND 
+            ${NUGET} restore packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        )
+    endif()
 endif()
 
 set( CFG $<IF:$<CONFIG:Debug>,DEBUG,RELEASE> )
