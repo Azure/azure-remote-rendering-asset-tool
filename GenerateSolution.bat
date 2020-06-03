@@ -2,7 +2,7 @@ SETLOCAL
 SET OUTPUT_DIR=%1
 SET CACHEFILE=%OUTPUT_DIR%\CMakeCache.txt
 
-REM @echo off
+@echo off
 IF [%1] EQU [] ( 
     CALL :USAGE
 ) ELSE IF [%2] EQU [] (
