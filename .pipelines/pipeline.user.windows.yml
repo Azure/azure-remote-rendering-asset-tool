@@ -8,8 +8,25 @@ environment:
     image: 'cdpxwin1809.azurecr.io/global/vse2017:latest'
     source_mode: 'link'
 
+signing_options:
+  profile: 'external_distribution'
+
 workspace_options:
   enable_legacy_networking: false
+
+static_analysis_options:
+  binskim_options:
+    disable_tool_scan: false
+    fail_on_error: true
+    files_to_scan:
+      - from: 'CMakeFiles\'
+        exclude:
+          - '**/*'
+  policheck_options:
+    disable_tool_scan: false
+    fail_on_error: true
+    scan_comments: true
+
 
 version:
   name: 'ARRT'
