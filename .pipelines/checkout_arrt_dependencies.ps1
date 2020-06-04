@@ -51,7 +51,7 @@ $tokenBytes = [System.Text.UTF8Encoding]::UTF8.GetBytes($tokenWithUserName)
 $encoded = [System.Convert]::ToBase64String($tokenBytes)
 $headerValue = "Basic " + $encoded
 
-&git.exe -c http.$RepoUrl.extraheader="Authorization: $headerValue" clone --verbose $RepoUrl --branch $BranchName --recurse-submodules $RepoFolder
+&git.exe -c http.$RepoUrl.extraheader="Authorization: $headerValue" clone $RepoUrl --branch $BranchName --recurse-submodules $RepoFolder
 
 if ($LASTEXITCODE -ne 0)
 {
