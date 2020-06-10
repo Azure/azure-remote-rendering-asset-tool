@@ -10,6 +10,7 @@ pushd C:\source
 
 SET CACHEFILE=CMakeCache.txt
 SET NUGET_RESTORE=false
+SET ARRT_VERSION="%BUILD_BUILDNUMBER%"
 
 cmake --version
 cmake -G "Visual Studio 15 2017" -A x64
