@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.12)
 # retrieve version
 
 if(DEFINED ENV{ARRT_VERSION})
-    set(ARRT_VERSION ENV{ARRT_VERSION})
+    set(ARRT_VERSION $ENV{ARRT_VERSION})
 else()
     message("Retrieving version from last git tag")
     find_package (Git)
@@ -14,7 +14,7 @@ else()
         OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
 if (NOT DEFINED ARRT_VERSION)
-    set (ARRT_VERSION "0")
+    set (ARRT_VERSION 0)
 endif()
 message("Version = ${ARRT_VERSION}")
 
