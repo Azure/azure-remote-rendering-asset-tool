@@ -17,6 +17,11 @@ SettingsView::SettingsView(SettingsModel* settingsModel, QWidget* parent)
     auto* scrollArea = new VerticalScrollArea(this);
     listLayout->addWidget(scrollArea, 1);
 
+    {
+        // version information
+        scrollArea->getContentLayout()->addWidget(new FormControl(tr("Application version"), new QLabel(ARRT_VERSION)));
+    }
+
     auto* const settingsViewParent = scrollArea->widget();
     {
         auto* view = new ArrAccountSettingsView(settingsModel->getArrAccountSettingsModel(), settingsViewParent);
