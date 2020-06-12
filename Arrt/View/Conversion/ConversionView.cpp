@@ -3,9 +3,7 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <QLineEdit>
-#include <ViewUtils/DpiUtils.h>
 #include <Utils/ScopedBlockers.h>
-#include <ViewUtils/SimpleVerticalLayout.h>
 #include <View/ArrtStyle.h>
 #include <View/Conversion/ConversionView.h>
 #include <View/Conversion/InputSelectionView.h>
@@ -17,6 +15,8 @@
 #include <ViewModel/Conversion/InputSelectionModel.h>
 #include <ViewModel/Conversion/OutputSelectionModel.h>
 #include <ViewModel/Parameters/ParameterModel.h>
+#include <ViewUtils/DpiUtils.h>
+#include <ViewUtils/SimpleVerticalLayout.h>
 #include <Widgets/FlatButton.h>
 #include <Widgets/FormControl.h>
 #include <Widgets/Navigator.h>

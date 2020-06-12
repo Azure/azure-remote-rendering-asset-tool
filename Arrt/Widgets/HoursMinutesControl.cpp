@@ -1,5 +1,5 @@
-#include <Widgets/HoursMinutesControl.h>
 #include <Utils/TimeValidator.h>
+#include <Widgets/HoursMinutesControl.h>
 
 HoursMinutesControl::HoursMinutesControl()
 {

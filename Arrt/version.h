@@ -3,7 +3,7 @@
 // Version information which is going to be exposed in the output executable
 
 #ifndef ARRT_VERSION
-#define ARRT_VERSION "0.0.0.0"
+#    define ARRT_VERSION "0.0.0.0"
 #endif
 
 #define VER_COMPANY "Microsoft"

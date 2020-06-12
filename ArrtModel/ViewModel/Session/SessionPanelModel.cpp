@@ -1,8 +1,8 @@
 #include <Model/ArrSessionManager.h>
+#include <Utils/TimeValidator.h>
 #include <ViewModel/Session/RunningSessionModel.h>
 #include <ViewModel/Session/SessionCreationModel.h>
 #include <ViewModel/Session/SessionPanelModel.h>
-#include <Utils/TimeValidator.h>
 
 SessionPanelModel::SessionPanelModel(ArrSessionManager* sessionManager, Configuration* configuration, QObject* parent)
     : QObject(parent)

@@ -6,11 +6,11 @@
 #include <QTextEdit>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <ViewUtils/DpiUtils.h>
 #include <Utils/FontOverrideModel.h>
 #include <View/ArrtStyle.h>
 #include <View/Log/LogView.h>
 #include <ViewModel/Log/LogModel.h>
+#include <ViewUtils/DpiUtils.h>
 #include <Widgets/FlatButton.h>
 
 Q_DECLARE_METATYPE(QtMsgType);

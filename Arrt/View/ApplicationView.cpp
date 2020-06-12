@@ -1,7 +1,6 @@
 #include <QBoxLayout>
 #include <QButtonGroup>
 #include <QMessageBox>
-#include <ViewUtils/DpiUtils.h>
 #include <View/ApplicationView.h>
 #include <View/ArrtStyle.h>
 #include <View/Conversion/ConversionPageView.h>
@@ -22,6 +21,7 @@
 #include <ViewModel/Settings/ArrAccountSettingsModel.h>
 #include <ViewModel/Settings/SettingsModel.h>
 #include <ViewModel/Upload/UploadModel.h>
+#include <ViewUtils/DpiUtils.h>
 #include <Widgets/FlatButton.h>
 #include <Widgets/Navigator.h>
 

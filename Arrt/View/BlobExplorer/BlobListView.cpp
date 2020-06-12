@@ -5,10 +5,10 @@
 #include <QPainter>
 #include <QPen>
 #include <QStyledItemDelegate>
-#include <ViewUtils/DpiUtils.h>
 #include <View/ArrtStyle.h>
 #include <View/BlobExplorer/BlobListView.h>
 #include <ViewModel/BlobExplorer/BlobsListModel.h>
+#include <ViewUtils/DpiUtils.h>
 
 Q_DECLARE_METATYPE(azure::storage::storage_uri);
 Q_DECLARE_METATYPE(BlobsListModel::LoadingStatus);

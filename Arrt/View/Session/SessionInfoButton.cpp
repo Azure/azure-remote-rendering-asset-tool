@@ -3,11 +3,11 @@
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QVBoxLayout>
-#include <ViewUtils/DpiUtils.h>
+#include <Utils/TimeValidator.h>
 #include <View/ArrtStyle.h>
 #include <View/Session/SessionInfoButton.h>
 #include <ViewModel/Session/SessionPanelModel.h>
-#include <Utils/TimeValidator.h>
+#include <ViewUtils/DpiUtils.h>
 
 namespace
 {

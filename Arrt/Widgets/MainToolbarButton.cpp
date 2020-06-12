@@ -1,7 +1,7 @@
 #include <QStylePainter>
 #include <QTimer>
-#include <ViewUtils/DpiUtils.h>
 #include <View/ArrtStyle.h>
+#include <ViewUtils/DpiUtils.h>
 #include <Widgets/MainToolbarButton.h>
 
 namespace

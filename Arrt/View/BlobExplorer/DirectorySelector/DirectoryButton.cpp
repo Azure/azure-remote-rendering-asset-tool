@@ -2,10 +2,10 @@
 #include <QStyleOptionToolButton>
 #include <QStylePainter>
 #include <QVBoxLayout>
-#include <ViewUtils/DpiUtils.h>
 #include <View/ArrtStyle.h>
 #include <View/BlobExplorer/DirectorySelector/DirectoryButton.h>
 #include <View/BlobExplorer/DirectorySelector/PopupList.h>
+#include <ViewUtils/DpiUtils.h>
 
 DirectoryButton::DirectoryButton()
     : FlatButton("")

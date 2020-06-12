@@ -40,7 +40,7 @@ namespace
         }
         return {};
     }
-}
+} // namespace
 
 
 class ConversionListDelegate : public QItemDelegate
