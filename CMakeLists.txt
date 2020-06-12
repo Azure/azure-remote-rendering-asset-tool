@@ -1,5 +1,23 @@
 cmake_minimum_required (VERSION 3.12)
 
+# retrieve version
+
+if(DEFINED ENV{ARRT_VERSION})
+    set(ARRT_VERSION $ENV{ARRT_VERSION})
+else()
+    message("Retrieving version from last git tag")
+    find_package (Git)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} describe --tags
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} 
+        OUTPUT_VARIABLE ARRT_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
+if (NOT DEFINED ARRT_VERSION)
+    set (ARRT_VERSION 0)
+endif()
+message("Version = ${ARRT_VERSION}")
+
 set(CMAKE_SUPPRESS_REGENERATION true)
 
 project(Arrt)
@@ -103,6 +121,8 @@ target_include_directories(Arrt PUBLIC ${LIB_ARR_INCLUDE})
 if(DEFINED ENV{EXTRA_ARR_ZONE})
     add_definitions( -DEXTRA_ARR_ZONE=$ENV{EXTRA_ARR_ZONE} )
 endif()
+
+add_definitions( -DARRT_VERSION="${ARRT_VERSION}" )
 
 target_link_libraries(Arrt d3d11.lib DXGI.lib crypt32.lib)
 
