@@ -1,29 +1,5 @@
 cmake_minimum_required (VERSION 3.12)
 
-
-#project(gtest-test)
-
-#enable_testing()
-#set(GTEST_MSVC_SEARCH MD)
-#find_package(GTest REQUIRED)
-#find_package(Threads REQUIRED)
-
-#include_directories(
-#    ${GTEST_INCLUDE_DIRS}
-#)
-
-#add_executable(${PROJECT_NAME}
-#    main.cpp
-#)
-
-#target_link_libraries(${PROJECT_NAME}
-#    ${GTEST_BOTH_LIBRARIES}
-#    ${CMAKE_THREAD_LIBS_INIT}
-#)
-
-#add_test(MyTests ${PROJECT_NAME})
-
-
 # retrieve version
 
 if(DEFINED ENV{ARRT_VERSION})
@@ -171,7 +147,7 @@ endforeach()
 
 source_group(TREE "${SOURCE_ROOT}" FILES ${SOURCE_LIST})
 
-add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_LIST})
+add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SOURCE_LIST})
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${SOURCE_ROOT}")
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ArrtModel")
@@ -197,7 +173,6 @@ add_custom_command(
         $<TARGET_FILE_DIR:Arrt>
 )
 
-
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 add_definitions(-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING -D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 # No Windows.h min and max
@@ -205,7 +180,6 @@ add_definitions(-DNOMINMAX)
 add_definitions(-DARRT_VERSION="${ARRT_VERSION}")
 
 target_link_libraries(${CMAKE_PROJECT_NAME} ArrtModel)
-
 
 
 # Enable all warnings and turn it into errors
