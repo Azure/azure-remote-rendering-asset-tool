@@ -1,4 +1,4 @@
-#include <Widgets/TimeValidator.h>
+#include <Utils/TimeValidator.h>
 
 TimeValidator::TimeValidator(QObject* parent)
     : QValidator(parent)

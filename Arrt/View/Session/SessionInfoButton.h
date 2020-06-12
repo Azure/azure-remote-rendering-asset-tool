@@ -11,7 +11,6 @@ class SessionInfoButton : public FlatButton
 public:
     SessionInfoButton(SessionPanelModel* model, QWidget* parent = {});
 
-    static QString getStringFromStatus(SessionPanelModel::Status status);
     static QIcon getIconFromStatus(SessionPanelModel::Status status);
 
 protected:

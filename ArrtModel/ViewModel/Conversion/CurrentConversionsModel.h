@@ -24,7 +24,6 @@ public:
     };
 
     static QString getStringFromStatus(Conversion::Status status);
-    static QIcon getIconFromStatus(Conversion::Status status);
 
 private:
     ConversionManager* const m_conversionManager;

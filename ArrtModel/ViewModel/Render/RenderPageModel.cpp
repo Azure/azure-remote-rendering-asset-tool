@@ -1,12 +1,12 @@
-#include <View/ArrtStyle.h>
-#include <View/Session/SessionInfoButton.h>
+#include <ViewModel/Render/RenderPageModel.h>
+
+#include <Utils/StyleUtils.h>
 #include <ViewModel/ModelEditor/ModelEditorModel.h>
 #include <ViewModel/ModelsPage/ModelsPageModel.h>
 #include <ViewModel/NotificationButtonModel.h>
 #include <ViewModel/NotificationButtonModelImplementation.h>
-#include <ViewModel/Render/RenderPageModel.h>
 #include <ViewModel/Session/SessionPanelModel.h>
-#include <Widgets/TimeValidator.h>
+#include <Utils/TimeValidator.h>
 
 namespace
 {
@@ -74,8 +74,8 @@ RenderPageModel::RenderPageModel(AzureStorageManager* storageManager, ArrSession
         {
             m_status = status;
             m_buttonModel->setNotifications({{statusToNotificationType(m_status)}});
-            m_buttonModel->setStatusString(ArrtStyle::formatParameterList({tr("Current session status"), tr("Remaining time")})
-                                               .arg(SessionInfoButton::getStringFromStatus(status))
+            m_buttonModel->setStatusString(StyleUtils::formatParameterList({tr("Current session status"), tr("Remaining time")})
+                                               .arg(SessionPanelModel::getStringFromStatus(status))
                                                .arg(TimeValidator::minutesToString(sessionManager->getRemainingMinutes())));
         }
     };

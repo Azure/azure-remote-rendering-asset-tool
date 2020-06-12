@@ -2,7 +2,7 @@
 
 #include <QCursor>
 #include <QDoubleSpinBox>
-#include <Utils/Formatter.h>
+#include <ViewUtils/Formatter.h>
 
 class QTimer;
 

@@ -1,6 +1,6 @@
 #include <QStylePainter>
 #include <QTimer>
-#include <Utils/DpiUtils.h>
+#include <ViewUtils/DpiUtils.h>
 #include <View/ArrtStyle.h>
 #include <Widgets/MainToolbarButton.h>
 

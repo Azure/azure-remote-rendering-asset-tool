@@ -1,5 +1,5 @@
 #include <QApplication>
-#include <Utils/DpiUtils.h>
+#include <ViewUtils/DpiUtils.h>
 
 //from qstylehelper.cpp
 Q_GUI_EXPORT int qt_defaultDpiX();

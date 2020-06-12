@@ -1,5 +1,5 @@
 #include <QScrollBar>
-#include <Utils/SimpleVerticalLayout.h>
+#include <ViewUtils/SimpleVerticalLayout.h>
 #include <Widgets/VerticalScrollArea.h>
 
 VerticalScrollArea::VerticalScrollArea(QWidget* parent)

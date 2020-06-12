@@ -1,7 +1,7 @@
 #include <QBoxLayout>
 #include <QButtonGroup>
 #include <QMessageBox>
-#include <Utils/DpiUtils.h>
+#include <ViewUtils/DpiUtils.h>
 #include <View/ApplicationView.h>
 #include <View/ArrtStyle.h>
 #include <View/Conversion/ConversionPageView.h>

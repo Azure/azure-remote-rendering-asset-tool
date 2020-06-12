@@ -1,5 +1,4 @@
 #include <QItemSelectionModel>
-#include <View/ArrtStyle.h>
 #include <ViewModel/Conversion/CurrentConversionsModel.h>
 
 Q_DECLARE_METATYPE(Conversion::Status);
@@ -95,30 +94,6 @@ QString CurrentConversionsModel::getStringFromStatus(Conversion::Status status)
             return tr("Synchronization failed");
         case Conversion::CONVERSION_FAILED:
             return tr("Conversion failed");
-    }
-    return {};
-}
-
-QIcon CurrentConversionsModel::getIconFromStatus(Conversion::Status status)
-{
-    switch (status)
-    {
-        case Conversion::NOT_STARTED:
-        case Conversion::UNKNOWN:
-            return {};
-        case Conversion::START_REQUESTED:
-        case Conversion::STARTING:
-        case Conversion::SYNCHRONIZING:
-        case Conversion::CONVERTING:
-            return ArrtStyle::s_conversion_runningIcon;
-        case Conversion::COMPLETED:
-            return ArrtStyle::s_conversion_succeededIcon;
-        case Conversion::CANCELED:
-            return ArrtStyle::s_conversion_canceledIcon;
-        case Conversion::SYNCHRONIZATION_FAILED:
-        case Conversion::CONVERSION_FAILED:
-        case Conversion::FAILED_TO_START:
-            return ArrtStyle::s_conversion_failedIcon;
     }
     return {};
 }

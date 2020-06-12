@@ -15,6 +15,34 @@
 
 Q_DECLARE_METATYPE(Conversion::Status);
 
+namespace
+{
+    QIcon getIconFromStatus(Conversion::Status status)
+    {
+        switch (status)
+        {
+            case Conversion::NOT_STARTED:
+            case Conversion::UNKNOWN:
+                return {};
+            case Conversion::START_REQUESTED:
+            case Conversion::STARTING:
+            case Conversion::SYNCHRONIZING:
+            case Conversion::CONVERTING:
+                return ArrtStyle::s_conversion_runningIcon;
+            case Conversion::COMPLETED:
+                return ArrtStyle::s_conversion_succeededIcon;
+            case Conversion::CANCELED:
+                return ArrtStyle::s_conversion_canceledIcon;
+            case Conversion::SYNCHRONIZATION_FAILED:
+            case Conversion::CONVERSION_FAILED:
+            case Conversion::FAILED_TO_START:
+                return ArrtStyle::s_conversion_failedIcon;
+        }
+        return {};
+    }
+}
+
+
 class ConversionListDelegate : public QItemDelegate
 {
 public:
@@ -53,7 +81,7 @@ public:
         QRect iconRect = r;
         //make it square, and on the left side
         iconRect.setRight(iconRect.left() + iconRect.height());
-        QIcon icon = CurrentConversionsModel::getIconFromStatus(status);
+        QIcon icon = getIconFromStatus(status);
         icon.paint(painter, iconRect, Qt::AlignCenter);
         r.setLeft(iconRect.right() + m_spacing);
 

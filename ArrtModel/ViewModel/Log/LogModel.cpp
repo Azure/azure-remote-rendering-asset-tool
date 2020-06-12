@@ -3,7 +3,7 @@
 #include <QDateTime>
 #include <QSortFilterProxyModel>
 #include <QStandardItemModel>
-#include <View/ArrtStyle.h>
+#include <Utils/StyleUtils.h>
 #include <ViewModel/Log/LogModel.h>
 #include <ViewModel/NotificationButtonModelImplementation.h>
 #include <ViewModel/Parameters/ComboBoxModel.h>
@@ -266,5 +266,5 @@ void LogModel::updateNotifications()
         }
         m_buttonModel->setNotifications({{type, m_unreadEntries}});
     }
-    m_buttonModel->setStatusString(ArrtStyle::formatParameterList({tr("Number of new log entries"), tr("Highest level in new entries")}).arg(m_unreadEntries).arg(severityToString(m_unreadEntryType)));
+    m_buttonModel->setStatusString(StyleUtils::formatParameterList({tr("Number of new log entries"), tr("Highest level in new entries")}).arg(m_unreadEntries).arg(severityToString(m_unreadEntryType)));
 }

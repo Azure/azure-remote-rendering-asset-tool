@@ -318,17 +318,6 @@ QLabel* ArrtStyle::createHeaderLabel(const QString& title, const QString& text)
     return label;
 }
 
-QString ArrtStyle::formatParameterList(const QStringList& parameterNames)
-{
-    QString s;
-    for (int i = 0; i < parameterNames.size(); ++i)
-    {
-        const QString& p = parameterNames[i];
-        s += QString("<br><b>" + p + ":<font color=\'white\'> %%1 </font></b>").arg(i + 1);
-    }
-    return s;
-}
-
 QString ArrtStyle::formatToolTip(const QString& title, const QString& details)
 {
     return QString("<font color=\'white\'><b>%1</b></font><br>%2").arg(title).arg(details);

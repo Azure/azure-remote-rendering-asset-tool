@@ -3,9 +3,9 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <QLineEdit>
-#include <Utils/DpiUtils.h>
+#include <ViewUtils/DpiUtils.h>
 #include <Utils/ScopedBlockers.h>
-#include <Utils/SimpleVerticalLayout.h>
+#include <ViewUtils/SimpleVerticalLayout.h>
 #include <View/ArrtStyle.h>
 #include <View/Conversion/ConversionView.h>
 #include <View/Conversion/InputSelectionView.h>

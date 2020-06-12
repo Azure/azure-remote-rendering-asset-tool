@@ -2,7 +2,7 @@
 #include <ViewModel/Session/RunningSessionModel.h>
 #include <ViewModel/Session/SessionCreationModel.h>
 #include <ViewModel/Session/SessionPanelModel.h>
-#include <Widgets/TimeValidator.h>
+#include <Utils/TimeValidator.h>
 
 SessionPanelModel::SessionPanelModel(ArrSessionManager* sessionManager, Configuration* configuration, QObject* parent)
     : QObject(parent)
@@ -36,4 +36,34 @@ SessionPanelModel::Status SessionPanelModel::getStatus() const
 QString SessionPanelModel::getRemainingTime() const
 {
     return TimeValidator::minutesToString(m_remainingMinutes);
+}
+
+
+QString SessionPanelModel::getStringFromStatus(SessionPanelModel::Status status)
+{
+    switch (status)
+    {
+        case SessionPanelModel::Status::NotActive:
+            return tr("Not Active");
+        case SessionPanelModel::Status::Stopped:
+            return tr("Stopped");
+        case SessionPanelModel::Status::Expired:
+            return tr("Expired");
+        case SessionPanelModel::Status::Error:
+            return tr("Error");
+        case SessionPanelModel::Status::StartRequested:
+            return tr("Start Requested");
+        case SessionPanelModel::Status::Starting:
+            return tr("Starting");
+        case SessionPanelModel::Status::ReadyNotConnected:
+            return tr("Session Ready");
+        case SessionPanelModel::Status::ReadyConnecting:
+            return tr("Connecting");
+        case SessionPanelModel::Status::ReadyConnected:
+            return tr("Connected");
+        case SessionPanelModel::Status::StopRequested:
+            return tr("Stop Requested");
+        default:
+            return tr("Not Recognized");
+    }
 }

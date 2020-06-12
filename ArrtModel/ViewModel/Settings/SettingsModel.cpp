@@ -1,9 +1,10 @@
+#include <ViewModel/Settings/SettingsModel.h>
+
 #include <Model/Configuration.h>
-#include <View/ArrtStyle.h>
+#include <Utils/StyleUtils.h>
 #include <ViewModel/NotificationButtonModelImplementation.h>
 #include <ViewModel/Settings/ArrAccountSettingsModel.h>
 #include <ViewModel/Settings/CameraSettingsModel.h>
-#include <ViewModel/Settings/SettingsModel.h>
 #include <ViewModel/Settings/StorageAccountSettingsModel.h>
 #include <ViewModel/Settings/VideoSettingsModel.h>
 
@@ -35,7 +36,7 @@ void SettingsModel::updateButton()
     const AccountConnectionStatus arrStatus = m_arrAccountSettingsModel->getStatus();
     const bool videoFormatSupported = m_videoSettingsModel->isVideoFormatSupported();
 
-    QString statusString = ArrtStyle::formatParameterList({tr("ARR connection status"), tr("Storage account status")}).arg(toString(arrStatus)).arg(toString(saStatus));
+    QString statusString = StyleUtils::formatParameterList({tr("ARR connection status"), tr("Storage account status")}).arg(toString(arrStatus)).arg(toString(saStatus));
 
     if (!videoFormatSupported)
     {

@@ -1,5 +1,5 @@
 #pragma once
-#include <Utils/BaseLayout.h>
+#include <ViewUtils/BaseLayout.h>
 
 // layout implementation, similar to QVBoxLayout, but enforcing that the items take
 // maximum width and expand only vertically

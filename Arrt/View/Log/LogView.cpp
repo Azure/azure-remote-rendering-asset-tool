@@ -6,7 +6,7 @@
 #include <QTextEdit>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <Utils/DpiUtils.h>
+#include <ViewUtils/DpiUtils.h>
 #include <Utils/FontOverrideModel.h>
 #include <View/ArrtStyle.h>
 #include <View/Log/LogView.h>

@@ -99,7 +99,4 @@ public:
 
     // helper to format the tooltip with a title and details
     static QString formatToolTip(const QString& title, const QString& details);
-
-    // helper function to format parameters in rich text
-    static QString formatParameterList(const QStringList& parameterNames);
 };

@@ -3,11 +3,11 @@
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QVBoxLayout>
-#include <Utils/DpiUtils.h>
+#include <ViewUtils/DpiUtils.h>
 #include <View/ArrtStyle.h>
 #include <View/Session/SessionInfoButton.h>
 #include <ViewModel/Session/SessionPanelModel.h>
-#include <Widgets/TimeValidator.h>
+#include <Utils/TimeValidator.h>
 
 namespace
 {
@@ -153,41 +153,12 @@ QSize SessionInfoButton::minimumSizeHint() const
 
 QString SessionInfoButton::getString() const
 {
-    return tr("Session status: %1").arg(getStringFromStatus(m_model->getStatus()));
+    return tr("Session status: %1").arg(SessionPanelModel::getStringFromStatus(m_model->getStatus()));
 }
 
 QString SessionInfoButton::getTimeString() const
 {
     return m_model->getRemainingTime();
-}
-
-QString SessionInfoButton::getStringFromStatus(SessionPanelModel::Status status)
-{
-    switch (status)
-    {
-        case SessionPanelModel::Status::NotActive:
-            return tr("Not Active");
-        case SessionPanelModel::Status::Stopped:
-            return tr("Stopped");
-        case SessionPanelModel::Status::Expired:
-            return tr("Expired");
-        case SessionPanelModel::Status::Error:
-            return tr("Error");
-        case SessionPanelModel::Status::StartRequested:
-            return tr("Start Requested");
-        case SessionPanelModel::Status::Starting:
-            return tr("Starting");
-        case SessionPanelModel::Status::ReadyNotConnected:
-            return tr("Session Ready");
-        case SessionPanelModel::Status::ReadyConnecting:
-            return tr("Connecting");
-        case SessionPanelModel::Status::ReadyConnected:
-            return tr("Connected");
-        case SessionPanelModel::Status::StopRequested:
-            return tr("Stop Requested");
-        default:
-            return tr("Not Recognized");
-    }
 }
 
 QIcon SessionInfoButton::getIconFromStatus(SessionPanelModel::Status status)

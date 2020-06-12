@@ -1,5 +1,5 @@
 #include <QWidget>
-#include <Utils/SimpleVerticalLayout.h>
+#include <ViewUtils/SimpleVerticalLayout.h>
 
 SimpleVerticalLayout::SimpleVerticalLayout(QWidget* parent, bool resizeParent)
     : BaseLayout(parent)

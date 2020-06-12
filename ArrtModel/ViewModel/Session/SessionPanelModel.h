@@ -25,6 +25,8 @@ public:
     SessionCreationModel* getSessionCreationModel() const { return m_creationModel; }
     RunningSessionModel* getRunningSessionModel() const { return m_runningModel; }
 
+    static QString getStringFromStatus(SessionPanelModel::Status status);
+
 Q_SIGNALS:
     void isRunningChanged();
     void sessionChanged();

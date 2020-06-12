@@ -2,7 +2,7 @@
 #include <QStyleOptionToolButton>
 #include <QStylePainter>
 #include <QVBoxLayout>
-#include <Utils/DpiUtils.h>
+#include <ViewUtils/DpiUtils.h>
 #include <View/ArrtStyle.h>
 #include <View/BlobExplorer/DirectorySelector/DirectoryButton.h>
 #include <View/BlobExplorer/DirectorySelector/PopupList.h>
