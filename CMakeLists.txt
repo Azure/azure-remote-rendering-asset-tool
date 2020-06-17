@@ -28,7 +28,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-
 # ArrtModel
 
 project(ArrtModel)
@@ -52,6 +51,8 @@ endforeach()
 source_group(TREE "${SOURCE_ROOT}" FILES ${SOURCE_LIST})
 
 add_library(${CMAKE_PROJECT_NAME} ${SOURCE_LIST})
+
+set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${SOURCE_ROOT}")
 
