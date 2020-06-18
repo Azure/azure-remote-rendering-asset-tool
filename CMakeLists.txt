@@ -28,7 +28,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-
 # ArrtModel
 
 project(ArrtModel)
@@ -52,6 +51,8 @@ endforeach()
 source_group(TREE "${SOURCE_ROOT}" FILES ${SOURCE_LIST})
 
 add_library(${CMAKE_PROJECT_NAME} ${SOURCE_LIST})
+
+set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${SOURCE_ROOT}")
 
@@ -159,7 +160,7 @@ find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E
         env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
-            "$<TARGET_FILE:Arrt>" --no-translations --no-webkit2 --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw
+            "$<TARGET_FILE:Arrt>" --no-translations --no-webkit2 --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --no-compiler-runtime
     COMMENT "Running windeployqt..."
 )
 add_custom_command(

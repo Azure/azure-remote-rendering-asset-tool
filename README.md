@@ -31,7 +31,20 @@ You need to be familiar with the following key concepts:
 * [Models](https://docs.microsoft.com/azure/remote-rendering/concepts/models)
 * [Model conversion](https://docs.microsoft.com/azure/remote-rendering/how-tos/conversion/model-conversion)
 
-## Prerequisites to build ARRT
+## To install ARRT
+
+* Find the latest release in [the GitHub release page](https://github.com/Azure/azure-remote-rendering-asset-tool/releases)
+* Download the release asset called ARRT.zip
+* Unzip to a directory of your choice
+* Run
+
+> <b>Important</b>
+>
+> If running ARRT fails for a missing dll (VCRUNTIME140_1.dll), please install the latest Visual C++ redistributable (vs2019 x64) from [the Visual Studio download page](https://visualstudio.microsoft.com/downloads/) or using [this direct link](https://aka.ms/vs/16/release/VC_redist.x64.exe)
+
+## To build ARRT
+
+### Prerequisites
 
 * Visual studio 2017 or 2019
 * Qt 5.13.1 or newer. Find the installation on the [website](https://www.qt.io/download-qt-installer). Use the default installation options. If you want to debug the Qt code, select the source code. Make sure the Qt5_DIR environment variable is set
@@ -39,7 +52,7 @@ You need to be familiar with the following key concepts:
 * Command-line NuGet from [here](https://www.nuget.org/downloads). Make sure Nuget.exe is in the PATH environment variable
 * HEVC driver (if not present already). For more information about the system requirements for ARR, see [System requirements](https://docs.microsoft.com/azure/remote-rendering/overview/system-requirements)
 
-## Building ARRT
+### Building
 
 * Clone the GitHub Repository [Azure Remote Rendering Asset Tool](https://github.com/Azure/azure-remote-rendering-asset-tool)
 * From the root directory, run the script *GenerateSolution.bat \<OutputDirectory\> -vs2017 (or -vs2019)*. The script will run CMake and generate a Visual Studio solution in *OutputDirectory*.
