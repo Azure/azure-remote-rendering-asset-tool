@@ -11,19 +11,28 @@
     },
     {
       "component": {
-        "type": "git",
-        "git": {
-          "repositoryUrl": "https://github.com/Azure/azure-storage-cpp",
-          "commitHash": "76cb553249ede1e6f05456d936c9a36753cc1597"
+        "type": "NuGet",
+        "NuGet": {
+          "Name": "Microsoft.Azure.RemoteRendering.Cpp",
+          "Version": "0.1.32"
         }
       }
     },
     {
       "component": {
-        "type": "git",
-        "git": {
-          "repositoryUrl": "https://github.com/microsoft/cpprestsdk",
-          "commitHash": "aecf8f1712203b119f58a7ff157c16f66885adcb"
+        "type": "NuGet",
+        "NuGet": {
+          "Name": "Microsoft.Azure.Storage.CPP.v140",
+          "Version": "5.0.0"
+        }
+      }
+    },
+    {
+      "component": {
+        "type": "NuGet",
+        "NuGet": {
+          "Name": "cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn",
+          "Version": "2.9.1"
         }
       }
     }
