@@ -28,9 +28,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# ArrtModel
+project(Arrt)
 
-project(ArrtModel)
+# ArrtModel
+set (TARGET "ArrtModel")
 
 set (SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/ArrtModel")
 
@@ -50,17 +51,17 @@ endforeach()
 
 source_group(TREE "${SOURCE_ROOT}" FILES ${SOURCE_LIST})
 
-add_library(${CMAKE_PROJECT_NAME} ${SOURCE_LIST})
+add_library(${TARGET} ${SOURCE_LIST})
 
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
+set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
 
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${SOURCE_ROOT}")
+target_include_directories(${TARGET} PUBLIC "${SOURCE_ROOT}")
 
 
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
-target_link_libraries(${CMAKE_PROJECT_NAME} Qt5::Core Qt5::Widgets Qt5::Gui)
+target_link_libraries(${TARGET} Qt5::Core Qt5::Widgets Qt5::Gui)
 
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
+set_target_properties(${TARGET} PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 add_definitions(-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING -D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 # No Windows.h min and max
 add_definitions(-DNOMINMAX)
@@ -85,13 +86,13 @@ set( POSTFIX $<$<CONFIG:Debug>:d> )
 
 set(LIB_BLOB_ROOT "${CMAKE_BINARY_DIR}/packages/Microsoft.Azure.Storage.CPP.v140.5.0.0")
 set(LIB_BLOB_NAME "${LIB_BLOB_ROOT}/lib/native/v140/x64/${CFG}/wastorage${POSTFIX}")
-target_link_libraries(${CMAKE_PROJECT_NAME} "${LIB_BLOB_NAME}.lib")
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${LIB_BLOB_ROOT}/build/native/include")
+target_link_libraries(${TARGET} "${LIB_BLOB_NAME}.lib")
+target_include_directories(${TARGET} PUBLIC "${LIB_BLOB_ROOT}/build/native/include")
 
 set(LIB_REST_ROOT "${CMAKE_BINARY_DIR}/packages/cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1")
 set(LIB_REST_NAME "${LIB_REST_ROOT}/lib/native/v140/windesktop/msvcstl/dyn/rt-dyn/x64/${CFG}/cpprest140${POSTFIX}_2_9")
-target_link_libraries(${CMAKE_PROJECT_NAME} "${LIB_REST_NAME}.lib")
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${LIB_REST_ROOT}/build/native/include")
+target_link_libraries(${TARGET} "${LIB_REST_NAME}.lib")
+target_include_directories(${TARGET} PUBLIC "${LIB_REST_ROOT}/build/native/include")
 
 if ("$ENV{LIB_ARR_USE_LOCAL}" STREQUAL "true")
     set(LIB_ARR_BIN $<IF:$<CONFIG:Debug>,$ENV{LIB_ARR_BIN_DEBUG},$ENV{LIB_ARR_BIN_RELEASE}>)
@@ -104,8 +105,8 @@ else()
     set(LIB_ARR_INCLUDE "${LIB_ARR_ROOT}/include")
 endif()
 
-target_link_libraries(${CMAKE_PROJECT_NAME} "${LIB_ARR_LIB}/RemoteRenderingClient.lib")
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${LIB_ARR_INCLUDE})
+target_link_libraries(${TARGET} "${LIB_ARR_LIB}/RemoteRenderingClient.lib")
+target_include_directories(${TARGET} PUBLIC ${LIB_ARR_INCLUDE})
 
 if(DEFINED ENV{EXTRA_ARR_ZONE})
     add_definitions( -DEXTRA_ARR_ZONE=$ENV{EXTRA_ARR_ZONE} )
@@ -113,7 +114,7 @@ endif()
 
 add_definitions( -DARRT_VERSION="${ARRT_VERSION}" )
 
-target_link_libraries(${CMAKE_PROJECT_NAME} d3d11.lib DXGI.lib crypt32.lib)
+target_link_libraries(${TARGET} d3d11.lib DXGI.lib crypt32.lib)
 
 unset(SOURCE_LIST)
 
@@ -122,7 +123,7 @@ unset(SOURCE_LIST)
 
 # ARRT
 
-project(Arrt)
+set (TARGET "Arrt")
 
 set (SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/Arrt")
 
@@ -148,16 +149,16 @@ endforeach()
 
 source_group(TREE "${SOURCE_ROOT}" FILES ${SOURCE_LIST})
 
-add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SOURCE_LIST})
+add_executable(${TARGET} WIN32 ${SOURCE_LIST})
 
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${SOURCE_ROOT}")
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ArrtModel")
+target_include_directories(${TARGET} PUBLIC "${SOURCE_ROOT}")
+target_include_directories(${TARGET} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ArrtModel")
 
 get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
 
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+add_custom_command(TARGET ${TARGET} POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E
         env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
             "$<TARGET_FILE:Arrt>" --no-translations --no-webkit2 --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --no-compiler-runtime
@@ -174,13 +175,15 @@ add_custom_command(
         $<TARGET_FILE_DIR:Arrt>
 )
 
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
+set_target_properties(${TARGET} PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 add_definitions(-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING -D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 # No Windows.h min and max
 add_definitions(-DNOMINMAX)
 add_definitions(-DARRT_VERSION="${ARRT_VERSION}")
 
-target_link_libraries(${CMAKE_PROJECT_NAME} ArrtModel)
+target_link_libraries(${TARGET} ArrtModel)
+
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Arrt)
 
 
 # Enable all warnings and turn it into errors
