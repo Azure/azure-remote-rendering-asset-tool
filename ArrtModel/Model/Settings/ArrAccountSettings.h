@@ -33,7 +33,7 @@ public:
 
     const QString& getId() const { return m_id; }
     QString getKey() const;
-    bool setKey(QString key);
+    bool setKey(const QString& key);
     Region getRegion() const { return m_region; }
 
     void loadFromJson(const QJsonObject& arrAccountConfig);

@@ -41,7 +41,7 @@ QString AzureStorageAccountSettings::getKey() const
     }
 }
 
-bool AzureStorageAccountSettings::setKey(QString key)
+bool AzureStorageAccountSettings::setKey(const QString& key)
 {
     if (StringEncrypter::encrypt(key, m_key))
     {

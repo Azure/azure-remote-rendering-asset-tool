@@ -3,6 +3,8 @@
 #include <Model/AzureStorageManager.h>
 #include <Model/Configuration.h>
 #include <Model/ConversionManager.h>
+#include <Model/IncludesAzureRemoteRendering.h>
+#include <Model/IncludesAzureStorage.h>
 #include <QStandardPaths>
 #include <ViewModel/ApplicationModel.h>
 #include <ViewModel/Conversion/ConversionPageModel.h>
@@ -13,6 +15,15 @@
 #include <ViewModel/Session/SessionPanelModel.h>
 #include <ViewModel/Settings/SettingsModel.h>
 #include <ViewModel/Upload/UploadModel.h>
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wsign-compare"
+#pragma warning(push)
+#pragma warning(disable : 4100)
+#include <AzureRemoteRendering.inl>
+#pragma warning(pop)
+#pragma clang diagnostic pop
+
 
 ApplicationModel::ApplicationModel()
 {
