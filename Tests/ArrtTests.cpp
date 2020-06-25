@@ -22,3 +22,10 @@ TEST(sample_test_case, sample_test_to_succeed)
 
     EXPECT_EQ(controls.size(), 4);
 }
+
+/*
+int main(int argc, char** argv)
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}*/

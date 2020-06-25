@@ -53,11 +53,11 @@ build:
         - include:
             - '**/*.log'
       artifacts:
-        - from: 'Debug'
+        - from: 'bin/Debug'
           to: 'binaryOutput'
           include:
             - '**/*'
-        - from: 'Release'
+        - from: 'bin/Release'
           to: 'binaryOutput.Release'
           include:
             - '**/*'
@@ -69,13 +69,13 @@ test:
       name: 'Test'
       command: '.pipelines\test.cmd'
       testresults:
-        - from: 'bin\tests\Debug'
+        - from: 'bin\tests\Debug\output'
           title: 'All Tests'
           configuration: 'Debug'
           platform: 'x64'
-          type: 'vstest'
+          type: 'JUnit'
           include:
-            - '**\*.trx'
+            - '**/*.xml'
 
 publish:
   commands:

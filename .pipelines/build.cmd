@@ -35,6 +35,9 @@ if %errorlevel% neq 0 (
 
 popd
 ENDLOCAL
+
+call test.cmd
+
 exit /B 0
 
 :errorExit
