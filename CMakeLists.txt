@@ -90,9 +90,6 @@ set(CMAKE_SUPPRESS_REGENERATION true)
 set( CMAKE_CONFIGURATION_TYPES Debug;Release )
 set (PLATFORM_SUBDIR "/x64_vs2017_win10/$<IF:$<CONFIG:Debug>,Debug,Dev>")
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
 
 #################
 # ARRT SOLUTION
@@ -111,6 +108,13 @@ add_definitions(-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING -D_SILENCE_C
 # No Windows.h min and max
 add_definitions(-DNOMINMAX)
 add_definitions(-DARRT_VERSION="${ARRT_VERSION}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 #####################
 # ArrtModel library 
@@ -136,8 +140,6 @@ endforeach()
 source_group(TREE "${SOURCE_ROOT}" FILES ${SOURCE_LIST})
 
 add_library(${TARGET} ${SOURCE_LIST})
-
-set_target_properties(${TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
 
 target_include_directories(${TARGET} PUBLIC "${SOURCE_ROOT}")
 
@@ -208,6 +210,8 @@ set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Arrt)
 #
 set( gtest_force_shared_crt ON CACHE BOOL "Use dynamically linked crt" )
 add_subdirectory(googletest)
+set_target_properties(gmock gmock_main gtest gtest_main PROPERTIES FOLDER "GTest")
+
 enable_testing()
 
 # find all of the *.cpp files in ./Tests and create a test exe for each one of them
@@ -220,9 +224,7 @@ foreach(case_file ${TEST_LIST})
     makeArrtExecutable(${case_name})
     target_link_libraries(${case_name} PRIVATE gtest_main)
     target_include_directories(${case_name} PRIVATE ${gtest_SOURCE_DIR} ${gtest_SOURCE_DIR}/include)
+    set_target_properties(${case_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/tests)
 
-    add_test(NAME ${case_name}
-             COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${case_name}
-             WORKING_DIRECTORY
-             ${PROJECT_BINARY_DIR})
+    add_test(NAME ${case_name} COMMAND ${case_name} WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endforeach()

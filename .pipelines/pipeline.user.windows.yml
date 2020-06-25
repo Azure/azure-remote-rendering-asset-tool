@@ -65,20 +65,17 @@ package:
   commands:
 test:
   commands:
-#   - !!testcommand
-#     name: 'Test'
-#     command: '.pipeline\test.cmd'
-#     testresults:                                                      # Sequence of entries indicating which test results files to collect.
-#       - from: 'src\WindowsServerSample\VisualStudio'
-#         title: 'Even-Odd-Tests'                                       # Test run title. Used by VSTS.
-#         configuration: 'Debug'                                        # Optional build configuration.
-#         platform: 'Debug'                                             # Optional build platform.
-#         type: 'vstest'                                                # Test engine type. Used by VSTS. Supported values are JUnit, NUnit
-#                                                                       # VSTest and xUnit.
-#         include:                                                      # Sequence of glob patterns indicating which test results file to
-#                                                                       # associate with this test run.
-#           - '**\*.trx'                                                # Include all TRX files under any TestResults folder under the src
-#                                                                       # folder.
+    - !!testcommand
+      name: 'Test'
+      command: '.pipelines\test.cmd'
+      testresults:
+        - from: 'bin\tests\Debug'
+          title: 'All Tests'
+          configuration: 'Debug'
+          platform: 'x64'
+          type: 'vstest'
+          include:
+            - '**\*.trx'
 
 publish:
   commands:
