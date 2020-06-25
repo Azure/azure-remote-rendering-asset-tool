@@ -12,7 +12,7 @@ ECHO on
 PUSHD C:\source\bin\tests\Debug
 
 FOR /f %%f in ('dir test_*.exe /b') DO (
-    CALL VSTest.Console.exe "%%f" /logger:trx /Platform:x64 /TestAdapterPath:"%VS_LOCATION%\Common7\IDE\Extensions"
+    CALL VSTest.Console.exe "%%f" /logger:trx /Platform:x64 /TestAdapterPath:"%VS_LOCATION%\IDE\Extensions"
     if %errorlevel% neq 0 SET EXIT_CODE=1
 )
 
