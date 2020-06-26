@@ -1,3 +1,5 @@
+#include <ViewModel/ApplicationModel.h>
+
 #include <Model/ArrFrontend.h>
 #include <Model/ArrSessionManager.h>
 #include <Model/AzureStorageManager.h>
@@ -6,11 +8,8 @@
 #include <Model/IncludesAzureRemoteRendering.h>
 #include <Model/IncludesAzureStorage.h>
 #include <QStandardPaths>
-#include <ViewModel/ApplicationModel.h>
 #include <ViewModel/Conversion/ConversionPageModel.h>
 #include <ViewModel/Log/LogModel.h>
-#include <ViewModel/ModelEditor/ModelEditorModel.h>
-#include <ViewModel/ModelsPage/ModelsPageModel.h>
 #include <ViewModel/Render/RenderPageModel.h>
 #include <ViewModel/Session/SessionPanelModel.h>
 #include <ViewModel/Settings/SettingsModel.h>

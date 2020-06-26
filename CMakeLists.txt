@@ -155,9 +155,7 @@ if(DEFINED ENV{EXTRA_ARR_ZONE})
     add_definitions( -DEXTRA_ARR_ZONE=$ENV{EXTRA_ARR_ZONE} )
 endif()
 
-add_definitions( -DARRT_VERSION="${ARRT_VERSION}" )
-
-target_link_libraries(${TARGET} PUBLIC d3d11.lib DXGI.lib crypt32.lib)
+target_link_libraries(${TARGET} PUBLIC crypt32.lib)
 
 unset(SOURCE_LIST)
 
@@ -167,7 +165,6 @@ unset(SOURCE_LIST)
 set (TARGET "Arrt")
 
 set (SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/Arrt")
-
 file(
      GLOB SOURCE_LIST 
 	 LIST_DIRECTORIES false
@@ -202,6 +199,7 @@ addQtDeployment(${TARGET})
 target_include_directories(${TARGET} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET}")
 target_include_directories(${TARGET} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ArrtModel")
 target_link_libraries(${TARGET} PUBLIC ArrtModel)
+target_link_libraries(${TARGET} PUBLIC d3d11.lib DXGI.lib)
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Arrt)
 
@@ -227,7 +225,7 @@ enable_testing()
 #    target_link_libraries(${case_name} PRIVATE gtest_main)
 #    target_include_directories(${case_name} PRIVATE ${gtest_SOURCE_DIR} ${gtest_SOURCE_DIR}/include)
 #    set_target_properties(${case_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/tests)
-#
+# 
 #    add_test(NAME ${case_name} COMMAND ${case_name} WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 #endforeach()
 
@@ -240,6 +238,7 @@ foreach(case_file ${TEST_LIST})
     
     addQtDeployment(${case_name})
     target_link_libraries(${case_name} PUBLIC Qt5::Core Qt5::Widgets Qt5::Gui)
+    target_link_libraries(${case_name} PUBLIC d3d11.lib DXGI.lib)
 
     target_link_libraries(${case_name} PRIVATE gtest_main)
     target_include_directories(${case_name} PRIVATE ${gtest_SOURCE_DIR} ${gtest_SOURCE_DIR}/include)
