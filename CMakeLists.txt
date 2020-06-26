@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.12)
 
 # common setup for exe targets (Arrt and Tests)
-function(makeArrtExecutable _TARGET)
+function(addQtDeployment _TARGET)
     get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
     get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
     find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
@@ -23,10 +23,6 @@ function(makeArrtExecutable _TARGET)
             ${LIB_ARR_BIN}/Microsoft.Holographic.HybridRemoting.dll
             $<TARGET_FILE_DIR:${_TARGET}>
     )
-
-    target_include_directories(${_TARGET} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/${_TARGET}")
-    target_include_directories(${_TARGET} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ArrtModel")
-    target_link_libraries(${_TARGET} PUBLIC ArrtModel)
 endfunction()
 
 # set variables for nuget libraries
@@ -201,7 +197,11 @@ endforeach()
 source_group(TREE "${SOURCE_ROOT}" FILES ${SOURCE_LIST})
 
 add_executable(${TARGET} WIN32 ${SOURCE_LIST})
-makeArrtExecutable(${TARGET})
+addQtDeployment(${TARGET})
+
+target_include_directories(${TARGET} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET}")
+target_include_directories(${TARGET} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ArrtModel")
+target_link_libraries(${TARGET} PUBLIC ArrtModel)
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Arrt)
 
@@ -221,7 +221,9 @@ enable_testing()
 #    get_filename_component( case_name ${case_file} NAME_WE )
 #    set (case_name test_${case_name})
 #    add_executable(${case_name} ${case_file})
-#    makeArrtExecutable(${case_name})
+#    addQtDeployment(${case_name})
+#    target_include_directories(${case_name} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ArrtModel")
+#    target_link_libraries(${case_name} PUBLIC ArrtModel)
 #    target_link_libraries(${case_name} PRIVATE gtest_main)
 #    target_include_directories(${case_name} PRIVATE ${gtest_SOURCE_DIR} ${gtest_SOURCE_DIR}/include)
 #    set_target_properties(${case_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/tests)
@@ -236,6 +238,9 @@ foreach(case_file ${TEST_LIST})
     set (case_name test_${case_name})
     add_executable(${case_name} ${case_file})
     
+    addQtDeployment(${case_name})
+    target_link_libraries(${case_name} PUBLIC Qt5::Core Qt5::Widgets Qt5::Gui)
+
     target_link_libraries(${case_name} PRIVATE gtest_main)
     target_include_directories(${case_name} PRIVATE ${gtest_SOURCE_DIR} ${gtest_SOURCE_DIR}/include)
     set_target_properties(${case_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/tests)
