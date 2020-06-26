@@ -216,15 +216,30 @@ enable_testing()
 
 # find all of the *.cpp files in ./Tests and create a test exe for each one of them
 
-file(GLOB_RECURSE TEST_LIST Tests/*.cpp)
+#file(GLOB_RECURSE TEST_LIST Tests/Model/*.cpp)
+#foreach(case_file ${TEST_LIST})
+#    get_filename_component( case_name ${case_file} NAME_WE )
+#    set (case_name test_${case_name})
+#    add_executable(${case_name} ${case_file})
+#    makeArrtExecutable(${case_name})
+#    target_link_libraries(${case_name} PRIVATE gtest_main)
+#    target_include_directories(${case_name} PRIVATE ${gtest_SOURCE_DIR} ${gtest_SOURCE_DIR}/include)
+#    set_target_properties(${case_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/tests)
+#
+#    add_test(NAME ${case_name} COMMAND ${case_name} WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+#endforeach()
+
+
+file(GLOB_RECURSE TEST_LIST Tests/Standalone/*.cpp)
 foreach(case_file ${TEST_LIST})
     get_filename_component( case_name ${case_file} NAME_WE )
     set (case_name test_${case_name})
     add_executable(${case_name} ${case_file})
-    makeArrtExecutable(${case_name})
+    
     target_link_libraries(${case_name} PRIVATE gtest_main)
     target_include_directories(${case_name} PRIVATE ${gtest_SOURCE_DIR} ${gtest_SOURCE_DIR}/include)
     set_target_properties(${case_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/tests)
 
     add_test(NAME ${case_name} COMMAND ${case_name} WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endforeach()
+
