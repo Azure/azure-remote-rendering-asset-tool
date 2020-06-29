@@ -1,4 +1,4 @@
-SETLOCAL
+SETLOCAL EnableDelayedExpansion
 SET ARRT_SRC=C:\source
 SET DEPS_DIR=C:\arr.arrt.dependencies
 SET Qt5_DIR=%DEPS_DIR%\Qt\5.13.1\msvc2017_64
@@ -35,9 +35,6 @@ if %errorlevel% neq 0 (
 
 popd
 ENDLOCAL
-
-call %~dp0/test.cmd
-
 exit /B 0
 
 :errorExit
