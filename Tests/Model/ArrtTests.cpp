@@ -1,31 +1,13 @@
 #include <gtest/gtest.h>
 #include <iostream>
+#include <QApplication>
 
-#include <ViewModel/ApplicationModel.h>
-#include <ViewModel/Parameters/ParameterModel.h>
-#include <ViewModel/Settings/CameraSettingsModel.h>
-#include <ViewModel/Settings/SettingsModel.h>
+// Unit tests for the Arrt model. They will use mocked ARR and Azure Storage SDKs.
+// Note: the access to the model data from the ARR SDK will have to be faked, since ARRT creates and holds SDK objects (Microsoft::Azure::RemoteRendering::Entity)
 
-// dummy test. To test the framework
-TEST(sample_test_case, sample_test_to_fail)
+TEST(sample_model_test, to_succeed)
 {
-    ApplicationModel am;
-    const QList<ParameterModel*>& controls = am.getSettingsModel()->getCameraSettingsModel()->getControls();
-
-    EXPECT_EQ(controls.size(), 3);
+	// ApplicationModel am;
+	// Add tests for models
+	EXPECT_EQ(3, 3);
 }
-
-TEST(sample_test_case, sample_test_to_succeed)
-{
-    ApplicationModel am;
-    const QList<ParameterModel*>& controls = am.getSettingsModel()->getCameraSettingsModel()->getControls();
-
-    EXPECT_EQ(controls.size(), 4);
-}
-
-/*
-int main(int argc, char** argv)
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}*/
