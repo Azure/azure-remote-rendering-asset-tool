@@ -21,6 +21,7 @@ steps:
 - checkout: ArrtDependencies
   lfs: true
 - checkout: self
+  submodules: true
 
 - task: BatchScript@1
   displayName: 'Generate solution for vs2017' 
