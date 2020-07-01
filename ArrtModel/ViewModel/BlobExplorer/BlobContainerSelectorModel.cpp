@@ -2,10 +2,11 @@
 #include <QPointer>
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 
-BlobContainerSelectorModel::BlobContainerSelectorModel(AzureStorageManager* storageManager, QString container, QObject* parent)
+BlobContainerSelectorModel::BlobContainerSelectorModel(AzureStorageManager* storageManager, QString container, QString defaultContainerName, QObject* parent)
     : QObject(parent)
     , m_storageManager(storageManager)
     , m_desiredContainerName(std::move(container))
+    , m_defaultContainerName(defaultContainerName)
 {
 
     m_availableContainersModel = new QStandardItemModel(this);
@@ -47,7 +48,7 @@ void BlobContainerSelectorModel::updateModel()
             {
                 m_inhibitUpdates = true;
                 QString oldContainer(m_desiredContainerName);
-                size_t rowInNewModel = 0; //default to the first element
+                int rowInNewModel = 0; //default to the first element
 
                 // the QT model m_availableContainersModel will notify the view (the QComboBox)
                 // when appending the first row, after clearing, and the view will select immediately
@@ -57,18 +58,30 @@ void BlobContainerSelectorModel::updateModel()
                 // empty, which clears the blob lists and doesn't start fetching, until the setCurrentContainer
                 model->appendRow(new QStandardItem(""));
 
-                for (size_t i = 0; i < fetchedModel.size(); ++i)
-                {
-                    const QString& name = fetchedModel[i];
+                int row = 0;
+                auto addRow = [&model, &oldContainer, &row, &rowInNewModel](const QString& name) {
                     model->appendRow(new QStandardItem(name));
+                    row++;
                     if (name == oldContainer)
                     {
-                        rowInNewModel = i;
+                        rowInNewModel = row;
+                    }
+                };
+
+                if (!m_defaultContainerName.isEmpty())
+                {
+                    addRow(m_defaultContainerName);
+                }
+                for (size_t i = 0; i < fetchedModel.size(); ++i)
+                {
+                    if (fetchedModel[i] != m_defaultContainerName)
+                    {
+                        addRow(fetchedModel[i]);
                     }
                 }
                 m_inhibitUpdates = false;
 
-                setCurrentContainer(fetchedModel[rowInNewModel]);
+                setCurrentContainer(model->data(model->index(rowInNewModel, 0)).toString());
                 model->removeRow(0);
 
                 fetchedModel.clear();

@@ -16,7 +16,7 @@ class BlobContainerSelectorModel : public QObject
     Q_OBJECT
 
 public:
-    BlobContainerSelectorModel(AzureStorageManager* storageManager, QString container, QObject* parent);
+    BlobContainerSelectorModel(AzureStorageManager* storageManager, QString container, QString defaultContainerName, QObject* parent);
     ~BlobContainerSelectorModel();
 
     // the model is a flat list of all of the containers. It can be used in a combobox
@@ -39,6 +39,10 @@ private:
     // this container is the container name that the user wants to select.
     // it is only selected if there is a match with an existing container
     QString m_desiredContainerName;
+
+    // default container that might or not be there. It will be displayed in the list at the beginning, also when it's not actually there.
+    QString m_defaultContainerName;
+
     std::shared_ptr<Cancellable> m_fetcher;
     std::vector<QString> m_fetchedModel;
     bool m_inhibitUpdates = false;

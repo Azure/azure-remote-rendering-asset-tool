@@ -9,7 +9,7 @@ OutputSelectionModel::OutputSelectionModel(AzureStorageManager* storageManager, 
     : QObject(parent)
     , m_storageManager(storageManager)
     , m_configuration(configuration)
-    , m_containersModel(new BlobContainerSelectorModel(storageManager, defaultContainer(std::move(container)), this))
+    , m_containersModel(new BlobContainerSelectorModel(storageManager, defaultContainer(std::move(container)), "ARRT_Models", this))
     , m_explorerModel(new BlobExplorerModel(storageManager, m_containersModel->getCurrentContainer(), defaultDirectory(std::move(directory)), this))
 {
     auto filterType = m_configuration->getUiState(QLatin1Literal("outputSelection:filterType"), BlobsListModel::FilterType::OnlySubDirectories);
