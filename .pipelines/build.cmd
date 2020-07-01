@@ -34,11 +34,9 @@ if %errorlevel% neq 0 (
 )
 
 popd
-ENDLOCAL
 exit /B 0
 
 :errorExit
 popd
-ENDLOCAL
 exit /B 1
 

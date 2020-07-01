@@ -51,7 +51,7 @@ QString ArrAccountSettings::getKey() const
     }
 }
 
-bool ArrAccountSettings::setKey(QString key)
+bool ArrAccountSettings::setKey(const QString& key)
 {
     if (StringEncrypter::encrypt(key, m_key))
     {

@@ -18,7 +18,7 @@ public:
 
     const QString& getName() const { return m_name; }
     QString getKey() const;
-    bool setKey(QString key);
+    bool setKey(const QString& key);
     const QString& getBlobEndpoint() const { return m_blobEndpoint; }
 
     void loadFromJson(const QJsonObject& storageAccountConfig);
