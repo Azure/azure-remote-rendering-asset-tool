@@ -151,7 +151,7 @@ QString ConversionModel::getOutput() const
     {
         if (!conversion->m_outputContainer.primary_uri().is_empty())
         {
-            return QString::fromStdWString(conversion->m_outputContainer.primary_uri().to_string()) + "/" + QString::fromUtf8(conversion->m_output_folder.c_str());
+            return QString::fromStdWString(conversion->m_outputContainer.primary_uri().to_string()) + "/" + QString::fromUtf8(conversion->m_output_folder.c_str()) + conversion->getModelName() + ".arrAsset";
         }
         else
         {
