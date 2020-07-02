@@ -1,5 +1,6 @@
 #include <Model/AzureStorageManager.h>
 #include <Model/Configuration.h>
+#include <Model/ConversionManager.h>
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 #include <ViewModel/BlobExplorer/BlobExplorerModel.h>
 #include <ViewModel/BlobExplorer/BlobsListModel.h>
@@ -9,7 +10,7 @@ InputSelectionModel::InputSelectionModel(AzureStorageManager* storageManager, QS
     : QObject(parent)
     , m_storageManager(storageManager)
     , m_configuration(configuration)
-    , m_containersModel(new BlobContainerSelectorModel(storageManager, defaultContainer(std::move(container)), "arrt-sourcemodels", this))
+    , m_containersModel(new BlobContainerSelectorModel(storageManager, defaultContainer(std::move(container)), ConversionManager::s_default_input_container, this))
     , m_explorerModel(new BlobExplorerModel(storageManager, true, QString("fbx;gltf;glb"), tr("3d Model Files (*.gltf, *.fbx);;All Files (*.*)"), m_containersModel->getCurrentContainer(), defaultDirectory(std::move(directory)), this))
 {
     auto filterType = m_configuration->getUiState(QLatin1Literal("inputSelection:filterType"), BlobsListModel::FilterType::JustAllowedExtensions);

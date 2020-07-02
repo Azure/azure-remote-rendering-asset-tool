@@ -163,13 +163,17 @@ void AzureStorageManager::createContainer(const QString& containerName, std::fun
     try
     {
         QPointer<AzureStorageManager> thisPtr = this;
-        getContainerFromName(containerName).create_async().then([endCallback, containerName, thisPtr](const pplx::task<void>& previousTask) {
+        getContainerFromName(containerName).create_if_not_exists_async().then([endCallback, containerName, thisPtr](const pplx::task<bool>& previousTask) {
             bool succeeded = false;
             try
             {
                 // the task is already completed, so this won't block
-                previousTask.wait();
+                bool wasntThere = previousTask.get();
                 succeeded = true;
+                if (wasntThere)
+                {
+                    qInfo(LoggingCategory::azureStorage) << tr("New container created:") << containerName;
+                }
             }
             catch (std::exception& e)
             {

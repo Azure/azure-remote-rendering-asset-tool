@@ -149,6 +149,9 @@ public:
     // return the number of running conversions
     int runningConversionCount() const;
 
+    static const QString s_default_input_container;
+    static const QString s_default_output_container;
+
 Q_SIGNALS:
     void onEnabledChanged();
     void conversionUpdated(ConversionId id);

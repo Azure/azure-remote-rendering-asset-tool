@@ -1,5 +1,6 @@
 #include <Model/AzureStorageManager.h>
 #include <Model/Configuration.h>
+#include <Model/ConversionManager.h>
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 #include <ViewModel/BlobExplorer/BlobExplorerModel.h>
 #include <ViewModel/BlobExplorer/BlobsListModel.h>
@@ -10,7 +11,7 @@ UploadModel::UploadModel(AzureStorageManager* storageManager, Configuration* con
     : QObject(parent)
     , m_storageManager(storageManager)
     , m_configuration(configuration)
-    , m_containersModel(new BlobContainerSelectorModel(storageManager, m_configuration->getUiState(QLatin1Literal("upload:defaultContainer"), QString()), "arrt-sourcemodels", this))
+    , m_containersModel(new BlobContainerSelectorModel(storageManager, m_configuration->getUiState(QLatin1Literal("upload:defaultContainer"), QString()), ConversionManager::s_default_input_container, this))
     , m_explorerModel(new BlobExplorerModel(storageManager, true, QString("fbx;gltf;glb"), tr("3d Model Files (*.gltf, *.fbx);;All Files (*.*)"), m_containersModel->getCurrentContainer(), m_configuration->getUiState(QLatin1Literal("upload:defaultDirectory"), QString()), this))
     , m_buttonModel(new NotificationButtonModelImplementation(this))
 {

@@ -6,6 +6,9 @@
 #include <QDebug>
 #include <QPointer>
 
+const QString ConversionManager::s_default_input_container = "arrt-sourcemodels";
+const QString ConversionManager::s_default_output_container = "arrt-models";
+
 namespace
 {
     const int m_secondsForEachUpdate = 7;
@@ -210,6 +213,9 @@ ConversionManager::ConversionId ConversionManager::addNewConversion()
     memset(&info, 0, sizeof(arr_asset_conversion_input_sas_params));
 
     auto* newConversion = new Conversion();
+    newConversion->m_output_storage_account_name = QString::fromStdWString(m_storageManager->getAccountName()).toStdString();
+    newConversion->m_output_blob_container_name = s_default_output_container.toStdString();
+    newConversion->m_outputContainer = m_storageManager->getContainerUriFromName(s_default_output_container);
 
     m_conversions.insert(newConversionId, newConversion);
 
@@ -221,12 +227,10 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
 {
     Conversion* newConversion = getConversion(newConversionId);
     assert(newConversion);
-    if (newConversion->isActive())
-    {
-        return;
-    }
 
+    newConversion->updateConversionStatus(Conversion::START_REQUESTED);
     QPointer<ConversionManager> thisPtr = this;
+
     auto onConversionStartRequestFinished = [thisPtr, newConversionId](const RR::ApiHandle<RR::StartAssetConversionAsync>& finishedAsync) {
         logContext(finishedAsync->Context().value());
         QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, newConversionId, async = finishedAsync]() {
@@ -275,6 +279,7 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
     output.ContainerWriteSas = outputSasToken.toStdString();
     output.OutputAssetPath = newConversion->m_output_asset_relative_path;
 
+
     const auto async = m_frontend->getFrontend()->StartAssetConversionSasAsync(input, output);
     if (async)
     {
@@ -283,7 +288,6 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
 
         newConversion->m_startConversionTime.start();
         newConversion->m_endConversionTime = newConversion->m_startConversionTime;
-        newConversion->updateConversionStatus(Conversion::START_REQUESTED);
         thisPtr->changeConversionCount(1);
     }
     else
