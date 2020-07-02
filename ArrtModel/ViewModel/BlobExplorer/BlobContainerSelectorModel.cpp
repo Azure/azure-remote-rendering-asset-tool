@@ -2,11 +2,12 @@
 #include <QPointer>
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 
-BlobContainerSelectorModel::BlobContainerSelectorModel(AzureStorageManager* storageManager, QString container, QString defaultContainerName, QObject* parent)
+BlobContainerSelectorModel::BlobContainerSelectorModel(AzureStorageManager* storageManager, QString container, QString defaultContainerName, bool canNavigateToNewContainers, QObject* parent)
     : QObject(parent)
     , m_storageManager(storageManager)
     , m_desiredContainerName(std::move(container))
     , m_defaultContainerName(defaultContainerName)
+    , m_canNavigateToNewContainers(canNavigateToNewContainers)
 {
 
     m_availableContainersModel = new QStandardItemModel(this);
@@ -42,13 +43,13 @@ void BlobContainerSelectorModel::updateModel()
         [this]() {
             auto* model = m_availableContainersModel;
             std::vector<QString>& fetchedModel = m_fetchedModel;
+            QString desiredContainer(m_desiredContainerName);
 
             model->clear();
             if (!fetchedModel.empty())
             {
                 m_inhibitUpdates = true;
-                QString oldContainer(m_desiredContainerName);
-                int rowInNewModel = 0; //default to the first element
+                int desiredContainerRow = -1;
 
                 // the QT model m_availableContainersModel will notify the view (the QComboBox)
                 // when appending the first row, after clearing, and the view will select immediately
@@ -59,12 +60,12 @@ void BlobContainerSelectorModel::updateModel()
                 model->appendRow(new QStandardItem(""));
 
                 int row = 0;
-                auto addRow = [&model, &oldContainer, &row, &rowInNewModel](const QString& name) {
+                auto addRow = [&model, &desiredContainer, &row, &desiredContainerRow](const QString& name) {
                     model->appendRow(new QStandardItem(name));
                     row++;
-                    if (name == oldContainer)
+                    if (name == desiredContainer)
                     {
-                        rowInNewModel = row;
+                        desiredContainerRow = row;
                     }
                 };
 
@@ -81,7 +82,20 @@ void BlobContainerSelectorModel::updateModel()
                 }
                 m_inhibitUpdates = false;
 
-                setCurrentContainer(model->data(model->index(rowInNewModel, 0)).toString());
+                if (desiredContainerRow == -1)
+                {
+                    // if the container was not set, just default to the first row (which is the default container)
+                    if (desiredContainer.isEmpty())
+                    {
+                        desiredContainerRow = 0;
+                    }
+                    else
+                    {
+                        // default container was set but it's not there: treat it as a new container
+                        addRow(desiredContainer);
+                    }
+                }
+                setCurrentContainer(model->data(model->index(desiredContainerRow, 0)).toString());
                 model->removeRow(0);
 
                 fetchedModel.clear();
@@ -109,6 +123,20 @@ void BlobContainerSelectorModel::setCurrentContainer(QString containerName)
             m_currentContainerName = std::move(containerName);
             Q_EMIT currentContainerChanged();
         }
+    }
+}
+
+bool BlobContainerSelectorModel::canNavigateToNewContainers() const
+{
+    return m_canNavigateToNewContainers;
+}
+
+void BlobContainerSelectorModel::navigateToNewContainer(QString containerName)
+{
+    if (m_canNavigateToNewContainers)
+    {
+        setCurrentContainer(containerName);
+        updateModel();
     }
 }
 

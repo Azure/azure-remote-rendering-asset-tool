@@ -104,7 +104,7 @@ struct Conversion
     QString getModelName() const
     {
         return QString::fromStdString(m_input_asset_relative_path).section('/', -1).section('.', 0, -2);
-	}
+    }
 
     // return the default name that would be given to this conversion if m_name is not set. Id is the conversion id, which might be used in the default name
     QString getDefaultName(int id) const

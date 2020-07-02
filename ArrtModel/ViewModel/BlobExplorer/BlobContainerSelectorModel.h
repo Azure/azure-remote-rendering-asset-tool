@@ -16,7 +16,7 @@ class BlobContainerSelectorModel : public QObject
     Q_OBJECT
 
 public:
-    BlobContainerSelectorModel(AzureStorageManager* storageManager, QString container, QString defaultContainerName, QObject* parent);
+    BlobContainerSelectorModel(AzureStorageManager* storageManager, QString container, QString defaultContainerName, bool canNavigateToNewContainers, QObject* parent);
     ~BlobContainerSelectorModel();
 
     // the model is a flat list of all of the containers. It can be used in a combobox
@@ -27,6 +27,12 @@ public:
 
     // set the current container by name
     void setCurrentContainer(QString containerName);
+
+    // can navigate to new containers
+    bool canNavigateToNewContainers() const;
+
+    // navigate to a new container, or to an existing one, if it's found
+    void navigateToNewContainer(QString containerName);
 
 signals:
     // when getCurrentContainer(index) returns a different value
@@ -46,6 +52,7 @@ private:
     std::shared_ptr<Cancellable> m_fetcher;
     std::vector<QString> m_fetchedModel;
     bool m_inhibitUpdates = false;
+    const bool m_canNavigateToNewContainers;
 
     QString itemString(int index) const;
 

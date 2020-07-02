@@ -19,7 +19,7 @@ ModelsPageModel::ModelsPageModel(AzureStorageManager* storageManager, ArrSession
     : QObject(parent)
     , m_storageManager(storageManager)
     , m_configuration(configuration)
-    , m_containersModel(new BlobContainerSelectorModel(storageManager, m_configuration->getUiState("modelsPage:defaultContainer", QString()), ConversionManager::s_default_output_container, this))
+    , m_containersModel(new BlobContainerSelectorModel(storageManager, m_configuration->getUiState("modelsPage:defaultContainer", QString()), ConversionManager::s_default_output_container, false, this))
     , m_explorerModel(new BlobExplorerModel(storageManager, true, QString("arrAsset"), tr("Converted 3d Model Files (*.arrAsset);;All Files (*.*)"), m_containersModel->getCurrentContainer(), m_configuration->getUiState("modelsPage:defaultDirectory", QString()), this))
     , m_sessionManager(sessionManager)
 {
