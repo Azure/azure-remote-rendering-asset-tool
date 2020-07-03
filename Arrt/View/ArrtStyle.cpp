@@ -291,14 +291,25 @@ void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* opti
             rectColor = rectColor.lighter(120);
         }
 
-        if (option->state.testFlag(State_Raised))
+        if (option->state.testFlag(State_HasFocus))
         {
-            painter->setPen(Qt::NoPen);
+            rectColor = rectColor.lighter(120);
+        }
+
+        if (option->state.testFlag(State_HasFocus))
+        {
+            painter->setPen(option->palette.highlight().color());
         }
         else
         {
-            // checked toggle buttons have a lighter border
-            painter->setPen(option->palette.mid().color());
+            if (option->state.testFlag(State_Raised))
+            {
+                painter->setPen(Qt::NoPen);
+            }
+            else
+            {
+                painter->setPen(option->palette.mid().color());
+            }
         }
         painter->setBrush(rectColor);
 
