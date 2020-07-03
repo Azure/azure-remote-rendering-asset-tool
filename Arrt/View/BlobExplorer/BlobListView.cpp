@@ -245,32 +245,50 @@ void BlobListView::dropEvent(QDropEvent* event)
 
 void BlobListView::keyPressEvent(QKeyEvent* event)
 {
-    if (event->key() == Qt::Key_Delete)
+    switch (event->key())
     {
-        BlobsListModel::EntryType type;
-        QString path;
-        QString url;
-        m_model->getCurrentItem(type, path, url);
-
-        if (type != BlobsListModel::EntryType::NoType && type != BlobsListModel::EntryType::DirectoryUp)
+        case Qt::Key_Delete:
         {
-            QMessageBox mb(this);
-            if (type == BlobsListModel::EntryType::Directory)
+            BlobsListModel::EntryType type;
+            QString path;
+            QString url;
+            m_model->getCurrentItem(type, path, url);
+
+            if (type != BlobsListModel::EntryType::NoType && type != BlobsListModel::EntryType::DirectoryUp)
             {
-                mb.setText(tr("Deleting directory %0 and its subdirectories. Proceed?").arg(path));
+                QMessageBox mb(this);
+                if (type == BlobsListModel::EntryType::Directory)
+                {
+                    mb.setText(tr("Deleting directory %0 and its subdirectories. Proceed?").arg(path));
+                }
+                else
+                {
+                    mb.setText(tr("Deleting blob %0. Proceed?").arg(path));
+                }
+                mb.setIcon(QMessageBox::Warning);
+                mb.setWindowTitle(tr("Deleting"));
+                mb.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+                mb.setDefaultButton(QMessageBox::Ok);
+                if (mb.exec() == QMessageBox::Ok)
+                {
+                    m_model->deleteCurrentItem();
+                }
             }
-            else
+            break;
+        }
+        case Qt::Key_Enter:
+        case Qt::Key_Return:
+        {
+            auto current = selectionModel()->currentIndex();
+            if (current.isValid())
             {
-                mb.setText(tr("Deleting blob %0. Proceed?").arg(path));
+                m_model->doubleClickItem(current);
             }
-            mb.setIcon(QMessageBox::Warning);
-            mb.setWindowTitle(tr("Deleting"));
-            mb.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-            mb.setDefaultButton(QMessageBox::Ok);
-            if (mb.exec() == QMessageBox::Ok)
-            {
-                m_model->deleteCurrentItem();
-            }
+            break;
+        }
+        default:
+        {
         }
     }
+    QListView::keyPressEvent(event);
 }
