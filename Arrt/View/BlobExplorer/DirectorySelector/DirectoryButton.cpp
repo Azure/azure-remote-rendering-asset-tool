@@ -7,8 +7,8 @@
 #include <View/BlobExplorer/DirectorySelector/PopupList.h>
 #include <ViewUtils/DpiUtils.h>
 
-DirectoryButton::DirectoryButton()
-    : FlatButton("")
+DirectoryButton::DirectoryButton(QWidget* parent)
+    : FlatButton("", parent)
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 }

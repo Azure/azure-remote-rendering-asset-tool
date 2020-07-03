@@ -17,6 +17,7 @@ private:
     DirectoryProvider* const m_directoryModel;
     QList<DirectoryButton*> m_buttons;
     QHBoxLayout* m_buttonLayout = {};
+    QWidget* m_buttonContainer = {};
 
     void updateUi();
 };

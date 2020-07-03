@@ -13,14 +13,20 @@ DirectorySelector::DirectorySelector(DirectoryProvider* directoryModel, QWidget*
     setSizePolicy(QSizePolicy::Ignored, QSizePolicy::MinimumExpanding);
     auto* l = new QHBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
+    m_buttonContainer = new QWidget(this);
+    m_buttonContainer->setContentsMargins(0, 0, 0, 0);
+    m_buttonContainer->setFocusPolicy(Qt::TabFocus);
+
+    m_buttonLayout = new QHBoxLayout(m_buttonContainer);
+    m_buttonLayout->setContentsMargins(0, 0, 0, 0);
+    m_buttonLayout->setMargin(2);
+    l->addWidget(m_buttonContainer);
+
     auto* newFolderButton = new NewFolderButton(this);
     connect(newFolderButton, &NewFolderButton::newFolderRequested, this, [this](const QString& newFolder) {
         m_directoryModel->navigateIntoDirectory(newFolder);
     });
-    m_buttonLayout = new QHBoxLayout();
-    m_buttonLayout->setContentsMargins(0, 0, 0, 0);
-    m_buttonLayout->setMargin(2);
-    l->addLayout(m_buttonLayout);
+
     l->addWidget(newFolderButton);
     l->addStretch(1);
     updateUi();
@@ -41,9 +47,24 @@ void DirectorySelector::updateUi()
         DirectoryButton* button;
         if (buttonIndex >= m_buttons.size())
         {
-            button = new DirectoryButton();
-            m_buttons.push_back(button);
+            button = new DirectoryButton(m_buttonContainer);
             m_buttonLayout->addWidget(button);
+
+            // fix tab order for newly created widget
+            if (m_buttons.empty())
+            {
+                // if it's the first button then it's the proxy of the buttonContainer (which is equivalent to anchor the tab position to the parent container)
+                QWidget::setTabOrder(m_buttonContainer, button);
+                m_buttonContainer->setFocusProxy(button);
+            }
+            else
+            {
+                // otherwise it just appends the new button to the last button
+                QWidget::setTabOrder(m_buttons.last(), button);
+            }
+
+            m_buttons.push_back(button);
+
             connect(button, &DirectoryButton::dirPressed, this, [this, button] {
                 m_directoryModel->setDirectory(button->getDirectory());
             });

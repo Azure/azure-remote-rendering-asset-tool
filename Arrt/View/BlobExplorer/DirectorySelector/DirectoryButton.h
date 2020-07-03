@@ -10,7 +10,7 @@ class DirectoryButton : public FlatButton
 {
     Q_OBJECT
 public:
-    DirectoryButton();
+    DirectoryButton(QWidget* parent = {});
     void setDirectory(QString directory);
     void showPopup(QAbstractItemModel* model);
     void hidePopup();
