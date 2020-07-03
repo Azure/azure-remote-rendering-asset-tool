@@ -1,5 +1,6 @@
 #include <QHBoxLayout>
 #include <QSlider>
+#include <Utils/ScopedBlockers.h>
 #include <View/Parameters/BoundFloatSlider.h>
 #include <View/Parameters/BoundFloatSpinBox.h>
 
@@ -29,9 +30,12 @@ BoundFloatSlider::BoundFloatSlider(FloatSliderModel* model, QWidget* parent)
         m_spinBox->updateFromModel();
     });
 
-    QObject::connect(m_spinBox, static_cast<void (BoundFloatSpinBox::*)(double)>(&BoundFloatSpinBox::valueChanged), this, [this](double) {
-        updateFromModel();
-    });
+	// the connection is queued, so we make sure that the model update for BoundFloatSpinBox is done before updating the slider from the model
+    QObject::connect(m_spinBox, static_cast<void (BoundFloatSpinBox::*)(double)>(&BoundFloatSpinBox::valueChanged), this,
+                     [this](double) {
+                         updateFromModel();
+                     },
+                     Qt::ConnectionType::QueuedConnection);
 }
 
 const ParameterModel* BoundFloatSlider::getModel() const
@@ -42,5 +46,6 @@ const ParameterModel* BoundFloatSlider::getModel() const
 void BoundFloatSlider::updateFromModel()
 {
     const float delta = m_model->getMaximum() - m_model->getMinimum();
+    ScopedBlockSignals blockSignal(m_slider);
     m_slider->setValue(m_model->getNumberOfSteps() * (m_model->getValue() - m_model->getMinimum()) / delta);
 }
