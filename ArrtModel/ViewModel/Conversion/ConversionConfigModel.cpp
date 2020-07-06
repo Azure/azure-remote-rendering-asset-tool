@@ -34,7 +34,7 @@ namespace JsonUtils
         QString("dynamic")} ENUM_LABELS_END(SceneGraphMode)
 
         ENUM_LABELS_BEGIN(Axis){
-            QString("Default"),
+            QString("default"),
             QString("+x"),
             QString("-x"),
             QString("+y"),
