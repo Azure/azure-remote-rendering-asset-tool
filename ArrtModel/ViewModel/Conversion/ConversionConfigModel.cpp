@@ -34,7 +34,7 @@ namespace JsonUtils
         QString("dynamic")} ENUM_LABELS_END(SceneGraphMode)
 
         ENUM_LABELS_BEGIN(Axis){
-            QString("Default"),
+            QString("default"),
             QString("+x"),
             QString("-x"),
             QString("+y"),
@@ -232,6 +232,7 @@ QJsonDocument ConversionConfigModel::createJson(const ArrtConversion::Config& co
         QJsonArray axes;
         {
             bool hasValues = false;
+            hasValues |= toJson(axes, 0, config.m_axis1, def.m_axis1, ArrtConversion::Axis::Inherit);
             hasValues |= toJson(axes, 0, config.m_axis1, def.m_axis1, ArrtConversion::Axis::Inherit);
             hasValues |= toJson(axes, 1, config.m_axis2, def.m_axis2, ArrtConversion::Axis::Inherit);
             hasValues |= toJson(axes, 2, config.m_axis3, def.m_axis3, ArrtConversion::Axis::Inherit);
