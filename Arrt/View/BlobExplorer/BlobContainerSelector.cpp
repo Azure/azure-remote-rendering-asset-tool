@@ -20,7 +20,8 @@ BlobContainerSelector::BlobContainerSelector(BlobContainerSelectorModel* model, 
     if (m_model->canNavigateToNewContainers())
     {
         m_addButton = new FlatButton("", this);
-        m_addButton->setIcon(ArrtStyle::s_newfolderIcon);
+        m_addButton->setIcon(ArrtStyle::s_newIcon);
+        m_addButton->setToolTip(tr("Go to new container"), tr("Navigate to a new container. If the container already exists it will be selected, otherwise it will be created on write."));
 
         m_lineEdit = new LineEditReturnOnFocusLost(this);
 
