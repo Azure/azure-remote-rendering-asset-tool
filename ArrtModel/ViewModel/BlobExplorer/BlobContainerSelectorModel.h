@@ -42,9 +42,6 @@ private:
     QStandardItemModel* m_availableContainersModel;
     AzureStorageManager* const m_storageManager;
     QString m_currentContainerName;
-    // this container is the container name that the user wants to select.
-    // it is only selected if there is a match with an existing container
-    QString m_desiredContainerName;
 
     // default container that might or not be there. It will be displayed in the list at the beginning, also when it's not actually there.
     QString m_defaultContainerName;
