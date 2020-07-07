@@ -11,7 +11,11 @@ ms.topic: article
 
 ![Upload panel](media/upload.png)
 To convert a 3D model, first it has to be uploaded to one the containers in your Azure Storage account. To do so, click on the "Upload" button on the main toolbar.
+
+## Selection a container
+
 Select the container where you want to upload the model using the combo-box on the top.
+If you want to upload your files to a new container, you can press the "+" icon on the right side of the container combo-box. You can then type the name of the new container and press enter. If the container you typed exists, it will be selected, if it doesn't exist, it will be created as soon as you'll upload a file into it.
 
 ## Selection of the destination directory
 
