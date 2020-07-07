@@ -1,5 +1,22 @@
 cmake_minimum_required (VERSION 3.12)
 
+# submodule update
+find_package(Git QUIET)
+if(GIT_FOUND)
+    message(STATUS "Googletest submodule update")
+    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                    RESULT_VARIABLE GIT_SUBMOD_RESULT)
+    if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+        message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}")
+    endif()
+endif()
+
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/googletest/CMakeLists.txt")
+    message(FATAL_ERROR "Submodules update failed. Please run git submodule update --init")
+endif()
+
+
 # common setup for exe targets (Arrt and Tests)
 function(addQtDeployment _TARGET)
     get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
@@ -67,7 +84,7 @@ endif()
 if(DEFINED ENV{ARRT_VERSION})
     set(ARRT_VERSION $ENV{ARRT_VERSION})
 else()
-    message("Retrieving version from last git tag")
+    message(STATUS "Retrieving version from last git tag")
     find_package (Git)
     execute_process(
         COMMAND ${GIT_EXECUTABLE} describe --tags
