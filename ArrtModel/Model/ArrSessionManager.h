@@ -153,6 +153,9 @@ private:
     void initializeSession();
     void deinitializeSession();
 
+    // start/stop internal timers based on the session state
+    void updateTimers();
+
     bool m_isEnabled = false;
 
     ArrFrontend* const m_frontend;
