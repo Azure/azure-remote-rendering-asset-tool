@@ -719,8 +719,11 @@ void ArrSessionManager::updateTimers()
 {
     enum UpdateType
     {
+        // no update needed. The session is not active
         STOPPED,
+        // the session is in a temporary state. Update with higher frequency
         FAST_UPDATE,
+        // the session is connected and in a stable state. Update with a slower frequency
         SLOW_UPDATE
     };
     UpdateType oldUpdateType;
