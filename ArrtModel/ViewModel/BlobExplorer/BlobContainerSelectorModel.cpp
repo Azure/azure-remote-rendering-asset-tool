@@ -46,60 +46,57 @@ void BlobContainerSelectorModel::updateModel()
             QString desiredContainer(m_desiredContainerName);
 
             model->clear();
-            if (!fetchedModel.empty())
+            m_inhibitUpdates = true;
+            int desiredContainerRow = -1;
+
+            // the QT model m_availableContainersModel will notify the view (the QComboBox)
+            // when appending the first row, after clearing, and the view will select immediately
+            // that first item, which will end up starting the fetching of the blobs in the first container,
+            // until we select the desired container with setCurrentContainer below.
+            // To avoid this, we add a first empty row, so that the selected container will become temporarily
+            // empty, which clears the blob lists and doesn't start fetching, until the setCurrentContainer
+            model->appendRow(new QStandardItem(""));
+
+            int row = 0;
+            auto addRow = [&model, &desiredContainer, &row, &desiredContainerRow](const QString& name) {
+                model->appendRow(new QStandardItem(name));
+                row++;
+                if (name == desiredContainer)
+                {
+                    desiredContainerRow = row;
+                }
+            };
+
+            if (!m_defaultContainerName.isEmpty())
             {
-                m_inhibitUpdates = true;
-                int desiredContainerRow = -1;
-
-                // the QT model m_availableContainersModel will notify the view (the QComboBox)
-                // when appending the first row, after clearing, and the view will select immediately
-                // that first item, which will end up starting the fetching of the blobs in the first container,
-                // until we select the desired container with setCurrentContainer below.
-                // To avoid this, we add a first empty row, so that the selected container will become temporarily
-                // empty, which clears the blob lists and doesn't start fetching, until the setCurrentContainer
-                model->appendRow(new QStandardItem(""));
-
-                int row = 0;
-                auto addRow = [&model, &desiredContainer, &row, &desiredContainerRow](const QString& name) {
-                    model->appendRow(new QStandardItem(name));
-                    row++;
-                    if (name == desiredContainer)
-                    {
-                        desiredContainerRow = row;
-                    }
-                };
-
-                if (!m_defaultContainerName.isEmpty())
-                {
-                    addRow(m_defaultContainerName);
-                }
-                for (size_t i = 0; i < fetchedModel.size(); ++i)
-                {
-                    if (fetchedModel[i] != m_defaultContainerName)
-                    {
-                        addRow(fetchedModel[i]);
-                    }
-                }
-                m_inhibitUpdates = false;
-
-                if (desiredContainerRow == -1)
-                {
-                    // if the container was not set, just default to the first row (which is the default container)
-                    if (desiredContainer.isEmpty())
-                    {
-                        desiredContainerRow = 0;
-                    }
-                    else
-                    {
-                        // default container was set but it's not there: treat it as a new container
-                        addRow(desiredContainer);
-                    }
-                }
-                setCurrentContainer(model->data(model->index(desiredContainerRow, 0)).toString());
-                model->removeRow(0);
-
-                fetchedModel.clear();
+                addRow(m_defaultContainerName);
             }
+            for (size_t i = 0; i < fetchedModel.size(); ++i)
+            {
+                if (fetchedModel[i] != m_defaultContainerName)
+                {
+                    addRow(fetchedModel[i]);
+                }
+            }
+            m_inhibitUpdates = false;
+
+            if (desiredContainerRow == -1)
+            {
+                // if the container was not set, just default to the first row (which is the default container)
+                if (desiredContainer.isEmpty())
+                {
+                    desiredContainerRow = 0;
+                }
+                else
+                {
+                    // default container was set but it's not there: treat it as a new container
+                    addRow(desiredContainer);
+                }
+            }
+            setCurrentContainer(model->data(model->index(desiredContainerRow, 0)).toString());
+            model->removeRow(0);
+
+            fetchedModel.clear();
         });
 }
 
