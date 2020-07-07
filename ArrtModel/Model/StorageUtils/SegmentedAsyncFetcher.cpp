@@ -16,7 +16,7 @@ namespace
             }
             catch (std::exception& e)
             {
-                qCritical(e.what());
+                qWarning(e.what());
             }
         });
     }

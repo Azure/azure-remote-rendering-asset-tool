@@ -52,7 +52,7 @@ RunningSessionView::RunningSessionView(RunningSessionModel* model, QWidget* pare
     m_extendButton = new FlatButton(tr("Extend"));
     m_extendButton->setToolTip(tr("Extend the session lease time"), tr("Add the specified amount of minutes to the session lease time"));
     m_extendButton->setIcon(ArrtStyle::s_extendtimeIcon, true);
-    connect(m_extendButton, &FlatButton::pressed, this, [this]() {
+    connect(m_extendButton, &FlatButton::clicked, this, [this]() {
         m_model->extend();
     });
 
@@ -89,14 +89,14 @@ RunningSessionView::RunningSessionView(RunningSessionModel* model, QWidget* pare
     m_arrInspectorButton->setToolTip(tr("Inspect Running Session"), tr("Open the ArrInspector tool on a local browser, to visualize diagnostic data on this running session"));
     m_arrInspectorButton->setIcon(ArrtStyle::s_inspectorIcon, true);
     panelLayout->addWidget(m_arrInspectorButton);
-    connect(m_arrInspectorButton, &FlatButton::pressed, this, [this]() {
+    connect(m_arrInspectorButton, &FlatButton::clicked, this, [this]() {
         m_model->startInspector();
     });
 
     m_startStopButton = new FlatButton(tr("Stop Session"));
     m_startStopButton->setToolTip(tr("Stop session"), tr("Stop the currently running session. This brings you to the main panel to start a new session"));
     m_startStopButton->setIcon(ArrtStyle::s_stopIcon, true);
-    connect(m_startStopButton, &FlatButton::pressed, this, [this]() { stop(); });
+    connect(m_startStopButton, &FlatButton::clicked, this, [this]() { stop(); });
 
     panelLayout->addWidget(m_startStopButton);
 

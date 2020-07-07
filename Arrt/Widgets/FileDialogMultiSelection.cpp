@@ -27,7 +27,7 @@ FileDialogMultiSelection::FileDialogMultiSelection(QWidget* parent)
     // This is needed because the default code will check the first element in the selection,
     // and when the fileMode is QFileDialog::Directory it assumes that element is a directory
     // and fail otherwise. In our case that element can be also a file.
-    QObject::connect(chooseButton, &QPushButton::pressed, this, [this]() {
+    QObject::connect(chooseButton, &QPushButton::clicked, this, [this]() {
         // this is the "accept" behaviour of QFileDialog (see QFileDialog::accept)
         Q_EMIT filesSelected(selectedFiles());
         QDialog::accept();

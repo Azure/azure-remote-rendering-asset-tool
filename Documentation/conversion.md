@@ -45,7 +45,7 @@ The panel is similar to the input panel, but it will show you just the sub-direc
 
 To select a directory you can navigate to it and press "ok", or you can select a sub-directory and press ok.
 
-Like for the upload panel, you can also select a new directory by clicking on the "Add Sub-Directory" button, and entering the name of a new directory.
+Like for the upload panel, you can also select a new container by clicking on the "+" icon on the right of the container selector, or navigate to a new directory by clicking on the "Add Sub-Directory" button.
 
 ![Directory selection](media/newdiroutput.png)
 

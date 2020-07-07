@@ -46,8 +46,8 @@ OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
         buttonLayout->addWidget(okButton);
         buttonLayout->addWidget(cancelButton);
 
-        QObject::connect(okButton, &FlatButton::pressed, this, [this]() { m_model->submit(); });
-        QObject::connect(cancelButton, &FlatButton::pressed, this, [this]() { goBack(); });
+        QObject::connect(okButton, &FlatButton::clicked, this, [this]() { m_model->submit(); });
+        QObject::connect(cancelButton, &FlatButton::clicked, this, [this]() { goBack(); });
         l->addLayout(buttonLayout, 0);
     }
 }

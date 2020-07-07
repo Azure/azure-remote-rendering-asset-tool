@@ -73,7 +73,7 @@ SessionCreationView::SessionCreationView(SessionCreationModel* model, QWidget* p
     m_startButton->setToolTip(tr("Start session"), tr("Start the remote rendering session and automatically connects to it once it\'s ready"));
     m_startButton->setIcon(ArrtStyle::s_startIcon, true);
 
-    QObject::connect(m_startButton, &FlatButton::pressed, this, [this]() {
+    QObject::connect(m_startButton, &FlatButton::clicked, this, [this]() {
         if (!m_model->isRunning())
         {
             m_model->start();

@@ -158,6 +158,45 @@ azure::storage::cloud_blob_container AzureStorageManager::getContainerFromUri(co
     }
 }
 
+void AzureStorageManager::createContainer(const QString& containerName, std::function<void(bool)> endCallback)
+{
+    try
+    {
+        QPointer<AzureStorageManager> thisPtr = this;
+        getContainerFromName(containerName).create_if_not_exists_async().then([endCallback, containerName, thisPtr](const pplx::task<bool>& previousTask) {
+            bool succeeded = false;
+            try
+            {
+                // the task is already completed, so this won't block
+                bool wasntThere = previousTask.get();
+                succeeded = true;
+                if (wasntThere)
+                {
+                    qInfo(LoggingCategory::azureStorage) << tr("New container created:") << containerName;
+                }
+            }
+            catch (std::exception& e)
+            {
+                qWarning(LoggingCategory::azureStorage) << tr("Failed creating a container:") << containerName << endl
+                                                        << e.what();
+            }
+            QMetaObject::invokeMethod(QApplication::instance(), [endCallback, succeeded, thisPtr]() {
+                if (thisPtr)
+                {
+                    endCallback(succeeded);
+                }
+            });
+        });
+    }
+    catch (std::exception& e)
+    {
+        qWarning(LoggingCategory::azureStorage) << tr("Error invoking the container creation for container:") << containerName << endl
+                                                << e.what();
+        endCallback(false);
+    }
+}
+
+
 std::shared_ptr<Cancellable> AzureStorageManager::getAllBlobsAsyncSegmented(const QObject* context, const QString& containerName, std::function<void(const azure::storage::list_blob_item_segment& segment)> callback)
 {
     azure::storage::cloud_blob_container container = getContainerFromName(containerName);

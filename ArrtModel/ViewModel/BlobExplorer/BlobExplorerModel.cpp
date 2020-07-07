@@ -1,4 +1,5 @@
 #include <Model/AzureStorageManager.h>
+#include <Model/Log/LogHelpers.h>
 #include <Model/StorageUtils/FileUploader.h>
 #include <QDirIterator>
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
@@ -157,9 +158,25 @@ void BlobExplorerModel::uploadBlobs(const QDir& rootDir, const QStringList& loca
         m_errorWhenUploadingFiles = false;
     }
     m_totalFiles += localPaths.size();
-    auto container = m_storageManager->getContainerFromName(m_containerName->get());
 
-    m_fileUploader->uploadFilesAsync(rootDir, localPaths, container, getDirectory());
+    // first try to create the container if it doesn't exist
+    QString containerName = m_containerName->get();
+    QString directory = getDirectory();
+    QPointer<BlobExplorerModel> thisPtr = this;
+    m_storageManager->createContainer(m_containerName->get(), [thisPtr, containerName, rootDir, localPaths, directory](bool succeeded) {
+        if (thisPtr)
+        {
+            if (succeeded)
+            {
+                auto container = thisPtr->m_storageManager->getContainerFromName(containerName);
+                thisPtr->m_fileUploader->uploadFilesAsync(rootDir, localPaths, container, directory);
+            }
+            else
+            {
+                qWarning(LoggingCategory::azureStorage) << tr("Could not create container: ") << containerName;
+            }
+        }
+    });
 }
 
 // it converts a set of files+directories to a list of files. Utility function used by the view to know how many files

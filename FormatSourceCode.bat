@@ -1,15 +1,22 @@
 @echo off
+
 echo Formatting...
-for /r %~dp0 %%f in (*.cpp) do (
-    rem echo %%f
-    clang-format -i %%f
-)
-for /r %~dp0 %%f in (*.h) do (
-    rem echo %%f
-    clang-format -i %%f
-)
-for /r %~dp0 %%f in (*.inl) do (
-    rem echo %%f
-    clang-format -i %%f
-)
+
+pushd %~dp0
+
+call :scanRecursive Arrt
+call :scanRecursive ArrtModel
+call :scanRecursive Tests
+
 echo Done.
+
+popd
+exit/b 0
+
+:scanRecursive
+pushd %1
+for /f "tokens=*" %%G in ('dir /b /s *.cpp *.h *.inl') do (
+    rem echo %%G
+    clang-format -i %%G
+)
+popd

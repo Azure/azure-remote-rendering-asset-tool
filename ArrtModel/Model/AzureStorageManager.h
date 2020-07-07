@@ -42,6 +42,9 @@ public:
     // return the container from the uri, using the client credentials
     azure::storage::cloud_blob_container getContainerFromUri(const azure::storage::storage_uri& containerUri) const;
 
+    // create a new container. If the container is created (or is already there) returns true in the callback. The callback is executed in the main thread
+    void createContainer(const QString& containerNamebool, std::function<void(bool)> endCallback);
+
     // fetch all of the blobs of a container in a flat list, in an asynchronous way, and segmented. Callback is executed on the main thread and it gets passed the segment,
     // which also contains a continuation token (empty when it's the last call)
     std::shared_ptr<Cancellable> getAllBlobsAsyncSegmented(const QObject* context, const QString& container, std::function<void(const azure::storage::list_blob_item_segment& segment)> callback);

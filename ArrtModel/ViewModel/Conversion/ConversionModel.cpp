@@ -1,6 +1,7 @@
 #include <Model/AzureStorageManager.h>
 #include <Model/ConversionManager.h>
 #include <Model/Log/LogHelpers.h>
+#include <QPointer>
 #include <QStandardItemModel>
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 #include <ViewModel/BlobExplorer/BlobExplorerModel.h>
@@ -150,7 +151,7 @@ QString ConversionModel::getOutput() const
     {
         if (!conversion->m_outputContainer.primary_uri().is_empty())
         {
-            return QString::fromStdWString(conversion->m_outputContainer.primary_uri().to_string()) + "/" + QString::fromUtf8(conversion->m_output_folder.c_str());
+            return QString::fromStdWString(conversion->m_outputContainer.primary_uri().to_string()) + "/" + QString::fromUtf8(conversion->m_output_folder.c_str()) + conversion->getModelName() + ".arrAsset";
         }
         else
         {
@@ -262,7 +263,7 @@ bool ConversionModel::canStartConversion() const
 {
     if (const Conversion* conversion = getConversion())
     {
-        return !conversion->isActive() && !conversion->m_input_asset_relative_path.empty() && !conversion->m_outputContainer.primary_uri().is_empty();
+        return !conversion->isActive() && !conversion->m_input_asset_relative_path.empty();
     }
     else
     {
@@ -274,12 +275,35 @@ void ConversionModel::startConversion()
 {
     if (canStartConversion())
     {
+        Conversion* conversion = m_conversionManager->getConversion(m_conversionId);
+        conversion->updateConversionStatus(Conversion::START_REQUESTED);
+
         if (m_conversionConfigModel->save())
         {
-            m_conversionManager->startConversion(m_conversionId, m_storageManager);
+            // try and create the output container, if it's not there
+
+            QPointer<ConversionModel> thisPtr = this;
+            m_storageManager->createContainer(QString::fromStdString(conversion->m_output_blob_container_name), [thisPtr, conversionId = m_conversionId](bool success) {
+                if (thisPtr)
+                {
+                    if (success)
+                    {
+                        thisPtr->m_conversionManager->startConversion(conversionId, thisPtr->m_storageManager);
+                    }
+                    else
+                    {
+                        Conversion* conversion = thisPtr->m_conversionManager->getConversion(conversionId);
+                        if (conversion)
+                        {
+                            conversion->updateConversionStatus(Conversion::FAILED_TO_START);
+						}
+                        qCritical(LoggingCategory::conversion) << tr("Conversion couldn't start because output container could not be created");
+                    }
+                } });
         }
         else
         {
+            conversion->updateConversionStatus(Conversion::FAILED_TO_START);
             qCritical(LoggingCategory::conversion) << tr("Conversion couldn't start because configuration couldn't be saved on blob storage");
         }
     }
