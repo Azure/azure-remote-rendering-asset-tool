@@ -120,7 +120,7 @@ ModelsPageView::ModelsPageView(ModelsPageModel* modelsPageModel)
 
         m_loadButton = new FlatButton(tr("Load"));
         m_loadButton->setToolTip(tr("Load model"), tr("Load the selected 3D model"));
-        connect(m_loadButton, &FlatButton::pressed, this, [this]() {
+        connect(m_loadButton, &FlatButton::clicked, this, [this]() {
             m_model->load(getInputMode() == FROM_STORAGE_CONTAINER ? ModelsPageModel::FromExplorer : ModelsPageModel::FromSasUri);
         });
 

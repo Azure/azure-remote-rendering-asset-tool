@@ -70,7 +70,7 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         {
             auto* button = new NotificationButtonView(tr("Upload"), m_model->getUploadModel()->getNotificationButtonModel());
             button->setToolTip(tr("Upload"), tr("Panel to upload the 3D model files to Azure Storage before conversion."));
-            connect(button, &FlatButton::pressed, this, [this]() { m_topLevelNavigator->navigateToPage(TOPLEVEL_UPLOAD); });
+            connect(button, &FlatButton::clicked, this, [this]() { m_topLevelNavigator->navigateToPage(TOPLEVEL_UPLOAD); });
             button->setIcon(ArrtStyle::s_uploadIcon, true);
             m_mainButtons[TOPLEVEL_UPLOAD] = button;
             button->setAutoExclusive(true);
@@ -79,7 +79,7 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         {
             auto* button = new NotificationButtonView(tr("Convert"), m_model->getConversionPageModel()->getNotificationButtonModel());
             button->setToolTip(tr("Convert"), tr("Main panel to control the 3D model conversion tasks. The result of the conversion is a model in the Azure Remote Rendering internal format, which can be loaded and rendered by the service"));
-            connect(button, &FlatButton::pressed, this, [this]() { m_topLevelNavigator->navigateToPage(TOPLEVEL_CONVERSION); });
+            connect(button, &FlatButton::clicked, this, [this]() { m_topLevelNavigator->navigateToPage(TOPLEVEL_CONVERSION); });
             button->setIcon(ArrtStyle::s_conversionIcon, true);
             m_mainButtons[TOPLEVEL_CONVERSION] = button;
             button->setAutoExclusive(true);
@@ -88,7 +88,7 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         {
             auto* button = new NotificationButtonView(tr("Render"), m_model->getRenderPageModel()->getNotificationButtonModel());
             button->setToolTip(tr("Render"), tr("Main panel to control the remote rendering with ARR. Here you can start a session, load a model and visualize and navigate the remotely rendered 3D model"));
-            connect(button, &FlatButton::pressed, this, [this]() { m_topLevelNavigator->navigateToPage(TOPLEVEL_RENDERING); });
+            connect(button, &FlatButton::clicked, this, [this]() { m_topLevelNavigator->navigateToPage(TOPLEVEL_RENDERING); });
             button->setIcon(ArrtStyle::s_renderingIcon, true);
             m_mainButtons[TOPLEVEL_RENDERING] = button;
             button->setAutoExclusive(true);

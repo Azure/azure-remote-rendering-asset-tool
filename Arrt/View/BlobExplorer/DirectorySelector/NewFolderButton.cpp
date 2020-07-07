@@ -15,7 +15,7 @@ NewFolderButton::NewFolderButton(QWidget* parent)
 
     m_addButton = new FlatButton("", this);
     m_addButton->setIcon(ArrtStyle::s_newfolderIcon);
-    connect(m_addButton, &FlatButton::pressed, this, [this]() {
+    connect(m_addButton, &FlatButton::clicked, this, [this]() {
         m_lineEdit->setVisible(true);
         m_lineEdit->setFocus();
         m_addButton->setVisible(false);

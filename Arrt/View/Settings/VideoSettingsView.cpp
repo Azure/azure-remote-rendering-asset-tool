@@ -10,12 +10,12 @@ VideoSettingsView::VideoSettingsView(VideoSettingsModel* model, QWidget* parent)
 {
     m_applyButton = new FlatButton(tr("Apply"), this);
     m_applyButton->setToolTip(tr("Apply the video settings"), tr("Re-connect and apply the video settings"));
-    QObject::connect(m_applyButton, &FlatButton::pressed, this, [this]() {
+    QObject::connect(m_applyButton, &FlatButton::clicked, this, [this]() {
         m_model->applySettings();
     });
     m_resetButton = new FlatButton(tr("Reset"), this);
     m_resetButton->setToolTip(tr("Reset"), tr("Reset to the current settings, discarding the changes"));
-    QObject::connect(m_resetButton, &FlatButton::pressed, this, [this]() {
+    QObject::connect(m_resetButton, &FlatButton::clicked, this, [this]() {
         m_model->resetToCurrentSettings();
     });
 

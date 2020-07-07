@@ -121,13 +121,13 @@ ConversionPageView::ConversionPageView(ConversionPageModel* model, QWidget* pare
         addConversion->setToolTip(tr("New conversion"), tr("Create a new task to convert a 3D model for Remote Rendering"));
         addConversion->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         addConversion->setIcon(ArrtStyle::s_newIcon, true);
-        connect(addConversion, &FlatButton::pressed, this, [this]() { m_model->addNewConversion(); });
+        connect(addConversion, &FlatButton::clicked, this, [this]() { m_model->addNewConversion(); });
 
         m_removeConversionButton = new FlatButton(tr("Delete"), listPanel);
         m_removeConversionButton->setToolTip(tr("Delete conversion"), tr("Removes the selected conversion task from the list. It can only be called on conversions that are not running"));
         m_removeConversionButton->setIcon(ArrtStyle::s_removeIcon, true);
         m_removeConversionButton->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        connect(m_removeConversionButton, &FlatButton::pressed, this, [this]() { m_model->removeCurrentConversion(); });
+        connect(m_removeConversionButton, &FlatButton::clicked, this, [this]() { m_model->removeCurrentConversion(); });
 
         toolbarLayout->addWidget(addConversion);
         toolbarLayout->addWidget(m_removeConversionButton);

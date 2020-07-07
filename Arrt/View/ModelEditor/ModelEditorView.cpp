@@ -59,7 +59,7 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
 
         auto* unloadButton = new FlatButton(tr("Unload model"), toolBar);
         unloadButton->setToolTip(tr("Unload 3D model"), tr("Unload and go back to the panel for selecting another 3D model"));
-        QObject::connect(unloadButton, &FlatButton::pressed, this, [this]() {
+        QObject::connect(unloadButton, &FlatButton::clicked, this, [this]() {
             m_model->unloadModel();
         });
         toolbarLayout->addWidget(unloadButton);

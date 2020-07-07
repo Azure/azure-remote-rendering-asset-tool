@@ -28,7 +28,7 @@ BlobContainerSelector::BlobContainerSelector(BlobContainerSelectorModel* model, 
         l->addWidget(m_addButton, 0);
         m_lineEdit->setVisible(false);
 
-        connect(m_addButton, &FlatButton::pressed, this, [this]() {
+        connect(m_addButton, &FlatButton::clicked, this, [this]() {
             m_selector->setVisible(false);
             m_lineEdit->setVisible(true);
             m_lineEdit->setFocus();

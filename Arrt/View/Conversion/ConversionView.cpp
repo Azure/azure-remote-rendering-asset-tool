@@ -68,7 +68,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
         m_inputButton = new FlatButton(tr("Select"), this);
         m_inputButton->setToolTip(tr("Select input model"), tr("Open a blob explorer to find and select an input 3D model for conversion"));
 
-        QObject::connect(m_inputButton, &FlatButton::pressed, this, [this]() {
+        QObject::connect(m_inputButton, &FlatButton::clicked, this, [this]() {
             InputSelectionModel* model = m_model->createtInputSelectionModel();
             auto* inputSelectionView = new InputSelectionView(model);
             model->setParent(inputSelectionView);
@@ -130,7 +130,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
         auto* resetButton = new FlatButton(tr("Reset"));
         resetButton->setToolTip(tr("Reset to default"), tr("Reset all of the configuration values to their default"));
         resetButton->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
-        connect(resetButton, &FlatButton::pressed, this, [this]() { m_model->resetToDefault(); });
+        connect(resetButton, &FlatButton::clicked, this, [this]() { m_model->resetToDefault(); });
         configLayout->addRow(createConfigLabel(tr("Reset to default")), resetButton);
         m_configControls.push_back(resetButton);
 
@@ -179,7 +179,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
         m_outputButton = new FlatButton(tr("Select"), this);
         m_outputButton->setToolTip(tr("Select output directory"), tr("Open a blob explorer to select the directory where the conversion will write the converted 3D model"));
 
-        QObject::connect(m_outputButton, &FlatButton::pressed, this, [this]() {
+        QObject::connect(m_outputButton, &FlatButton::clicked, this, [this]() {
             OutputSelectionModel* model = m_model->createOutputSelectionModel();
             auto* outputSelectionView = new OutputSelectionView(model);
             model->setParent(outputSelectionView);
