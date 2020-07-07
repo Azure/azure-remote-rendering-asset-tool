@@ -7,7 +7,7 @@
 #include <QPointer>
 
 const QString ConversionManager::s_default_input_container = "arrt-sourcemodels";
-const QString ConversionManager::s_default_output_container = "arrt-models";
+const QString ConversionManager::s_default_output_container = "arrt-convertedmodels";
 
 namespace
 {

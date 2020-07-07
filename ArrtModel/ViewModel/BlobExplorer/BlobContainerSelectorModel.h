@@ -28,7 +28,7 @@ public:
     // set the current container by name
     void setCurrentContainer(QString containerName);
 
-    // can navigate to new containers
+    // true when the user can call navigateToNewContainer
     bool canNavigateToNewContainers() const;
 
     // navigate to a new container, or to an existing one, if it's found
@@ -43,12 +43,14 @@ private:
     AzureStorageManager* const m_storageManager;
     QString m_currentContainerName;
 
-    // default container that might or not be there. It will be displayed in the list at the beginning, also when it's not actually there.
+    // default container displayed in the list at the beginning, also when it's not actually there.
     QString m_defaultContainerName;
 
     std::shared_ptr<Cancellable> m_fetcher;
     std::vector<QString> m_fetchedModel;
     bool m_inhibitUpdates = false;
+
+    // true when the user can call navigateToNewContainer
     const bool m_canNavigateToNewContainers;
 
     QString itemString(int index) const;
