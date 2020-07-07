@@ -43,7 +43,7 @@ void BlobContainerSelectorModel::updateModel()
             auto* model = m_availableContainersModel;
             std::vector<QString>& fetchedModel = m_fetchedModel;
             QString currentContainer(m_currentContainerName);
-			// reset the current container, so a call to setCurrentContainer will force the row selection in the UI.
+            // reset the current container, so a call to setCurrentContainer will force the row selection in the UI.
             m_currentContainerName = "";
 
             model->clear();
