@@ -8,9 +8,10 @@
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 #include <ViewModel/BlobExplorer/BlobExplorerModel.h>
 #include <ViewModel/Conversion/InputSelectionModel.h>
-#include <Widgets/FlatButton.h>
+#include <Widgets/ToolbarButton.h>
 #include <Widgets/FormControl.h>
 #include <Widgets/Navigator.h>
+#include <Widgets/ToolbarButton.h>
 
 Q_DECLARE_METATYPE(azure::storage::storage_uri);
 
@@ -18,23 +19,21 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
     : m_model(model)
 {
     auto* l = new QVBoxLayout(this);
-    FlatButton* uploadButton;
-    FlatButton* refreshButton;
-    FlatButton* okButton;
-    FlatButton* cancelButton;
+    ToolbarButton* uploadButton;
+    ToolbarButton* refreshButton;
+    ToolbarButton* okButton;
+    ToolbarButton* cancelButton;
     {
-        uploadButton = new FlatButton(tr("Upload files"));
+        uploadButton = new ToolbarButton(tr("Upload files"), ArrtStyle::s_uploadIcon);
         uploadButton->setToolTip(tr("Upload files"), tr("Select local files and/or directories and upload them to Azure Storage, in the current directory"));
-        uploadButton->setIcon(ArrtStyle::s_uploadIcon, true);
 
-        refreshButton = new FlatButton(tr("Refresh"));
+        refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
         refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
-        refreshButton->setIcon(ArrtStyle::s_refreshIcon, true);
 
-        okButton = new FlatButton(tr("OK"));
+        okButton = new ToolbarButton(tr("OK"));
         okButton->setToolTip(tr("OK"), tr("Select the input model to be converted"));
 
-        cancelButton = new FlatButton(tr("Cancel"));
+        cancelButton = new ToolbarButton(tr("Cancel"));
         cancelButton->setToolTip(tr("Cancel"), tr("Go back to the conversion page without changing the selection"));
 
         QHBoxLayout* buttonLayout = new QHBoxLayout;
@@ -68,16 +67,15 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
     }
 
     connect(m_model, &InputSelectionModel::submitted, this, [this]() { goBack(); });
-    connect(uploadButton, &FlatButton::clicked, this, [this]() { m_explorer->selectFilesToUpload(); });
-    connect(refreshButton, &FlatButton::clicked, this, [this]() { m_model->refresh(); });
-    connect(okButton, &FlatButton::clicked, this, [this]() { m_model->submit(); });
-    connect(cancelButton, &FlatButton::clicked, this, [this]() { goBack(); });
+    connect(uploadButton, &ToolbarButton::clicked, this, [this]() { m_explorer->selectFilesToUpload(); });
+    connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
+    connect(okButton, &ToolbarButton::clicked, this, [this]() { m_model->submit(); });
+    connect(cancelButton, &ToolbarButton::clicked, this, [this]() { goBack(); });
 }
 
 
 void InputSelectionView::goBack()
 {
     Navigator* navigator = Navigator::getNavigator(this);
-    QMetaObject::invokeMethod(
-        navigator, [navigator] { navigator->back(); }, Qt::QueuedConnection);
+    QMetaObject::invokeMethod(navigator, [navigator] { navigator->back(); }, Qt::QueuedConnection);
 }

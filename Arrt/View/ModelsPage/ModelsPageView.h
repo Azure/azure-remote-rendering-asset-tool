@@ -10,7 +10,7 @@ class ModelsPageModel;
 class BlobExplorerView;
 class QStackedLayout;
 class QComboBox;
-class FlatButton;
+class ToolbarButton;
 
 // Main panel used to show the content of a blob storage account (containers and blob hierarchy)
 // and to trigger model loading
@@ -33,7 +33,7 @@ private:
     QLineEdit* m_modelLoading = {};
     QLabel* m_modelLoadingStatus = {};
     QProgressBar* m_progressBar = {};
-    FlatButton* m_loadButton = {};
+    ToolbarButton* m_loadButton = {};
 
     QComboBox* m_inputMode;
     InputMode m_userPreferredSelection = FROM_STORAGE_CONTAINER;

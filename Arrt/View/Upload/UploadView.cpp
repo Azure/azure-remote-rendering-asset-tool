@@ -6,7 +6,7 @@
 #include <View/Upload/UploadView.h>
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 #include <ViewModel/Upload/UploadModel.h>
-#include <Widgets/FlatButton.h>
+#include <Widgets/ToolbarButton.h>
 #include <Widgets/FormControl.h>
 
 UploadView::UploadView(UploadModel* model)
@@ -14,9 +14,9 @@ UploadView::UploadView(UploadModel* model)
 {
     auto* l = new QVBoxLayout(this);
 
-    FlatButton* refreshButton;
+    ToolbarButton* refreshButton;
     {
-        refreshButton = new FlatButton(tr("Refresh"));
+        refreshButton = new ToolbarButton(tr("Refresh"));
         refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
         refreshButton->setIcon(ArrtStyle::s_refreshIcon, true);
 
@@ -41,5 +41,5 @@ UploadView::UploadView(UploadModel* model)
         l->addWidget(fc);
     }
 
-    connect(refreshButton, &FlatButton::clicked, this, [this]() { m_model->refresh(); });
+    connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
 }

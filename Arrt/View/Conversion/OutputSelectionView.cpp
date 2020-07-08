@@ -8,7 +8,7 @@
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 #include <ViewModel/BlobExplorer/BlobExplorerModel.h>
 #include <ViewModel/Conversion/OutputSelectionModel.h>
-#include <Widgets/FlatButton.h>
+#include <Widgets/ToolbarButton.h>
 #include <Widgets/FormControl.h>
 #include <Widgets/Navigator.h>
 
@@ -19,18 +19,17 @@ OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
 {
     auto* l = new QVBoxLayout(this);
 
-    FlatButton* refreshButton;
-    FlatButton* okButton;
-    FlatButton* cancelButton;
+    ToolbarButton* refreshButton;
+    ToolbarButton* okButton;
+    ToolbarButton* cancelButton;
     {
-        refreshButton = new FlatButton(tr("Refresh"));
+        refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
         refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
-        refreshButton->setIcon(ArrtStyle::s_refreshIcon, true);
 
-        okButton = new FlatButton(tr("OK"));
+        okButton = new ToolbarButton(tr("OK"));
         okButton->setToolTip(tr("OK"), tr("Select the output location for the conversion"));
 
-        cancelButton = new FlatButton(tr("Cancel"));
+        cancelButton = new ToolbarButton(tr("Cancel"));
         cancelButton->setToolTip(tr("Cancel"), tr("Go back to the conversion page without changing the output"));
 
         QHBoxLayout* buttonLayout = new QHBoxLayout;
@@ -57,9 +56,9 @@ OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
     }
 
     connect(m_model, &OutputSelectionModel::submitted, this, [this]() { goBack(); });
-    connect(refreshButton, &FlatButton::clicked, this, [this]() { m_model->refresh(); });
-    connect(okButton, &FlatButton::clicked, this, [this]() { m_model->submit(); });
-    connect(cancelButton, &FlatButton::clicked, this, [this]() { goBack(); });
+    connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
+    connect(okButton, &ToolbarButton::clicked, this, [this]() { m_model->submit(); });
+    connect(cancelButton, &ToolbarButton::clicked, this, [this]() { goBack(); });
 }
 
 
