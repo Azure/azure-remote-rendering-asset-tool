@@ -6,25 +6,24 @@
 #include <View/Upload/UploadView.h>
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 #include <ViewModel/Upload/UploadModel.h>
-#include <Widgets/ToolbarButton.h>
 #include <Widgets/FormControl.h>
+#include <Widgets/Toolbar.h>
+#include <Widgets/ToolbarButton.h>
 
 UploadView::UploadView(UploadModel* model)
     : m_model(model)
 {
     auto* l = new QVBoxLayout(this);
+    l->addWidget(ArrtStyle::createHeaderLabel({}, tr("Upload your 3D model (fbx, gltf, glb) to Azure Storage, by dropping files in the blob list or by clicking on \"upload files\"")));
 
-    ToolbarButton* refreshButton;
     {
-        refreshButton = new ToolbarButton(tr("Refresh"));
+        auto* refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
         refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
-        refreshButton->setIcon(ArrtStyle::s_refreshIcon, true);
+        connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
 
-        QHBoxLayout* buttonLayout = new QHBoxLayout;
-        buttonLayout->addWidget(ArrtStyle::createHeaderLabel({}, tr("Upload your 3D model (fbx, gltf, glb) to Azure Storage, by dropping files in the blob list or by clicking on \"upload files\"")), 1);
-        buttonLayout->addWidget(refreshButton);
-
-        l->addLayout(buttonLayout, 0);
+        auto* toolbar = new Toolbar(this);
+        toolbar->addButton(refreshButton);
+        l->addWidget(toolbar);
     }
 
     {
@@ -40,6 +39,4 @@ UploadView::UploadView(UploadModel* model)
         fc->setToolTip(tr("Blob list"), tr("Azure Storage blob container where the input 3D model is located"));
         l->addWidget(fc);
     }
-
-    connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
 }

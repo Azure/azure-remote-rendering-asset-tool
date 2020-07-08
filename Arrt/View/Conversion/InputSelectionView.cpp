@@ -8,9 +8,9 @@
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 #include <ViewModel/BlobExplorer/BlobExplorerModel.h>
 #include <ViewModel/Conversion/InputSelectionModel.h>
-#include <Widgets/ToolbarButton.h>
 #include <Widgets/FormControl.h>
 #include <Widgets/Navigator.h>
+#include <Widgets/Toolbar.h>
 #include <Widgets/ToolbarButton.h>
 
 Q_DECLARE_METATYPE(azure::storage::storage_uri);
@@ -19,37 +19,21 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
     : m_model(model)
 {
     auto* l = new QVBoxLayout(this);
-    ToolbarButton* uploadButton;
-    ToolbarButton* refreshButton;
-    ToolbarButton* okButton;
-    ToolbarButton* cancelButton;
+    l->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the model to convert to .arrAsset format")));
+
     {
-        uploadButton = new ToolbarButton(tr("Upload files"), ArrtStyle::s_uploadIcon);
+        ToolbarButton* uploadButton = new ToolbarButton(tr("Upload files"), ArrtStyle::s_uploadIcon);
         uploadButton->setToolTip(tr("Upload files"), tr("Select local files and/or directories and upload them to Azure Storage, in the current directory"));
+        connect(uploadButton, &ToolbarButton::clicked, this, [this]() { m_explorer->selectFilesToUpload(); });
 
-        refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
+        ToolbarButton* refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
         refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
+        connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
 
-        okButton = new ToolbarButton(tr("OK"));
-        okButton->setToolTip(tr("OK"), tr("Select the input model to be converted"));
-
-        cancelButton = new ToolbarButton(tr("Cancel"));
-        cancelButton->setToolTip(tr("Cancel"), tr("Go back to the conversion page without changing the selection"));
-
-        QHBoxLayout* buttonLayout = new QHBoxLayout;
-        buttonLayout->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the model to convert to .arrAsset format")), 1);
-        buttonLayout->addWidget(uploadButton);
-        buttonLayout->addWidget(refreshButton);
-        buttonLayout->addWidget(okButton);
-        buttonLayout->addWidget(cancelButton);
-
-        l->addLayout(buttonLayout, 0);
-
-        auto updateCanSubmit = [this, okButton]() {
-            okButton->setEnabled(m_model->canSubmit());
-        };
-        connect(m_model, &InputSelectionModel::canSubmitChanged, this, updateCanSubmit);
-        updateCanSubmit();
+        auto* toolbar = new Toolbar(this);
+        toolbar->addButton(uploadButton);
+        toolbar->addButton(refreshButton);
+        l->addWidget(toolbar);
     }
 
     {
@@ -66,16 +50,37 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
         l->addWidget(fc);
     }
 
+    {
+        ToolbarButton* okButton;
+        ToolbarButton* backButton;
+
+        backButton = new ToolbarButton(tr("Back"), ArrtStyle::s_backIcon);
+        backButton->setToolTip(tr("Back"), tr("Go back to the conversion page without changing the selection"));
+        connect(backButton, &ToolbarButton::clicked, this, [this]() { goBack(); });
+
+        okButton = new ToolbarButton(tr("Select Input"));
+        okButton->setToolTip(tr("OK"), tr("Select the input model to be converted"));
+        connect(okButton, &ToolbarButton::clicked, this, [this]() { m_model->submit(); });
+
+        auto* toolbar = new Toolbar(this);
+        toolbar->addButton(backButton);
+        toolbar->addButton(okButton);
+        l->addWidget(toolbar);
+
+        auto updateCanSubmit = [this, okButton]() {
+            okButton->setEnabled(m_model->canSubmit());
+        };
+        connect(m_model, &InputSelectionModel::canSubmitChanged, this, updateCanSubmit);
+        updateCanSubmit();
+    }
+
     connect(m_model, &InputSelectionModel::submitted, this, [this]() { goBack(); });
-    connect(uploadButton, &ToolbarButton::clicked, this, [this]() { m_explorer->selectFilesToUpload(); });
-    connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
-    connect(okButton, &ToolbarButton::clicked, this, [this]() { m_model->submit(); });
-    connect(cancelButton, &ToolbarButton::clicked, this, [this]() { goBack(); });
 }
 
 
 void InputSelectionView::goBack()
 {
     Navigator* navigator = Navigator::getNavigator(this);
-    QMetaObject::invokeMethod(navigator, [navigator] { navigator->back(); }, Qt::QueuedConnection);
+    QMetaObject::invokeMethod(
+        navigator, [navigator] { navigator->back(); }, Qt::QueuedConnection);
 }

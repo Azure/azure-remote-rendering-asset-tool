@@ -78,7 +78,9 @@ BlobExplorerView::BlobExplorerView(BlobExplorerModel* model, ExplorerType explor
             hLayout->addWidget(m_uploadStatusLabel);
 
             auto updateLabelCallback = [this]() {
-                m_uploadStatusLabel->setText(m_model->getUploadStatus());
+                auto newText = m_model->getUploadStatus();
+                m_uploadStatusLabel->setVisible(!newText.isEmpty());
+                m_uploadStatusLabel->setText(newText);
             };
             QObject::connect(m_model, &BlobExplorerModel::uploadStatusChanged, this, updateLabelCallback);
             updateLabelCallback();

@@ -8,9 +8,10 @@
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 #include <ViewModel/BlobExplorer/BlobExplorerModel.h>
 #include <ViewModel/Conversion/OutputSelectionModel.h>
-#include <Widgets/ToolbarButton.h>
 #include <Widgets/FormControl.h>
 #include <Widgets/Navigator.h>
+#include <Widgets/Toolbar.h>
+#include <Widgets/ToolbarButton.h>
 
 Q_DECLARE_METATYPE(azure::storage::storage_uri);
 
@@ -18,27 +19,16 @@ OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
     : m_model(model)
 {
     auto* l = new QVBoxLayout(this);
+    l->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the output container and directory, where the converted 3D model will be stored")));
 
-    ToolbarButton* refreshButton;
-    ToolbarButton* okButton;
-    ToolbarButton* cancelButton;
     {
-        refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
+        auto* refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
         refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
+        connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
 
-        okButton = new ToolbarButton(tr("OK"));
-        okButton->setToolTip(tr("OK"), tr("Select the output location for the conversion"));
-
-        cancelButton = new ToolbarButton(tr("Cancel"));
-        cancelButton->setToolTip(tr("Cancel"), tr("Go back to the conversion page without changing the output"));
-
-        QHBoxLayout* buttonLayout = new QHBoxLayout;
-        buttonLayout->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the output container and directory, where the converted 3D model will be stored")), 1);
-        buttonLayout->addWidget(refreshButton);
-        buttonLayout->addWidget(okButton);
-        buttonLayout->addWidget(cancelButton);
-
-        l->addLayout(buttonLayout, 0);
+        auto* toolbar = new Toolbar(this);
+        toolbar->addButton(refreshButton);
+        l->addWidget(toolbar);
     }
 
     {
@@ -52,13 +42,25 @@ OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
         m_explorer = new BlobExplorerView(m_model->getExplorerModel(), BlobExplorerView::ExplorerType::DirectorySelector, this);
         auto* fc = new FormControl(tr("Output Directory"), m_explorer);
         fc->setToolTip(tr("Output Directory for Conversion"), tr("This is the destination directory where Conversion will write the output files"));
-        l->addWidget(fc);
+        l->addWidget(fc, 1);
+    }
+
+    {
+        auto* backButton = new ToolbarButton(tr("Back"), ArrtStyle::s_backIcon);
+        backButton->setToolTip(tr("Back"), tr("Go back to the conversion page without changing the output"));
+        connect(backButton, &ToolbarButton::clicked, this, [this]() { goBack(); });
+
+        auto* okButton = new ToolbarButton(tr("Select Output"));
+        okButton->setToolTip(tr("Select Output"), tr("Select the output location for the conversion"));
+        connect(okButton, &ToolbarButton::clicked, this, [this]() { m_model->submit(); });
+
+        auto* toolbar = new Toolbar(this);
+        toolbar->addButton(backButton);
+        toolbar->addButton(okButton);
+        l->addWidget(toolbar);
     }
 
     connect(m_model, &OutputSelectionModel::submitted, this, [this]() { goBack(); });
-    connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
-    connect(okButton, &ToolbarButton::clicked, this, [this]() { m_model->submit(); });
-    connect(cancelButton, &ToolbarButton::clicked, this, [this]() { goBack(); });
 }
 
 

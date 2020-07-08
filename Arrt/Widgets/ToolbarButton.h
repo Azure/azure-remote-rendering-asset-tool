@@ -7,5 +7,5 @@ class ToolbarButton : public FlatButton
 {
 public:
     ToolbarButton(const QString& text, QWidget* parent = {});
-	ToolbarButton(const QString& text, const QIcon& icon, QWidget* parent = {});
+    ToolbarButton(const QString& text, const QIcon& icon, QWidget* parent = {});
 };

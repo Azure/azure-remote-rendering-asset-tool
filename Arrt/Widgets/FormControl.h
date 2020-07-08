@@ -24,6 +24,5 @@ public:
 
 private:
     QLabel* m_header;
-    void init();
     void clear();
 };
