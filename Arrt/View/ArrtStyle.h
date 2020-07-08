@@ -84,6 +84,8 @@ public:
     static QIcon s_conversion_succeededIcon;
     static QIcon s_conversion_canceledIcon;
     static QIcon s_conversion_failedIcon;
+    static QIcon s_refreshIcon;
+
 
     virtual void polish(QPalette& pal) override;
     virtual void polish(QApplication* app) override;
