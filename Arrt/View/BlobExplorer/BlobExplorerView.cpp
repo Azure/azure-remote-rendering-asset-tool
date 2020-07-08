@@ -73,11 +73,6 @@ BlobExplorerView::BlobExplorerView(BlobExplorerModel* model, ExplorerType explor
             });
 
             auto hLayout = new QHBoxLayout();
-            auto uploadButton = new FlatButton(tr("Upload files"));
-            uploadButton->setToolTip(tr("Upload files"), tr("Select local files and/or directories and upload them to Azure Storage, in the current directory"));
-            uploadButton->setIcon(ArrtStyle::s_uploadIcon, true);
-            hLayout->addWidget(uploadButton);
-            QObject::connect(uploadButton, &FlatButton::clicked, this, [this]() { selectFilesToUpload(); });
 
             m_uploadStatusLabel = new QLabel(this);
             hLayout->addWidget(m_uploadStatusLabel);

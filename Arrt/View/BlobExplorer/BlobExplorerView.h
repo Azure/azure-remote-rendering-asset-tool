@@ -21,6 +21,9 @@ public:
 
     BlobExplorerView(BlobExplorerModel* model, ExplorerType explorerType, QWidget* parent);
 
+    // opens the uploadDialog to start uploading files
+    void selectFilesToUpload();
+
 private:
     BlobExplorerModel* const m_model;
     QLabel* m_uploadStatusLabel = {};
@@ -29,5 +32,4 @@ private:
 
     // upload all of the files (passed as paths) to the blob storage.
     void uploadToBlobStorage(QStringList filesToUpload);
-    void selectFilesToUpload();
 };
