@@ -89,3 +89,9 @@ void UploadModel::updateButton()
     m_buttonModel->setProgress(uploadProgress != -1, uploadProgress);
     m_buttonModel->setStatusString(m_explorerModel->getUploadStatus());
 }
+
+void UploadModel::refresh()
+{
+    m_containersModel->refresh();
+    m_explorerModel->refresh();
+}

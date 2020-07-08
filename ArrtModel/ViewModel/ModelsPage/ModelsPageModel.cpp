@@ -224,6 +224,13 @@ bool ModelsPageModel::isBlobStorageAvailable() const
     return m_blobStorageAvailable;
 }
 
+void ModelsPageModel::refresh()
+{
+    m_containersModel->refresh();
+    m_explorerModel->refresh();
+}
+
+
 bool ModelsPageModel::canLoad(LoadingMode mode) const
 {
     switch (mode)

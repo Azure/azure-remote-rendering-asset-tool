@@ -63,6 +63,13 @@ BlobExplorerModel* OutputSelectionModel::getExplorerModel() const
     return m_explorerModel;
 }
 
+void OutputSelectionModel::refresh()
+{
+    m_containersModel->refresh();
+    m_explorerModel->refresh();
+}
+
+
 void OutputSelectionModel::submit()
 {
     Q_EMIT submitted();

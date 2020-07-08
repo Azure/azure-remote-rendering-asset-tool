@@ -23,6 +23,9 @@ public:
     BlobContainerSelectorModel* getContainersModel() const;
     BlobExplorerModel* getExplorerModel() const;
 
+    // refresh container list and blob list
+    void refresh();
+
 private:
     AzureStorageManager* const m_storageManager;
     Configuration* const m_configuration;

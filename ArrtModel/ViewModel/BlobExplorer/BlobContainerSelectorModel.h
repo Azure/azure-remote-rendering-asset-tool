@@ -34,6 +34,9 @@ public:
     // navigate to a new container, or to an existing one, if it's found
     void navigateToNewContainer(QString containerName);
 
+    // refresh the list of containers
+    void refresh();
+
 signals:
     // when getCurrentContainer(index) returns a different value
     void currentContainerChanged();
@@ -54,7 +57,4 @@ private:
     const bool m_canNavigateToNewContainers;
 
     QString itemString(int index) const;
-
-    // recompute the list of containers
-    void updateModel();
 };
