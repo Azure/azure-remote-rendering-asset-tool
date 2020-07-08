@@ -86,6 +86,7 @@ public:
     static QIcon s_conversion_canceledIcon;
     static QIcon s_conversion_failedIcon;
     static QIcon s_refreshIcon;
+    static QIcon s_backIcon;
 
 
     virtual void polish(QPalette& pal) override;

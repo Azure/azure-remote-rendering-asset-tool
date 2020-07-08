@@ -92,6 +92,7 @@ QIcon ArrtStyle::s_conversion_succeededIcon;
 QIcon ArrtStyle::s_conversion_canceledIcon;
 QIcon ArrtStyle::s_conversion_failedIcon;
 QIcon ArrtStyle::s_refreshIcon;
+QIcon ArrtStyle::s_backIcon;
 
 ArrtStyle::ArrtStyle()
     : QProxyStyle("Fusion")
@@ -172,6 +173,7 @@ void ArrtStyle::polish(QApplication* app)
     s_conversion_canceledIcon = QIcon(":/ArrtApplication/Icons/conversion_canceled.svg");
     s_conversion_failedIcon = QIcon(":/ArrtApplication/Icons/conversion_failed.svg");
     s_refreshIcon = QIcon(":/ArrtApplication/Icons/refresh.svg");
+    s_backIcon = QIcon(":/ArrtApplication/Icons/back.svg");
 }
 
 void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPainter* p, const QWidget* widget) const
