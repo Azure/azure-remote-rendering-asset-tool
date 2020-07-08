@@ -42,6 +42,7 @@ public:
     static const QFont s_formHeaderFont;
     static const QFont s_notificationFont;
     static const QFont s_mainButtonFont;
+    static const QFont s_toolbarFont;
 
     static QIcon s_expandedIcon;
     static QIcon s_notexpandedIcon;
