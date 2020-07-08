@@ -18,8 +18,40 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
     : m_model(model)
 {
     auto* l = new QVBoxLayout(this);
+    FlatButton* uploadButton;
+    FlatButton* refreshButton;
+    FlatButton* okButton;
+    FlatButton* cancelButton;
+    {
+        uploadButton = new FlatButton(tr("Upload files"));
+        uploadButton->setToolTip(tr("Upload files"), tr("Select local files and/or directories and upload them to Azure Storage, in the current directory"));
+        uploadButton->setIcon(ArrtStyle::s_uploadIcon, true);
 
-    l->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the model to convert to .arrAsset format")));
+        refreshButton = new FlatButton(tr("Refresh"));
+        refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
+        refreshButton->setIcon(ArrtStyle::s_refreshIcon, true);
+
+        okButton = new FlatButton(tr("OK"));
+        okButton->setToolTip(tr("OK"), tr("Select the input model to be converted"));
+
+        cancelButton = new FlatButton(tr("Cancel"));
+        cancelButton->setToolTip(tr("Cancel"), tr("Go back to the conversion page without changing the selection"));
+
+        QHBoxLayout* buttonLayout = new QHBoxLayout;
+        buttonLayout->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the model to convert to .arrAsset format")), 1);
+        buttonLayout->addWidget(uploadButton);
+        buttonLayout->addWidget(refreshButton);
+        buttonLayout->addWidget(okButton);
+        buttonLayout->addWidget(cancelButton);
+
+        l->addLayout(buttonLayout, 0);
+
+        auto updateCanSubmit = [this, okButton]() {
+            okButton->setEnabled(m_model->canSubmit());
+        };
+        connect(m_model, &InputSelectionModel::canSubmitChanged, this, updateCanSubmit);
+        updateCanSubmit();
+    }
 
     {
         auto* cb = new BlobContainerSelector(model->getContainersModel());
@@ -36,26 +68,10 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
     }
 
     connect(m_model, &InputSelectionModel::submitted, this, [this]() { goBack(); });
-
-    {
-        FlatButton* okButton = new FlatButton(tr("OK"));
-        FlatButton* cancelButton = new FlatButton(tr("Cancel"));
-
-        QHBoxLayout* buttonLayout = new QHBoxLayout;
-        buttonLayout->addStretch(1);
-        buttonLayout->addWidget(okButton);
-        buttonLayout->addWidget(cancelButton);
-
-        QObject::connect(okButton, &FlatButton::clicked, this, [this]() { m_model->submit(); });
-        QObject::connect(cancelButton, &FlatButton::clicked, this, [this]() { goBack(); });
-        l->addLayout(buttonLayout, 0);
-
-        auto updateCanSubmit = [this, okButton]() {
-            okButton->setEnabled(m_model->canSubmit());
-        };
-        connect(m_model, &InputSelectionModel::canSubmitChanged, this, updateCanSubmit);
-        updateCanSubmit();
-    }
+    connect(uploadButton, &FlatButton::clicked, this, [this]() { m_explorer->selectFilesToUpload(); });
+    connect(refreshButton, &FlatButton::clicked, this, [this]() { m_model->refresh(); });
+    connect(okButton, &FlatButton::clicked, this, [this]() { m_model->submit(); });
+    connect(cancelButton, &FlatButton::clicked, this, [this]() { goBack(); });
 }
 
 

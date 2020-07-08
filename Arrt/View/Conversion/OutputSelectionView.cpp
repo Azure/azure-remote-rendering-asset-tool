@@ -19,7 +19,28 @@ OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
 {
     auto* l = new QVBoxLayout(this);
 
-    l->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the output container and directory, where the converted 3D model will be stored")));
+    FlatButton* refreshButton;
+    FlatButton* okButton;
+    FlatButton* cancelButton;
+    {
+        refreshButton = new FlatButton(tr("Refresh"));
+        refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
+        refreshButton->setIcon(ArrtStyle::s_refreshIcon, true);
+
+        okButton = new FlatButton(tr("OK"));
+        okButton->setToolTip(tr("OK"), tr("Select the output location for the conversion"));
+
+        cancelButton = new FlatButton(tr("Cancel"));
+        cancelButton->setToolTip(tr("Cancel"), tr("Go back to the conversion page without changing the output"));
+
+        QHBoxLayout* buttonLayout = new QHBoxLayout;
+        buttonLayout->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the output container and directory, where the converted 3D model will be stored")), 1);
+        buttonLayout->addWidget(refreshButton);
+        buttonLayout->addWidget(okButton);
+        buttonLayout->addWidget(cancelButton);
+
+        l->addLayout(buttonLayout, 0);
+    }
 
     {
         auto* cb = new BlobContainerSelector(model->getContainersModel());
@@ -36,20 +57,9 @@ OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
     }
 
     connect(m_model, &OutputSelectionModel::submitted, this, [this]() { goBack(); });
-
-    {
-        FlatButton* okButton = new FlatButton(tr("OK"));
-        FlatButton* cancelButton = new FlatButton(tr("Cancel"));
-
-        QHBoxLayout* buttonLayout = new QHBoxLayout;
-        buttonLayout->addStretch(1);
-        buttonLayout->addWidget(okButton);
-        buttonLayout->addWidget(cancelButton);
-
-        QObject::connect(okButton, &FlatButton::clicked, this, [this]() { m_model->submit(); });
-        QObject::connect(cancelButton, &FlatButton::clicked, this, [this]() { goBack(); });
-        l->addLayout(buttonLayout, 0);
-    }
+    connect(refreshButton, &FlatButton::clicked, this, [this]() { m_model->refresh(); });
+    connect(okButton, &FlatButton::clicked, this, [this]() { m_model->submit(); });
+    connect(cancelButton, &FlatButton::clicked, this, [this]() { goBack(); });
 }
 
 
