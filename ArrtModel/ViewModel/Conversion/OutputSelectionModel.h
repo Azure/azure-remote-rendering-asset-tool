@@ -20,6 +20,9 @@ public:
 
     BlobExplorerModel* getExplorerModel() const;
 
+    // refresh container list and blob list
+    void refresh();
+
     void submit();
 
 Q_SIGNALS:

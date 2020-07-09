@@ -48,6 +48,7 @@ const QFont ArrtStyle::s_sessionTimeFont = QFont("Segoe UI", 10);
 const QFont ArrtStyle::s_formHeaderFont = QFont("Segoe UI", 10);
 const QFont ArrtStyle::s_notificationFont = QFont("Segoe UI", 8);
 const QFont ArrtStyle::s_mainButtonFont = QFont("Segoe UI", 20);
+const QFont ArrtStyle::s_toolbarFont = QFont("Segoe UI", 14);
 
 QIcon ArrtStyle::s_expandedIcon;
 QIcon ArrtStyle::s_notexpandedIcon;
@@ -90,6 +91,8 @@ QIcon ArrtStyle::s_conversion_runningIcon;
 QIcon ArrtStyle::s_conversion_succeededIcon;
 QIcon ArrtStyle::s_conversion_canceledIcon;
 QIcon ArrtStyle::s_conversion_failedIcon;
+QIcon ArrtStyle::s_refreshIcon;
+QIcon ArrtStyle::s_backIcon;
 
 ArrtStyle::ArrtStyle()
     : QProxyStyle("Fusion")
@@ -169,6 +172,8 @@ void ArrtStyle::polish(QApplication* app)
     s_conversion_succeededIcon = QIcon(":/ArrtApplication/Icons/conversion_succeeded.svg");
     s_conversion_canceledIcon = QIcon(":/ArrtApplication/Icons/conversion_canceled.svg");
     s_conversion_failedIcon = QIcon(":/ArrtApplication/Icons/conversion_failed.svg");
+    s_refreshIcon = QIcon(":/ArrtApplication/Icons/refresh.svg");
+    s_backIcon = QIcon(":/ArrtApplication/Icons/back.svg");
 }
 
 void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPainter* p, const QWidget* widget) const
@@ -177,6 +182,8 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
     {
         if (const QStyleOptionToolButton* toolbutton = qstyleoption_cast<const QStyleOptionToolButton*>(opt))
         {
+            const int spaceBetweenIconAndText = 4;
+
             // only fixes the alignment when the button has an icon+text and no arrow.
             // This code is a modified version of qfusionstyle.cpp
 
@@ -186,11 +193,11 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
             {
                 QRect rect = toolbutton->rect;
                 int shiftX = 0;
-                int shiftY = 0;
+                int shiftY = 2;
                 if (toolbutton->state & (State_Sunken | State_On))
                 {
                     shiftX = proxy()->pixelMetric(PM_ButtonShiftHorizontal, toolbutton, widget);
-                    shiftY = proxy()->pixelMetric(PM_ButtonShiftVertical, toolbutton, widget);
+                    shiftY += proxy()->pixelMetric(PM_ButtonShiftVertical, toolbutton, widget);
                 }
 
                 QPixmap pm;
@@ -204,8 +211,7 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                     mode = QIcon::Active;
                 else
                     mode = QIcon::Normal;
-                pm = toolbutton->icon.pixmap(qt_getWindow(widget), toolbutton->rect.size().boundedTo(toolbutton->iconSize),
-                                             mode, state);
+                pm = toolbutton->icon.pixmap(qt_getWindow(widget), toolbutton->rect.size().boundedTo(toolbutton->iconSize), mode, state);
                 pmSize = pm.size() / pm.devicePixelRatio();
 
                 shiftX += pmSize.width() / 3;
@@ -227,11 +233,11 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                 }
                 else
                 {
-                    pr.setWidth(pmSize.width() + 4); //### 4 is currently hardcoded in QToolButton::sizeHint()
-                    tr.adjust(pr.width(), 0, 0, 0);
+                    pr.setWidth(pmSize.width() + 2);
+                    tr.adjust(pr.width() + spaceBetweenIconAndText, 0, 0, 0);
                     pr.translate(shiftX, shiftY);
                     proxy()->drawItemPixmap(p, QStyle::visualRect(opt->direction, rect, pr), Qt::AlignCenter, pm);
-                    alignment |= Qt::AlignLeft | Qt::AlignVCenter;
+                    alignment |= Qt::AlignLeft | Qt::AlignBaseline;
                 }
                 tr.translate(shiftX, shiftY);
                 const QString text = toolbutton->text; //not eliding

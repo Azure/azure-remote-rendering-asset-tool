@@ -42,5 +42,7 @@
         <file>Icons/session_starting.svg</file>
         <file>Icons/session_stop_requested.svg</file>
         <file>Icons/session_stopped.svg</file>
+        <file>Icons/refresh.svg</file>
+        <file>Icons/back.svg</file>
     </qresource>
 </RCC>

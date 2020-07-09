@@ -11,8 +11,9 @@
 #include <ViewModel/BlobExplorer/BlobContainerSelectorModel.h>
 #include <ViewModel/BlobExplorer/BlobsListModel.h>
 #include <ViewModel/ModelsPage/ModelsPageModel.h>
-#include <Widgets/FlatButton.h>
 #include <Widgets/FormControl.h>
+#include <Widgets/Toolbar.h>
+#include <Widgets/ToolbarButton.h>
 
 Q_DECLARE_METATYPE(ModelsPageView::InputMode);
 
@@ -21,8 +22,22 @@ ModelsPageView::ModelsPageView(ModelsPageModel* modelsPageModel)
     , m_explorer(new BlobExplorerView(modelsPageModel->getExplorerModel(), BlobExplorerView::ExplorerType::ModelSelector, this))
 {
     auto* mainLayout = new QVBoxLayout(this);
-
     mainLayout->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select model to load for rendering")));
+
+    {
+        auto* uploadButton = new ToolbarButton(tr("Upload files"), ArrtStyle::s_uploadIcon);
+        uploadButton->setToolTip(tr("Upload files"), tr("Select local files and/or directories and upload them to Azure Storage, in the current directory"));
+        connect(uploadButton, &ToolbarButton::clicked, this, [this]() { m_explorer->selectFilesToUpload(); });
+
+        auto* refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
+        refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
+        connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
+
+        auto* toolbar = new Toolbar(this);
+        toolbar->addButton(uploadButton);
+        toolbar->addButton(refreshButton);
+        mainLayout->addWidget(toolbar);
+    }
 
     auto onBlobStorageAvailableFunc = [this]() {
         QStandardItemModel* model = qobject_cast<QStandardItemModel*>(m_inputMode->model());
@@ -110,6 +125,12 @@ ModelsPageView::ModelsPageView(ModelsPageModel* modelsPageModel)
     {
         auto* h = new QHBoxLayout();
 
+        m_loadButton = new ToolbarButton(tr("Load"));
+        m_loadButton->setToolTip(tr("Load model"), tr("Load the selected 3D model"));
+        connect(m_loadButton, &ToolbarButton::clicked, this, [this]() {
+            m_model->load(getInputMode() == FROM_STORAGE_CONTAINER ? ModelsPageModel::FromExplorer : ModelsPageModel::FromSasUri);
+        });
+
         m_modelLoading = new QLineEdit(this);
         m_modelLoading->setReadOnly(true);
         m_progressBar = new QProgressBar(this);
@@ -118,17 +139,11 @@ ModelsPageView::ModelsPageView(ModelsPageModel* modelsPageModel)
         m_modelLoadingStatus = new QLabel(this);
         m_modelLoadingStatus->setFixedWidth(130);
 
-        m_loadButton = new FlatButton(tr("Load"));
-        m_loadButton->setToolTip(tr("Load model"), tr("Load the selected 3D model"));
-        connect(m_loadButton, &FlatButton::clicked, this, [this]() {
-            m_model->load(getInputMode() == FROM_STORAGE_CONTAINER ? ModelsPageModel::FromExplorer : ModelsPageModel::FromSasUri);
-        });
-
+        h->addWidget(new FormControl({}, m_loadButton));
         h->addWidget(m_modelLoading, 50);
         h->addWidget(m_progressBar, 50);
         h->addWidget(m_modelLoadingStatus, 0);
         h->addStretch(1);
-        h->addWidget(m_loadButton, 0);
 
         mainLayout->addLayout(h, 0);
     }

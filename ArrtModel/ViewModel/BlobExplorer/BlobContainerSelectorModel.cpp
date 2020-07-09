@@ -13,10 +13,10 @@ BlobContainerSelectorModel::BlobContainerSelectorModel(AzureStorageManager* stor
     connect(m_storageManager, &AzureStorageManager::onStatusChanged, this, [this]() {
         if (m_storageManager->getStatus() == AccountConnectionStatus::Connected)
         {
-            updateModel();
+            refresh();
         }
     });
-    updateModel();
+    refresh();
 }
 
 BlobContainerSelectorModel::~BlobContainerSelectorModel()
@@ -27,7 +27,7 @@ BlobContainerSelectorModel::~BlobContainerSelectorModel()
     }
 }
 
-void BlobContainerSelectorModel::updateModel()
+void BlobContainerSelectorModel::refresh()
 {
     if (m_fetcher)
     {
@@ -130,7 +130,7 @@ void BlobContainerSelectorModel::navigateToNewContainer(QString containerName)
     if (m_canNavigateToNewContainers)
     {
         setCurrentContainer(containerName);
-        updateModel();
+        refresh();
     }
 }
 

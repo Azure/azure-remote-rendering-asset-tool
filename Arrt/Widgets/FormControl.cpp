@@ -3,17 +3,15 @@
 #include <Widgets/FormControl.h>
 
 FormControl::FormControl(const QString& header, QWidget* control, QWidget* parent)
-    : QWidget(parent)
+    : FormControl(parent)
 {
-    init();
     setHeader(header);
     setWidget(control);
 }
 
 FormControl::FormControl(const QString& header, QLayout* l, QWidget* parent)
-    : QWidget(parent)
+    : FormControl(parent)
 {
-    init();
     setHeader(header);
     setLayout(l);
 }
@@ -21,17 +19,13 @@ FormControl::FormControl(const QString& header, QLayout* l, QWidget* parent)
 FormControl::FormControl(QWidget* parent)
     : QWidget(parent)
 {
-    init();
-}
-
-void FormControl::init()
-{
     m_header = new QLabel();
 
     m_header->setFont(ArrtStyle::s_formHeaderFont);
     QPalette p = m_header->palette();
     p.setColor(QPalette::WindowText, ArrtStyle::s_underTextColor);
     m_header->setPalette(p);
+    m_header->setVisible(false);
 
     auto* l = new QVBoxLayout(this);
 
@@ -50,6 +44,7 @@ QString FormControl::getHeader() const
 
 void FormControl::setHeader(const QString& header)
 {
+    m_header->setVisible(!header.isEmpty());
     m_header->setText(header);
     m_header->setToolTip(header);
     setAccessibleName(header);

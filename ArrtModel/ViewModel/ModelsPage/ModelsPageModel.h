@@ -41,6 +41,9 @@ public:
     bool isEnabled() const;
     bool isBlobStorageAvailable() const;
 
+    // refresh container list and blob list
+    void refresh();
+
     // true when load can be invoked
     bool canLoad(LoadingMode mode) const;
     // start loading the selected model

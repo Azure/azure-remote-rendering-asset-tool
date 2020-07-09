@@ -42,6 +42,7 @@ public:
     static const QFont s_formHeaderFont;
     static const QFont s_notificationFont;
     static const QFont s_mainButtonFont;
+    static const QFont s_toolbarFont;
 
     static QIcon s_expandedIcon;
     static QIcon s_notexpandedIcon;
@@ -84,6 +85,9 @@ public:
     static QIcon s_conversion_succeededIcon;
     static QIcon s_conversion_canceledIcon;
     static QIcon s_conversion_failedIcon;
+    static QIcon s_refreshIcon;
+    static QIcon s_backIcon;
+
 
     virtual void polish(QPalette& pal) override;
     virtual void polish(QApplication* app) override;

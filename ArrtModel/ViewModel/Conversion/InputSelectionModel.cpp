@@ -76,6 +76,12 @@ BlobExplorerModel* InputSelectionModel::getExplorerModel() const
     return m_explorerModel;
 }
 
+void InputSelectionModel::refresh()
+{
+    m_containersModel->refresh();
+    m_explorerModel->refresh();
+}
+
 bool InputSelectionModel::canSubmit() const
 {
     return m_canSubmit;

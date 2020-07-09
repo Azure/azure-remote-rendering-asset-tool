@@ -245,3 +245,8 @@ void BlobExplorerModel::fileCountChanged(int remainingFiles, bool errorWhenUploa
         Q_EMIT uploadFinished(!errorWhenUploadingFiles);
     }
 }
+
+void BlobExplorerModel::refresh()
+{
+    getBlobsModel()->refresh();
+}

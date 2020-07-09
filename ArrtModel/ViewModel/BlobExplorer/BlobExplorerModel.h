@@ -57,6 +57,9 @@ public:
     // return the upload progress. -1 if no upload is in progress
     int getUploadProgress() const;
 
+    // refresh the container list and the blob list
+    void refresh();
+
 Q_SIGNALS:
     void directoryChanged();
     void submitted();
