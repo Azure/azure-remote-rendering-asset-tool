@@ -17,11 +17,16 @@ UploadView::UploadView(UploadModel* model)
     l->addWidget(ArrtStyle::createHeaderLabel({}, tr("Upload your 3D model (fbx, gltf, glb) to Azure Storage, by dropping files in the blob list or by clicking on \"upload files\"")));
 
     {
+        auto* uploadButton = new ToolbarButton(tr("Upload files"), ArrtStyle::s_uploadIcon);
+        uploadButton->setToolTip(tr("Upload files"), tr("Select local files and/or directories and upload them to Azure Storage, in the current directory"));
+        connect(uploadButton, &ToolbarButton::clicked, this, [this]() { m_explorer->selectFilesToUpload(); });
+
         auto* refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
         refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
         connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
 
         auto* toolbar = new Toolbar(this);
+        toolbar->addButton(uploadButton);
         toolbar->addButton(refreshButton);
         l->addWidget(toolbar);
     }

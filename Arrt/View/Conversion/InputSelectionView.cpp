@@ -22,15 +22,20 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
     l->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the model to convert to .arrAsset format")));
 
     {
-        ToolbarButton* uploadButton = new ToolbarButton(tr("Upload files"), ArrtStyle::s_uploadIcon);
+        auto* backButton = new ToolbarButton(tr("Back"), ArrtStyle::s_backIcon);
+        backButton->setToolTip(tr("Back"), tr("Go back to the conversion page without changing the selection"));
+        connect(backButton, &ToolbarButton::clicked, this, [this]() { goBack(); });
+
+        auto* uploadButton = new ToolbarButton(tr("Upload files"), ArrtStyle::s_uploadIcon);
         uploadButton->setToolTip(tr("Upload files"), tr("Select local files and/or directories and upload them to Azure Storage, in the current directory"));
         connect(uploadButton, &ToolbarButton::clicked, this, [this]() { m_explorer->selectFilesToUpload(); });
 
-        ToolbarButton* refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
+        auto* refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
         refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
         connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
 
         auto* toolbar = new Toolbar(this);
+        toolbar->addButton(backButton);
         toolbar->addButton(uploadButton);
         toolbar->addButton(refreshButton);
         l->addWidget(toolbar);
@@ -51,19 +56,11 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
     }
 
     {
-        ToolbarButton* okButton;
-        ToolbarButton* backButton;
-
-        backButton = new ToolbarButton(tr("Back"), ArrtStyle::s_backIcon);
-        backButton->setToolTip(tr("Back"), tr("Go back to the conversion page without changing the selection"));
-        connect(backButton, &ToolbarButton::clicked, this, [this]() { goBack(); });
-
-        okButton = new ToolbarButton(tr("Select Input"));
-        okButton->setToolTip(tr("OK"), tr("Select the input model to be converted"));
+        auto* okButton = new ToolbarButton(tr("Select Input"));
+        okButton->setToolTip(tr("Select Input"), tr("Select the input model to be converted"));
         connect(okButton, &ToolbarButton::clicked, this, [this]() { m_model->submit(); });
 
         auto* toolbar = new Toolbar(this);
-        toolbar->addButton(backButton);
         toolbar->addButton(okButton);
         l->addWidget(toolbar);
 

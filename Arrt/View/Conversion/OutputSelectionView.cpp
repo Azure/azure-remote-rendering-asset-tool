@@ -22,11 +22,16 @@ OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
     l->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the output container and directory, where the converted 3D model will be stored")));
 
     {
+        auto* backButton = new ToolbarButton(tr("Back"), ArrtStyle::s_backIcon);
+        backButton->setToolTip(tr("Back"), tr("Go back to the conversion page without changing the output"));
+        connect(backButton, &ToolbarButton::clicked, this, [this]() { goBack(); });
+
         auto* refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
         refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
         connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
 
         auto* toolbar = new Toolbar(this);
+        toolbar->addButton(backButton);
         toolbar->addButton(refreshButton);
         l->addWidget(toolbar);
     }
@@ -46,16 +51,11 @@ OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
     }
 
     {
-        auto* backButton = new ToolbarButton(tr("Back"), ArrtStyle::s_backIcon);
-        backButton->setToolTip(tr("Back"), tr("Go back to the conversion page without changing the output"));
-        connect(backButton, &ToolbarButton::clicked, this, [this]() { goBack(); });
-
         auto* okButton = new ToolbarButton(tr("Select Output"));
         okButton->setToolTip(tr("Select Output"), tr("Select the output location for the conversion"));
         connect(okButton, &ToolbarButton::clicked, this, [this]() { m_model->submit(); });
 
         auto* toolbar = new Toolbar(this);
-        toolbar->addButton(backButton);
         toolbar->addButton(okButton);
         l->addWidget(toolbar);
     }
