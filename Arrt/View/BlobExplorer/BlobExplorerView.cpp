@@ -9,6 +9,7 @@
 #include <ViewModel/BlobExplorer/BlobsListModel.h>
 #include <Widgets/FileDialogMultiSelection.h>
 #include <Widgets/FlatButton.h>
+#include <Widgets/FocusableContainer.h>
 #include <Widgets/FormControl.h>
 
 BlobExplorerView::BlobExplorerView(BlobExplorerModel* model, ExplorerType explorerType, QWidget* parent)
@@ -61,9 +62,9 @@ BlobExplorerView::BlobExplorerView(BlobExplorerModel* model, ExplorerType explor
     l->addLayout(topLayout, 0);
 
     {
-        auto* blobListView = new BlobListView(m_model->getBlobsModel(), this);
+        auto* blobListView = new BlobListView(m_model->getBlobsModel());
 
-        l->addWidget(blobListView, 1);
+        l->addWidget(new FocusableContainer(blobListView, this), 1);
 
         if (m_model->allowsUpload())
         {

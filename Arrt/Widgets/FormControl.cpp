@@ -1,5 +1,3 @@
-#include <QApplication>
-#include <QPointer>
 #include <QStylePainter>
 #include <QVBoxLayout>
 #include <View/ArrtStyle.h>
@@ -110,78 +108,4 @@ void FormControl::clear()
     {
         delete l; //is that correct?
     }
-}
-
-void FormControl::setHighlight(bool highlight)
-{
-    if (highlight != m_highlighted)
-    {
-        m_highlighted = highlight;
-        update();
-    }
-}
-
-class FormControlFocusListener : public QObject
-{
-public:
-    typedef std::function<void(FormControl* formControl, bool highlight)> Callback;
-
-    FormControlFocusListener(QApplication* application, Callback callback)
-        : QObject(application)
-        , m_callback(std::move(callback))
-    {
-        connect(application, &QApplication::focusChanged, this, [this](QWidget* /*old*/, QWidget* now) {
-            FormControl* newFocusedControl = {};
-            if (now)
-            {
-                auto* w = now;
-                while (w != nullptr)
-                {
-                    if (newFocusedControl = qobject_cast<FormControl*>(w))
-                    {
-                        break;
-                    }
-                    w = w->parentWidget();
-                }
-            }
-            if (newFocusedControl != m_focusedFormControl)
-            {
-                if (m_focusedFormControl)
-                {
-                    m_callback(m_focusedFormControl, false);
-                }
-                m_focusedFormControl = newFocusedControl;
-                if (m_focusedFormControl)
-                {
-                    m_callback(m_focusedFormControl, true);
-                }
-            }
-        });
-    }
-
-private:
-    QPointer<FormControl> m_focusedFormControl;
-    Callback m_callback;
-};
-
-QObject* FormControl::installFocusListener(QApplication* application)
-{
-    auto onHighlighChanged = [](FormControl* formControl, bool highlight) {
-        if (formControl)
-        {
-            formControl->setHighlight(highlight);
-        }
-    };
-
-    return new FormControlFocusListener(application, std::move(onHighlighChanged));
-}
-
-void FormControl::paintEvent(QPaintEvent* e)
-{
-    if (m_highlighted)
-    {
-        QStylePainter p(this);
-        p.fillRect(rect(), ArrtStyle::s_formControlFocusedColor);
-    }
-    QWidget::paintEvent(e);
 }

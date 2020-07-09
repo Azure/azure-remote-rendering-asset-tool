@@ -30,12 +30,13 @@ BoundFloatSlider::BoundFloatSlider(FloatSliderModel* model, QWidget* parent)
         m_spinBox->updateFromModel();
     });
 
-	// the connection is queued, so we make sure that the model update for BoundFloatSpinBox is done before updating the slider from the model
-    QObject::connect(m_spinBox, static_cast<void (BoundFloatSpinBox::*)(double)>(&BoundFloatSpinBox::valueChanged), this,
-                     [this](double) {
-                         updateFromModel();
-                     },
-                     Qt::ConnectionType::QueuedConnection);
+    // the connection is queued, so we make sure that the model update for BoundFloatSpinBox is done before updating the slider from the model
+    QObject::connect(
+        m_spinBox, static_cast<void (BoundFloatSpinBox::*)(double)>(&BoundFloatSpinBox::valueChanged), this,
+        [this](double) {
+            updateFromModel();
+        },
+        Qt::ConnectionType::QueuedConnection);
 }
 
 const ParameterModel* BoundFloatSlider::getModel() const

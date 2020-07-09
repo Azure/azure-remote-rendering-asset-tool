@@ -106,8 +106,8 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
             {
                 //find the widget to give focus to
                 QWidget* w = m_settingsView;
-                while(w->isVisible() && w->isEnabled() && (w->focusPolicy() & Qt::FocusPolicy::TabFocus))
-				{
+                while (w->isVisible() && w->isEnabled() && (w->focusPolicy() & Qt::FocusPolicy::TabFocus))
+                {
                     w = w->nextInFocusChain();
                 }
                 w->setFocus();

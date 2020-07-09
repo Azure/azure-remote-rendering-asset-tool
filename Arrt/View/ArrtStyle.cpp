@@ -6,7 +6,7 @@
 #include <QToolTip>
 #include <QWidget>
 #include <View/ArrtStyle.h>
-#include <Widgets/FormControl.h>
+#include <Widgets/FocusableContainer.h>
 
 namespace
 {
@@ -177,7 +177,7 @@ void ArrtStyle::polish(QApplication* app)
     s_refreshIcon = QIcon(":/ArrtApplication/Icons/refresh.svg");
     s_backIcon = QIcon(":/ArrtApplication/Icons/back.svg");
 
-    FormControl::installFocusListener(app);
+    FocusableContainer::installFocusListener(app);
 }
 
 void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPainter* p, const QWidget* widget) const

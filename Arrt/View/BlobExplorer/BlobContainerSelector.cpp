@@ -19,7 +19,6 @@ BlobContainerSelector::BlobContainerSelector(BlobContainerSelectorModel* model, 
     l->addWidget(m_selector, 1);
     if (m_model->canNavigateToNewContainers())
     {
-        
         m_lineEdit = new LineEditReturnOnFocusLost(this);
 
         l->addWidget(m_lineEdit, 1);

@@ -22,15 +22,7 @@ public:
     using QWidget::setToolTip;
     void setToolTip(const QString& title, const QString& details);
 
-	// used to 
-	static QObject* installFocusListener(QApplication* application);
-
-	virtual void paintEvent(QPaintEvent* e) override;
-
 private:
     QLabel* m_header;
-    bool m_highlighted = false;
     void clear();
-
-	void setHighlight(bool highlight);	
 };
