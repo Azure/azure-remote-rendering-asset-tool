@@ -21,7 +21,9 @@ namespace
     }
 
     // interval to check the status (elapsed time, connection status etc)
-    const std::chrono::milliseconds s_updateTime = 5s;
+    const std::chrono::milliseconds s_updateTime = 10s;
+    // interval to check the status (elapsed time, connection status etc) when the session is connected
+    const std::chrono::milliseconds s_updateTimeWhenConnected = 30s;
     // interval to call the update function in the remote rendering client. See Microsoft::Azure::RemoteRendering::Internal::RemoteRenderingClient::Update()
     const std::chrono::milliseconds s_updateClientTime = 100ms;
     // timeout for connecting to the azure session, once it's ready
@@ -133,17 +135,17 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
     m_extendAutomatically = m_configuration->getUiState("sessionManager:extendAutomatically", true);
 
     m_updateTimer = new QTimer(this);
+    m_updateTimer->setInterval(s_updateTime);
     QObject::connect(m_updateTimer, &QTimer::timeout, this, [this]() { updateStatus(); });
-    m_updateTimer->start(s_updateTime);
 
     m_clientUpdateTimer = new QTimer(this);
+    m_clientUpdateTimer->setInterval(s_updateClientTime);
     QObject::connect(m_clientUpdateTimer, &QTimer::timeout, this, [this]() {
         if (m_api)
         {
             m_api->Update();
         }
     });
-    m_clientUpdateTimer->start(s_updateClientTime);
 
     QObject::connect(configuration->getVideoSettings(), &VideoSettings::changed, this, [this]() {
         m_waitForVideoFormatChange = false;
@@ -663,6 +665,8 @@ void ArrSessionManager::onStatusUpdated()
         setLoadedModel({});
     }
 
+    updateTimers();
+
     Q_EMIT changed();
 }
 
@@ -707,6 +711,55 @@ void ArrSessionManager::initializeSession()
         else
         {
             qWarning(LoggingCategory::configuration) << tr("Failed to set connection statu changed callback:") << token.error();
+        }
+    }
+}
+
+void ArrSessionManager::updateTimers()
+{
+    enum UpdateType
+    {
+        // no update needed. The session is not active
+        STOPPED,
+        // the session is in a temporary state. Update with higher frequency
+        FAST_UPDATE,
+        // the session is connected and in a stable state. Update with a slower frequency
+        SLOW_UPDATE
+    };
+    UpdateType oldUpdateType;
+    if (!m_updateTimer->isActive())
+    {
+        oldUpdateType = STOPPED;
+    }
+    else
+    {
+        oldUpdateType = m_updateTimer->interval() == s_updateTime.count() ? FAST_UPDATE : SLOW_UPDATE;
+    }
+
+    UpdateType updateType = STOPPED;
+    if (getSessionStatus().isRunning())
+    {
+        updateType = getSessionStatus().m_status == SessionStatus::Status::ReadyConnected ? SLOW_UPDATE : FAST_UPDATE;
+    }
+
+    if (updateType != oldUpdateType)
+    {
+        switch (updateType)
+        {
+            case STOPPED:
+                m_updateTimer->stop();
+                m_clientUpdateTimer->stop();
+                break;
+            case FAST_UPDATE:
+                m_updateTimer->setInterval(s_updateTime);
+                m_updateTimer->start();
+                m_clientUpdateTimer->start();
+                break;
+            case SLOW_UPDATE:
+                m_updateTimer->setInterval(s_updateTimeWhenConnected);
+                m_updateTimer->start();
+                m_clientUpdateTimer->start();
+                break;
         }
     }
 }
