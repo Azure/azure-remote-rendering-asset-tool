@@ -12,6 +12,7 @@
 #include <ViewModel/Conversion/ConversionPageModel.h>
 #include <ViewModel/Conversion/CurrentConversionsModel.h>
 #include <Widgets/FlatButton.h>
+#include <Widgets/FocusableContainer.h>
 
 Q_DECLARE_METATYPE(Conversion::Status);
 
@@ -112,7 +113,7 @@ ConversionPageView::ConversionPageView(ConversionPageModel* model, QWidget* pare
 {
     {
         auto* listPanel = new QWidget(this);
-        auto* conversionList = new QListView(listPanel);
+        auto* conversionList = new QListView();
         conversionList->setItemDelegate(new ConversionListDelegate(m_model->getCurrentConversionsModel(), conversionList));
 
         auto* listLayout = new QVBoxLayout(listPanel);
@@ -136,7 +137,7 @@ ConversionPageView::ConversionPageView(ConversionPageModel* model, QWidget* pare
 
         listLayout->addWidget(m_description, 0);
         listLayout->addLayout(toolbarLayout, 0);
-        listLayout->addWidget(conversionList, 1);
+        listLayout->addWidget(new FocusableContainer(conversionList, listPanel), 1);
 
         auto updateLabelVisbiilty = [this]() {
             m_description->setVisible(m_model->getCurrentConversionsModel()->rowCount() == 0);

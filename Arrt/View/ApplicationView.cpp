@@ -46,7 +46,6 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
     }
 
     auto settingsModel = m_model->getSettingsModel();
-    m_settingsView = new SettingsView(settingsModel, this);
 
     // Setup of top level navigator
     NotificationButtonView* settingsButton;
@@ -99,10 +98,22 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         settingsButton->setIcon(ArrtStyle::s_settingsIcon);
         settingsButton->setIconSize(QSize(DpiUtils::size(30), DpiUtils::size(30)));
 
+        m_settingsView = new SettingsView(settingsModel, this);
         m_settingsView->setVisible(false);
         connect(settingsButton, &FlatButton::toggled, this, [this](bool checked) {
             m_settingsView->setVisible(checked);
+            if (checked)
+            {
+                //find the widget to give focus to
+                QWidget* w = m_settingsView;
+                while (w->isVisible() && w->isEnabled() && (w->focusPolicy() & Qt::FocusPolicy::TabFocus))
+                {
+                    w = w->nextInFocusChain();
+                }
+                w->setFocus();
+            }
         });
+
 
         // if the ARR account is not set up, start with the settings panel visible
         auto arrStatus = settingsModel->getArrAccountSettingsModel()->getStatus();

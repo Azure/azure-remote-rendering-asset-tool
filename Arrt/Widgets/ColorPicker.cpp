@@ -59,13 +59,16 @@ void ColorDialog::setMultiplier(double multiplier)
 }
 
 ColorPicker::ColorPicker(QWidget* parent)
-    : QWidget(parent)
+    : QToolButton(parent)
 {
+    setFixedHeight(fontMetrics().height());
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+
     setContentsMargins(0, 0, 0, 0);
-    setMinimumHeight(20);
-    setMinimumWidth(20);
 
     setCursor(Qt::PointingHandCursor);
+
+    connect(this, &QToolButton::clicked, [this]() { performPickValue(); });
 }
 
 void ColorPicker::setColorGammaSpace(const QColor& color)
@@ -191,19 +194,17 @@ static void drawCheckerboardPattern(QPainter& painter, const QRect& rect)
 }
 
 
-void ColorPicker::paintEvent(QPaintEvent* /*e*/)
+void ColorPicker::paintEvent(QPaintEvent*)
 {
     QColor c = m_color;
-    QRect rect = geometry();
-    rect.moveTopLeft(QPoint(0, 0));
-    rect.setBottomRight(rect.bottomRight() - QPoint(1, 1));
+    QRect r = rect().adjusted(0, 0, -1, -1);
     QStylePainter p(this);
 
     if (m_useAlpha)
     {
         // when alpha is needed, first render a checkerboard background pattern
         p.setCompositionMode(QPainter::CompositionMode_Source);
-        drawCheckerboardPattern(p, rect);
+        drawCheckerboardPattern(p, r);
     }
     else
     {
@@ -214,8 +215,7 @@ void ColorPicker::paintEvent(QPaintEvent* /*e*/)
     p.setCompositionMode(QPainter::CompositionMode_SourceOver);
     p.setPen(Qt::NoPen);
     p.setBrush(c);
-    p.drawRect(rect);
-
+    p.drawRect(r);
 
     // if alpha is enabled, render the same thing a second time over half the rectangle, this time without alpha
     // to make sure even at low alpha values, the user can figure out the general color
@@ -223,35 +223,12 @@ void ColorPicker::paintEvent(QPaintEvent* /*e*/)
     {
         c.setAlpha(255);
         p.setBrush(c);
-        rect.adjust(0, 0, 0, -rect.height() / 2);
-        p.drawRect(rect);
+        p.drawRect(r.adjusted(0, 0, 0, -r.height() / 2));
     }
 
-    p.setPen(Qt::black);
+    p.setPen(hasFocus() ? palette().highlight().color() : palette().windowText().color());
     p.setBrush(Qt::NoBrush);
-    p.drawRect(rect);
-}
-
-
-void ColorPicker::mousePressEvent(QMouseEvent* e)
-{
-    if (e->button() == Qt::LeftButton && contentsRect().contains(e->localPos().toPoint()))
-    {
-        m_pressed = true;
-        e->accept();
-    }
-}
-
-void ColorPicker::mouseReleaseEvent(QMouseEvent* e)
-{
-    if (m_pressed && e->button() == Qt::LeftButton)
-    {
-        m_pressed = false;
-        if (contentsRect().contains(e->localPos().toPoint()))
-        {
-            performPickValue();
-        }
-    }
+    p.drawRect(r);
 }
 
 void ColorPicker::ensureItIsEditing()

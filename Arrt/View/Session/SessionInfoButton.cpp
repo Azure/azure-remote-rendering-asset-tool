@@ -44,7 +44,7 @@ void SessionInfoButton::paintEvent(QPaintEvent*)
         // draw background like a button
         QStyleOptionToolButton opt;
         initStyleOption(&opt);
-        if (opt.state & (QStyle::State_Sunken | QStyle::State_MouseOver))
+        if (opt.state & (QStyle::State_HasFocus | QStyle::State_Sunken | QStyle::State_MouseOver))
         {
             QRect r = rect();
             QColor rectColor = ArrtStyle::s_buttonUncheckedColor;
@@ -59,8 +59,15 @@ void SessionInfoButton::paintEvent(QPaintEvent*)
             {
                 rectColor = rectColor.lighter(120);
             }
-
-            p.setPen(Qt::NoPen);
+            if (opt.state.testFlag(QStyle::State_HasFocus))
+            {
+                rectColor = rectColor.lighter(120);
+                p.setPen(opt.palette.highlight().color());
+            }
+            else
+            {
+                p.setPen(Qt::NoPen);
+            }
             p.setBrush(rectColor);
             p.drawRoundedRect(r.adjusted(1, 1, -1, -1), 8.0, 8.0);
         }

@@ -19,14 +19,15 @@ BlobContainerSelector::BlobContainerSelector(BlobContainerSelectorModel* model, 
     l->addWidget(m_selector, 1);
     if (m_model->canNavigateToNewContainers())
     {
-        m_addButton = new FlatButton("", this);
-        m_addButton->setIcon(ArrtStyle::s_newIcon);
-        m_addButton->setToolTip(tr("Go to new container"), tr("Navigate to a new container. If the container already exists it will be selected, otherwise it will be created on write."));
-
         m_lineEdit = new LineEditReturnOnFocusLost(this);
 
         l->addWidget(m_lineEdit, 1);
+
+        m_addButton = new FlatButton("", this);
+        m_addButton->setIcon(ArrtStyle::s_newIcon);
+        m_addButton->setToolTip(tr("Go to new container"), tr("Navigate to a new container. If the container already exists it will be selected, otherwise it will be created on write."));
         l->addWidget(m_addButton, 0);
+
         m_lineEdit->setVisible(false);
 
         connect(m_addButton, &FlatButton::clicked, this, [this]() {

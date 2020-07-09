@@ -5,6 +5,7 @@
 VerticalScrollArea::VerticalScrollArea(QWidget* parent)
     : QScrollArea(parent)
 {
+    setFocusPolicy(Qt::NoFocus);
     setAutoFillBackground(false);
     viewport()->setAutoFillBackground(false);
     setFrameShape(QFrame::NoFrame);

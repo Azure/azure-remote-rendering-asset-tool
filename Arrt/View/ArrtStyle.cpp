@@ -6,6 +6,7 @@
 #include <QToolTip>
 #include <QWidget>
 #include <View/ArrtStyle.h>
+#include <Widgets/FocusableContainer.h>
 
 namespace
 {
@@ -23,6 +24,7 @@ const QColor ArrtStyle::s_infoColor = QColor(0, 40, 200);
 const QColor ArrtStyle::s_buttonCheckedColor = QColor(35, 35, 35);
 const QColor ArrtStyle::s_buttonUncheckedColor = QColor(63, 63, 63);
 const QColor ArrtStyle::s_underTextColor = QColor(200, 200, 200);
+const QColor ArrtStyle::s_formControlFocusedColor = QColor(70, 70, 70);
 
 const QColor ArrtStyle::s_successColor = Qt::darkGreen;
 const QColor ArrtStyle::s_runningColor = Qt::darkYellow;
@@ -174,6 +176,8 @@ void ArrtStyle::polish(QApplication* app)
     s_conversion_failedIcon = QIcon(":/ArrtApplication/Icons/conversion_failed.svg");
     s_refreshIcon = QIcon(":/ArrtApplication/Icons/refresh.svg");
     s_backIcon = QIcon(":/ArrtApplication/Icons/back.svg");
+
+    FocusableContainer::installFocusListener(app);
 }
 
 void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPainter* p, const QWidget* widget) const
@@ -291,14 +295,25 @@ void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* opti
             rectColor = rectColor.lighter(120);
         }
 
-        if (option->state.testFlag(State_Raised))
+        if (option->state.testFlag(State_HasFocus))
         {
-            painter->setPen(Qt::NoPen);
+            rectColor = rectColor.lighter(120);
+        }
+
+        if (option->state.testFlag(State_HasFocus))
+        {
+            painter->setPen(option->palette.highlight().color());
         }
         else
         {
-            // checked toggle buttons have a lighter border
-            painter->setPen(option->palette.mid().color());
+            if (option->state.testFlag(State_Raised))
+            {
+                painter->setPen(Qt::NoPen);
+            }
+            else
+            {
+                painter->setPen(option->palette.mid().color());
+            }
         }
         painter->setBrush(rectColor);
 

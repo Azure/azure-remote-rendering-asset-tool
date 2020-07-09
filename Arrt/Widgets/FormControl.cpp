@@ -1,3 +1,4 @@
+#include <QStylePainter>
 #include <QVBoxLayout>
 #include <View/ArrtStyle.h>
 #include <Widgets/FormControl.h>
@@ -19,18 +20,20 @@ FormControl::FormControl(const QString& header, QLayout* l, QWidget* parent)
 FormControl::FormControl(QWidget* parent)
     : QWidget(parent)
 {
-    m_header = new QLabel();
+    {
+        m_header = new QLabel();
 
-    m_header->setFont(ArrtStyle::s_formHeaderFont);
-    QPalette p = m_header->palette();
-    p.setColor(QPalette::WindowText, ArrtStyle::s_underTextColor);
-    m_header->setPalette(p);
-    m_header->setVisible(false);
+        m_header->setFont(ArrtStyle::s_formHeaderFont);
+        QPalette p = m_header->palette();
+        p.setColor(QPalette::WindowText, ArrtStyle::s_underTextColor);
+        m_header->setPalette(p);
+        m_header->setVisible(false);
+    }
 
     auto* l = new QVBoxLayout(this);
 
     l->setMargin(0);
-    l->setContentsMargins(10, 5, 10, 0);
+    l->setContentsMargins(10, 3, 10, 5);
     l->setSpacing(2);
     l->addWidget(m_header);
 

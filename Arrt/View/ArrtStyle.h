@@ -19,6 +19,7 @@ public:
     static const QColor s_buttonCheckedColor;
     static const QColor s_buttonUncheckedColor;
     static const QColor s_underTextColor;
+    static const QColor s_formControlFocusedColor;
     static const QColor s_successColor;
     static const QColor s_runningColor;
     static const QColor s_failureColor;
