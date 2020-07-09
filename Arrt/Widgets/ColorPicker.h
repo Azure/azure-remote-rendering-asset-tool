@@ -2,7 +2,7 @@
 
 #include <QColorDialog>
 #include <QPointer>
-#include <QWidget>
+#include <QToolButton>
 
 class FormatDoubleSpinBox;
 
@@ -31,7 +31,7 @@ private:
 
 // Button control showing a QColor, and opening a color dialog on click, to modify it
 
-class ColorPicker : public QWidget
+class ColorPicker : public QToolButton
 {
     Q_OBJECT
 
@@ -52,8 +52,6 @@ public:
 
 protected:
     virtual void paintEvent(QPaintEvent* e) override;
-    virtual void mouseReleaseEvent(QMouseEvent* e) override;
-    virtual void mousePressEvent(QMouseEvent* e) override;
 
 Q_SIGNALS:
     void beginEdit();
@@ -71,6 +69,5 @@ private:
     bool m_useMultiplier = false;
     double m_multiplier = 1.0;
     bool m_editing = false;
-    bool m_pressed = false;
     QPointer<ColorDialog> m_colorDialog;
 };
