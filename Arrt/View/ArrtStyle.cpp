@@ -6,6 +6,7 @@
 #include <QToolTip>
 #include <QWidget>
 #include <View/ArrtStyle.h>
+#include <Widgets/FormControl.h>
 
 namespace
 {
@@ -23,6 +24,7 @@ const QColor ArrtStyle::s_infoColor = QColor(0, 40, 200);
 const QColor ArrtStyle::s_buttonCheckedColor = QColor(35, 35, 35);
 const QColor ArrtStyle::s_buttonUncheckedColor = QColor(63, 63, 63);
 const QColor ArrtStyle::s_underTextColor = QColor(200, 200, 200);
+const QColor ArrtStyle::s_formControlFocusedColor = QColor(70, 70, 70);
 
 const QColor ArrtStyle::s_successColor = Qt::darkGreen;
 const QColor ArrtStyle::s_runningColor = Qt::darkYellow;
@@ -174,6 +176,8 @@ void ArrtStyle::polish(QApplication* app)
     s_conversion_failedIcon = QIcon(":/ArrtApplication/Icons/conversion_failed.svg");
     s_refreshIcon = QIcon(":/ArrtApplication/Icons/refresh.svg");
     s_backIcon = QIcon(":/ArrtApplication/Icons/back.svg");
+
+    FormControl::installFocusListener(app);
 }
 
 void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPainter* p, const QWidget* widget) const
