@@ -8,23 +8,22 @@
 #include <Widgets/VerticalScrollArea.h>
 
 MaterialEditorView::MaterialEditorView(MaterialProvider* model, QWidget* parent)
-    : QWidget(parent)
+    : FocusableContainer({}, parent)
     , m_model(model)
 {
-    setContentsMargins(0, 0, 0, 0);
     auto* scrollArea = new VerticalScrollArea(this);
-    auto* l = new QVBoxLayout(this);
-    l->setContentsMargins(0, 0, 0, 0);
-    l->addWidget(scrollArea);
-
     m_layout = scrollArea->getContentLayout();
-    QObject::connect(m_model, &MaterialProvider::materialChanged, this, [this]() { updateFromModel(); });
-}
+    setChild(scrollArea);
 
+    QObject::connect(m_model, &MaterialProvider::materialChanged, this, [this]() { updateFromModel(); });
+    updateFromModel();
+}
 
 void MaterialEditorView::updateFromModel()
 {
     const auto& controls = m_model->getControls();
+    setVisible(!controls.empty());
+
     for (int i = 0; i < controls.size(); ++i)
     {
         if (m_widgets.size() == i)

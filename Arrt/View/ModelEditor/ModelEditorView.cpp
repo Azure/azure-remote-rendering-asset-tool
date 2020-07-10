@@ -100,7 +100,7 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
 
         {
             auto* materialPanel = new MaterialEditorView(modelEditorModel->getEditingMaterial(), splitter);
-            splitter->addWidget(new FocusableContainer(materialPanel));
+            splitter->addWidget(materialPanel);
         }
 
         splitter->setSizes({10, 40, 10, 10});

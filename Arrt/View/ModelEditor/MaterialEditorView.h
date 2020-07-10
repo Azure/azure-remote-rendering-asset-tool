@@ -1,5 +1,5 @@
 #pragma once
-#include <QWidget>
+#include <Widgets/FocusableContainer.h>
 
 class MaterialProvider;
 class ParameterModel;
@@ -7,7 +7,7 @@ class FormControl;
 
 // View for the property editor for the material, exposing all of the controls
 
-class MaterialEditorView : public QWidget
+class MaterialEditorView : public FocusableContainer
 {
 public:
     MaterialEditorView(MaterialProvider* model, QWidget* parent = nullptr);
@@ -15,7 +15,7 @@ public:
 private:
     MaterialProvider* const m_model;
     QList<FormControl*> m_widgets;
-    QLayout* m_layout;
+    QLayout* m_layout = {};
 
     // called when the control models have changed, to regenerate the controls
     void updateFromModel();
