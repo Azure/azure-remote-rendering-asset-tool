@@ -7,6 +7,7 @@ ScenePanelView::ScenePanelView(ModelEditorModel* model, QWidget* parent /* = nul
     : QWidget(parent)
 {
     auto* l = new QHBoxLayout(this);
+    l->setContentsMargins(0, 0, 0, 0);
     auto* treeView = new QTreeView(this);
     treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     treeView->setHeaderHidden(true);

@@ -11,9 +11,9 @@ MaterialEditorView::MaterialEditorView(MaterialProvider* model, QWidget* parent)
     : QWidget(parent)
     , m_model(model)
 {
+    setContentsMargins(0, 0, 0, 0);
     auto* scrollArea = new VerticalScrollArea(this);
     auto* l = new QVBoxLayout(this);
-    setContentsMargins(0, 0, 0, 0);
     l->setContentsMargins(0, 0, 0, 0);
     l->addWidget(scrollArea);
 
