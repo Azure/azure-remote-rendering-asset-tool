@@ -133,7 +133,7 @@ ConversionPageView::ConversionPageView(ConversionPageModel* model, QWidget* pare
         toolbarLayout->addWidget(addConversion);
         toolbarLayout->addWidget(m_removeConversionButton);
 
-        m_description = new QLabel(tr("<small>Add a new conversion to start converting your 3D model into an arrAsset"));
+        m_description = ArrtStyle::createHeaderLabel({}, tr("Add a new conversion to start converting your 3D model into an arrAsset"));
 
         listLayout->addWidget(m_description, 0);
         listLayout->addLayout(toolbarLayout, 0);

@@ -12,6 +12,7 @@
 #include <ViewModel/BlobExplorer/BlobsListModel.h>
 #include <ViewModel/ModelsPage/ModelsPageModel.h>
 #include <Widgets/FormControl.h>
+#include <Widgets/ReadOnlyText.h>
 #include <Widgets/Toolbar.h>
 #include <Widgets/ToolbarButton.h>
 
@@ -140,7 +141,7 @@ ModelsPageView::ModelsPageView(ModelsPageModel* modelsPageModel)
         m_progressBar->setMaximum(100);
         m_progressBar->setAccessibleName(tr("Loading progress"));
 
-        m_modelLoadingStatus = new QLabel(this);
+        m_modelLoadingStatus = new ReadOnlyText(this);
         m_modelLoadingStatus->setFixedWidth(130);
         m_modelLoadingStatus->setAccessibleName(tr("Loading status"));
 

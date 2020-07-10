@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QLabel>
 #include <QSplitter>
 #include <QVBoxLayout>
 #include <View/ModelEditor/MaterialEditorView.h>

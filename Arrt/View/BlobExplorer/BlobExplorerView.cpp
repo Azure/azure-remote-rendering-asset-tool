@@ -11,6 +11,7 @@
 #include <Widgets/FlatButton.h>
 #include <Widgets/FocusableContainer.h>
 #include <Widgets/FormControl.h>
+#include <Widgets/ReadOnlyText.h>
 
 BlobExplorerView::BlobExplorerView(BlobExplorerModel* model, ExplorerType explorerType, QWidget* parent)
     : QWidget(parent)
@@ -75,7 +76,8 @@ BlobExplorerView::BlobExplorerView(BlobExplorerModel* model, ExplorerType explor
 
             auto hLayout = new QHBoxLayout();
 
-            m_uploadStatusLabel = new QLabel(this);
+            m_uploadStatusLabel = new ReadOnlyText(this);
+            m_uploadStatusLabel->setAccessibleName(tr("Upload status"));
             hLayout->addWidget(m_uploadStatusLabel);
 
             auto updateLabelCallback = [this]() {

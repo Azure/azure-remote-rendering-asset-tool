@@ -1,8 +1,8 @@
 #include <QHBoxLayout>
-#include <QLabel>
 #include <View/Settings/StorageAccountSettingsView.h>
 #include <ViewModel/Settings/StorageAccountSettingsModel.h>
 #include <Widgets/FlatButton.h>
+#include <Widgets/ReadOnlyText.h>
 
 StorageAccountSettingsView::StorageAccountSettingsView(StorageAccountSettingsModel* model, QWidget* parent)
     : SettingsBaseView(model, parent)

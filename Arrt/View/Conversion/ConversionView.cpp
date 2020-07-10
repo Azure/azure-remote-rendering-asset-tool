@@ -20,6 +20,7 @@
 #include <Widgets/FlatButton.h>
 #include <Widgets/FormControl.h>
 #include <Widgets/Navigator.h>
+#include <Widgets/ReadOnlyText.h>
 #include <Widgets/VerticalScrollArea.h>
 
 ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent)
@@ -51,9 +52,8 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
         }
 
         {
-            m_status = new QLabel();
+            m_status = new ReadOnlyText();
             auto* fc = new FormControl(tr("Status"), m_status);
-            fc->setToolTip(tr("Status of the conversion"));
             nameStatusLayout->addWidget(fc);
         }
 
@@ -61,8 +61,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
     }
 
     {
-        m_inputLabel = new QLineEdit();
-        m_inputLabel->setReadOnly(true);
+        m_inputLabel = new ReadOnlyText();
         m_inputLabel->setPlaceholderText(tr("[Select input model]"));
         m_inputLabel->setAccessibleName(tr("Input model"));
 
@@ -174,7 +173,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
     }
 
     {
-        m_outputLabel = new QLineEdit();
+        m_outputLabel = new ReadOnlyText();
         m_outputLabel->setReadOnly(true);
         m_outputLabel->setPlaceholderText(tr("[Select output directory]"));
         m_outputLabel->setAccessibleName(tr("Input model"));

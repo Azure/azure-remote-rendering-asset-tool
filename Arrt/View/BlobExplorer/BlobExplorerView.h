@@ -1,10 +1,10 @@
 #pragma once
-#include <QLabel>
 #include <QWidget>
 
 class BlobExplorerModel;
 class FlatButton;
 class FormControl;
+class ReadOnlyText;
 
 // View used for blob browsing and selection. It has an editable combobox for the directory and a list view for the blobs
 
@@ -26,7 +26,7 @@ public:
 
 private:
     BlobExplorerModel* const m_model;
-    QLabel* m_uploadStatusLabel = {};
+    ReadOnlyText* m_uploadStatusLabel = {};
     FlatButton* m_parentDirectoryButton = {};
     FormControl* m_directoryControl = {};
 

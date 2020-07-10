@@ -6,6 +6,7 @@
 #include <View/Settings/VideoSettingsView.h>
 #include <ViewModel/Settings/SettingsModel.h>
 #include <Widgets/FormControl.h>
+#include <Widgets/ReadOnlyText.h>
 #include <Widgets/VerticalScrollArea.h>
 
 SettingsView::SettingsView(SettingsModel* settingsModel, QWidget* parent)
@@ -19,7 +20,8 @@ SettingsView::SettingsView(SettingsModel* settingsModel, QWidget* parent)
 
     {
         // version information
-        scrollArea->getContentLayout()->addWidget(new FormControl(tr("Application version"), new QLabel(ARRT_VERSION)));
+        auto* versionLabel = new ReadOnlyText(ARRT_VERSION);
+        scrollArea->getContentLayout()->addWidget(new FormControl(tr("Application version"), versionLabel));
     }
 
     auto* const settingsViewParent = scrollArea->widget();
