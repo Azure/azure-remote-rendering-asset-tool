@@ -13,10 +13,12 @@ BoundFloatSlider::BoundFloatSlider(FloatSliderModel* model, QWidget* parent)
     m_slider = new QSlider(Qt::Horizontal, this);
     m_slider->setMinimum(0);
     m_slider->setMaximum(m_model->getNumberOfSteps());
+    m_slider->setAccessibleName(model->getName());
     layout->addWidget(m_slider);
 
     m_spinBox = new BoundFloatSpinBox(model, this);
     m_spinBox->setMinimumWidth(120);
+    m_spinBox->setAccessibleName(model->getName());
     layout->addWidget(m_spinBox);
 
     BoundFloatSlider::updateFromModel();

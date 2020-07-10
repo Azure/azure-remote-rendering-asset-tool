@@ -11,8 +11,8 @@ ArrAccountSettingsModel::ArrAccountSettingsModel(ArrAccountSettings* arrAccountS
     , m_frontend(frontend)
 {
     using namespace std::literals;
-    m_controls.push_back(new TextModel(tr("Account Id"), m_arrAccountSettings, "id"sv, true));
-    m_controls.push_back(new TextModel(tr("Account Key"), m_arrAccountSettings, "key"sv, true, true));
+    m_controls.push_back(new TextModel(tr("Id"), m_arrAccountSettings, "id"sv, true));
+    m_controls.push_back(new TextModel(tr("Key"), m_arrAccountSettings, "key"sv, true, true));
     m_controls.push_back(new ComboBoxModel(tr("Region"), m_arrAccountSettings, "region"sv));
 
     connect(m_frontend, &ArrFrontend::onStatusChanged, this, [this]() {
