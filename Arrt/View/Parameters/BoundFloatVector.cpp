@@ -15,6 +15,7 @@ BoundFloatVector::BoundFloatVector(FloatVectorModel* model, QWidget* parent)
     {
         l->addWidget(new QLabel(model->getLabel(i)), 0);
         m_spinBoxes[i] = new FormatDoubleSpinBox(this, model->getFormat());
+        m_spinBoxes[i]->setAccessibleName(model->getLabel(i));
         l->addWidget(m_spinBoxes[i], 1);
         QObject::connect(m_spinBoxes[i], &FormatDoubleSpinBox::edited, this, [this, i]() {
             m_model->setValue(i, m_spinBoxes[i]->value());

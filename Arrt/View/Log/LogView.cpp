@@ -176,6 +176,7 @@ LogView::LogView(LogModel* model, QWidget* parent)
     {
         m_textView = new QTextEdit(this);
         m_textView->setReadOnly(true);
+        m_textView->setAccessibleName(tr("Log message"));
         splitter->addWidget(new FocusableContainer(m_textView));
     }
 
