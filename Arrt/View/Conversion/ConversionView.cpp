@@ -64,6 +64,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
         m_inputLabel = new QLineEdit();
         m_inputLabel->setReadOnly(true);
         m_inputLabel->setPlaceholderText(tr("[Select input model]"));
+        m_inputLabel->setAccessibleName(tr("Input model"));
 
         m_inputButton = new FlatButton(tr("Select"), this);
         m_inputButton->setToolTip(tr("Select input model"), tr("Open a blob explorer to find and select an input 3D model for conversion"));
@@ -138,6 +139,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
         {
             QWidget* w = BoundWidgetFactory::createBoundWidget(controlModel, configPanel);
             w->setFixedHeight(DpiUtils::size(20));
+            w->setAccessibleName(controlModel->getName());
             if (auto* boundWidget = qobject_cast<BoundWidget*>(w))
             {
                 configLayout->addRow(createConfigLabel(controlModel->getName()), w);
@@ -175,6 +177,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
         m_outputLabel = new QLineEdit();
         m_outputLabel->setReadOnly(true);
         m_outputLabel->setPlaceholderText(tr("[Select output directory]"));
+        m_outputLabel->setAccessibleName(tr("Input model"));
 
         m_outputButton = new FlatButton(tr("Select"), this);
         m_outputButton->setToolTip(tr("Select output directory"), tr("Open a blob explorer to select the directory where the conversion will write the converted 3D model"));

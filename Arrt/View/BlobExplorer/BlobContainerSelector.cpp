@@ -16,16 +16,21 @@ BlobContainerSelector::BlobContainerSelector(BlobContainerSelectorModel* model, 
     auto* l = new QHBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
 
+    m_selector->setAccessibleName(tr("Blob Container"));
+
     l->addWidget(m_selector, 1);
     if (m_model->canNavigateToNewContainers())
     {
         m_lineEdit = new LineEditReturnOnFocusLost(this);
+        m_lineEdit->setAccessibleName(tr("New container name"));
+        m_lineEdit->setPlaceholderText(tr("Enter container name"));
 
         l->addWidget(m_lineEdit, 1);
 
-        m_addButton = new FlatButton("", this);
+        m_addButton = new FlatButton("New container", this);
         m_addButton->setIcon(ArrtStyle::s_newIcon);
         m_addButton->setToolTip(tr("Go to new container"), tr("Navigate to a new container. If the container already exists it will be selected, otherwise it will be created on write."));
+
         l->addWidget(m_addButton, 0);
 
         m_lineEdit->setVisible(false);
