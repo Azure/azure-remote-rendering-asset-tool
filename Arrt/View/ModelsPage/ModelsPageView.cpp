@@ -133,11 +133,16 @@ ModelsPageView::ModelsPageView(ModelsPageModel* modelsPageModel)
 
         m_modelLoading = new QLineEdit(this);
         m_modelLoading->setReadOnly(true);
+        m_modelLoading->setAccessibleName(tr("Loading model"));
+
         m_progressBar = new QProgressBar(this);
         m_progressBar->setMinimum(0);
         m_progressBar->setMaximum(100);
+        m_progressBar->setAccessibleName(tr("Loading progress"));
+
         m_modelLoadingStatus = new QLabel(this);
         m_modelLoadingStatus->setFixedWidth(130);
+        m_modelLoadingStatus->setAccessibleName(tr("Loading status"));
 
         h->addWidget(new FormControl({}, m_loadButton));
         h->addWidget(m_modelLoading, 50);
