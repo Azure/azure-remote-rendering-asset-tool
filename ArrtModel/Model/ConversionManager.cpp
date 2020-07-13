@@ -240,8 +240,16 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
                 {
                     if (async->Status().value() == RR::Result::Success)
                     {
-                        conversion->m_activeSessionUUID = async->Result().value();
-                        conversion->updateConversionStatus(Conversion::SYNCHRONIZING);
+                        auto result = async->Result(conversion->m_activeSessionUUID);
+                        if (result)
+                        {
+                            conversion->updateConversionStatus(Conversion::SYNCHRONIZING);
+                        }
+                        else
+                        {
+                            conversion->m_endConversionTime.start();
+                            conversion->updateConversionStatus(Conversion::SYNCHRONIZATION_FAILED, tr("Failure reason: %1.").arg(tr("Failed retrieving the session UUID")));
+                        }
                     }
                     else
                     {
@@ -351,7 +359,12 @@ void ConversionManager::updateConversions(bool updateRemotely)
 
                 conversion->m_statusAsync->Completed([id, thisPtr](const RR::ApiHandle<RR::ConversionStatusAsync>& async) {
                     logContext(async->Context().value());
-                    QMetaObject::invokeMethod(QApplication::instance(), [id, thisPtr, message = async->Message().value(), status = async->Status().value(), result = async->Result().value()]() {
+                    std::string message;
+                    if (!async->Message(message))
+                    {
+                        message = tr("Error retrieving message").toStdString();
+                    }
+                    QMetaObject::invokeMethod(QApplication::instance(), [id, thisPtr, message, status = async->Status().value(), result = async->Result().value()]() {
                         if (thisPtr)
                         {
                             if (Conversion* conversion = thisPtr->getConversion(id))

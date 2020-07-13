@@ -267,9 +267,8 @@ bool ArrSessionManager::stopSession()
         return false;
     }
     QPointer<ArrSessionManager> thisPtr = this;
-
     qInfo(LoggingCategory::renderingSession)
-        << tr("Requesting to stop session:\n") << *m_session->SessionUUID();
+        << tr("Requesting to stop session:\n") << getSessionUuid();
     auto async = m_session->StopAsync();
     if (async)
     {
@@ -403,7 +402,7 @@ bool ArrSessionManager::extendMaxSessionTime()
         QPointer<ArrSessionManager> thisPtr = this;
 
         qInfo(LoggingCategory::renderingSession)
-            << tr("Requesting extension of session time. Session id:") << *m_session->SessionUUID()
+            << tr("Requesting extension of session time. Session id:") << getSessionUuid()
             << "\n"
             << params;
         auto async = m_session->RenewAsync(params);
@@ -470,9 +469,8 @@ void ArrSessionManager::updateStatus()
     {
         QPointer<ArrSessionManager> thisPtr = this;
 
-        const auto sessionUuid = m_session->SessionUUID();
         qDebug(LoggingCategory::renderingSession)
-            << tr("Requesting session properties. Session id:") << (sessionUuid ? sessionUuid.value() : tr("error").toStdString());
+            << tr("Requesting session properties. Session id:") << getSessionUuid();
         auto async = m_session->GetPropertiesAsync();
         if (async)
         {
@@ -525,9 +523,8 @@ void ArrSessionManager::connectToSessionRuntime()
         m_connectingElapsedTime.start();
         QPointer<ArrSessionManager> thisPtr = this;
 
-        const auto uuid = m_session->SessionUUID();
         qInfo(LoggingCategory::renderingSession)
-            << tr("Requesting connection to session id:") << (uuid ? uuid.value() : tr("error").toStdString());
+            << tr("Requesting connection to session id:") << getSessionUuid();
         const auto async = m_session->ConnectToRuntime({RR::ServiceRenderMode::DepthBasedComposition, false});
         if (async)
         {
@@ -636,7 +633,7 @@ void ArrSessionManager::onStatusUpdated()
         QString timeoutMsg = tr("Connection timed out [%1 milliseconds].").arg(s_connectionTimeout.count());
         if (m_session)
         {
-            qWarning(LoggingCategory::renderingSession) << timeoutMsg << tr("Session id:") << *m_session->SessionUUID();
+            qWarning(LoggingCategory::renderingSession) << timeoutMsg << tr("Session id:") << getSessionUuid();
             m_session->DisconnectFromRuntime();
         }
         else
@@ -764,6 +761,22 @@ void ArrSessionManager::updateTimers()
     }
 }
 
+std::string ArrSessionManager::getSessionUuid() const
+{
+    if (!m_session)
+    {
+        return tr("no session").toStdString();
+    }
+
+    std::string sessionUuid;
+    if (!m_session->SessionUUID(sessionUuid))
+    {
+        return tr("error").toStdString();
+    }
+    return sessionUuid;
+}
+
+
 void ArrSessionManager::deinitializeSession()
 {
     unloadModel();
@@ -793,14 +806,7 @@ void ArrSessionManager::setRunningSession(const RR::ApiHandle<RR::AzureSession>&
         {
             m_api = m_session->Actions();
             initializeSession();
-            if (const auto uuid = m_session->SessionUUID())
-            {
-                m_configuration->setRunningSession(uuid.value());
-            }
-            else
-            {
-                m_configuration->setRunningSession(tr("Failed to fetch SessionId").toStdString());
-            }
+            m_configuration->setRunningSession(getSessionUuid());
         }
         Q_EMIT sessionChanged();
         updateStatus();
@@ -930,12 +936,13 @@ void ArrSessionManager::startInspector()
                     }
                     else
                     {
-                        if (const auto result = async->Result())
+                        std::string result;
+                        if (async->Result(result))
                         {
                             qInfo(LoggingCategory::renderingSession)
-                                << tr("Opening inspector web page: ") << result->c_str();
+                                << tr("Opening inspector web page: ") << result.c_str();
                             //try and start a browser
-                            QDesktopServices::openUrl(QUrl::fromLocalFile(result->c_str()));
+                            QDesktopServices::openUrl(QUrl::fromLocalFile(result.c_str()));
                         }
                     }
                 }
