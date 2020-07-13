@@ -6,7 +6,9 @@
 MaterialListView::MaterialListView(ModelEditorModel* model, QWidget* parent /* = nullptr */)
     : QWidget(parent)
 {
+    setContentsMargins(0, 0, 0, 0);
     auto* l = new QHBoxLayout(this);
+    l->setContentsMargins(0, 0, 0, 0);
     auto* listView = new QListView(this);
     listView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
     listView->setModel(model->getMaterialListModel());

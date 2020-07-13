@@ -10,6 +10,7 @@
 #include <ViewModel/ModelEditor/ModelEditorModel.h>
 #include <ViewModel/ModelEditor/ViewportModel.h>
 #include <Widgets/FlatButton.h>
+#include <Widgets/FocusableContainer.h>
 
 // the viewport widget has to be wrapped by a non native widget with WA_DontCreateNativeAncestors set,
 // to make sure that the parent widgets won't be turned into native widgets. This is because this might break
@@ -21,6 +22,7 @@ public:
     ContainerForViewport(QWidget* parentWidget)
         : QWidget(parentWidget)
     {
+        setContentsMargins(0, 0, 0, 0);
         setAttribute(Qt::WA_DontCreateNativeAncestors);
         setAttribute(Qt::WA_LayoutOnEntireRect);
         setMinimumWidth(256);
@@ -75,24 +77,29 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
         splitter = new QSplitter(this);
 
         {
-            auto scenePanel = new ScenePanelView(modelEditorModel, this);
-            splitter->addWidget(scenePanel);
+            auto scenePanel = new ScenePanelView(modelEditorModel, splitter);
+            splitter->addWidget(new FocusableContainer(scenePanel));
         }
 
         {
-            auto container = new ContainerForViewport(splitter);
-            auto viewportModel = new ViewportView(modelEditorModel->getViewportModel(), container);
+            auto* focusableContainer = new FocusableContainer({}, splitter);
+            auto* container = new ContainerForViewport(focusableContainer);
+            auto* viewportModel = new ViewportView(modelEditorModel->getViewportModel(), container);
             container->setViewport(viewportModel);
-            splitter->addWidget(container);
+
+            auto* viewportLayout = new QHBoxLayout(focusableContainer);
+            viewportLayout->setContentsMargins(0, 0, 0, 0);
+            viewportLayout->addWidget(container);
+            splitter->addWidget(focusableContainer);
         }
 
         {
-            auto materialPanel = new MaterialListView(modelEditorModel, this);
-            splitter->addWidget(materialPanel);
+            auto* materialPanel = new MaterialListView(modelEditorModel, splitter);
+            splitter->addWidget(new FocusableContainer(materialPanel));
         }
 
         {
-            auto materialPanel = new MaterialEditorView(modelEditorModel->getEditingMaterial(), this);
+            auto* materialPanel = new MaterialEditorView(modelEditorModel->getEditingMaterial(), splitter);
             splitter->addWidget(materialPanel);
         }
 

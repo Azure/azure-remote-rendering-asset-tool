@@ -29,7 +29,7 @@ const QColor ArrtStyle::s_formControlFocusedColor = QColor(70, 70, 70);
 const QColor ArrtStyle::s_successColor = Qt::darkGreen;
 const QColor ArrtStyle::s_runningColor = Qt::darkYellow;
 const QColor ArrtStyle::s_failureColor = Qt::darkRed;
-const QColor ArrtStyle::s_progressBackgroundColor = Qt::lightGray;
+const QColor ArrtStyle::s_progressBackgroundColor = Qt::darkGray;
 const QColor ArrtStyle::s_progressColor = Qt::blue;
 
 const QColor ArrtStyle::s_connectedColor = Qt::green;

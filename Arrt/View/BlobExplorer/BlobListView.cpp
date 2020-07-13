@@ -88,15 +88,20 @@ public:
                     {
                         loadingProgress = 0;
                     }
+                    QFontMetrics fm(ArrtStyle::s_blobStatusFont, option.widget);
+                    int barheight = fm.height() / 3;
                     QPoint p1 = loadingUiRect.center();
                     QPoint p2 = p1;
-                    p2.setX(loadingUiRect.right());
-                    QPoint pProgress = p1 + (p2 - p1) * loadingProgress;
+                    p2.setX(loadingUiRect.right() - DpiUtils::size(10));
 
-                    painter->setPen(QPen(ArrtStyle::s_progressColor, 2));
-                    painter->drawLine(p1, pProgress);
-                    painter->setPen(QPen(ArrtStyle::s_progressBackgroundColor, 2));
-                    painter->drawLine(pProgress, p2);
+                    QRect progressRect(p1 - QPoint(0, barheight / 2), p2 + QPoint(0, barheight / 2));
+                    painter->fillRect(progressRect, ArrtStyle::s_progressBackgroundColor);
+                    QRect progressDoneRect = progressRect;
+                    progressDoneRect.setWidth(float(progressDoneRect.width()) * loadingProgress);
+                    painter->fillRect(progressDoneRect, ArrtStyle::s_progressColor);
+                    painter->setPen(option.palette.windowText().color());
+                    painter->setBrush(Qt::NoBrush);
+                    painter->drawRect(progressRect);
                     break;
             }
             textRect.setRight(loadingUiRect.left() - DpiUtils::size(5));

@@ -10,6 +10,9 @@ class FocusableContainer : public QWidget
 public:
     FocusableContainer(QWidget* childWidget = {}, QWidget* parent = {});
 
+    // set the child in this container. Child has to be non null and this method can only be called once
+    void setChild(QWidget* child);
+
     static QObject* installFocusListener(QApplication* application);
 
     virtual void paintEvent(QPaintEvent* e) override;

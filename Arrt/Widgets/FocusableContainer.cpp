@@ -54,12 +54,17 @@ FocusableContainer::FocusableContainer(QWidget* childWidget, QWidget* parent)
     setContentsMargins(1, 1, 1, 1);
     if (childWidget)
     {
-        auto* l = new QHBoxLayout(this);
-        l->setContentsMargins(0, 0, 0, 0);
-        l->addWidget(childWidget);
+        setChild(childWidget);
     }
 }
 
+void FocusableContainer::setChild(QWidget* child)
+{
+    assert(child);
+    auto* l = new QHBoxLayout(this);
+    l->setContentsMargins(0, 0, 0, 0);
+    l->addWidget(child);
+}
 
 
 QObject* FocusableContainer::installFocusListener(QApplication* application)
