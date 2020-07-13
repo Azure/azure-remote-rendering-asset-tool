@@ -4,7 +4,7 @@
 class FormControl;
 class QVBoxLayout;
 class QHBoxLayout;
-class QLabel;
+class ReadOnlyText;
 class QFrame;
 class SettingsBaseModel;
 
@@ -25,7 +25,7 @@ protected:
     QVBoxLayout* m_listLayout = {};
     QHBoxLayout* m_statusLayout = {};
 
-    QLabel* m_status = {};
+    ReadOnlyText* m_status = {};
     QFrame* m_statusBar = {};
 
 private:

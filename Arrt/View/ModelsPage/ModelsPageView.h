@@ -1,7 +1,4 @@
 #pragma once
-#include <QLabel>
-#include <QLineEdit>
-#include <QProgressBar>
 #include <QWidget>
 
 class AzureStorageManager;
@@ -11,6 +8,9 @@ class BlobExplorerView;
 class QStackedLayout;
 class QComboBox;
 class ToolbarButton;
+class ReadOnlyText;
+class QProgressBar;
+class QLineEdit;
 
 // Main panel used to show the content of a blob storage account (containers and blob hierarchy)
 // and to trigger model loading
@@ -31,7 +31,7 @@ private:
     QStackedLayout* m_modelSelectionLayout = {};
 
     QLineEdit* m_modelLoading = {};
-    QLabel* m_modelLoadingStatus = {};
+    ReadOnlyText* m_modelLoadingStatus = {};
     QProgressBar* m_progressBar = {};
     ToolbarButton* m_loadButton = {};
 

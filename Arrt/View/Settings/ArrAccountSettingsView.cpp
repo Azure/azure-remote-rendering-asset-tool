@@ -4,6 +4,7 @@
 #include <View/Settings/ArrAccountSettingsView.h>
 #include <ViewModel/Settings/ArrAccountSettingsModel.h>
 #include <Widgets/FlatButton.h>
+#include <Widgets/ReadOnlyText.h>
 
 ArrAccountSettingsView::ArrAccountSettingsView(ArrAccountSettingsModel* model, QWidget* parent)
     : SettingsBaseView(model, parent)

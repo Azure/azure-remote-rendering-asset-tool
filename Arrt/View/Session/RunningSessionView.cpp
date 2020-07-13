@@ -10,6 +10,7 @@
 #include <Widgets/FlatButton.h>
 #include <Widgets/FormControl.h>
 #include <Widgets/HoursMinutesControl.h>
+#include <Widgets/ReadOnlyText.h>
 
 Q_DECLARE_METATYPE(SessionModel::Size);
 
@@ -20,7 +21,7 @@ RunningSessionView::RunningSessionView(RunningSessionModel* model, QWidget* pare
     auto* panelLayout = new QVBoxLayout(this);
 
     {
-        m_sizeInfo = new QLabel();
+        m_sizeInfo = new ReadOnlyText();
         auto* fc = new FormControl(tr("Size"), m_sizeInfo);
         fc->setToolTip(tr("VM Size"), tr("Size of the Virtual Machine used for this remote rendering session"));
         panelLayout->addWidget(fc);

@@ -21,9 +21,13 @@ NewFolderButton::NewFolderButton(QWidget* parent)
         m_addButton->setVisible(false);
     });
     m_addButton->setToolTip(tr("Add Sub-Directory"), tr("Add a directory and navigate to it. The directory is not persisted in Azure."));
+    m_addButton->setAccessibleName(tr("Add Sub-Directory"));
+
 
     m_lineEdit = new LineEditReturnOnFocusLost(this);
     m_lineEdit->setVisible(false);
+    m_lineEdit->setAccessibleName(tr("New folder name"));
+    m_lineEdit->setPlaceholderText(tr("Enter folder name"));
     connect(m_lineEdit, &QLineEdit::returnPressed, this, [this]() {
         if (m_lineEdit->isVisible() && !m_lineEdit->text().isEmpty())
         {

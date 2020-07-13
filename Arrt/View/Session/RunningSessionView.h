@@ -1,12 +1,12 @@
 #pragma once
 #include <QFrame>
-#include <QLabel>
 #include <QLineEdit>
 
 class RunningSessionModel;
 class HoursMinutesControl;
 class FlatButton;
 class SessionInfoButton;
+class ReadOnlyText;
 
 // panel used to visualize the status of the session and extend lease time or stop the session.
 
@@ -18,7 +18,7 @@ public:
 private:
     RunningSessionModel* const m_model;
     FlatButton* m_startStopButton = {};
-    QLabel* m_sizeInfo = {};
+    ReadOnlyText* m_sizeInfo = {};
     HoursMinutesControl* m_maxTime = {};
     HoursMinutesControl* m_remainingTime = {};
     HoursMinutesControl* m_extendTime = {};

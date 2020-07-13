@@ -1,8 +1,8 @@
 #pragma once
-#include <QLabel>
 #include <qwidget.h>
 
 class ModelEditorModel;
+class QLabel;
 
 // main view with all of the panels for material editing, scene inspection, viewport
 

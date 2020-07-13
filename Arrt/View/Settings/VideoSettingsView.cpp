@@ -1,8 +1,8 @@
-#include <QLabel>
 #include <QVBoxLayout>
 #include <View/Settings/VideoSettingsView.h>
 #include <ViewModel/Settings/VideoSettingsModel.h>
 #include <Widgets/FlatButton.h>
+#include <Widgets/ReadOnlyText.h>
 
 VideoSettingsView::VideoSettingsView(VideoSettingsModel* model, QWidget* parent)
     : SettingsBaseView(model, parent)

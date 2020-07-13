@@ -4,6 +4,7 @@
 class ConversionModel;
 class FlatButton;
 class FlatButton;
+class ReadOnlyText;
 class QLabel;
 class BoundWidget;
 class QLineEdit;
@@ -18,7 +19,7 @@ public:
 private:
     ConversionModel* m_model;
     QLineEdit* m_name = {};
-    QLabel* m_status = {};
+    ReadOnlyText* m_status = {};
 
     QLineEdit* m_inputLabel = {};
     QLineEdit* m_outputLabel = {};
@@ -28,7 +29,7 @@ private:
 
     FlatButton* m_startConversionButton = {};
     FlatButton* m_reingestButton = {};
-    QLabel* m_uploadStatusLabel = {};
+    ReadOnlyText* m_uploadStatusLabel = {};
     QList<QWidget*> m_configControls;
 
     QPalette m_configLabelPalette;

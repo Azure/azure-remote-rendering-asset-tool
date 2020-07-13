@@ -8,6 +8,7 @@
 #include <ViewModel/Settings/SettingsBaseModel.h>
 #include <Widgets/FlatButton.h>
 #include <Widgets/FormControl.h>
+#include <Widgets/ReadOnlyText.h>
 
 SettingsBaseView::SettingsBaseView(SettingsBaseModel* baseModel, QWidget* parent)
     : QWidget(parent)
@@ -27,7 +28,8 @@ SettingsBaseView::SettingsBaseView(SettingsBaseModel* baseModel, QWidget* parent
     m_topLayout->addWidget(m_statusBar, 0);
     m_topLayout->addLayout(m_listLayout);
 
-    m_status = new QLabel();
+    m_status = new ReadOnlyText();
+    m_status->setAccessibleName(tr("Status"));
     m_statusLayout->addWidget(m_status);
 
     m_statusLayout->setSpacing(3);
