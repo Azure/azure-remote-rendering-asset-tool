@@ -8,7 +8,7 @@
 class Configuration;
 namespace Microsoft::Azure::RemoteRendering
 {
-    struct AzureSession;
+    class AzureSession;
     class RemoteRenderingClient;
     using LoadResult = std::function<void(Result, ApiHandle<Entity>)>;
     using LoadProgress = std::function<void(float)>;
@@ -155,6 +155,9 @@ private:
 
     // start/stop internal timers based on the session state
     void updateTimers();
+
+    // return the string of the session uuid, used for logging
+    std::string getSessionUuid() const;
 
     bool m_isEnabled = false;
 

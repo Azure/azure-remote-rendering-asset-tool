@@ -272,10 +272,13 @@ void ViewportModel::pick(int x, int y)
     {
         (*async)->Completed([thisPtr](const RR::ApiHandle<RR::RaycastQueryAsync>& finishedAsync) {
             RR::ApiHandle<RR::Entity> hit = nullptr;
-            const auto result = finishedAsync->Result().value();
-            if (result.size() > 0)
+            std::vector<RR::RayCastHit> rayCastHits;
+            if (finishedAsync->Result(rayCastHits))
             {
-                hit = result[0].HitObject;
+                if (rayCastHits.size() > 0)
+                {
+                    hit = rayCastHits[0].HitObject;
+                }
             }
 
             if (thisPtr && thisPtr->m_selectionModel)
@@ -465,9 +468,10 @@ void ViewportModel::updateSelection(const QList<RR::ApiHandle<RR::Entity>>& sele
         const auto validEx = entity->Valid();
         if (validEx && validEx.value())
         {
-            if (auto components = entity->Components())
+            std::vector<RR::ApiHandle<RR::ComponentBase>> components;
+            if (entity->Components(components))
             {
-                for (auto&& comp : components.value())
+                for (auto&& comp : components)
                 {
                     if (comp->Type().value() == RR::ObjectType::HierarchicalStateOverrideComponent)
                     {

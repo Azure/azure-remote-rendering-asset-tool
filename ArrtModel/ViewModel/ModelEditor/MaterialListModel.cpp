@@ -21,16 +21,21 @@ MaterialListModel::MaterialListModel(ArrSessionManager* sessionManager, QObject*
 void MaterialListModel::reset()
 {
     clear();
-    if (m_sessionManager->loadedModel())
+    if (auto loadedModel = m_sessionManager->loadedModel())
     {
-        if (auto materials = m_sessionManager->loadedModel()->GetLoadedResourceOfType(RR::ObjectType::Material))
+        std::vector<RR::ApiHandle<RR::ResourceBase>> materials;
+        if (loadedModel->GetLoadedResourceOfType(RR::ObjectType::Material, materials))
         {
-            for (auto&& res : materials.value())
+            for (auto&& res : materials)
             {
-                auto material = res.as<RR::Material>();
-                auto* newItem = new QStandardItem(QString::fromUtf8(material->Name()->c_str()));
-                newItem->setData(QVariant::fromValue(material), OBJECT_MATERIAL_ROLE);
-                appendRow(newItem);
+                const RR::ApiHandle<RR::Material> material = res.as<RR::Material>();
+                std::string name;
+                if (material->Name(name))
+                {
+                    auto* newItem = new QStandardItem(QString::fromUtf8(name.c_str()));
+                    newItem->setData(QVariant::fromValue(material), OBJECT_MATERIAL_ROLE);
+                    appendRow(newItem);
+                }
             }
         }
     }
@@ -49,16 +54,18 @@ void MaterialFilteredListModel::filterBasedOnEntities(const QList<RR::ApiHandle<
         else
         {
             //find all of the materials
-            if (auto components = entity->Components())
+            std::vector<RR::ApiHandle<RR::ComponentBase>> components;
+            if (entity->Components(components))
             {
-                for (auto&& component : components.value())
+                for (auto&& component : components)
                 {
                     if (*component->Type() == RR::ObjectType::MeshComponent)
                     {
                         const RR::ApiHandle<RR::MeshComponent> meshComponent = component.as<RR::MeshComponent>();
-                        if (auto materials = meshComponent->UsedMaterials())
+                        std::vector<RR::ApiHandle<RR::Material>> materials;
+                        if (meshComponent->UsedMaterials(materials))
                         {
-                            for (auto&& material : materials.value())
+                            for (auto&& material : materials)
                             {
                                 if (material->Valid().value())
                                 {

@@ -181,7 +181,11 @@ QVariant SceneTreeModel::EntityCache::data(ArrSessionManager* sessionManager, in
             {
                 if (m_entity && m_entity->Valid().value())
                 {
-                    return QString::fromUtf8(m_entity->Name()->c_str());
+                    std::string name;
+                    if (m_entity->Name(name))
+                    {
+                        return QString::fromStdString(name);
+                    }
                 }
                 return QString();
             }
@@ -200,9 +204,10 @@ void SceneTreeModel::EntityCache::ensureChildrenComputed(const SceneTreeModel* m
             if (m_entity && m_entity->Valid())
             {
                 int childNumber = 0;
-                if (auto children = m_entity->Children())
+                std::vector<RR::ApiHandle<RR::Entity>> children;
+                if (m_entity->Children(children))
                 {
-                    for (const RR::ApiHandle<RR::Entity>& child : children.value())
+                    for (auto&& child : children)
                     {
                         m_children.push_back(new EntityCache(child, thisModelIndex));
                         model->m_indices.insert(child, model->index(childNumber++, 0, thisModelIndex));
