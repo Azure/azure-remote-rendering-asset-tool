@@ -24,6 +24,8 @@ The blob list visualization has two modes:
 * When **show all models** is not selected then the list will show only the content of the selected directory, with all of its blobs and subdirectories. You can double-click on the folders to navigate into them, like a file explorer, and find your model.
 ![Show only directory](media/directorybloblist.png)
 
+You can select an input model from the list by double-clicking the row, or selecting it and pressing "Select input".
+
 ## Input root directory selection
 
 The root directory is the one under which the input model and any file referenced by it (for example textures files) will be located.
@@ -43,7 +45,7 @@ At the bottom of the conversion panel you can select the output directory (click
 
 The panel is similar to the input panel, but it will show you just the sub-directories in the current directory, or, if you click on "Show all" button, it will show also all of the other blobs.
 
-To select a directory you can navigate to it and press "ok", or you can select a sub-directory and press ok.
+To select a directory you can navigate to it and press "Select Output", or you can select a sub-directory and press "Select Output".
 
 Like for the upload panel, you can also select a new container by clicking on the "+" icon on the right of the container selector, or navigate to a new directory by clicking on the "Add Sub-Directory" button.
 

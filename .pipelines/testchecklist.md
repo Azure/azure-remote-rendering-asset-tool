@@ -1,4 +1,5 @@
 # Test checklist
+
 Test workflows to be done before any release.
 
 - Start application -> No crash.
@@ -7,7 +8,9 @@ Test workflows to be done before any release.
 ## Upload panel
 
 - Open Upload panel -> it shows the blob containers for the configured storage account.
+
 ### Uploading
+
 - Drag and drop an fbx file -> It shows the new file current directory.
 - Select the file and press "del" -> The file is deleted.
 - Drag-drop and remove a whole directory -> It shows the directory and removes the directory.
@@ -15,7 +18,16 @@ Test workflows to be done before any release.
 - Drag-drop multiple files and a directory at the same time
 - Try all of the above with "select file" button.
 - During multi-file upload, check that there is a "progress bar" on top of the main Upload button, showing the progress.
+
+### Containers
+
+- Check if changing container shows the content of the containers.
+- Press "+" and add a new container name -> the blob list will be empty.
+- Change container to another one and press "refresh" -> the new container doesn't show.
+- Add a new container and upload sometimes to it. Change container and press "refresh" -> the container remains.
+
 ### Directories
+
 - Make sure you have multiple directories. Upload some, if you don't.
 - Double click a subdirectory -> The current directory is set to the subdirectory.
 - From a directory, double click '../' in the list -> Navigates to the parent directory.
@@ -51,20 +63,20 @@ Test workflows to be done before any release.
   - Verify that all and only the glb/gltf/fbx models are visualized as a flat list.
   - Verify that the list entries show the model name and under it the full path.
   - Navigate in subdirectories using the bread crumbs -> The list is filtered to the current directory and subdirectories.
-  - Click on 3D model files and other files in the list -> The "Ok" button is only enabled for 3D model files
+  - Click on 3D model files and other files in the list -> The "Select input" button is only enabled for 3D model files
 - Verify that drag-drop and "upload files" behaves exactly like the Upload panel.
 - Double click a model file -> It goes back to the conversion panel where the "input 3d model" is set to that model.
-- Click "Select" again, this time just select another model and press "OK" -> The input model is selected
-- Click "Select" again, select a model but press "Cancel" -> The input model remains unchanged
+- Click "Select" again, this time just select another model and press "Select Input" -> The input model is selected
+- Click "Select" again, select a model but press "Back" -> The input model remains unchanged
 
 ### Output selection
 
 - The "Output" field should read "[Select output directory]. Click on "Select" besides it. -> A blob explorer panel appears
 - When "Show all" is not pressed -> The list contains just the subdirectories from the current directory.
 - When "Show all" is pressed -> All of the files in the current directory (and the subdirectories) are shown.
-- Enter a directory and press "OK" without selecting anything -> The current subdirectory is selected in the "Output" field
-- Click "Select" again. Select a sub-directory in the list and press "OK" -> The selected sub-directory is selected as output.
-- Click on "Add Sub-directory" button besides the bread-crumbs, enter a subdirectory and press "OK" -> The new subdirectory is selected as output.
+- Enter a directory and press "Select Output" without selecting anything -> The current subdirectory is selected in the "Output" field
+- Click "Select" again. Select a sub-directory in the list and press "Select Output" -> The selected sub-directory is selected as output.
+- Click on "Add Sub-directory" button besides the bread-crumbs, enter a subdirectory and press "Select Output" -> The new subdirectory is selected as output.
 
 ### Running conversion status
 
@@ -172,7 +184,7 @@ Test workflows to be done before any release.
 - Select the root node from the scene tree -> The selected material show stay selected, in the larger material list.
 - Modify the values from the material property editor on the right (for example the albedo color) -> observe the changes in the viewport immediately.
 
-## Logs 
+## Logs
 
 - Open the log panel -> The logs are shown on the bottom as a list on top of another panel.
 - Select one of the log entries -> The full text is displayed in the panel below.
