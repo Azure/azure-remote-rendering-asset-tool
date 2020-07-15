@@ -13,6 +13,7 @@ class ArrSessionManager;
 class ArrFrontend;
 class SettingsModel;
 class UploadModel;
+class AboutModel;
 
 // main model for the whole application, used by ApplicationView
 
@@ -34,6 +35,14 @@ public:
 
     SettingsModel* getSettingsModel() const { return m_settingsModel; }
 
+    void openFeedback() const;
+    void openDocumentation() const;
+    AboutModel* getAboutModel() const;
+    void closeApplication();
+
+Q_SIGNALS:
+    void closeRequested();
+
 private:
     Configuration* m_configuration = {};
     LogModel* m_logModel = {};
@@ -46,4 +55,6 @@ private:
     UploadModel* m_uploadModel = {};
     ConversionPageModel* m_conversionPageModel = {};
     SettingsModel* m_settingsModel = {};
+
+    AboutModel* m_aboutModel;
 };

@@ -6,6 +6,7 @@
 #include <QToolTip>
 #include <QWidget>
 #include <View/ArrtStyle.h>
+#include <ViewUtils/DpiUtils.h>
 #include <Widgets/FocusableContainer.h>
 
 namespace
@@ -95,6 +96,7 @@ QIcon ArrtStyle::s_conversion_canceledIcon;
 QIcon ArrtStyle::s_conversion_failedIcon;
 QIcon ArrtStyle::s_refreshIcon;
 QIcon ArrtStyle::s_backIcon;
+QIcon ArrtStyle::s_moreActionsIcon;
 
 ArrtStyle::ArrtStyle()
     : QProxyStyle("Fusion")
@@ -176,6 +178,7 @@ void ArrtStyle::polish(QApplication* app)
     s_conversion_failedIcon = QIcon(":/ArrtApplication/Icons/conversion_failed.svg");
     s_refreshIcon = QIcon(":/ArrtApplication/Icons/refresh.svg");
     s_backIcon = QIcon(":/ArrtApplication/Icons/back.svg");
+    s_moreActionsIcon = QIcon(":/ArrtApplication/Icons/more_actions.svg");
 
     FocusableContainer::installFocusListener(app);
 }
@@ -253,7 +256,6 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
             }
         }
     }
-
     return QProxyStyle::drawControl(element, opt, p, widget);
 }
 
@@ -270,6 +272,20 @@ int ArrtStyle::styleHint(StyleHint hint, const QStyleOption* option, const QWidg
         default:
             return QProxyStyle::styleHint(hint, option, widget, returnData);
     }
+}
+
+QSize ArrtStyle::sizeFromContents(ContentsType type, const QStyleOption* option, const QSize& size, const QWidget* widget) const
+{
+
+    if (type == CT_MenuItem)
+    {
+        if (const QStyleOptionMenuItem* menuItem = qstyleoption_cast<const QStyleOptionMenuItem*>(option))
+        {
+            // make the menu separator taller than the default
+            return QProxyStyle::sizeFromContents(type, option, size, widget).expandedTo(QSize(0, DpiUtils::size(14)));
+        }
+    }
+    return QProxyStyle::sizeFromContents(type, option, size, widget);
 }
 
 void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget) const

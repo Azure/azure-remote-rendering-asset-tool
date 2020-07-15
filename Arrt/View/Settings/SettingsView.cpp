@@ -20,7 +20,7 @@ SettingsView::SettingsView(SettingsModel* settingsModel, QWidget* parent)
 
     {
         // version information
-        auto* versionLabel = new ReadOnlyText(ARRT_VERSION);
+        auto* versionLabel = new ReadOnlyText(settingsModel->getVersion());
         scrollArea->getContentLayout()->addWidget(new FormControl(tr("Application version"), versionLabel));
     }
 

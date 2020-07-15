@@ -18,9 +18,6 @@ public:
     ApplicationView(ApplicationModel* model, QWidget* parent = Q_NULLPTR);
     ~ApplicationView();
 
-    bool canStart() const { return m_canStart; }
-
-
     enum TopLevelPageType
     {
         TOPLEVEL_UPLOAD = 0,
@@ -59,10 +56,5 @@ protected:
     SessionPanelView* m_sessionPanelView = {};
     LogView* m_logView = {};
 
-    //SessionInfoButton* m_sessionInfoButton = {};
-
-    bool m_canStart = true;
-
-    // synchronises the focused page in the model with the navigator page
-    void updateArrPage();
+    void openAboutDialog();
 };

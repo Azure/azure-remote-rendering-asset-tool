@@ -1,6 +1,8 @@
 #include <QBoxLayout>
 #include <QButtonGroup>
+#include <QMenu>
 #include <QMessageBox>
+#include <View/AboutView.h>
 #include <View/ApplicationView.h>
 #include <View/ArrtStyle.h>
 #include <View/Conversion/ConversionPageView.h>
@@ -145,6 +147,22 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         m_logView->setVisible(false);
     }
 
+    MainToolbarButton* extraActionsButton;
+    {
+        extraActionsButton = new MainToolbarButton("More actions...");
+        extraActionsButton->setIcon(ArrtStyle::s_moreActionsIcon);
+        extraActionsButton->setPopupMode(QToolButton::InstantPopup);
+        auto* menu = new QMenu(this);
+        menu->setFont(ArrtStyle::s_widgetFont);
+        connect(menu->addAction(tr("Send feedback")), &QAction::triggered, this, [this]() { m_model->openFeedback(); });
+        connect(menu->addAction(tr("Open documentation")), &QAction::triggered, this, [this]() { m_model->openDocumentation(); });
+        menu->addSeparator();
+        connect(menu->addAction(tr("About ARRT")), &QAction::triggered, this, [this]() { openAboutDialog(); });
+        connect(menu->addAction(tr("Close application")), &QAction::triggered, this, [this]() { close(); });
+
+        extraActionsButton->setMenu(menu);
+    }
+
     // Tab bar for top level navigator
     QHBoxLayout* tabBarLayout;
     {
@@ -165,6 +183,7 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         tabBarLayout->addWidget(buttonGroup);
         tabBarLayout->addStretch(1);
         tabBarLayout->addWidget(logButton);
+        tabBarLayout->addWidget(extraActionsButton);
     }
 
     // Top level widget
@@ -196,4 +215,11 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
 
 ApplicationView::~ApplicationView()
 {
+}
+
+void ApplicationView::openAboutDialog()
+{
+    AboutView* aboutView = new AboutView(m_model->getAboutModel());
+    aboutView->exec();
+    delete aboutView;
 }

@@ -23,6 +23,11 @@ SettingsModel::SettingsModel(Configuration* configuration, ArrFrontend* frontend
     updateButton();
 }
 
+QString SettingsModel::getVersion() const
+{
+    return QString(ARRT_VERSION);
+}
+
 NotificationButtonModel* SettingsModel::getNotificationButtonModel() const
 {
     return m_buttonModel;

@@ -7,13 +7,18 @@
 #include <Model/ConversionManager.h>
 #include <Model/IncludesAzureRemoteRendering.h>
 #include <Model/IncludesAzureStorage.h>
+#include <QAction>
+#include <QDesktopServices>
 #include <QStandardPaths>
+#include <QUrl>
+#include <ViewModel/AboutModel.h>
 #include <ViewModel/Conversion/ConversionPageModel.h>
 #include <ViewModel/Log/LogModel.h>
 #include <ViewModel/Render/RenderPageModel.h>
 #include <ViewModel/Session/SessionPanelModel.h>
 #include <ViewModel/Settings/SettingsModel.h>
 #include <ViewModel/Upload/UploadModel.h>
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wsign-compare"
@@ -42,6 +47,28 @@ ApplicationModel::ApplicationModel()
     m_uploadModel = new UploadModel(m_storageManager, m_configuration, this);
     m_conversionPageModel = new ConversionPageModel(m_conversionManager, m_storageManager, m_configuration, this);
     m_settingsModel = new SettingsModel(m_configuration, m_frontend, m_storageManager, m_sessionManager, this);
+
+    m_aboutModel = new AboutModel(this);
+}
+
+void ApplicationModel::openFeedback() const
+{
+    QDesktopServices::openUrl(QUrl("https://feedback.azure.com/forums/928696-azure-remote-rendering"));
+}
+
+void ApplicationModel::openDocumentation() const
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/blob/master/Documentation/index.md"));
+}
+
+AboutModel* ApplicationModel::getAboutModel() const
+{
+    return m_aboutModel;
+}
+
+void ApplicationModel::closeApplication()
+{
+    Q_EMIT closeRequested();
 }
 
 ApplicationModel::~ApplicationModel()
