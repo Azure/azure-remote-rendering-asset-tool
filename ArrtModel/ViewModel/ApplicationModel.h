@@ -14,6 +14,7 @@ class ArrFrontend;
 class SettingsModel;
 class UploadModel;
 class AboutModel;
+class NewVersionModel;
 
 // main model for the whole application, used by ApplicationView
 
@@ -40,8 +41,12 @@ public:
     AboutModel* getAboutModel() const;
     void closeApplication();
 
+    // this call might cause openNewVersionDialogRequested to be triggered, if there is a new version
+    void checkNewVersion();
+
 Q_SIGNALS:
     void closeRequested();
+    void openNewVersionDialogRequested(NewVersionModel* unparentedNewVersionModel);
 
 private:
     Configuration* m_configuration = {};

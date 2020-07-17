@@ -9,6 +9,7 @@
 #include <View/Log/LogView.h>
 #include <View/ModelEditor/ModelEditorView.h>
 #include <View/ModelsPage/ModelsPageView.h>
+#include <View/NewVersionView.h>
 #include <View/NotificationButtonView.h>
 #include <View/Render/RenderPageView.h>
 #include <View/Session/SessionCreationView.h>
@@ -19,6 +20,7 @@
 #include <ViewModel/ApplicationModel.h>
 #include <ViewModel/Conversion/ConversionPageModel.h>
 #include <ViewModel/Log/LogModel.h>
+#include <ViewModel/NewVersionModel.h>
 #include <ViewModel/Render/RenderPageModel.h>
 #include <ViewModel/Settings/ArrAccountSettingsModel.h>
 #include <ViewModel/Settings/SettingsModel.h>
@@ -26,6 +28,8 @@
 #include <ViewUtils/DpiUtils.h>
 #include <Widgets/FlatButton.h>
 #include <Widgets/Navigator.h>
+
+using namespace std::chrono_literals;
 
 ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
     : QMainWindow(parent)
@@ -213,6 +217,9 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
     m_topLevelNavigator->navigateToPage(TOPLEVEL_RENDERING);
 
     connect(m_model, &ApplicationModel::closeRequested, this, [this]() { close(); });
+    connect(m_model, &ApplicationModel::openNewVersionDialogRequested, this, [this](NewVersionModel* model) { openNewVersionDialog(model); });
+
+    QTimer::singleShot(500ms, this, [this]() { m_model->checkNewVersion(); });
 }
 
 ApplicationView::~ApplicationView()
@@ -221,7 +228,15 @@ ApplicationView::~ApplicationView()
 
 void ApplicationView::openAboutDialog()
 {
-    AboutView* aboutView = new AboutView(m_model->getAboutModel());
+    AboutView* aboutView = new AboutView(m_model->getAboutModel(), this);
     aboutView->exec();
     delete aboutView;
+}
+
+void ApplicationView::openNewVersionDialog(NewVersionModel* unparentedNewVersionModel)
+{
+    NewVersionView* newVersion = new NewVersionView(unparentedNewVersionModel, this);
+    unparentedNewVersionModel->setParent(newVersion);
+    newVersion->exec();
+    delete newVersion;
 }

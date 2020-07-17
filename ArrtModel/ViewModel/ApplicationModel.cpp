@@ -14,6 +14,7 @@
 #include <ViewModel/AboutModel.h>
 #include <ViewModel/Conversion/ConversionPageModel.h>
 #include <ViewModel/Log/LogModel.h>
+#include <ViewModel/NewVersionModel.h>
 #include <ViewModel/Render/RenderPageModel.h>
 #include <ViewModel/Session/SessionPanelModel.h>
 #include <ViewModel/Settings/SettingsModel.h>
@@ -108,4 +109,10 @@ RenderPageModel* ApplicationModel::getRenderPageModel() const
 LogModel* ApplicationModel::getLogModel() const
 {
     return m_logModel;
+}
+
+void ApplicationModel::checkNewVersion()
+{
+    NewVersionModel* model = new NewVersionModel("oldVer", "newVer");
+    Q_EMIT openNewVersionDialogRequested(model);
 }
