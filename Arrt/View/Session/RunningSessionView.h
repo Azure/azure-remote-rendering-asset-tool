@@ -19,6 +19,7 @@ private:
     RunningSessionModel* const m_model;
     FlatButton* m_startStopButton = {};
     ReadOnlyText* m_sizeInfo = {};
+    ReadOnlyText* m_currentSessionId = {};
     HoursMinutesControl* m_maxTime = {};
     HoursMinutesControl* m_remainingTime = {};
     HoursMinutesControl* m_extendTime = {};

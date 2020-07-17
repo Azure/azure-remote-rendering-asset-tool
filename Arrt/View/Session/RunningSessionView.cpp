@@ -21,6 +21,13 @@ RunningSessionView::RunningSessionView(RunningSessionModel* model, QWidget* pare
     auto* panelLayout = new QVBoxLayout(this);
 
     {
+        m_currentSessionId = new ReadOnlyText();
+        auto* fc = new FormControl(tr("Session ID"), m_currentSessionId);
+        fc->setToolTip(tr("Session ID"), tr("Session ID of the running session"));
+        panelLayout->addWidget(fc);
+    }
+
+    {
         m_sizeInfo = new ReadOnlyText();
         auto* fc = new FormControl(tr("Size"), m_sizeInfo);
         fc->setToolTip(tr("VM Size"), tr("Size of the Virtual Machine used for this remote rendering session"));
@@ -118,6 +125,8 @@ void RunningSessionView::updateUi()
 {
     QString label;
     bool isRunning = m_model->isRunning();
+
+    m_currentSessionId->setText(isRunning ? m_model->getSessionId() : QString());
 
     m_sizeInfo->setText(m_model->getSize() == SessionModel::Size::Standard ? tr("Standard") : tr("Premium"));
 

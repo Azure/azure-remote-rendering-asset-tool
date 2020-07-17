@@ -119,6 +119,9 @@ public:
 
     RR::Result getLastError() const { return m_lastError; }
 
+    // return the string of the current session uuid
+    std::string getSessionUuid() const;
+
 Q_SIGNALS:
     void onEnabledChanged();
     void changed();
@@ -155,9 +158,6 @@ private:
 
     // start/stop internal timers based on the session state
     void updateTimers();
-
-    // return the string of the session uuid, used for logging
-    std::string getSessionUuid() const;
 
     bool m_isEnabled = false;
 
