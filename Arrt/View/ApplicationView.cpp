@@ -158,7 +158,7 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         connect(menu->addAction(tr("Open documentation")), &QAction::triggered, this, [this]() { m_model->openDocumentation(); });
         menu->addSeparator();
         connect(menu->addAction(tr("About ARRT")), &QAction::triggered, this, [this]() { openAboutDialog(); });
-        connect(menu->addAction(tr("Close application")), &QAction::triggered, this, [this]() { close(); });
+        connect(menu->addAction(tr("Close application")), &QAction::triggered, this, [this]() { m_model->closeApplication(); });
 
         extraActionsButton->setMenu(menu);
     }
@@ -211,6 +211,8 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
     // Init navigators
     m_conversionNavigator->navigateToPage(CONV_CONVERSION);
     m_topLevelNavigator->navigateToPage(TOPLEVEL_RENDERING);
+
+    connect(m_model, &ApplicationModel::closeRequested, this, [this]() { close(); });
 }
 
 ApplicationView::~ApplicationView()
