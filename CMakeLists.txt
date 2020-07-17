@@ -87,7 +87,7 @@ else()
     message(STATUS "Retrieving version from last git tag")
     find_package (Git)
     execute_process(
-        COMMAND ${GIT_EXECUTABLE} describe --tags
+        COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} 
         OUTPUT_VARIABLE ARRT_VERSION
         OUTPUT_STRIP_TRAILING_WHITESPACE)
