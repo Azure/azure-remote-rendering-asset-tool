@@ -91,6 +91,15 @@ QString ConversionModel::getStatus() const
     return {};
 }
 
+QString ConversionModel::getConversionId() const
+{
+    if (const Conversion* conversion = getConversion())
+    {
+        return QString::fromStdString(conversion->m_conversionUUID);
+    }
+    return {};
+}
+
 QString ConversionModel::getInput() const
 {
     if (const Conversion* conversion = getConversion())
