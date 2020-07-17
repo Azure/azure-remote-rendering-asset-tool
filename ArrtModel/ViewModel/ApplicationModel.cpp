@@ -26,6 +26,8 @@
 #pragma warning(push)
 #pragma warning(disable : 4100)
 #include <AzureRemoteRendering.inl>
+#pragma warning(disable : 4996)
+#include <cpprest/http_client.h>
 #pragma warning(pop)
 #pragma clang diagnostic pop
 
@@ -113,6 +115,27 @@ LogModel* ApplicationModel::getLogModel() const
 
 void ApplicationModel::checkNewVersion()
 {
-    NewVersionModel* model = new NewVersionModel("oldVer", "newVer");
-    Q_EMIT openNewVersionDialogRequested(model);
+    using namespace web::http;
+    client::http_client client(L"https://api.github.com/repos/Azure/azure-remote-rendering-asset-tool/releases/latest");
+    client.request(methods::GET).then([this](const pplx::task<http_response>& previousTask) {
+        // in case of any exception, don't show the dialog
+        try
+        {
+            auto response = previousTask.get();
+            if (response.status_code() == status_codes::OK)
+            {
+                auto json = response.extract_json().get();
+                QString newVersion = QString::fromStdWString(json.at(L"tag_name").as_string());
+                QString currentVersion(ARRT_VERSION);
+                if (currentVersion != newVersion)
+                {
+                    NewVersionModel* model = new NewVersionModel(currentVersion, newVersion);
+                    Q_EMIT openNewVersionDialogRequested(model);
+                }
+            }
+        }
+        catch (std::exception& /*e*/)
+        {
+        }
+    });
 }

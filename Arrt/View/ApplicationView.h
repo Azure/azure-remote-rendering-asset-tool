@@ -11,9 +11,9 @@ class UploadView;
 class SessionPanelView;
 class NewVersionModel;
 
-    // Main application UI, holds the root navigation panel, handles the back button and the navigation to the different editors
+// Main application UI, holds the root navigation panel, handles the back button and the navigation to the different editors
 
-    class ApplicationView : public QMainWindow
+class ApplicationView : public QMainWindow
 {
 public:
     ApplicationView(ApplicationModel* model, QWidget* parent = Q_NULLPTR);
