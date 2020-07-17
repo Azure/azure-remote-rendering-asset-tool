@@ -36,6 +36,7 @@ public:
 
     SettingsModel* getSettingsModel() const { return m_settingsModel; }
 
+    void openFileNewIssue() const;
     void openFeedback() const;
     void openDocumentation() const;
     AboutModel* getAboutModel() const;

@@ -159,7 +159,9 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         auto* menu = new QMenu(this);
         menu->setFont(ArrtStyle::s_widgetFont);
         connect(menu->addAction(tr("Send feedback")), &QAction::triggered, this, [this]() { m_model->openFeedback(); });
+        connect(menu->addAction(tr("File an issue")), &QAction::triggered, this, [this]() { m_model->openFileNewIssue(); });
         connect(menu->addAction(tr("Open documentation")), &QAction::triggered, this, [this]() { m_model->openDocumentation(); });
+
         menu->addSeparator();
         connect(menu->addAction(tr("About ARRT")), &QAction::triggered, this, [this]() { openAboutDialog(); });
         connect(menu->addAction(tr("Close application")), &QAction::triggered, this, [this]() { m_model->closeApplication(); });

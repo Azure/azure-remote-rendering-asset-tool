@@ -54,6 +54,11 @@ ApplicationModel::ApplicationModel()
     m_aboutModel = new AboutModel(this);
 }
 
+void ApplicationModel::openFileNewIssue() const
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/issues/new"));
+}
+
 void ApplicationModel::openFeedback() const
 {
     QDesktopServices::openUrl(QUrl("https://feedback.azure.com/forums/928696-azure-remote-rendering"));
