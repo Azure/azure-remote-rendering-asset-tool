@@ -2,7 +2,7 @@
 name: General questions
 about: Reach out to us with questions
 title: "[Question]"
-labels: 'Question'
+labels: 'question'
 assignees: 'mafranc'
 
 ---

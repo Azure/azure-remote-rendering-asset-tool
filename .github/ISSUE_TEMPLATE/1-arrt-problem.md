@@ -2,7 +2,7 @@
 name: Azure Remote Rendering Asset Tool Problem
 about: Create a report to help us improve Azure Remote Rendering Asset Tool
 title: '[ARRT Problem]'
-labels: 'Bug'
+labels: 'bug'
 assignees: 'mafranc'
 
 ---
