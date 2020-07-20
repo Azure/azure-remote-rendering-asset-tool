@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Remote Rendering Problem
+    url: https://github.com/Azure/azure-remote-rendering/issues/new?assignees=&labels=rendering%2CARRT&template=1-remote-rendering-problem.md&title=%5BRemote+rendering+problem%5D
+    about: Report a remote rendering problem, include the session ID from the session panel.
+  - name: Conversion Problem
+    url: https://github.com/Azure/azure-remote-rendering/issues/new?assignees=&labels=conversion%2CARRT&template=2-asset-conversion-problem.md&title=%5BConversion+Problem%5D
+    about: Report a conversion problem, include the conversion ID from the conversion panel.
+  - name: Provide product feedback
+    url: https://feedback.azure.com/forums/928696-azure-remote-rendering
+    about: Please provide feedback and request new features here.
+  - name: Stack Overflow
+    url: https://stackoverflow.com/questions/tagged/azure-remote-rendering
+    about: Ask the community questions about Azure Remote Rendering on Stack Overflow
+  - name: Microsoft Q&A
+    url: https://docs.microsoft.com/en-us/answers/topics/azure-remote-rendering.html
+    about: Ask the community questions about Azure Remote Rendering on Microsoft Q&A
