@@ -20,6 +20,7 @@ class SettingsModel : public QObject
 public:
     SettingsModel(Configuration* configuration, ArrFrontend* frontend, AzureStorageManager* storageManager, ArrSessionManager* arrSessionManager, QObject* parent = nullptr);
 
+    QString getVersion() const;
     NotificationButtonModel* getNotificationButtonModel() const;
 
     ArrAccountSettingsModel* getArrAccountSettingsModel() const { return m_arrAccountSettingsModel; }

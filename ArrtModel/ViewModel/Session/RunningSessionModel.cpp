@@ -17,6 +17,11 @@ RunningSessionModel::RunningSessionModel(ArrSessionManager* sessionManager, Conf
 {
 }
 
+QString RunningSessionModel::getSessionId() const
+{
+    return QString::fromStdString(m_sessionManager->getSessionUuid());
+}
+
 RunningSessionModel::Size RunningSessionModel::getSize() const
 {
     if (isRunningImpl(true))

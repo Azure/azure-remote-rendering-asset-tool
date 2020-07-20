@@ -9,6 +9,7 @@ class SettingsView;
 class LogView;
 class UploadView;
 class SessionPanelView;
+class NewVersionModel;
 
 // Main application UI, holds the root navigation panel, handles the back button and the navigation to the different editors
 
@@ -17,9 +18,6 @@ class ApplicationView : public QMainWindow
 public:
     ApplicationView(ApplicationModel* model, QWidget* parent = Q_NULLPTR);
     ~ApplicationView();
-
-    bool canStart() const { return m_canStart; }
-
 
     enum TopLevelPageType
     {
@@ -59,10 +57,6 @@ protected:
     SessionPanelView* m_sessionPanelView = {};
     LogView* m_logView = {};
 
-    //SessionInfoButton* m_sessionInfoButton = {};
-
-    bool m_canStart = true;
-
-    // synchronises the focused page in the model with the navigator page
-    void updateArrPage();
+    void openAboutDialog();
+    void openNewVersionDialog(NewVersionModel* unparentedNewVersionModel);
 };

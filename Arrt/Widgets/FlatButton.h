@@ -14,6 +14,7 @@ public:
 
     // set the text, and affects also tooltip and accessible name
     void setText(const QString& text);
+    virtual QSize sizeHint() const override;
 
     virtual QSize minimumSizeHint() const override;
 

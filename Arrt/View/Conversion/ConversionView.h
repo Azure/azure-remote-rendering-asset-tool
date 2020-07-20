@@ -9,6 +9,7 @@ class QLabel;
 class BoundWidget;
 class QLineEdit;
 class QComboBox;
+class FormControl;
 
 class ConversionView : public QWidget
 {
@@ -20,6 +21,8 @@ private:
     ConversionModel* m_model;
     QLineEdit* m_name = {};
     ReadOnlyText* m_status = {};
+    ReadOnlyText* m_conversionId = {};
+    FormControl* m_conversionIdControl = {};
 
     QLineEdit* m_inputLabel = {};
     QLineEdit* m_outputLabel = {};

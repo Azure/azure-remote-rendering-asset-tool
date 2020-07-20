@@ -88,12 +88,15 @@ public:
     static QIcon s_conversion_failedIcon;
     static QIcon s_refreshIcon;
     static QIcon s_backIcon;
+    static QIcon s_moreActionsIcon;
 
 
     virtual void polish(QPalette& pal) override;
     virtual void polish(QApplication* app) override;
 
     virtual void drawControl(ControlElement element, const QStyleOption* opt, QPainter* p, const QWidget* widget = {}) const override;
+
+    virtual QSize sizeFromContents(ContentsType type, const QStyleOption* option, const QSize& size, const QWidget* widget) const override;
 
     virtual void drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget = nullptr) const override;
 

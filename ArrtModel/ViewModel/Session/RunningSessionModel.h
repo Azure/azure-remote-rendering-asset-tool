@@ -14,6 +14,9 @@ class RunningSessionModel : public SessionModel
 public:
     RunningSessionModel(ArrSessionManager* sessionManager, Configuration* configuration, QObject* parent);
 
+    // get session id of running session
+    QString getSessionId() const;
+
     Size getSize() const;
 
     // get the initial lease time

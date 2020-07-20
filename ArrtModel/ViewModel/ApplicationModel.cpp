@@ -7,19 +7,27 @@
 #include <Model/ConversionManager.h>
 #include <Model/IncludesAzureRemoteRendering.h>
 #include <Model/IncludesAzureStorage.h>
+#include <QAction>
+#include <QDesktopServices>
 #include <QStandardPaths>
+#include <QUrl>
+#include <ViewModel/AboutModel.h>
 #include <ViewModel/Conversion/ConversionPageModel.h>
 #include <ViewModel/Log/LogModel.h>
+#include <ViewModel/NewVersionModel.h>
 #include <ViewModel/Render/RenderPageModel.h>
 #include <ViewModel/Session/SessionPanelModel.h>
 #include <ViewModel/Settings/SettingsModel.h>
 #include <ViewModel/Upload/UploadModel.h>
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wsign-compare"
 #pragma warning(push)
 #pragma warning(disable : 4100)
 #include <AzureRemoteRendering.inl>
+#pragma warning(disable : 4996)
+#include <cpprest/http_client.h>
 #pragma warning(pop)
 #pragma clang diagnostic pop
 
@@ -42,6 +50,33 @@ ApplicationModel::ApplicationModel()
     m_uploadModel = new UploadModel(m_storageManager, m_configuration, this);
     m_conversionPageModel = new ConversionPageModel(m_conversionManager, m_storageManager, m_configuration, this);
     m_settingsModel = new SettingsModel(m_configuration, m_frontend, m_storageManager, m_sessionManager, this);
+
+    m_aboutModel = new AboutModel(this);
+}
+
+void ApplicationModel::openFileNewIssue() const
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/issues/new"));
+}
+
+void ApplicationModel::openFeedback() const
+{
+    QDesktopServices::openUrl(QUrl("https://feedback.azure.com/forums/928696-azure-remote-rendering"));
+}
+
+void ApplicationModel::openDocumentation() const
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/blob/master/Documentation/index.md"));
+}
+
+AboutModel* ApplicationModel::getAboutModel() const
+{
+    return m_aboutModel;
+}
+
+void ApplicationModel::closeApplication()
+{
+    Q_EMIT closeRequested();
 }
 
 ApplicationModel::~ApplicationModel()
@@ -81,4 +116,31 @@ RenderPageModel* ApplicationModel::getRenderPageModel() const
 LogModel* ApplicationModel::getLogModel() const
 {
     return m_logModel;
+}
+
+void ApplicationModel::checkNewVersion()
+{
+    using namespace web::http;
+    client::http_client client(L"https://api.github.com/repos/Azure/azure-remote-rendering-asset-tool/releases/latest");
+    client.request(methods::GET).then([this](const pplx::task<http_response>& previousTask) {
+        // in case of any exception, don't show the dialog
+        try
+        {
+            auto response = previousTask.get();
+            if (response.status_code() == status_codes::OK)
+            {
+                auto json = response.extract_json().get();
+                QString newVersion = QString::fromStdWString(json.at(L"tag_name").as_string());
+                QString currentVersion(ARRT_VERSION);
+                if (currentVersion != newVersion)
+                {
+                    NewVersionModel* model = new NewVersionModel(currentVersion, newVersion);
+                    Q_EMIT openNewVersionDialogRequested(model);
+                }
+            }
+        }
+        catch (std::exception& /*e*/)
+        {
+        }
+    });
 }

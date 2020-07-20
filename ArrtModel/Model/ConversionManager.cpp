@@ -48,7 +48,7 @@ namespace
     {
         QJsonObject info;
         info[QLatin1String("status")] = toString(conversion.m_status);
-        info[QLatin1String("uuid")] = conversion.m_status >= Conversion::STARTING ? QString::fromStdString(conversion.m_activeSessionUUID) : QCoreApplication::tr("unknown");
+        info[QLatin1String("uuid")] = conversion.m_status >= Conversion::STARTING ? QString::fromStdString(conversion.m_conversionUUID) : QCoreApplication::tr("unknown");
         if (conversion.m_status >= Conversion::STARTING)
         {
             info[QLatin1String("start time")] = conversion.m_startConversionTime.toString();
@@ -240,7 +240,7 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
                 {
                     if (async->Status().value() == RR::Result::Success)
                     {
-                        auto result = async->Result(conversion->m_activeSessionUUID);
+                        auto result = async->Result(conversion->m_conversionUUID);
                         if (result)
                         {
                             conversion->updateConversionStatus(Conversion::SYNCHRONIZING);
@@ -350,7 +350,7 @@ void ConversionManager::updateConversions(bool updateRemotely)
             {
                 //query conversion
                 QPointer<ConversionManager> thisPtr = this;
-                const auto async = m_frontend->getFrontend()->GetAssetConversionStatusAsync(conversion->m_activeSessionUUID);
+                const auto async = m_frontend->getFrontend()->GetAssetConversionStatusAsync(conversion->m_conversionUUID);
                 if (!async)
                 {
                     return;

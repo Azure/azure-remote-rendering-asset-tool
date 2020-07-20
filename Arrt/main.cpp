@@ -22,10 +22,6 @@ int WinMain(HINSTANCE, HINSTANCE, char*, int)
         ApplicationModel model;
 
         ApplicationView w(&model);
-        if (!w.canStart())
-        {
-            return -1;
-        }
         w.show();
         return a.exec();
     }

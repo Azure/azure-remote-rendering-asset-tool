@@ -54,7 +54,7 @@ struct Conversion
         CONVERSION_FAILED
     } m_status = NOT_STARTED;
 
-    std::string m_activeSessionUUID;
+    std::string m_conversionUUID;
     // stop/watch timer used to time the conversion
     QTime m_startConversionTime;
     QTime m_endConversionTime;

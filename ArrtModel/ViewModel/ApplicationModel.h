@@ -13,6 +13,8 @@ class ArrSessionManager;
 class ArrFrontend;
 class SettingsModel;
 class UploadModel;
+class AboutModel;
+class NewVersionModel;
 
 // main model for the whole application, used by ApplicationView
 
@@ -34,6 +36,19 @@ public:
 
     SettingsModel* getSettingsModel() const { return m_settingsModel; }
 
+    void openFileNewIssue() const;
+    void openFeedback() const;
+    void openDocumentation() const;
+    AboutModel* getAboutModel() const;
+    void closeApplication();
+
+    // this call might cause openNewVersionDialogRequested to be triggered, if there is a new version
+    void checkNewVersion();
+
+Q_SIGNALS:
+    void closeRequested();
+    void openNewVersionDialogRequested(NewVersionModel* unparentedNewVersionModel);
+
 private:
     Configuration* m_configuration = {};
     LogModel* m_logModel = {};
@@ -46,4 +61,6 @@ private:
     UploadModel* m_uploadModel = {};
     ConversionPageModel* m_conversionPageModel = {};
     SettingsModel* m_settingsModel = {};
+
+    AboutModel* m_aboutModel;
 };

@@ -42,6 +42,9 @@ public:
     // return the current status of the conversion
     QString getStatus() const;
 
+    // return the conversion ID, if available
+    QString getConversionId() const;
+
     QString getInput() const;
 
     // return the model that can be used to select the root directory

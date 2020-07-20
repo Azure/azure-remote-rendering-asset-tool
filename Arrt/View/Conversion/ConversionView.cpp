@@ -200,6 +200,14 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
         contentLayout->addWidget(fc);
     }
 
+    {
+        m_conversionId = new ReadOnlyText();
+        m_conversionIdControl = new FormControl(tr("Conversion ID"), m_conversionId);
+        m_conversionIdControl->setToolTip(tr("Conversion ID"), tr("ID of the current conversion"));
+        contentLayout->addWidget(m_conversionIdControl);
+    }
+
+
     QHBoxLayout* toolButtonsLayout = new QHBoxLayout();
     toolButtonsLayout->addStretch(1);
     m_startConversionButton = new FlatButton(tr("Start conversion"));
@@ -229,6 +237,10 @@ void ConversionView::updateUi()
     m_name->setReadOnly(!m_model->canSetName());
 
     m_status->setText(m_model->getStatus());
+
+    QString conversionId = m_model->getConversionId();
+    m_conversionIdControl->setVisible(!conversionId.isEmpty());
+    m_conversionId->setText(conversionId);
 
     m_inputLabel->setText(m_model->getInput());
     m_inputButton->setEnabled(m_model->canSelectInput());

@@ -1,12 +1,15 @@
 #include <QBoxLayout>
 #include <QButtonGroup>
+#include <QMenu>
 #include <QMessageBox>
+#include <View/AboutView.h>
 #include <View/ApplicationView.h>
 #include <View/ArrtStyle.h>
 #include <View/Conversion/ConversionPageView.h>
 #include <View/Log/LogView.h>
 #include <View/ModelEditor/ModelEditorView.h>
 #include <View/ModelsPage/ModelsPageView.h>
+#include <View/NewVersionView.h>
 #include <View/NotificationButtonView.h>
 #include <View/Render/RenderPageView.h>
 #include <View/Session/SessionCreationView.h>
@@ -17,6 +20,7 @@
 #include <ViewModel/ApplicationModel.h>
 #include <ViewModel/Conversion/ConversionPageModel.h>
 #include <ViewModel/Log/LogModel.h>
+#include <ViewModel/NewVersionModel.h>
 #include <ViewModel/Render/RenderPageModel.h>
 #include <ViewModel/Settings/ArrAccountSettingsModel.h>
 #include <ViewModel/Settings/SettingsModel.h>
@@ -24,6 +28,8 @@
 #include <ViewUtils/DpiUtils.h>
 #include <Widgets/FlatButton.h>
 #include <Widgets/Navigator.h>
+
+using namespace std::chrono_literals;
 
 ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
     : QMainWindow(parent)
@@ -145,6 +151,24 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         m_logView->setVisible(false);
     }
 
+    MainToolbarButton* extraActionsButton;
+    {
+        extraActionsButton = new MainToolbarButton("More actions...");
+        extraActionsButton->setIcon(ArrtStyle::s_moreActionsIcon);
+        extraActionsButton->setPopupMode(QToolButton::InstantPopup);
+        auto* menu = new QMenu(this);
+        menu->setFont(ArrtStyle::s_widgetFont);
+        connect(menu->addAction(tr("Send feedback")), &QAction::triggered, this, [this]() { m_model->openFeedback(); });
+        connect(menu->addAction(tr("File an issue")), &QAction::triggered, this, [this]() { m_model->openFileNewIssue(); });
+        connect(menu->addAction(tr("Open documentation")), &QAction::triggered, this, [this]() { m_model->openDocumentation(); });
+
+        menu->addSeparator();
+        connect(menu->addAction(tr("About ARRT")), &QAction::triggered, this, [this]() { openAboutDialog(); });
+        connect(menu->addAction(tr("Close application")), &QAction::triggered, this, [this]() { m_model->closeApplication(); });
+
+        extraActionsButton->setMenu(menu);
+    }
+
     // Tab bar for top level navigator
     QHBoxLayout* tabBarLayout;
     {
@@ -165,6 +189,7 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         tabBarLayout->addWidget(buttonGroup);
         tabBarLayout->addStretch(1);
         tabBarLayout->addWidget(logButton);
+        tabBarLayout->addWidget(extraActionsButton);
     }
 
     // Top level widget
@@ -192,8 +217,28 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
     // Init navigators
     m_conversionNavigator->navigateToPage(CONV_CONVERSION);
     m_topLevelNavigator->navigateToPage(TOPLEVEL_RENDERING);
+
+    connect(m_model, &ApplicationModel::closeRequested, this, [this]() { close(); });
+    connect(m_model, &ApplicationModel::openNewVersionDialogRequested, this, [this](NewVersionModel* model) { openNewVersionDialog(model); });
+
+    QTimer::singleShot(500ms, this, [this]() { m_model->checkNewVersion(); });
 }
 
 ApplicationView::~ApplicationView()
 {
+}
+
+void ApplicationView::openAboutDialog()
+{
+    AboutView* aboutView = new AboutView(m_model->getAboutModel(), this);
+    aboutView->exec();
+    delete aboutView;
+}
+
+void ApplicationView::openNewVersionDialog(NewVersionModel* unparentedNewVersionModel)
+{
+    NewVersionView* newVersion = new NewVersionView(unparentedNewVersionModel, this);
+    unparentedNewVersionModel->setParent(newVersion);
+    newVersion->exec();
+    delete newVersion;
 }
