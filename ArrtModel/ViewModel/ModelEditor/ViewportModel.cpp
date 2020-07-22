@@ -6,6 +6,7 @@
 #include <dxgi.h>
 #include <utility>
 
+#include <Model/ArrSessionManager.h>
 #include <Model/ModelEditor/EntitySelection.h>
 #include <Model/Settings/CameraSettings.h>
 #include <Model/Settings/VideoSettings.h>
@@ -49,10 +50,11 @@ namespace
 } // namespace
 
 
-ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* cameraSettings, QObject* parent)
+ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* cameraSettings, ArrSessionManager* sessionManager, QObject* parent)
     : QObject(parent)
     , m_cameraSettings(cameraSettings)
     , m_videoSettings(videoSettings)
+    , m_sessionManager(sessionManager)
 {
     // static one-time initialization
     moveCameraDirection(0.0, 0.0);
@@ -64,6 +66,24 @@ ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* camer
 
     QObject::connect(m_cameraSettings, &CameraSettings::changed, this, [this]() {
         updateProjection();
+    });
+
+    QObject::connect(m_sessionManager, &ArrSessionManager::rootIdChanged, this, [this]() {
+        RR::ApiHandle<RR::LoadModelResult> loadedModel = m_sessionManager->loadedModel();
+        if (loadedModel.valid())
+        {
+            auto root = loadedModel->Root();
+            if (root)
+            {
+                auto rootEntity = *root;
+                if (rootEntity.valid())
+                {
+                    // set the camera for the model that was just loaded
+                    setRotation(0, 0);
+                    zoomOnEntity(rootEntity);
+                }
+            }
+        }
     });
 
     initializeD3D();
@@ -326,9 +346,7 @@ void ViewportModel::setCameraRotationSpeed(float x, float y)
 
 void ViewportModel::moveCameraDirection(float dx, float dy)
 {
-    m_yaw += dx * m_cameraSettings->getCameraRotationSpeed();
-    m_pitch += dy * m_cameraSettings->getCameraRotationSpeed();
-    m_cameraRotation = QQuaternion::fromEulerAngles(m_pitch, m_yaw, 0);
+    setRotation(m_yaw + dx * m_cameraSettings->getCameraRotationSpeed(), m_pitch + dy * m_cameraSettings->getCameraRotationSpeed());
 }
 
 void ViewportModel::updateProjection()
@@ -515,9 +533,15 @@ void ViewportModel::updateSelection(const QList<RR::ApiHandle<RR::Entity>>& sele
     }
 }
 
+void ViewportModel::setRotation(float yaw, float pitch)
+{
+    m_yaw = yaw;
+    m_pitch = pitch;
+    m_cameraRotation = QQuaternion::fromEulerAngles(m_pitch, m_yaw, 0);
+}
+
 void ViewportModel::zoomOnEntity(RR::ApiHandle<RR::Entity> entity)
 {
-    //Expected<Microsoft::Azure::RemoteRendering::ApiHandle<Microsoft::Azure::RemoteRendering::BoundsQueryAsync>, Microsoft::Azure::RemoteRendering::Status>
     QPointer<ViewportModel> thisPtr = this;
     if (auto async = entity->QueryWorldBoundsAsync())
     {

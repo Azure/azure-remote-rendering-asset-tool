@@ -153,7 +153,7 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
 
     try
     {
-        m_viewportModel = new ViewportModel(m_configuration->getVideoSettings(), m_configuration->getCameraSettings(), this);
+        m_viewportModel = new ViewportModel(m_configuration->getVideoSettings(), m_configuration->getCameraSettings(), this, this);
     }
     catch (...)
     {
