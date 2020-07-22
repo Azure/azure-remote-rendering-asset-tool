@@ -188,4 +188,7 @@ private:
 
     // Moves the camera to frame the entity
     void zoomOnEntity(RR::ApiHandle<RR::Entity> entity);
+
+    // Moves the camera to frame a bounding box
+    void zoomOnBoundingBox(const QVector3D& minBB, const QVector3D& maxBB);
 };

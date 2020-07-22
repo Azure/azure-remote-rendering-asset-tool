@@ -1,6 +1,7 @@
 #include <ViewModel/ModelEditor/ViewportModel.h>
 
 #include <QMatrix4x4>
+#include <QtMath>
 #include <d3d11.h>
 #include <dxgi.h>
 #include <utility>
@@ -516,5 +517,44 @@ void ViewportModel::updateSelection(const QList<RR::ApiHandle<RR::Entity>>& sele
 
 void ViewportModel::zoomOnEntity(RR::ApiHandle<RR::Entity> entity)
 {
-    //<TODO>
+    //Expected<Microsoft::Azure::RemoteRendering::ApiHandle<Microsoft::Azure::RemoteRendering::BoundsQueryAsync>, Microsoft::Azure::RemoteRendering::Status>
+    QPointer<ViewportModel> thisPtr = this;
+    if (auto async = entity->QueryWorldBoundsAsync())
+    {
+        (*async)->Completed([thisPtr](const RR::ApiHandle<RR::BoundsQueryAsync>& finishedAsync) {
+            auto result = finishedAsync->Result();
+            if (result && result->IsValid())
+            {
+                auto minBB = result->min;
+                auto maxBB = result->max;
+                thisPtr->zoomOnBoundingBox(QVector3D(minBB.x, minBB.y, minBB.z), QVector3D(maxBB.x, maxBB.y, maxBB.z));
+            }
+        });
+    }
+}
+
+void ViewportModel::zoomOnBoundingBox(const QVector3D& minBB, const QVector3D& maxBB)
+{
+
+    QVector3D axisX, axisY, axisZ;
+    m_cameraRotation.getAxes(&axisX, &axisY, &axisZ);
+
+    // calculates a sphere including the bounding box
+
+    QVector3D center = (minBB + maxBB) / 2;
+    QVector3D diagonal = maxBB - minBB;
+    qreal bbRadius = qMax(qMax(diagonal.x(), diagonal.y()), diagonal.z()) * 1.5 / 2.0;
+
+    // the distance is so that the bounding sphere is all inside the fov angle
+    qreal dist = bbRadius / qTan(M_PI * m_cameraSettings->getFovAngle() / 360.0);
+
+    // keeps a minimum distance to avoid clipping
+    if (dist < m_simUpdate.nearPlaneDistance * 2)
+    {
+        dist = m_simUpdate.nearPlaneDistance * 2;
+    }
+
+    // place the camera
+    m_cameraPosition = center - axisZ * dist;
+    update();
 }
