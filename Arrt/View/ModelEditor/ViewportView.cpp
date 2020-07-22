@@ -141,6 +141,14 @@ void ViewportView::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
+void ViewportView::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        m_viewportModel->doubleClick(event->localPos().x(), event->localPos().y());
+    }
+}
+
 void ViewportView::updateFromKeyboard()
 {
     m_cameraForwardSpeed = 0.0f;

@@ -95,6 +95,8 @@ public:
 
     void pick(int x, int y);
 
+    void doubleClick(int x, int y);
+
     void render();
 
     void setSelectionModel(EntitySelection* selectionModel);
@@ -180,4 +182,10 @@ private:
     void deinitializeD3D();
 
     void updateProxyTextures();
+
+    // handles click and double click
+    void pick(int x, int y, bool doubleClick);
+
+    // Moves the camera to frame the entity
+    void zoomOnEntity(RR::ApiHandle<RR::Entity> entity);
 };

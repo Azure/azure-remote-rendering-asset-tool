@@ -10,4 +10,7 @@ class ScenePanelView : public QWidget
 {
 public:
     ScenePanelView(ModelEditorModel* model, QWidget* parent = nullptr);
+
+private:
+    ModelEditorModel* const m_model;
 };

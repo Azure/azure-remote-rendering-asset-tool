@@ -243,6 +243,16 @@ void ViewportModel::resize(int width, int height)
 
 void ViewportModel::pick(int x, int y)
 {
+    pick(x, y, false);
+}
+
+void ViewportModel::doubleClick(int x, int y)
+{
+    pick(x, y, true);
+}
+
+void ViewportModel::pick(int x, int y, bool doubleClick)
+{
     if (m_width <= 0 || m_height <= 0)
     {
         return;
@@ -270,7 +280,7 @@ void ViewportModel::pick(int x, int y)
     QPointer<ViewportModel> thisPtr = this;
     if (auto async = m_client->RayCastQueryAsync(rc))
     {
-        (*async)->Completed([thisPtr](const RR::ApiHandle<RR::RaycastQueryAsync>& finishedAsync) {
+        (*async)->Completed([thisPtr, doubleClick](const RR::ApiHandle<RR::RaycastQueryAsync>& finishedAsync) {
             RR::ApiHandle<RR::Entity> hit = nullptr;
             std::vector<RR::RayCastHit> rayCastHits;
             if (finishedAsync->Result(rayCastHits))
@@ -290,6 +300,10 @@ void ViewportModel::pick(int x, int y)
                 else
                 {
                     thisPtr->m_selectionModel->select(hit);
+                    if (doubleClick)
+                    {
+                        thisPtr->m_selectionModel->focusEntity(hit);
+                    }
                 }
             }
         });
@@ -421,10 +435,14 @@ void ViewportModel::setSelectionModel(EntitySelection* selectionModel)
         }
         updateSelection(selected, {});
 
-        QObject::connect(m_selectionModel, &EntitySelection::selectionChanged, this,
-                         [this](const QList<RR::ApiHandle<RR::Entity>>& selected, const QList<RR::ApiHandle<RR::Entity>>& deselected) {
-                             updateSelection(selected, deselected);
-                         });
+        connect(m_selectionModel, &EntitySelection::selectionChanged, this,
+                [this](const QList<RR::ApiHandle<RR::Entity>>& selected, const QList<RR::ApiHandle<RR::Entity>>& deselected) {
+                    updateSelection(selected, deselected);
+                });
+        connect(m_selectionModel, &EntitySelection::entityFocused, this,
+                [this](RR::ApiHandle<RR::Entity> entity) {
+                    zoomOnEntity(entity);
+                });
     }
 }
 
@@ -494,4 +512,9 @@ void ViewportModel::updateSelection(const QList<RR::ApiHandle<RR::Entity>>& sele
             }
         }
     }
+}
+
+void ViewportModel::zoomOnEntity(RR::ApiHandle<RR::Entity> entity)
+{
+    //<TODO>
 }

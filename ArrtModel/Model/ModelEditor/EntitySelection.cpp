@@ -115,3 +115,8 @@ void EntitySelection::setSelection(const QList<RR::ApiHandle<RR::Entity>>& newSe
     }
     selectionChanged(justSelected, justDeselected);
 }
+
+void EntitySelection::focusEntity(const RR::ApiHandle<RR::Entity>& entity)
+{
+    Q_EMIT entityFocused(entity);
+}
