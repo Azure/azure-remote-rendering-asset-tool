@@ -1,3 +1,4 @@
+#include <QFileDialog>
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <Utils/ScopedBlockers.h>
@@ -7,7 +8,6 @@
 #include <View/BlobExplorer/DirectorySelector/DirectorySelector.h>
 #include <ViewModel/BlobExplorer/BlobExplorerModel.h>
 #include <ViewModel/BlobExplorer/BlobsListModel.h>
-#include <Widgets/FileDialogMultiSelection.h>
 #include <Widgets/FlatButton.h>
 #include <Widgets/FocusableContainer.h>
 #include <Widgets/FormControl.h>
