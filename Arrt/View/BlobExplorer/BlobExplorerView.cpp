@@ -127,9 +127,9 @@ void BlobExplorerView::uploadToBlobStorage(QStringList filesToUpload)
 
 void BlobExplorerView::selectDirectoryToUpload()
 {
-    FileDialogMultiSelection fd(this);
-    fd.setNameFilter(m_model->getUploadFileFilters());
-    fd.setViewMode(QFileDialog::Detail);
+    QFileDialog fd(this);
+    fd.setFileMode(QFileDialog::Directory);
+    fd.setOption(QFileDialog::DontUseNativeDialog, false);
 
     if (fd.exec())
     {
@@ -140,7 +140,10 @@ void BlobExplorerView::selectDirectoryToUpload()
 
 void BlobExplorerView::selectFilesToUpload()
 {
-    FileDialogMultiSelection fd(this);
+    QFileDialog fd(this);
+    fd.setFileMode(QFileDialog::ExistingFiles);
+    fd.setOption(QFileDialog::DontUseNativeDialog, false);
+
     fd.setNameFilter(m_model->getUploadFileFilters());
     fd.setViewMode(QFileDialog::Detail);
 
@@ -152,7 +155,6 @@ void BlobExplorerView::selectFilesToUpload()
 
 ToolbarButton* BlobExplorerView::createFilesUploadButton(QWidget* parent)
 {
-    //<TODO> change to system dialog
     auto* uploadFilesButton = new ToolbarButton(tr("Upload files"), ArrtStyle::s_uploadIcon, parent);
     uploadFilesButton->setToolTip(tr("Upload files"), tr("Select local files and upload them to Azure Storage, in the current directory"));
     connect(uploadFilesButton, &ToolbarButton::clicked, this, [this]() { selectFilesToUpload(); });
@@ -161,7 +163,6 @@ ToolbarButton* BlobExplorerView::createFilesUploadButton(QWidget* parent)
 
 ToolbarButton* BlobExplorerView::createDirectoryUploadButton(QWidget* parent)
 {
-    //<TODO> change to system dialog
     auto* uploadDirectoryButton = new ToolbarButton(tr("Upload directory"), ArrtStyle::s_uploadIcon, parent);
     uploadDirectoryButton->setToolTip(tr("Upload directory"), tr("Select a local directory and upload its content to Azure Storage, in the current directory"));
     connect(uploadDirectoryButton, &ToolbarButton::clicked, this, [this]() { selectDirectoryToUpload(); });
