@@ -14,7 +14,7 @@ public:
 
 private:
     OutputSelectionModel* const m_model;
-    BlobExplorerView* m_explorer;
+    BlobExplorerView* const m_explorer;
 
     void goBack();
 };

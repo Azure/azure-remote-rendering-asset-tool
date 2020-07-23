@@ -20,22 +20,19 @@ Q_DECLARE_METATYPE(ModelsPageView::InputMode);
 
 ModelsPageView::ModelsPageView(ModelsPageModel* modelsPageModel)
     : m_model(modelsPageModel)
-    , m_explorer(new BlobExplorerView(modelsPageModel->getExplorerModel(), BlobExplorerView::ExplorerType::ModelSelector, this))
+    , m_explorer(new BlobExplorerView(modelsPageModel->getExplorerModel(), BlobExplorerView::ExplorerType::ModelSelector))
 {
     auto* mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select model to load for rendering")));
 
     {
-        auto* uploadButton = new ToolbarButton(tr("Upload files"), ArrtStyle::s_uploadIcon);
-        uploadButton->setToolTip(tr("Upload files"), tr("Select local files and/or directories and upload them to Azure Storage, in the current directory"));
-        connect(uploadButton, &ToolbarButton::clicked, this, [this]() { m_explorer->selectFilesToUpload(); });
-
         auto* refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
         refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
         connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
 
         auto* toolbar = new Toolbar(this);
-        toolbar->addButton(uploadButton);
+        toolbar->addButton(m_explorer->createFilesUploadButton());
+        toolbar->addButton(m_explorer->createDirectoryUploadButton());
         toolbar->addButton(refreshButton);
         mainLayout->addWidget(toolbar);
     }
