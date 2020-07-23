@@ -14,6 +14,8 @@ private:
     Q_PROPERTY(float cameraInertia MEMBER m_cameraInertia NOTIFY changed);
     Q_PROPERTY(float cameraSpeed MEMBER m_cameraSpeed NOTIFY changed);
     Q_PROPERTY(float cameraRotationSpeed MEMBER m_cameraRotationSpeed NOTIFY changed);
+    Q_PROPERTY(float nearPlane MEMBER m_nearPlane NOTIFY changed);
+    Q_PROPERTY(float farPlane MEMBER m_farPlane NOTIFY changed);
 
 public:
     CameraSettings(QObject* parent);
@@ -38,6 +40,8 @@ public:
     static constexpr float s_cameraSpeedMax = 1000.0f;
     static constexpr float s_cameraRotationSpeedMin = 0.001f;
     static constexpr float s_cameraRotationSpeedMax = 1000.0f;
+    static constexpr float s_planeMin = 0.0001f;
+    static constexpr float s_planeMax = 1000000.0f;
 
 private:
     double m_fovAngle = 90.0;
@@ -47,4 +51,6 @@ private:
     float m_cameraInertia = 0.5f;
     float m_cameraSpeed = 2.5f;
     float m_cameraRotationSpeed = 0.5f;
+    float m_nearPlane = 0.1f;
+    float m_farPlane = 100.f;
 };

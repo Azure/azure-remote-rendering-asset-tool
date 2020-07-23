@@ -1,4 +1,5 @@
 #include <Model/Settings/CameraSettings.h>
+#include <QtMath>
 #include <Utils/JsonUtils.h>
 
 CameraSettings::CameraSettings(QObject* parent)
@@ -19,6 +20,15 @@ void CameraSettings::loadFromJson(const QJsonObject& cameraConfig)
 
     m_cameraRotationSpeed = JsonUtils::fromJson(cameraConfig, QLatin1String("cameraRotationSpeed"), m_cameraRotationSpeed);
     m_cameraRotationSpeed = std::clamp(m_cameraRotationSpeed, s_cameraRotationSpeedMin, s_cameraRotationSpeedMax);
+
+    m_cameraRotationSpeed = JsonUtils::fromJson(cameraConfig, QLatin1String("cameraRotationSpeed"), m_cameraRotationSpeed);
+    m_cameraRotationSpeed = std::clamp(m_cameraRotationSpeed, s_cameraRotationSpeedMin, s_cameraRotationSpeedMax);
+
+    m_nearPlane = JsonUtils::fromJson(cameraConfig, QLatin1String("nearPlane"), m_nearPlane);
+    m_nearPlane = std::clamp(m_nearPlane, s_planeMin, s_planeMax);
+
+    m_farPlane = JsonUtils::fromJson(cameraConfig, QLatin1String("farPlane"), m_farPlane);
+    m_farPlane = std::clamp(m_farPlane, s_planeMin, s_planeMax);
 }
 
 QJsonObject CameraSettings::saveToJson() const
@@ -28,5 +38,7 @@ QJsonObject CameraSettings::saveToJson() const
     cameraConfig[QLatin1String("cameraInertia")] = m_cameraInertia;
     cameraConfig[QLatin1String("cameraSpeed")] = m_cameraSpeed;
     cameraConfig[QLatin1String("cameraRotationSpeed")] = m_cameraRotationSpeed;
+    cameraConfig[QLatin1String("nearPlane")] = m_nearPlane;
+    cameraConfig[QLatin1String("farPlane")] = m_farPlane;
     return cameraConfig;
 }
