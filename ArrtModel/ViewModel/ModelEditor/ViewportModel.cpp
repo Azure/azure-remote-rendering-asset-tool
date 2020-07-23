@@ -131,8 +131,6 @@ void ViewportModel::initializeClient()
         }
 
         ZeroMemory(&m_simUpdate, sizeof(m_simUpdate));
-        m_simUpdate.nearPlaneDistance = 0.1f;
-        m_simUpdate.farPlaneDistance = 100.f;
         m_simUpdate.renderTargetWidth = m_proxyTextureWidth;
         m_simUpdate.renderTargetHeight = m_proxyTextureHeight;
 
@@ -292,8 +290,8 @@ void ViewportModel::pick(int x, int y, bool doubleClick)
 
     const QVector4D dir = (p1 - p2).normalized();
 
-    rc.StartPos = qVectorToWorldPosition(p1 + dir * m_simUpdate.nearPlaneDistance);
-    rc.EndPos = qVectorToWorldPosition(p1 + dir * m_simUpdate.farPlaneDistance);
+    rc.StartPos = qVectorToWorldPosition(p1 + dir * m_cameraSettings->getNearPlane());
+    rc.EndPos = qVectorToWorldPosition(p1 + dir * m_cameraSettings->getFarPlane());
 
     rc.HitCollection = RR::HitCollectionPolicy::ClosestHit;
     rc.MaxHits = 1;
@@ -351,6 +349,9 @@ void ViewportModel::moveCameraDirection(float dx, float dy)
 
 void ViewportModel::updateProjection()
 {
+    m_simUpdate.nearPlaneDistance = m_cameraSettings->getNearPlane();
+    m_simUpdate.farPlaneDistance = m_cameraSettings->getFarPlane();
+
     // even if the ratio is not valid, which might happen when the viewport is collapsed, or not shown yet, we still need
     // to provide a valid projection matrix, to avoid problems in har
     float ratio = 1.0;
@@ -360,7 +361,7 @@ void ViewportModel::updateProjection()
     }
     // update projection when viewport size changes
     QMatrix4x4 m;
-    m.perspective(m_cameraSettings->getFovAngle(), ratio, m_simUpdate.nearPlaneDistance, m_simUpdate.farPlaneDistance);
+    m.perspective(m_cameraSettings->getFovAngle(), ratio, m_cameraSettings->getNearPlane(), m_cameraSettings->getFarPlane());
 
     convertMatrix(m_simUpdate.projection, m);
     bool success = false;
@@ -573,9 +574,9 @@ void ViewportModel::zoomOnBoundingBox(const QVector3D& minBB, const QVector3D& m
     qreal dist = bbRadius / qTan(M_PI * m_cameraSettings->getFovAngle() / 360.0);
 
     // keeps a minimum distance to avoid clipping
-    if (dist < m_simUpdate.nearPlaneDistance * 2)
+    if (dist < m_cameraSettings->getNearPlane() * 2)
     {
-        dist = m_simUpdate.nearPlaneDistance * 2;
+        dist = m_cameraSettings->getNearPlane() * 2;
     }
 
     // place the camera

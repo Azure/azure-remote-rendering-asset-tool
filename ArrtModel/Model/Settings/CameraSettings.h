@@ -24,6 +24,8 @@ public:
     float getCameraInertia() const { return m_cameraInertia; }
     float getCameraSpeed() const { return m_cameraSpeed; }
     float getCameraRotationSpeed() const { return m_cameraRotationSpeed; }
+    float getNearPlane() const { return m_nearPlane; }
+    float getFarPlane() const { return m_farPlane; }
 
     void loadFromJson(const QJsonObject& cameraConfig);
     QJsonObject saveToJson() const;
@@ -40,8 +42,8 @@ public:
     static constexpr float s_cameraSpeedMax = 1000.0f;
     static constexpr float s_cameraRotationSpeedMin = 0.001f;
     static constexpr float s_cameraRotationSpeedMax = 1000.0f;
-    static constexpr float s_planeMin = 0.0001f;
-    static constexpr float s_planeMax = 1000000.0f;
+    static constexpr float s_planeMin = 0.001f;
+    static constexpr float s_planeMax = 10000.0f;
 
 private:
     double m_fovAngle = 90.0;
