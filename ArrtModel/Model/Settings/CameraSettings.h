@@ -16,6 +16,8 @@ private:
     Q_PROPERTY(float cameraRotationSpeed MEMBER m_cameraRotationSpeed NOTIFY changed);
     Q_PROPERTY(float nearPlane MEMBER m_nearPlane NOTIFY changed);
     Q_PROPERTY(float farPlane MEMBER m_farPlane NOTIFY changed);
+    Q_PROPERTY(bool autoGlobalScale READ isGlobalScaleAutomatic WRITE setGlobalScaleAutomatic);
+    Q_PROPERTY(float globalScale MEMBER m_globalScale NOTIFY changed);
 
 public:
     CameraSettings(QObject* parent);
@@ -26,6 +28,9 @@ public:
     float getCameraRotationSpeed() const { return m_cameraRotationSpeed; }
     float getNearPlane() const { return m_nearPlane; }
     float getFarPlane() const { return m_farPlane; }
+    float isGlobalScaleAutomatic() const { return m_autoGlobalScale; }
+    void setGlobalScaleAutomatic(bool globalScaleAutomatic);
+    float getGlobalScale() const { return m_globalScale; }
 
     void loadFromJson(const QJsonObject& cameraConfig);
     QJsonObject saveToJson() const;
@@ -44,6 +49,8 @@ public:
     static constexpr float s_cameraRotationSpeedMax = 1000.0f;
     static constexpr float s_planeMin = 0.001f;
     static constexpr float s_planeMax = 10000.0f;
+    static constexpr float s_scaleMin = 0.0001f;
+    static constexpr float s_scaleMax = 100000.0f;
 
 private:
     double m_fovAngle = 90.0;
@@ -55,4 +62,6 @@ private:
     float m_cameraRotationSpeed = 0.5f;
     float m_nearPlane = 0.1f;
     float m_farPlane = 100.f;
+    float m_globalScale = 1.0f;
+    bool m_autoGlobalScale = true;
 };

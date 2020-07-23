@@ -1,5 +1,6 @@
 #include <Model/Settings/CameraSettings.h>
 #include <ViewModel/Parameters/FloatSliderModel.h>
+#include <ViewModel/Parameters/ToggleButtonModel.h>
 #include <ViewModel/Settings/CameraSettingsModel.h>
 #include <string_view>
 
@@ -14,4 +15,7 @@ CameraSettingsModel::CameraSettingsModel(CameraSettings* cameraSettings, QObject
     m_controls.push_back(new FloatSliderModel(tr("Camera rotation speed"), m_cameraSettings, "cameraRotationSpeed"sv, CameraSettings::s_cameraRotationSpeedMin, CameraSettings::s_cameraRotationSpeedMax, 10000, true));
     m_controls.push_back(new FloatSliderModel(tr("Near plane"), m_cameraSettings, "nearPlane"sv, CameraSettings::s_planeMin, CameraSettings::s_planeMax, 10000, true, "%.5fm"));
     m_controls.push_back(new FloatSliderModel(tr("Far plane"), m_cameraSettings, "farPlane"sv, CameraSettings::s_planeMin, CameraSettings::s_planeMax, 10000, true, "%.5fm"));
+
+    m_globalScaleModel = new FloatSliderModel(tr("Global scale"), m_cameraSettings, "globalScale"sv, CameraSettings::s_scaleMin, CameraSettings::s_scaleMax, 10000, true, "%.5fm");
+    m_autoGlobalScaleModel = new ToggleButtonModel(tr("Automatic global scale"), m_cameraSettings, "autoGlobalScale"sv);
 }
