@@ -120,6 +120,12 @@ QItemSelectionModel* ModelEditorModel::getSceneTreeSelection() const
     return m_treeSelectionModel;
 }
 
+void ModelEditorModel::focusEntity(QModelIndex entity) const
+{
+    RR::ApiHandle<RR::Entity> entityHandle = m_sceneTreeModel->getEntityFromIndex(entity);
+    m_entitySelection->focusEntity(entityHandle);
+}
+
 QAbstractItemModel* ModelEditorModel::getMaterialListModel() const
 {
     return m_materialListModel;

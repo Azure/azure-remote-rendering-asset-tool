@@ -20,6 +20,7 @@ class ViewportView;
 class EntitySelection;
 class CameraSettings;
 class VideoSettings;
+class ArrSessionManager;
 
 namespace Microsoft::Azure::RemoteRendering::Internal
 {
@@ -79,7 +80,7 @@ class ViewportModel : public QObject
     Q_OBJECT
 
 public:
-    ViewportModel(VideoSettings* videoSettings, CameraSettings* cameraSettings, QObject* parent);
+    ViewportModel(VideoSettings* videoSettings, CameraSettings* cameraSettings, ArrSessionManager* sessionManager, QObject* parent);
     virtual ~ViewportModel();
 
     void setSession(RR::ApiHandle<RR::AzureSession> session);
@@ -94,6 +95,8 @@ public:
     void resize(int width, int height);
 
     void pick(int x, int y);
+
+    void doubleClick(int x, int y);
 
     void render();
 
@@ -128,8 +131,9 @@ private:
     int m_width = 0;
     int m_height = 0;
 
-    CameraSettings* m_cameraSettings = nullptr;
-    VideoSettings* m_videoSettings = nullptr;
+    CameraSettings* const m_cameraSettings;
+    VideoSettings* const m_videoSettings;
+    ArrSessionManager* const m_sessionManager;
 
     QTimer* m_refreshTimer = nullptr;
 
@@ -162,6 +166,7 @@ private:
     QMatrix4x4 m_perspectiveMatrixInverse;
     QMatrix4x4 m_viewMatrixInverse;
     QVector3D m_cameraPosition;
+
     float m_yaw = 0.0f;   //yaw in radians
     float m_pitch = 0.0f; //pitch in radians
 
@@ -180,4 +185,15 @@ private:
     void deinitializeD3D();
 
     void updateProxyTextures();
+
+    // handles click and double click
+    void pick(int x, int y, bool doubleClick);
+
+    void setRotation(float yaw, float pitch);
+
+    // Moves the camera to frame the entity
+    void zoomOnEntity(RR::ApiHandle<RR::Entity> entity);
+
+    // Moves the camera to frame a bounding box
+    void zoomOnBoundingBox(const QVector3D& minBB, const QVector3D& maxBB);
 };

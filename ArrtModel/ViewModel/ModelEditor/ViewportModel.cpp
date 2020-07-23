@@ -1,10 +1,12 @@
 #include <ViewModel/ModelEditor/ViewportModel.h>
 
 #include <QMatrix4x4>
+#include <QtMath>
 #include <d3d11.h>
 #include <dxgi.h>
 #include <utility>
 
+#include <Model/ArrSessionManager.h>
 #include <Model/ModelEditor/EntitySelection.h>
 #include <Model/Settings/CameraSettings.h>
 #include <Model/Settings/VideoSettings.h>
@@ -48,10 +50,11 @@ namespace
 } // namespace
 
 
-ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* cameraSettings, QObject* parent)
+ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* cameraSettings, ArrSessionManager* sessionManager, QObject* parent)
     : QObject(parent)
     , m_cameraSettings(cameraSettings)
     , m_videoSettings(videoSettings)
+    , m_sessionManager(sessionManager)
 {
     // static one-time initialization
     moveCameraDirection(0.0, 0.0);
@@ -63,6 +66,24 @@ ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* camer
 
     QObject::connect(m_cameraSettings, &CameraSettings::changed, this, [this]() {
         updateProjection();
+    });
+
+    QObject::connect(m_sessionManager, &ArrSessionManager::rootIdChanged, this, [this]() {
+        RR::ApiHandle<RR::LoadModelResult> loadedModel = m_sessionManager->loadedModel();
+        if (loadedModel.valid())
+        {
+            auto root = loadedModel->Root();
+            if (root)
+            {
+                auto rootEntity = *root;
+                if (rootEntity.valid())
+                {
+                    // set the camera for the model that was just loaded
+                    setRotation(0, 0);
+                    zoomOnEntity(rootEntity);
+                }
+            }
+        }
     });
 
     initializeD3D();
@@ -243,6 +264,16 @@ void ViewportModel::resize(int width, int height)
 
 void ViewportModel::pick(int x, int y)
 {
+    pick(x, y, false);
+}
+
+void ViewportModel::doubleClick(int x, int y)
+{
+    pick(x, y, true);
+}
+
+void ViewportModel::pick(int x, int y, bool doubleClick)
+{
     if (m_width <= 0 || m_height <= 0)
     {
         return;
@@ -270,7 +301,7 @@ void ViewportModel::pick(int x, int y)
     QPointer<ViewportModel> thisPtr = this;
     if (auto async = m_client->RayCastQueryAsync(rc))
     {
-        (*async)->Completed([thisPtr](const RR::ApiHandle<RR::RaycastQueryAsync>& finishedAsync) {
+        (*async)->Completed([thisPtr, doubleClick](const RR::ApiHandle<RR::RaycastQueryAsync>& finishedAsync) {
             RR::ApiHandle<RR::Entity> hit = nullptr;
             std::vector<RR::RayCastHit> rayCastHits;
             if (finishedAsync->Result(rayCastHits))
@@ -290,6 +321,10 @@ void ViewportModel::pick(int x, int y)
                 else
                 {
                     thisPtr->m_selectionModel->select(hit);
+                    if (doubleClick)
+                    {
+                        thisPtr->m_selectionModel->focusEntity(hit);
+                    }
                 }
             }
         });
@@ -311,9 +346,7 @@ void ViewportModel::setCameraRotationSpeed(float x, float y)
 
 void ViewportModel::moveCameraDirection(float dx, float dy)
 {
-    m_yaw += dx * m_cameraSettings->getCameraRotationSpeed();
-    m_pitch += dy * m_cameraSettings->getCameraRotationSpeed();
-    m_cameraRotation = QQuaternion::fromEulerAngles(m_pitch, m_yaw, 0);
+    setRotation(m_yaw + dx * m_cameraSettings->getCameraRotationSpeed(), m_pitch + dy * m_cameraSettings->getCameraRotationSpeed());
 }
 
 void ViewportModel::updateProjection()
@@ -421,10 +454,14 @@ void ViewportModel::setSelectionModel(EntitySelection* selectionModel)
         }
         updateSelection(selected, {});
 
-        QObject::connect(m_selectionModel, &EntitySelection::selectionChanged, this,
-                         [this](const QList<RR::ApiHandle<RR::Entity>>& selected, const QList<RR::ApiHandle<RR::Entity>>& deselected) {
-                             updateSelection(selected, deselected);
-                         });
+        connect(m_selectionModel, &EntitySelection::selectionChanged, this,
+                [this](const QList<RR::ApiHandle<RR::Entity>>& selected, const QList<RR::ApiHandle<RR::Entity>>& deselected) {
+                    updateSelection(selected, deselected);
+                });
+        connect(m_selectionModel, &EntitySelection::entityFocused, this,
+                [this](RR::ApiHandle<RR::Entity> entity) {
+                    zoomOnEntity(entity);
+                });
     }
 }
 
@@ -494,4 +531,54 @@ void ViewportModel::updateSelection(const QList<RR::ApiHandle<RR::Entity>>& sele
             }
         }
     }
+}
+
+void ViewportModel::setRotation(float yaw, float pitch)
+{
+    m_yaw = yaw;
+    m_pitch = pitch;
+    m_cameraRotation = QQuaternion::fromEulerAngles(m_pitch, m_yaw, 0);
+}
+
+void ViewportModel::zoomOnEntity(RR::ApiHandle<RR::Entity> entity)
+{
+    QPointer<ViewportModel> thisPtr = this;
+    if (auto async = entity->QueryWorldBoundsAsync())
+    {
+        (*async)->Completed([thisPtr](const RR::ApiHandle<RR::BoundsQueryAsync>& finishedAsync) {
+            auto result = finishedAsync->Result();
+            if (result && result->IsValid())
+            {
+                auto minBB = result->min;
+                auto maxBB = result->max;
+                thisPtr->zoomOnBoundingBox(QVector3D(minBB.x, minBB.y, minBB.z), QVector3D(maxBB.x, maxBB.y, maxBB.z));
+            }
+        });
+    }
+}
+
+void ViewportModel::zoomOnBoundingBox(const QVector3D& minBB, const QVector3D& maxBB)
+{
+
+    QVector3D axisX, axisY, axisZ;
+    m_cameraRotation.getAxes(&axisX, &axisY, &axisZ);
+
+    // calculates a sphere including the bounding box
+
+    QVector3D center = (minBB + maxBB) / 2;
+    QVector3D diagonal = maxBB - minBB;
+    qreal bbRadius = qMax(qMax(diagonal.x(), diagonal.y()), diagonal.z()) * 1.5 / 2.0;
+
+    // the distance is so that the bounding sphere is all inside the fov angle
+    qreal dist = bbRadius / qTan(M_PI * m_cameraSettings->getFovAngle() / 360.0);
+
+    // keeps a minimum distance to avoid clipping
+    if (dist < m_simUpdate.nearPlaneDistance * 2)
+    {
+        dist = m_simUpdate.nearPlaneDistance * 2;
+    }
+
+    // place the camera
+    m_cameraPosition = center - axisZ * dist;
+    update();
 }

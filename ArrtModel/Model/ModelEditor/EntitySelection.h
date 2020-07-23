@@ -21,15 +21,19 @@ public:
     void select(const RR::ApiHandle<RR::Entity>& object, SelectionType type = SelectionType::SelectExclusively);
     void deselect(const RR::ApiHandle<RR::Entity>& object);
     void deselectAll();
-
     void setSelection(const QList<RR::ApiHandle<RR::Entity>>& newSelection);
 
     QSet<RR::ApiHandle<RR::Entity>>::const_iterator begin() const;
     QSet<RR::ApiHandle<RR::Entity>>::const_iterator end() const;
 
+    // called when an element is double clicked
+    void focusEntity(const RR::ApiHandle<RR::Entity>& entity);
+
 Q_SIGNALS:
     // notification that the selection has changed
     void selectionChanged(QList<RR::ApiHandle<RR::Entity>> m_added, QList<RR::ApiHandle<RR::Entity>> m_removed);
+    // when an entity get focused
+    void entityFocused(RR::ApiHandle<RR::Entity> focused);
 
 private:
     QSet<RR::ApiHandle<RR::Entity>> m_selected;

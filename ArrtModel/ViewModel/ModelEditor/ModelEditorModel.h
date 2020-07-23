@@ -23,6 +23,7 @@ public:
 
     QAbstractItemModel* getSceneTreeModel() const;
     QItemSelectionModel* getSceneTreeSelection() const;
+    void focusEntity(QModelIndex entity) const;
 
     QAbstractItemModel* getMaterialListModel() const;
     QItemSelectionModel* getMaterialListSelectionModel() const;
