@@ -35,7 +35,7 @@ BoundFloatSlider::BoundFloatSlider(FloatSliderModel* model, QWidget* parent)
     QObject::connect(
         m_spinBox, static_cast<void (BoundFloatSpinBox::*)(double)>(&BoundFloatSpinBox::valueChanged), this,
         [this](double) {
-            updateFromModel();
+            setSliderValue(m_model->getValue());
         },
         Qt::ConnectionType::QueuedConnection);
 }
@@ -47,6 +47,7 @@ const ParameterModel* BoundFloatSlider::getModel() const
 
 void BoundFloatSlider::updateFromModel()
 {
+    m_spinBox->updateFromModel();
     setSliderValue(m_model->getValue());
 }
 
