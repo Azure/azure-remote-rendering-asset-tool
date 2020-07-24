@@ -352,7 +352,6 @@ void ViewportModel::updateProjection()
 {
     m_simUpdate.nearPlaneDistance = m_cameraSettings->getNearPlane();
     m_simUpdate.farPlaneDistance = m_cameraSettings->getFarPlane();
-
     // even if the ratio is not valid, which might happen when the viewport is collapsed, or not shown yet, we still need
     // to provide a valid projection matrix, to avoid problems in har
     float ratio = 1.0;
@@ -615,9 +614,6 @@ void ViewportModel::applyAutomaticScaling()
     RR::ApiHandle<RR::Entity> root = getRoot();
     if (root)
     {
-        // position the model to the center
-        root->Position(toDouble3((m_modelBbMax - m_modelBbMin) / 2));
-
         // find the power of 10 that would fit better in the near/far plane range
         const qreal planesDistance = m_cameraSettings->getFarPlane() - m_cameraSettings->getNearPlane();
         const qreal bbDiagonal = (m_modelBbMax - m_modelBbMin).length();
