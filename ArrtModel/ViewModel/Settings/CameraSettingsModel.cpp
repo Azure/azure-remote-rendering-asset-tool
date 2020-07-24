@@ -17,5 +17,7 @@ CameraSettingsModel::CameraSettingsModel(CameraSettings* cameraSettings, QObject
     m_controls.push_back(new FloatSliderModel(tr("Far plane"), m_cameraSettings, "farPlane"sv, CameraSettings::s_planeMin, CameraSettings::s_planeMax, 10000, true, "%.5fm"));
 
     m_globalScaleModel = new FloatSliderModel(tr("Global scale"), m_cameraSettings, "globalScale"sv, CameraSettings::s_scaleMin, CameraSettings::s_scaleMax, 10000, true, "%.5fm");
-    m_autoGlobalScaleModel = new ToggleButtonModel(tr("Automatic global scale"), m_cameraSettings, "autoGlobalScale"sv);
+    m_autoGlobalScaleModel = new ToggleButtonModel(tr("Auto"), m_cameraSettings, "autoGlobalScale"sv);
+
+    connect(m_cameraSettings, &CameraSettings::scaleChanged, this, &CameraSettingsModel::scaleChanged);
 }
