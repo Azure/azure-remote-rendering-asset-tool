@@ -20,9 +20,9 @@ CameraSettingsView::CameraSettingsView(CameraSettingsModel* model, QWidget* pare
     h->addWidget(scaleSlider);
 
     auto* toggleButton = new BoundToggleButton(model->getAutoGlobalScaleModel());
+    toggleButton->setToolTip(tr("Automatic global scale"), tr("Set the global scale automatically to a power of 10 dependent on the loaded model size"));
     h->addWidget(toggleButton);
     w->setLayout(h);
-    m_widgets.push_back(w);
 
     auto updateButton = [this, scaleSlider, toggleButton, model]() {
         const bool val = toggleButton->isChecked();
@@ -32,4 +32,9 @@ CameraSettingsView::CameraSettingsView(CameraSettingsModel* model, QWidget* pare
     updateButton();
 
     m_listLayout->addWidget(w);
+
+    connect(model, &CameraSettingsModel::scaleChanged, this, [this, scaleSlider, toggleButton]() {
+        scaleSlider->updateFromModel();
+        toggleButton->updateFromModel();
+    });
 }

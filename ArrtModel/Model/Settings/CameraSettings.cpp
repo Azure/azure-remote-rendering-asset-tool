@@ -10,6 +10,14 @@ CameraSettings::CameraSettings(QObject* parent)
 void CameraSettings::setGlobalScaleAutomatic(bool globalScaleAutomatic)
 {
     m_autoGlobalScale = globalScaleAutomatic;
+    Q_EMIT scaleChanged();
+    Q_EMIT changed();
+}
+
+void CameraSettings::setGlobalScale(float globalScale)
+{
+    m_globalScale = std::clamp(globalScale, s_scaleMin, s_scaleMax);
+    Q_EMIT scaleChanged();
     Q_EMIT changed();
 }
 
