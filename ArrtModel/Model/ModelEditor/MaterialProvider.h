@@ -30,7 +30,6 @@ private:
     MaterialModel* const m_emptyMaterial;
     MaterialPBR* const m_materialPBR;
     MaterialColor* m_materialColor;
-    /*MaterialCustom* m_materialCustom;*/
 
     MaterialModel* m_currentMaterial;
 
