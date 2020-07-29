@@ -162,6 +162,9 @@ private:
     float m_cameraRotationSpeedX = 0.0f;
     float m_cameraRotationSpeedY = 0.0f;
 
+    float m_oldScale = 1.0f;
+    float m_wasAutomaticScale = false;
+
     QQuaternion m_cameraRotation;
     QMatrix4x4 m_perspectiveMatrixInverse;
     QMatrix4x4 m_viewMatrixInverse;
@@ -174,6 +177,11 @@ private:
 
     EntitySelection* m_selectionModel = nullptr;
 
+    // original model scale
+    QVector3D m_modelScale;
+    // original model bb (before scaling)
+    QVector3D m_modelBbMin;
+    QVector3D m_modelBbMax;
 
     void update();
     void initializeClient();
@@ -196,4 +204,14 @@ private:
 
     // Moves the camera to frame a bounding box
     void zoomOnBoundingBox(const QVector3D& minBB, const QVector3D& maxBB);
+
+    // update the model scale, taking it from the model
+    void updateScale();
+
+    // called to compute the automatic scaling, when the model is loaded or when the option is activated
+    void applyAutomaticScaling();
+
+    void initAfterLoading();
+    void initAfterLoading(const QVector3D& minBB, const QVector3D& maxBB);
+    RR::ApiHandle<RR::Entity> getRoot() const;
 };

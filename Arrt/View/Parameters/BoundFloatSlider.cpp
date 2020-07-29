@@ -1,5 +1,6 @@
 #include <QHBoxLayout>
 #include <QSlider>
+#include <QtMath>
 #include <Utils/ScopedBlockers.h>
 #include <View/Parameters/BoundFloatSlider.h>
 #include <View/Parameters/BoundFloatSpinBox.h>
@@ -7,6 +8,8 @@
 BoundFloatSlider::BoundFloatSlider(FloatSliderModel* model, QWidget* parent)
     : QWidget(parent)
     , m_model(model)
+    , m_sliderMinValue(model->isExpSlider() ? (qLn(model->getMinimum()) / qLn(10.0)) : model->getMinimum())
+    , m_sliderMaxValue(model->isExpSlider() ? (qLn(model->getMaximum()) / qLn(10.0)) : model->getMaximum())
 {
     auto* layout = new QHBoxLayout(this);
 
@@ -23,12 +26,8 @@ BoundFloatSlider::BoundFloatSlider(FloatSliderModel* model, QWidget* parent)
 
     BoundFloatSlider::updateFromModel();
 
-    QObject::connect(m_slider, &QSlider::valueChanged, this, [this](int value) {
-        const float delta = m_model->getMaximum() - m_model->getMinimum();
-        const float t = (float)value / m_model->getNumberOfSteps();
-
-        m_model->setValue(m_model->getMinimum() + t * delta);
-
+    QObject::connect(m_slider, &QSlider::valueChanged, this, [this]() {
+        m_model->setValue(getSliderValue());
         m_spinBox->updateFromModel();
     });
 
@@ -36,7 +35,7 @@ BoundFloatSlider::BoundFloatSlider(FloatSliderModel* model, QWidget* parent)
     QObject::connect(
         m_spinBox, static_cast<void (BoundFloatSpinBox::*)(double)>(&BoundFloatSpinBox::valueChanged), this,
         [this](double) {
-            updateFromModel();
+            setSliderValue(m_model->getValue());
         },
         Qt::ConnectionType::QueuedConnection);
 }
@@ -48,7 +47,23 @@ const ParameterModel* BoundFloatSlider::getModel() const
 
 void BoundFloatSlider::updateFromModel()
 {
-    const float delta = m_model->getMaximum() - m_model->getMinimum();
+    m_spinBox->updateFromModel();
+    setSliderValue(m_model->getValue());
+}
+
+void BoundFloatSlider::setSliderValue(float val)
+{
+    const float v = m_model->isExpSlider() ? qLn(val) / qLn(10) : val;
+    const float t = (v - m_sliderMinValue) / (m_sliderMaxValue - m_sliderMinValue);
+
     ScopedBlockSignals blockSignal(m_slider);
-    m_slider->setValue(m_model->getNumberOfSteps() * (m_model->getValue() - m_model->getMinimum()) / delta);
+    m_slider->setValue(m_model->getNumberOfSteps() * t);
+}
+
+float BoundFloatSlider::getSliderValue() const
+{
+    const float t = (float)m_slider->value() / m_model->getNumberOfSteps();
+    const float v = m_sliderMinValue + t * (m_sliderMaxValue - m_sliderMinValue);
+
+    return m_model->isExpSlider() ? qPow(10.0, v) : v;
 }

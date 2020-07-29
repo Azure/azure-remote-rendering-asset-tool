@@ -1,7 +1,9 @@
+#include <AzureRemoteRendering.h>
 #include <Model/ArrFrontend.h>
 #include <Model/ArrSessionManager.h>
 #include <Model/Configuration.h>
 #include <Model/Log/LogHelpers.h>
+#include <Model/Settings/CameraSettings.h>
 #include <Model/Settings/VideoSettings.h>
 #include <QApplication>
 #include <QDebug>
@@ -136,19 +138,28 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
 
     m_updateTimer = new QTimer(this);
     m_updateTimer->setInterval(s_updateTime);
-    QObject::connect(m_updateTimer, &QTimer::timeout, this, [this]() { updateStatus(); });
+    connect(m_updateTimer, &QTimer::timeout, this, [this]() { updateStatus(); });
 
     m_clientUpdateTimer = new QTimer(this);
     m_clientUpdateTimer->setInterval(s_updateClientTime);
-    QObject::connect(m_clientUpdateTimer, &QTimer::timeout, this, [this]() {
+    connect(m_clientUpdateTimer, &QTimer::timeout, this, [this]() {
         if (m_api)
         {
             m_api->Update();
         }
     });
 
-    QObject::connect(configuration->getVideoSettings(), &VideoSettings::changed, this, [this]() {
+    connect(m_configuration->getVideoSettings(), &VideoSettings::changed, this, [this]() {
         m_waitForVideoFormatChange = false;
+    });
+
+    connect(m_configuration->getCameraSettings(), &CameraSettings::changed, this, [this] {
+        if (auto cs = m_api->CameraSettings())
+        {
+            RR::ApiHandle<RR::CameraSettings> cameraSettings = *cs;
+            cameraSettings->NearPlane(m_configuration->getCameraSettings()->getNearPlane());
+            cameraSettings->FarPlane(m_configuration->getCameraSettings()->getFarPlane());
+        }
     });
 
     try
@@ -160,37 +171,37 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
         qFatal("Viewport couldn't be initialized");
     }
 
-    QObject::connect(m_frontend, &ArrFrontend::onStatusChanged, this,
-                     [this]() {
-                         const bool enabled = m_frontend->getStatus() == AccountConnectionStatus::Connected;
-                         if (m_isEnabled != enabled)
-                         {
-                             m_isEnabled = enabled;
-                             if (m_isEnabled)
-                             {
-                                 if (!m_configuration->getRunningSession().empty())
-                                 {
-                                     qInfo(LoggingCategory::renderingSession)
-                                         << tr("Trying to connect to the saved running session:") << m_configuration->getRunningSession();
-                                     auto session = m_frontend->getFrontend()->OpenRenderingSession(m_configuration->getRunningSession());
-                                     if (session)
-                                     {
-                                         setRunningSession(session.value());
-                                     }
-                                     else
-                                     {
-                                         qWarning(LoggingCategory::renderingSession) << tr("Failed to connect to the saved running session:") << session.error();
-                                     }
-                                 }
-                             }
-                             else
-                             {
-                                 stopSession();
-                                 setRunningSession(nullptr);
-                             }
-                             Q_EMIT onEnabledChanged();
-                         }
-                     });
+    connect(m_frontend, &ArrFrontend::onStatusChanged, this,
+            [this]() {
+                const bool enabled = m_frontend->getStatus() == AccountConnectionStatus::Connected;
+                if (m_isEnabled != enabled)
+                {
+                    m_isEnabled = enabled;
+                    if (m_isEnabled)
+                    {
+                        if (!m_configuration->getRunningSession().empty())
+                        {
+                            qInfo(LoggingCategory::renderingSession)
+                                << tr("Trying to connect to the saved running session:") << m_configuration->getRunningSession();
+                            auto session = m_frontend->getFrontend()->OpenRenderingSession(m_configuration->getRunningSession());
+                            if (session)
+                            {
+                                setRunningSession(session.value());
+                            }
+                            else
+                            {
+                                qWarning(LoggingCategory::renderingSession) << tr("Failed to connect to the saved running session:") << session.error();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        stopSession();
+                        setRunningSession(nullptr);
+                    }
+                    Q_EMIT onEnabledChanged();
+                }
+            });
 }
 
 ArrSessionManager::~ArrSessionManager()

@@ -7,6 +7,7 @@
 #include <View/Parameters/BoundIntSpinBox.h>
 #include <View/Parameters/BoundMultiComboBox.h>
 #include <View/Parameters/BoundText.h>
+#include <View/Parameters/BoundToggleButton.h>
 #include <View/Parameters/BoundWidgetFactory.h>
 
 #include <QDataWidgetMapper>
@@ -49,6 +50,10 @@ QWidget* BoundWidgetFactory::createBoundWidget(ParameterModel* model, QWidget* p
     if (auto* cbm = qobject_cast<CheckBoxModel*>(model))
     {
         return new BoundCheckBox(cbm, parent);
+    }
+    if (auto* tbm = qobject_cast<ToggleButtonModel*>(model))
+    {
+        return new BoundToggleButton(tbm, parent);
     }
     return nullptr;
 }

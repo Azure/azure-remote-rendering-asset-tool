@@ -104,7 +104,7 @@ void FormControl::clear()
     {
         delete w;
     }
-    else if (auto* l = getWidget())
+    else if (auto* l = getLayout())
     {
         delete l; //is that correct?
     }

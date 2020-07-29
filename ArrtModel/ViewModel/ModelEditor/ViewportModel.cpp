@@ -18,7 +18,12 @@ using namespace std::chrono_literals;
 
 namespace
 {
-    RR::Double3 qVectorToWorldPosition(const QVector4D& v)
+    RR::Double3 toDouble3(const QVector4D& v)
+    {
+        return {v.x(), v.y(), v.z()};
+    }
+
+    RR::Double3 toDouble3(const QVector3D& v)
     {
         return {v.x(), v.y(), v.z()};
     }
@@ -55,6 +60,7 @@ ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* camer
     , m_cameraSettings(cameraSettings)
     , m_videoSettings(videoSettings)
     , m_sessionManager(sessionManager)
+    , m_wasAutomaticScale(cameraSettings->isGlobalScaleAutomatic())
 {
     // static one-time initialization
     moveCameraDirection(0.0, 0.0);
@@ -68,21 +74,16 @@ ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* camer
         updateProjection();
     });
 
+    QObject::connect(m_cameraSettings, &CameraSettings::scaleChanged, this, [this]() {
+        updateScale();
+    });
+
+
     QObject::connect(m_sessionManager, &ArrSessionManager::rootIdChanged, this, [this]() {
-        RR::ApiHandle<RR::LoadModelResult> loadedModel = m_sessionManager->loadedModel();
-        if (loadedModel.valid())
+        auto rootEntity = getRoot();
+        if (rootEntity)
         {
-            auto root = loadedModel->Root();
-            if (root)
-            {
-                auto rootEntity = *root;
-                if (rootEntity.valid())
-                {
-                    // set the camera for the model that was just loaded
-                    setRotation(0, 0);
-                    zoomOnEntity(rootEntity);
-                }
-            }
+            initAfterLoading();
         }
     });
 
@@ -131,8 +132,6 @@ void ViewportModel::initializeClient()
         }
 
         ZeroMemory(&m_simUpdate, sizeof(m_simUpdate));
-        m_simUpdate.nearPlaneDistance = 0.1f;
-        m_simUpdate.farPlaneDistance = 100.f;
         m_simUpdate.renderTargetWidth = m_proxyTextureWidth;
         m_simUpdate.renderTargetHeight = m_proxyTextureHeight;
 
@@ -292,8 +291,8 @@ void ViewportModel::pick(int x, int y, bool doubleClick)
 
     const QVector4D dir = (p1 - p2).normalized();
 
-    rc.StartPos = qVectorToWorldPosition(p1 + dir * m_simUpdate.nearPlaneDistance);
-    rc.EndPos = qVectorToWorldPosition(p1 + dir * m_simUpdate.farPlaneDistance);
+    rc.StartPos = toDouble3(p1 + dir * m_cameraSettings->getNearPlane());
+    rc.EndPos = toDouble3(p1 + dir * m_cameraSettings->getFarPlane());
 
     rc.HitCollection = RR::HitCollectionPolicy::ClosestHit;
     rc.MaxHits = 1;
@@ -351,6 +350,8 @@ void ViewportModel::moveCameraDirection(float dx, float dy)
 
 void ViewportModel::updateProjection()
 {
+    m_simUpdate.nearPlaneDistance = m_cameraSettings->getNearPlane();
+    m_simUpdate.farPlaneDistance = m_cameraSettings->getFarPlane();
     // even if the ratio is not valid, which might happen when the viewport is collapsed, or not shown yet, we still need
     // to provide a valid projection matrix, to avoid problems in har
     float ratio = 1.0;
@@ -360,7 +361,7 @@ void ViewportModel::updateProjection()
     }
     // update projection when viewport size changes
     QMatrix4x4 m;
-    m.perspective(m_cameraSettings->getFovAngle(), ratio, m_simUpdate.nearPlaneDistance, m_simUpdate.farPlaneDistance);
+    m.perspective(m_cameraSettings->getFovAngle(), ratio, m_cameraSettings->getNearPlane(), m_cameraSettings->getFarPlane());
 
     convertMatrix(m_simUpdate.projection, m);
     bool success = false;
@@ -485,6 +486,8 @@ void ViewportModel::update()
         }
 
         binding->Update(m_simUpdate, &outputUpdate);
+        float np = outputUpdate.nearPlaneDistance;
+        np = np;
     }
 }
 
@@ -557,9 +560,77 @@ void ViewportModel::zoomOnEntity(RR::ApiHandle<RR::Entity> entity)
     }
 }
 
+void ViewportModel::initAfterLoading()
+{
+    RR::ApiHandle<RR::Entity> root = getRoot();
+    if (root)
+    {
+        QPointer<ViewportModel> thisPtr = this;
+        if (auto async = root->QueryWorldBoundsAsync())
+        {
+            (*async)->Completed([thisPtr, root](const RR::ApiHandle<RR::BoundsQueryAsync>& finishedAsync) {
+                if (thisPtr)
+                {
+                    const auto result = finishedAsync->Result();
+                    if (result && result->IsValid())
+                    {
+                        const auto minBB = result->min;
+                        const auto maxBB = result->max;
+                        const QVector3D vMin(minBB.x, minBB.y, minBB.z);
+                        const QVector3D vMax(maxBB.x, maxBB.y, maxBB.z);
+
+                        thisPtr->initAfterLoading(vMin, vMax);
+                    }
+                }
+            });
+        }
+    }
+}
+
+void ViewportModel::initAfterLoading(const QVector3D& minBB, const QVector3D& maxBB)
+{
+    m_modelBbMin = minBB;
+    m_modelBbMax = maxBB;
+    setRotation(0, 0);
+
+    RR::ApiHandle<RR::Entity> root = getRoot();
+    if (root)
+    {
+        RR::Float3 scale = *root->Scale();
+        m_modelScale = QVector3D(scale.x, scale.y, scale.z);
+    }
+    m_oldScale = 1.0;
+
+    // this logic is here to make sure that on load the model is scaled before the camera is positioned with zoomOnBoundingBox.
+    if (m_cameraSettings->isGlobalScaleAutomatic())
+    {
+        applyAutomaticScaling();
+    }
+    zoomOnEntity(root);
+}
+
+void ViewportModel::applyAutomaticScaling()
+{
+    RR::ApiHandle<RR::Entity> root = getRoot();
+    if (root)
+    {
+        // find the power of 10 that would fit better in the near/far plane range
+        const qreal planesDistance = m_cameraSettings->getFarPlane() - m_cameraSettings->getNearPlane();
+        const qreal bbDiagonal = (m_modelBbMax - m_modelBbMin).length();
+
+        if (planesDistance > std::numeric_limits<float>::epsilon() && bbDiagonal > std::numeric_limits<float>::epsilon())
+        {
+            const qreal expPlanesDistance = qFloor(qLn(planesDistance) / qLn(10));
+            const qreal exp = qCeil(qLn(bbDiagonal) / qLn(10));
+
+            const int expScale = expPlanesDistance - exp - 1;
+            m_cameraSettings->setGlobalScale(qPow(10, expScale));
+        }
+    }
+}
+
 void ViewportModel::zoomOnBoundingBox(const QVector3D& minBB, const QVector3D& maxBB)
 {
-
     QVector3D axisX, axisY, axisZ;
     m_cameraRotation.getAxes(&axisX, &axisY, &axisZ);
 
@@ -573,12 +644,52 @@ void ViewportModel::zoomOnBoundingBox(const QVector3D& minBB, const QVector3D& m
     qreal dist = bbRadius / qTan(M_PI * m_cameraSettings->getFovAngle() / 360.0);
 
     // keeps a minimum distance to avoid clipping
-    if (dist < m_simUpdate.nearPlaneDistance * 2)
+    if (dist < m_cameraSettings->getNearPlane() * 2)
     {
-        dist = m_simUpdate.nearPlaneDistance * 2;
+        dist = m_cameraSettings->getNearPlane() * 2;
     }
 
     // place the camera
     m_cameraPosition = center - axisZ * dist;
     update();
+}
+
+RR::ApiHandle<RR::Entity> ViewportModel::getRoot() const
+{
+    RR::ApiHandle<RR::LoadModelResult> loadedModel = m_sessionManager->loadedModel();
+    if (loadedModel.valid())
+    {
+        const auto root = loadedModel->Root();
+        if (root)
+        {
+            return *root;
+        }
+    }
+    return {};
+}
+
+void ViewportModel::updateScale()
+{
+    const bool isAutomatic = m_cameraSettings->isGlobalScaleAutomatic();
+    const bool wasAutomatic = m_wasAutomaticScale;
+    m_wasAutomaticScale = isAutomatic;
+    RR::ApiHandle<RR::Entity> root = getRoot();
+    if (root)
+    {
+        if (!wasAutomatic && isAutomatic)
+        {
+            applyAutomaticScaling();
+            zoomOnEntity(root);
+        }
+        else
+        {
+            const float scale = m_cameraSettings->getGlobalScale();
+            if (scale != m_oldScale)
+            {
+                m_oldScale = scale;
+                QVector3D newScale = m_modelScale * scale;
+                root->Scale({newScale.x(), newScale.y(), newScale.z()});
+            }
+        }
+    }
 }
