@@ -9,6 +9,7 @@
 #include <View/ModelEditor/ViewportView.h>
 #include <ViewModel/ModelEditor/ModelEditorModel.h>
 #include <ViewModel/ModelEditor/ViewportModel.h>
+#include <ViewUtils/DpiUtils.h>
 #include <Widgets/FlatButton.h>
 #include <Widgets/FocusableContainer.h>
 
@@ -94,16 +95,20 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
         }
 
         {
-            auto* materialPanel = new MaterialListView(modelEditorModel, splitter);
-            splitter->addWidget(new FocusableContainer(materialPanel));
+            auto* materialSplitter = new QSplitter(splitter);
+            auto* materialListView = new MaterialListView(modelEditorModel, materialSplitter);
+            auto* materialEditorView = new MaterialEditorView(modelEditorModel->getEditingMaterial(), materialSplitter);
+
+            materialSplitter->addWidget(new FocusableContainer(materialListView));
+            materialSplitter->addWidget(materialEditorView);
+            materialSplitter->setChildrenCollapsible(false);
+            materialSplitter->setMinimumWidth(DpiUtils::size(150));
+            materialSplitter->setSizes({10, 15});
+
+            splitter->addWidget(materialSplitter);
         }
 
-        {
-            auto* materialPanel = new MaterialEditorView(modelEditorModel->getEditingMaterial(), splitter);
-            splitter->addWidget(materialPanel);
-        }
-
-        splitter->setSizes({10, 40, 10, 10});
+        splitter->setSizes({10, 40, 15});
     }
 
     l->addWidget(splitter, 1);
