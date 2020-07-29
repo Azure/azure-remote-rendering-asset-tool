@@ -38,9 +38,8 @@ namespace
 {
     void convertMatrix(RR::Matrix4x4& dest, const QMatrix4x4& src)
     {
-        src.transposed().copyDataTo((float*)&dest);
+        memcpy((float*)&dest, src.constData(), sizeof(float) * 16);
     }
-
 
     float cameraCurve(float currentSpeed, float targetSpeed, float inertia)
     {
@@ -280,19 +279,23 @@ void ViewportModel::pick(int x, int y, bool doubleClick)
 
     RR::RayCast rc;
 
-    QVector4D v(x, y, 0, 1);
-    v.setX(2.0f * v.x() / float(m_width) - 1.0f);
-    v.setY(2.0f * v.y() / float(m_height) - 1.0f);
-    v.setX(-v.x());
+    // normalize (x,y) to [-1,1] range
+    const float normX = 2.0f * x / float(m_width) - 1.0f;
+    const float normY = -(2.0f * y / float(m_height) - 1.0f);
 
-    const QVector4D p1 = qVectorNormalizeW(m_viewMatrixInverse * m_perspectiveMatrixInverse * v);
-    v.setZ(v.z() + 0.1f);
-    const QVector4D p2 = qVectorNormalizeW(m_viewMatrixInverse * m_perspectiveMatrixInverse * v);
+    const QMatrix4x4 inverse = m_viewMatrixInverse * m_perspectiveMatrixInverse;
 
-    const QVector4D dir = (p1 - p2).normalized();
+    const QVector3D nearFrustumVertex = qVectorNormalizeW(inverse * QVector4D(1, 1, -1, 1)).toVector3D();
+    const float clippingSphereRadius = (nearFrustumVertex - m_cameraPosition).length();
 
-    rc.StartPos = toDouble3(p1 + dir * m_cameraSettings->getNearPlane());
-    rc.EndPos = toDouble3(p1 + dir * m_cameraSettings->getFarPlane());
+    // find the 3d position of the pixel on the near plane, and the the position of the same pixel on the far plane
+    const QVector4D p1 = qVectorNormalizeW(inverse * QVector4D(normX, normY, -1, 1));
+    const QVector4D p2 = qVectorNormalizeW(inverse * QVector4D(normX, normY, 1, 1));
+
+    const QVector4D dir = (p2 - p1).normalized();
+
+    rc.StartPos = toDouble3(m_cameraPosition + dir * clippingSphereRadius);
+    rc.EndPos = toDouble3(p2);
 
     rc.HitCollection = RR::HitCollectionPolicy::ClosestHit;
     rc.MaxHits = 1;
@@ -352,6 +355,7 @@ void ViewportModel::updateProjection()
 {
     m_simUpdate.nearPlaneDistance = m_cameraSettings->getNearPlane();
     m_simUpdate.farPlaneDistance = m_cameraSettings->getFarPlane();
+
     // even if the ratio is not valid, which might happen when the viewport is collapsed, or not shown yet, we still need
     // to provide a valid projection matrix, to avoid problems in har
     float ratio = 1.0;
@@ -365,6 +369,9 @@ void ViewportModel::updateProjection()
 
     convertMatrix(m_simUpdate.projection, m);
     bool success = false;
+
+    // the inverse projection used for picking needs -z
+    m.scale(1, 1, -1);
     m_perspectiveMatrixInverse = m.inverted(&success);
     if (!success)
     {
