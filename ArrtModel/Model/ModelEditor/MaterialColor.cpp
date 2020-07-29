@@ -3,6 +3,7 @@
 #include <ViewModel/Parameters/ColorModel.h>
 #include <ViewModel/Parameters/ComboBoxModel.h>
 #include <ViewModel/Parameters/FloatModel.h>
+#include <ViewModel/Parameters/FloatSliderModel.h>
 #include <ViewModel/Parameters/FloatVectorModel.h>
 #include <ViewModel/Parameters/MultiComboBoxModel.h>
 #include <ViewModel/Parameters/TextureModel.h>
@@ -19,9 +20,9 @@ MaterialColor::MaterialColor(ArrSessionManager* sessionManager, QObject* parent)
     m_controls.push_back(new Float2Model(tr("Texture Scale"), this, "TexCoordScale"sv));
     m_controls.push_back(new Float2Model(tr("Texture Offset"), this, "TexCoordOffset"sv));
     m_controls.push_back(new ComboBoxModel(tr("Color Transparency Mode"), this, "ColorTransparencyMode"sv));
-    m_controls.push_back(new FloatModel(tr("Fade Out"), this, "FadeOut"sv));
-    m_controls.push_back(new FloatModel(tr("Vertex Mix"), this, "VertexMix"sv));
-    m_controls.push_back(new FloatModel(tr("Alpha Clip Threshold"), this, "AlphaClipThreshold"sv));
+    m_controls.push_back(new FloatSliderModel(tr("Fade Out"), this, "FadeOut"sv, 0.0f, 1.0f, 1000));
+    m_controls.push_back(new FloatSliderModel(tr("Vertex Mix"), this, "VertexMix"sv, 0.0f, 1.0f, 1000));
+    m_controls.push_back(new FloatSliderModel(tr("Alpha Clip Threshold"), this, "AlphaClipThreshold"sv, 0.0f, 1.0f, 1000));
 }
 
 RR::ApiHandle<RR::ColorMaterial> MaterialColor::getMaterial()
