@@ -39,8 +39,8 @@ public:
             else
             {
                 return tr("Invalid");
-			}
-		}
+            }
+        }
         else
         {
             return tr("Not set");

@@ -1,4 +1,5 @@
 #include <Model/ArrSessionManager.h>
+#include <Model/ModelEditor/MaterialColor.h>
 #include <Model/ModelEditor/MaterialPBR.h>
 #include <Model/ModelEditor/MaterialProvider.h>
 #include <QMetaType>
@@ -10,6 +11,7 @@ MaterialProvider::MaterialProvider(const Value<RR::ApiHandle<RR::Material>>* mat
     , m_material(material)
     , m_emptyMaterial(new MaterialModel(sessionManager, this))
     , m_materialPBR(new MaterialPBR(sessionManager, this))
+    , m_materialColor(new MaterialColor(sessionManager, this))
     , m_currentMaterial(m_emptyMaterial)
 {
     QObject::connect(m_material, &Value<RR::ApiHandle<RR::Material>>::valueChanged, this, [this]() {
@@ -21,7 +23,6 @@ void MaterialProvider::updateControls()
 {
     MaterialModel* m = m_emptyMaterial;
 
-
     if (auto material = m_material->get())
     {
         if (auto subType = material->MaterialSubType())
@@ -32,6 +33,7 @@ void MaterialProvider::updateControls()
                     m = m_materialPBR;
                     break;
                 case RR::MaterialType::Color:
+                    m = m_materialColor;
                     break;
             }
         }
