@@ -17,6 +17,7 @@ Q_DECLARE_METATYPE(azure::storage::storage_uri);
 
 OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
     : m_model(model)
+    , m_explorer(new BlobExplorerView(model->getExplorerModel(), BlobExplorerView::ExplorerType::DirectorySelector))
 {
     auto* l = new QVBoxLayout(this);
     l->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the output container and directory, where the converted 3D model will be stored")));
@@ -44,7 +45,6 @@ OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
     }
 
     {
-        m_explorer = new BlobExplorerView(m_model->getExplorerModel(), BlobExplorerView::ExplorerType::DirectorySelector, this);
         auto* fc = new FormControl(tr("Output Directory"), m_explorer);
         fc->setToolTip(tr("Output Directory for Conversion"), tr("This is the destination directory where Conversion will write the output files"));
         l->addWidget(fc, 1);

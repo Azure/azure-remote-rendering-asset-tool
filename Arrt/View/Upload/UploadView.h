@@ -13,5 +13,5 @@ public:
 
 private:
     UploadModel* const m_model;
-    BlobExplorerView* m_explorer;
+    BlobExplorerView* const m_explorer;
 };

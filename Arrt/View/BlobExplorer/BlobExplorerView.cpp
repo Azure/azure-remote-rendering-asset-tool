@@ -1,3 +1,4 @@
+#include <QFileDialog>
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <Utils/ScopedBlockers.h>
@@ -7,11 +8,11 @@
 #include <View/BlobExplorer/DirectorySelector/DirectorySelector.h>
 #include <ViewModel/BlobExplorer/BlobExplorerModel.h>
 #include <ViewModel/BlobExplorer/BlobsListModel.h>
-#include <Widgets/FileDialogMultiSelection.h>
 #include <Widgets/FlatButton.h>
 #include <Widgets/FocusableContainer.h>
 #include <Widgets/FormControl.h>
 #include <Widgets/ReadOnlyText.h>
+#include <Widgets/ToolbarButton.h>
 
 BlobExplorerView::BlobExplorerView(BlobExplorerModel* model, ExplorerType explorerType, QWidget* parent)
     : QWidget(parent)
@@ -124,10 +125,25 @@ void BlobExplorerView::uploadToBlobStorage(QStringList filesToUpload)
     }
 }
 
+void BlobExplorerView::selectDirectoryToUpload()
+{
+    QFileDialog fd(this);
+    fd.setFileMode(QFileDialog::Directory);
+    fd.setOption(QFileDialog::DontUseNativeDialog, false);
+
+    if (fd.exec())
+    {
+        uploadToBlobStorage(fd.selectedFiles());
+    }
+}
+
 
 void BlobExplorerView::selectFilesToUpload()
 {
-    FileDialogMultiSelection fd(this);
+    QFileDialog fd(this);
+    fd.setFileMode(QFileDialog::ExistingFiles);
+    fd.setOption(QFileDialog::DontUseNativeDialog, false);
+
     fd.setNameFilter(m_model->getUploadFileFilters());
     fd.setViewMode(QFileDialog::Detail);
 
@@ -135,4 +151,20 @@ void BlobExplorerView::selectFilesToUpload()
     {
         uploadToBlobStorage(fd.selectedFiles());
     }
+}
+
+ToolbarButton* BlobExplorerView::createFilesUploadButton(QWidget* parent)
+{
+    auto* uploadFilesButton = new ToolbarButton(tr("Upload files"), ArrtStyle::s_uploadIcon, parent);
+    uploadFilesButton->setToolTip(tr("Upload files"), tr("Select local files and upload them to Azure Storage, in the current directory"));
+    connect(uploadFilesButton, &ToolbarButton::clicked, this, [this]() { selectFilesToUpload(); });
+    return uploadFilesButton;
+}
+
+ToolbarButton* BlobExplorerView::createDirectoryUploadButton(QWidget* parent)
+{
+    auto* uploadDirectoryButton = new ToolbarButton(tr("Upload directory"), ArrtStyle::s_uploadIcon, parent);
+    uploadDirectoryButton->setToolTip(tr("Upload directory"), tr("Select a local directory and upload its content to Azure Storage, in the current directory"));
+    connect(uploadDirectoryButton, &ToolbarButton::clicked, this, [this]() { selectDirectoryToUpload(); });
+    return uploadDirectoryButton;
 }

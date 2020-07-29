@@ -17,6 +17,7 @@ Q_DECLARE_METATYPE(azure::storage::storage_uri);
 
 InputSelectionView::InputSelectionView(InputSelectionModel* model)
     : m_model(model)
+    , m_explorer(new BlobExplorerView(model->getExplorerModel(), BlobExplorerView::ExplorerType::ModelSelector))
 {
     auto* l = new QVBoxLayout(this);
     l->addWidget(ArrtStyle::createHeaderLabel({}, tr("Select the model to convert to .arrAsset format")));
@@ -26,17 +27,14 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
         backButton->setToolTip(tr("Back"), tr("Go back to the conversion page without changing the selection"));
         connect(backButton, &ToolbarButton::clicked, this, [this]() { goBack(); });
 
-        auto* uploadButton = new ToolbarButton(tr("Upload files"), ArrtStyle::s_uploadIcon);
-        uploadButton->setToolTip(tr("Upload files"), tr("Select local files and/or directories and upload them to Azure Storage, in the current directory"));
-        connect(uploadButton, &ToolbarButton::clicked, this, [this]() { m_explorer->selectFilesToUpload(); });
-
         auto* refreshButton = new ToolbarButton(tr("Refresh"), ArrtStyle::s_refreshIcon);
         refreshButton->setToolTip(tr("Refresh"), tr("Refresh the containers and the blob list currently visualized"));
         connect(refreshButton, &ToolbarButton::clicked, this, [this]() { m_model->refresh(); });
 
         auto* toolbar = new Toolbar(this);
         toolbar->addButton(backButton);
-        toolbar->addButton(uploadButton);
+        toolbar->addButton(m_explorer->createFilesUploadButton());
+        toolbar->addButton(m_explorer->createDirectoryUploadButton());
         toolbar->addButton(refreshButton);
         l->addWidget(toolbar);
     }
@@ -49,7 +47,6 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
     }
 
     {
-        m_explorer = new BlobExplorerView(m_model->getExplorerModel(), BlobExplorerView::ExplorerType::ModelSelector, this);
         auto* fc = new FormControl(tr("Blob list"), m_explorer);
         fc->setToolTip(tr("Blob list"), tr("Azure Storage blob container where the input 3D model is located"));
         l->addWidget(fc);
@@ -73,7 +70,6 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
 
     connect(m_model, &InputSelectionModel::submitted, this, [this]() { goBack(); });
 }
-
 
 void InputSelectionView::goBack()
 {

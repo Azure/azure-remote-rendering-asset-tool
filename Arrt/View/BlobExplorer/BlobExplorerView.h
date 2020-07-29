@@ -3,6 +3,7 @@
 
 class BlobExplorerModel;
 class FlatButton;
+class ToolbarButton;
 class FormControl;
 class ReadOnlyText;
 
@@ -19,16 +20,26 @@ public:
         BlobExplorer
     };
 
-    BlobExplorerView(BlobExplorerModel* model, ExplorerType explorerType, QWidget* parent);
+    BlobExplorerView(BlobExplorerModel* model, ExplorerType explorerType, QWidget* parent = {});
 
-    // opens the uploadDialog to start uploading files
-    void selectFilesToUpload();
+    // create the button to select files to upload
+    ToolbarButton* createFilesUploadButton(QWidget* parent = {});
+
+    // create the button to select a directory to upload
+    ToolbarButton* createDirectoryUploadButton(QWidget* parent = {});
 
 private:
     BlobExplorerModel* const m_model;
     ReadOnlyText* m_uploadStatusLabel = {};
     FlatButton* m_parentDirectoryButton = {};
     FormControl* m_directoryControl = {};
+
+    // opens the uploadDialog to start uploading files
+    void selectFilesToUpload();
+
+    //	opens the uploadDialog to start uploading a directory
+    void selectDirectoryToUpload();
+
 
     // upload all of the files (passed as paths) to the blob storage.
     void uploadToBlobStorage(QStringList filesToUpload);
