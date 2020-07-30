@@ -6,6 +6,7 @@ BoundColor::BoundColor(ColorModel* model, QWidget* parent)
     , m_model(model)
 {
     setNotifyWhileSelecting(true);
+    setUseAlpha(true);
 
     BoundColor::updateFromModel();
 

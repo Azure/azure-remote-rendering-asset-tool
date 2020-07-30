@@ -7,6 +7,7 @@
 class ArrSessionManager;
 class MaterialModel;
 class MaterialPBR;
+class MaterialColor;
 class ParameterModel;
 
 // Model class used to expose the controls of the selected material.
@@ -28,8 +29,7 @@ private:
     const Value<RR::ApiHandle<RR::Material>>* const m_material;
     MaterialModel* const m_emptyMaterial;
     MaterialPBR* const m_materialPBR;
-    /* QColorMaterial* m_materialPBR;
-    QCustomMaterial* m_customMaterial;*/
+    MaterialColor* m_materialColor;
 
     MaterialModel* m_currentMaterial;
 

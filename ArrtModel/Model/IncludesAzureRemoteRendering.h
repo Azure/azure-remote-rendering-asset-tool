@@ -19,6 +19,7 @@ Q_DECLARE_METATYPE(RR::PbrMaterialFeatures);
 Q_DECLARE_METATYPE(RR::Result);
 Q_DECLARE_METATYPE(RR::ApiHandle<RR::Material>);
 Q_DECLARE_METATYPE(RR::ApiHandle<RR::Entity>);
+Q_DECLARE_METATYPE(RR::ApiHandle<RR::Texture>);
 
 bool operator<(const RR::ApiHandle<RR::Entity>& lhs, const RR::ApiHandle<RR::Entity>& rhs);
 uint qHash(const RR::ApiHandle<RR::Entity>& e);

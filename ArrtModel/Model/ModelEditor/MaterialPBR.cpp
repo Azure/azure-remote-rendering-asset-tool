@@ -3,6 +3,7 @@
 #include <ViewModel/Parameters/ColorModel.h>
 #include <ViewModel/Parameters/ComboBoxModel.h>
 #include <ViewModel/Parameters/FloatModel.h>
+#include <ViewModel/Parameters/FloatSliderModel.h>
 #include <ViewModel/Parameters/FloatVectorModel.h>
 #include <ViewModel/Parameters/MultiComboBoxModel.h>
 #include <ViewModel/Parameters/TextureModel.h>
@@ -19,14 +20,14 @@ MaterialPBR::MaterialPBR(ArrSessionManager* sessionManager, QObject* parent)
     m_controls.push_back(new TextureModel(tr("Albedo Texture"), this, "AlbedoTexture"sv));
     m_controls.push_back(new ComboBoxModel(tr("Vertex Alpha Mode"), this, "PbrVertexAlphaMode"sv));
     m_controls.push_back(new TextureModel(tr("Normal Map"), this, "NormalMap"sv));
-    m_controls.push_back(new FloatModel(tr("Ambient Occlusion Scale"), this, "AOScale"sv));
+    m_controls.push_back(new FloatSliderModel(tr("Ambient Occlusion Scale"), this, "AOScale"sv, 0.0f, 1.0f, 1000));
     m_controls.push_back(new TextureModel(tr("Ambient Occlusion Map"), this, "AOMap"sv));
-    m_controls.push_back(new FloatModel(tr("Roughness"), this, "Roughness"sv));
+    m_controls.push_back(new FloatSliderModel(tr("Roughness"), this, "Roughness"sv, 0.0f, 1.0f, 1000));
     m_controls.push_back(new TextureModel(tr("Roughness Map"), this, "RoughnessMap"sv));
-    m_controls.push_back(new FloatModel(tr("Metalness"), this, "Metalness"sv));
+    m_controls.push_back(new FloatSliderModel(tr("Metalness"), this, "Metalness"sv, 0.0f, 1.0f, 1000));
     m_controls.push_back(new TextureModel(tr("Metalness Map"), this, "MetalnessMap"sv));
-    m_controls.push_back(new FloatModel(tr("Alpha Clip Threshold"), this, "AlphaClipThreshold"sv));
-    m_controls.push_back(new FloatModel(tr("Fade Out"), this, "FadeOut"sv));
+    m_controls.push_back(new FloatSliderModel(tr("Alpha Clip Threshold"), this, "AlphaClipThreshold"sv, 0.0f, 1.0f, 1000));
+    m_controls.push_back(new FloatSliderModel(tr("Fade Out"), this, "FadeOut"sv, 0.0f, 1.0f, 1000));
 }
 
 RR::ApiHandle<RR::PbrMaterial> MaterialPBR::getMaterial()

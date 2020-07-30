@@ -35,7 +35,7 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
     : QMainWindow(parent)
 {
     // initial size
-    resize(1200, 800);
+    resize(DpiUtils::size(1200), DpiUtils::size(800));
     m_model = model;
 
     m_uploadView = new UploadView(model->getUploadModel());

@@ -10,8 +10,6 @@ class MaterialPBR : public MaterialModel
 {
     Q_OBJECT
 
-    typedef RR::PbrMaterialFeatures FlagsType;
-
 public:
     MaterialPBR(ArrSessionManager* sessionManager, QObject* parent = nullptr);
 

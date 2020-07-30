@@ -4,6 +4,7 @@
 #include <View/Parameters/BoundWidget.h>
 #include <View/Parameters/BoundWidgetFactory.h>
 #include <ViewModel/Parameters/ParameterModel.h>
+#include <ViewUtils/DpiUtils.h>
 #include <Widgets/FormControl.h>
 #include <Widgets/VerticalScrollArea.h>
 
@@ -11,6 +12,8 @@ MaterialEditorView::MaterialEditorView(MaterialProvider* model, QWidget* parent)
     : FocusableContainer({}, parent)
     , m_model(model)
 {
+    setMinimumWidth(DpiUtils::size(150));
+
     auto* scrollArea = new VerticalScrollArea(this);
     m_layout = scrollArea->getContentLayout();
     setChild(scrollArea);
