@@ -28,17 +28,17 @@ void ArrAccountSettingsView::updateUi()
     const auto status = m_model->getStatus();
     switch (status)
     {
-        case AccountConnectionStatus::Connected:
+        case AccountConnectionStatus::Authenticated:
             setStatusBarColor(ArrtStyle::s_connectedColor);
             break;
-        case AccountConnectionStatus::Connecting:
+        case AccountConnectionStatus::CheckingCredentials:
             setStatusBarColor(ArrtStyle::s_connectingColor);
             break;
-        case AccountConnectionStatus::FailedToConnect:
-        case AccountConnectionStatus::Disconnected:
+        case AccountConnectionStatus::InvalidCredentials:
+        case AccountConnectionStatus::NotAuthenticated:
             setStatusBarColor(ArrtStyle::s_disconnectedColor);
             break;
     }
     m_status->setText(toString(status));
-    m_retryButton->setEnabled(status == AccountConnectionStatus::FailedToConnect);
+    m_retryButton->setEnabled(status == AccountConnectionStatus::InvalidCredentials);
 }

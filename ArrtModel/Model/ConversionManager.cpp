@@ -135,8 +135,8 @@ ConversionManager::ConversionManager(ArrFrontend* azureFrontend, AzureStorageMan
     , m_storageManager(storageManager)
 {
     auto onStatusChanged = [this]() {
-        const bool enabled = m_frontend->getStatus() == AccountConnectionStatus::Connected &&
-                             m_storageManager->getStatus() == AccountConnectionStatus::Connected;
+        const bool enabled = m_frontend->getStatus() == AccountConnectionStatus::Authenticated &&
+                             m_storageManager->getStatus() == AccountConnectionStatus::Authenticated;
         if (m_enabled != enabled)
         {
             m_enabled = enabled;

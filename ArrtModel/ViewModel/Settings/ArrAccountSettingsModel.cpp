@@ -13,7 +13,7 @@ ArrAccountSettingsModel::ArrAccountSettingsModel(ArrAccountSettings* arrAccountS
     , m_frontend(frontend)
 {
     using namespace std::literals;
-    m_controls.push_back(new TextModel(tr("Id"), m_arrAccountSettings, "id"sv, true));
+    m_controls.push_back(new TextModel(tr("ID"), m_arrAccountSettings, "id"sv, true));
     m_controls.push_back(new TextModel(tr("Key"), m_arrAccountSettings, "key"sv, true, true));
     auto* regionModel = new ComboBoxModelFromMap(tr("Region"), m_arrAccountSettings, "region"sv);
     for (auto&& region : m_arrAccountSettings->getAvailableRegions())
@@ -38,7 +38,7 @@ ArrAccountSettingsModel::ArrAccountSettingsModel(ArrAccountSettings* arrAccountS
 
 bool ArrAccountSettingsModel::isEnabled() const
 {
-    return getStatus() != AccountConnectionStatus::Connecting;
+    return getStatus() != AccountConnectionStatus::CheckingCredentials;
 }
 
 AccountConnectionStatus ArrAccountSettingsModel::getStatus() const

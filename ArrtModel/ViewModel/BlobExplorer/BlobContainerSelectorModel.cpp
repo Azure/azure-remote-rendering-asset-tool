@@ -11,7 +11,7 @@ BlobContainerSelectorModel::BlobContainerSelectorModel(AzureStorageManager* stor
 {
     m_availableContainersModel = new QStandardItemModel(this);
     connect(m_storageManager, &AzureStorageManager::onStatusChanged, this, [this]() {
-        if (m_storageManager->getStatus() == AccountConnectionStatus::Connected)
+        if (m_storageManager->getStatus() == AccountConnectionStatus::Authenticated)
         {
             refresh();
         }

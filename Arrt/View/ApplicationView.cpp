@@ -123,7 +123,7 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
 
         // if the ARR account is not set up, start with the settings panel visible
         auto arrStatus = settingsModel->getArrAccountSettingsModel()->getStatus();
-        if (arrStatus == AccountConnectionStatus::Disconnected || arrStatus == AccountConnectionStatus::FailedToConnect)
+        if (arrStatus == AccountConnectionStatus::NotAuthenticated || arrStatus == AccountConnectionStatus::InvalidCredentials)
         {
             settingsButton->toggle();
         }

@@ -87,7 +87,7 @@ private:
     utility::string_t m_storageUrl;
     utility::string_t m_accountName;
     utility::string_t m_key;
-    AccountConnectionStatus m_status = AccountConnectionStatus::Disconnected;
+    AccountConnectionStatus m_status = AccountConnectionStatus::NotAuthenticated;
 
     void setStatus(AccountConnectionStatus status);
     void connect();

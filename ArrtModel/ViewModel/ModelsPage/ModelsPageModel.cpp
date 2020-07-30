@@ -44,7 +44,7 @@ ModelsPageModel::ModelsPageModel(AzureStorageManager* storageManager, ArrSession
     });
 
     QObject::connect(m_storageManager, &AzureStorageManager::onStatusChanged, this, [this]() {
-        const bool blobStorageAvailable = m_storageManager->getStatus() == AccountConnectionStatus::Connected;
+        const bool blobStorageAvailable = m_storageManager->getStatus() == AccountConnectionStatus::Authenticated;
         if (m_blobStorageAvailable != blobStorageAvailable)
         {
             m_blobStorageAvailable = blobStorageAvailable;

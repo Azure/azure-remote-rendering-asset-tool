@@ -173,7 +173,7 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
 
     connect(m_frontend, &ArrFrontend::onStatusChanged, this,
             [this]() {
-                const bool enabled = m_frontend->getStatus() == AccountConnectionStatus::Connected;
+                const bool enabled = m_frontend->getStatus() == AccountConnectionStatus::Authenticated;
                 if (m_isEnabled != enabled)
                 {
                     m_isEnabled = enabled;
