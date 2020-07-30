@@ -3,8 +3,6 @@
 #include <QApplication>
 #include <QPointer>
 
-//#define DEBUG_CONNECT_TO_LOCAL
-
 ArrFrontend::ArrFrontend(QObject* parent)
     : QObject(parent)
 {
@@ -57,11 +55,7 @@ void ArrFrontend::connect()
 
         RR::AzureFrontendAccountInfo fi;
         memset(&fi, 0, sizeof(RR::AzureFrontendAccountInfo));
-#ifdef DEBUG_CONNECT_TO_LOCAL
-        fi.AccountDomain = "builtin://localhost";
-#else
-        fi.AccountDomain = m_region + ".mixedreality.azure.com";
-#endif
+        fi.AccountDomain = m_region;
         fi.AccountId = m_accountId;
         fi.AccountKey = m_accountKey;
 

@@ -9,6 +9,12 @@
 ArrAccountSettings::ArrAccountSettings(QObject* parent)
     : QObject(parent)
 {
+    // initialize the regions
+    m_availableRegions = {
+        {"West US", "westus2.mixedreality.azure.com"},
+        {"East US", "eastus.mixedreality.azure.com"},
+        {"West Europe", "westeurope.mixedreality.azure.com"},
+        {"Southeast Asia", "southeastasia.mixedreality.azure.com"}};
 }
 
 void ArrAccountSettings::loadFromJson(const QJsonObject& arrAccountConfig)
@@ -16,15 +22,25 @@ void ArrAccountSettings::loadFromJson(const QJsonObject& arrAccountConfig)
     m_id = arrAccountConfig[QLatin1String("id")].toString();
     m_key = arrAccountConfig[QLatin1String("key")].toString();
 
-    bool ok;
-    const int value = QMetaEnum::fromType<Region>().keyToValue(arrAccountConfig[QLatin1String("region")].toString().toUtf8().data(), &ok);
-    if (ok)
+    auto oldFormatRegion = arrAccountConfig[QLatin1String("region")].toString();
+    if (!oldFormatRegion.isEmpty())
     {
-        m_region = static_cast<Region>(value);
+        m_region = oldFormatRegion + ".mixedreality.azure.com";
     }
     else
     {
-        m_region = Region::westeurope;
+        m_region = arrAccountConfig[QLatin1String("regionurl")].toString();
+    }
+
+    QJsonArray regionsArray = arrAccountConfig[QLatin1String("availableregions")].toArray();
+    if (!regionsArray.isEmpty())
+    {
+        m_availableRegions.clear();
+        for (auto e : regionsArray)
+        {
+            QJsonObject regionObj = e.toObject();
+            m_availableRegions.push_back({regionObj[QLatin1String("name")].toString(), regionObj[QLatin1String("url")].toString()});
+        }
     }
 }
 
@@ -33,7 +49,18 @@ QJsonObject ArrAccountSettings::saveToJson() const
     QJsonObject arrAccountConfig;
     arrAccountConfig[QLatin1String("id")] = m_id;
     arrAccountConfig[QLatin1String("key")] = m_key;
-    arrAccountConfig[QLatin1String("region")] = QMetaEnum::fromType<Region>().valueToKey(static_cast<int>(m_region));
+    arrAccountConfig[QLatin1String("regionurl")] = m_region;
+
+    QJsonArray regionsArray;
+    for (auto&& region : m_availableRegions)
+    {
+        QJsonObject regionObj;
+        regionObj[QLatin1String("name")] = region.m_label;
+        regionObj[QLatin1String("url")] = region.m_domainUrl;
+        regionsArray.append(regionObj);
+    }
+    arrAccountConfig[QLatin1String("availableregions")] = regionsArray;
+
     return arrAccountConfig;
 }
 

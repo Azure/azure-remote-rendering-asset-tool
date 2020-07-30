@@ -18,7 +18,7 @@ MaterialPBR::MaterialPBR(ArrSessionManager* sessionManager, QObject* parent)
     m_controls.push_back(new Float2Model(tr("Texture Offset"), this, "TexCoordOffset"sv));
     m_controls.push_back(new ColorModel(tr("Albedo Color"), this, "AlbedoColor"sv));
     m_controls.push_back(new TextureModel(tr("Albedo Texture"), this, "AlbedoTexture"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Vertex Alpha Mode"), this, "PbrVertexAlphaMode"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Vertex Alpha Mode"), this, "PbrVertexAlphaMode"sv));
     m_controls.push_back(new TextureModel(tr("Normal Map"), this, "NormalMap"sv));
     m_controls.push_back(new FloatSliderModel(tr("Ambient Occlusion Scale"), this, "AOScale"sv, 0.0f, 1.0f, 1000));
     m_controls.push_back(new TextureModel(tr("Ambient Occlusion Map"), this, "AOMap"sv));

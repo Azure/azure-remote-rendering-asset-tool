@@ -160,23 +160,23 @@ ConversionConfigModel::ConversionConfigModel(AzureStorageManager* storageManager
     m_controls.push_back(new TextModel(tr("Material Override"), this, "material_override"sv));
     m_controls.push_back(new CheckBoxModel(tr("Gamma to Linear Material"), this, "gammaToLinearMaterial"sv));
     m_controls.push_back(new CheckBoxModel(tr("Gamma to Linear Vertex"), this, "gammaToLinearVertex"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Scene Graph Mode"), this, "sceneGraphMode"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Scene Graph Mode"), this, "sceneGraphMode"sv));
 
     m_controls.push_back(new CheckBoxModel(tr("Generate Collision Mesh"), this, "generateCollisionMesh"sv));
     m_controls.push_back(new CheckBoxModel(tr("Unlit Materials"), this, "unlitMaterials"sv));
     m_controls.push_back(new CheckBoxModel(tr("FBX Assume Metallic"), this, "fbxAssumeMetallic"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Axis [0]"), this, "axis1"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Axis [1]"), this, "axis2"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Axis [2]"), this, "axis3"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Axis [0]"), this, "axis1"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Axis [1]"), this, "axis2"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Axis [2]"), this, "axis3"sv));
 
-    m_controls.push_back(new ComboBoxModel(tr("Vertex Position"), this, "vertexPosition"));
-    m_controls.push_back(new ComboBoxModel(tr("Vertex Color 0"), this, "vertexColor0"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Vertex Color 1"), this, "vertexColor1"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Vertex Normal"), this, "vertexNormal"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Vertex Tangent"), this, "vertexTangent"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Vertex Binormal"), this, "vertexBinormal"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Vertex TextureCoord0"), this, "vertexTexCoord0"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Vertex TextureCoord1"), this, "vertexTexCoord1"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Vertex Position"), this, "vertexPosition"));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Vertex Color 0"), this, "vertexColor0"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Vertex Color 1"), this, "vertexColor1"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Vertex Normal"), this, "vertexNormal"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Vertex Tangent"), this, "vertexTangent"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Vertex Binormal"), this, "vertexBinormal"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Vertex TextureCoord0"), this, "vertexTexCoord0"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Vertex TextureCoord1"), this, "vertexTexCoord1"sv));
 }
 
 ArrtConversion::Config ConversionConfigModel::initFromJson(const QJsonDocument& json)

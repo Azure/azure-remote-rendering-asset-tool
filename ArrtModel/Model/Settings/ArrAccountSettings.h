@@ -10,23 +10,17 @@ class ArrAccountSettings : public QObject
     Q_OBJECT
 
 public:
-    enum class Region
+    // Arr region entry. m_label is visualized on the UI, and m_domainUrl is the url used for connection
+    struct Region
     {
-        westus2,
-        eastus,
-        westeurope,
-        southeastasia
-#ifdef EXTRA_ARR_ZONE
-        ,
-        EXTRA_ARR_ZONE
-#endif
+        QString m_label;
+        QString m_domainUrl;
     };
-    Q_ENUM(Region);
 
 private:
     Q_PROPERTY(QString id MEMBER m_id NOTIFY changed);
     Q_PROPERTY(QString key READ getKey WRITE setKey);
-    Q_PROPERTY(Region region MEMBER m_region NOTIFY changed);
+    Q_PROPERTY(QString region MEMBER m_region NOTIFY changed);
 
 public:
     ArrAccountSettings(QObject* parent);
@@ -34,7 +28,10 @@ public:
     const QString& getId() const { return m_id; }
     QString getKey() const;
     bool setKey(const QString& key);
-    Region getRegion() const { return m_region; }
+    std::string getRegion() const { return m_region.toStdString(); }
+
+    // return the list of available arr regions
+    const std::vector<Region>& getAvailableRegions() const { return m_availableRegions; }
 
     void loadFromJson(const QJsonObject& arrAccountConfig);
     QJsonObject saveToJson() const;
@@ -45,5 +42,6 @@ Q_SIGNALS:
 private:
     QString m_id = {};
     QString m_key = {};
-    Region m_region = Region::westeurope;
+    QString m_region = "westeurope.mixedreality.azure.com";
+    std::vector<Region> m_availableRegions;
 };
