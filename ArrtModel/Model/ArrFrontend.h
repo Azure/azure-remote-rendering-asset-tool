@@ -38,7 +38,7 @@ private:
     RR::ApiHandle<RR::AzureFrontend> m_rrFrontend;
     RR::ApiHandle<RR::SessionPropertiesArrayAsync> m_sessionPropertiesAsync;
 
-    AccountConnectionStatus m_status = AccountConnectionStatus::Disconnected;
+    AccountConnectionStatus m_status = AccountConnectionStatus::NotAuthenticated;
 
     std::condition_variable m_condVar;
     std::mutex m_mutex;

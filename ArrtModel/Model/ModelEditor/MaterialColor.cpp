@@ -19,7 +19,7 @@ MaterialColor::MaterialColor(ArrSessionManager* sessionManager, QObject* parent)
     m_controls.push_back(new TextureModel(tr("Albedo Texture"), this, "AlbedoTexture"sv));
     m_controls.push_back(new Float2Model(tr("Texture Scale"), this, "TexCoordScale"sv));
     m_controls.push_back(new Float2Model(tr("Texture Offset"), this, "TexCoordOffset"sv));
-    m_controls.push_back(new ComboBoxModel(tr("Color Transparency Mode"), this, "ColorTransparencyMode"sv));
+    m_controls.push_back(new ComboBoxModelFromEnum(tr("Color Transparency Mode"), this, "ColorTransparencyMode"sv));
     m_controls.push_back(new FloatSliderModel(tr("Fade Out"), this, "FadeOut"sv, 0.0f, 1.0f, 1000));
     m_controls.push_back(new FloatSliderModel(tr("Vertex Mix"), this, "VertexMix"sv, 0.0f, 1.0f, 1000));
     m_controls.push_back(new FloatSliderModel(tr("Alpha Clip Threshold"), this, "AlphaClipThreshold"sv, 0.0f, 1.0f, 1000));

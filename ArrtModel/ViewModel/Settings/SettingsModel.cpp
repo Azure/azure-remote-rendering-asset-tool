@@ -48,16 +48,16 @@ void SettingsModel::updateButton()
         statusString += tr("<br><b>Unsupported video format.</b>");
     }
 
-    if (saStatus == AccountConnectionStatus::FailedToConnect || arrStatus == AccountConnectionStatus::FailedToConnect || !videoFormatSupported)
+    if (saStatus == AccountConnectionStatus::InvalidCredentials || arrStatus == AccountConnectionStatus::InvalidCredentials || !videoFormatSupported)
     {
         notificationType = NotificationButtonModel::Notification::Type::Error;
     }
-    else if (saStatus != AccountConnectionStatus::Connected || arrStatus != AccountConnectionStatus::Connected)
+    else if (saStatus != AccountConnectionStatus::Authenticated || arrStatus != AccountConnectionStatus::Authenticated)
     {
         notificationType = NotificationButtonModel::Notification::Type::Warning;
     }
 
-    m_buttonModel->setProgress(saStatus == AccountConnectionStatus::Connecting || arrStatus == AccountConnectionStatus::Connecting);
+    m_buttonModel->setProgress(saStatus == AccountConnectionStatus::CheckingCredentials || arrStatus == AccountConnectionStatus::CheckingCredentials);
     m_buttonModel->setStatusString(statusString);
     if (notificationType != NotificationButtonModel::Notification::Type::Undefined)
     {

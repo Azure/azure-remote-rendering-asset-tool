@@ -4,24 +4,24 @@
 // Account connection status for ARR and Azure Blob accounts
 enum class AccountConnectionStatus
 {
-    Connected,
-    Disconnected,
-    Connecting,
-    FailedToConnect
+    Authenticated,
+    NotAuthenticated,
+    CheckingCredentials,
+    InvalidCredentials
 };
 
 inline QString toString(AccountConnectionStatus status)
 {
     switch (status)
     {
-        case AccountConnectionStatus::Connected:
-            return QCoreApplication::tr("Connected");
-        case AccountConnectionStatus::Disconnected:
-            return QCoreApplication::tr("Disconnected");
-        case AccountConnectionStatus::Connecting:
-            return QCoreApplication::tr("Connecting");
-        case AccountConnectionStatus::FailedToConnect:
-            return QCoreApplication::tr("FailedToConnect");
+        case AccountConnectionStatus::Authenticated:
+            return QCoreApplication::tr("Authenticated");
+        case AccountConnectionStatus::NotAuthenticated:
+            return QCoreApplication::tr("Not authenticated");
+        case AccountConnectionStatus::CheckingCredentials:
+            return QCoreApplication::tr("Checking credentials");
+        case AccountConnectionStatus::InvalidCredentials:
+            return QCoreApplication::tr("Invalid credentials");
     }
     return QCoreApplication::tr("Unknown");
 }

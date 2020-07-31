@@ -31,7 +31,7 @@ StorageAccountSettingsModel::StorageAccountSettingsModel(AzureStorageAccountSett
 
 bool StorageAccountSettingsModel::isEnabled() const
 {
-    return getStatus() != AccountConnectionStatus::Connecting;
+    return getStatus() != AccountConnectionStatus::CheckingCredentials;
 }
 
 AccountConnectionStatus StorageAccountSettingsModel::getStatus() const

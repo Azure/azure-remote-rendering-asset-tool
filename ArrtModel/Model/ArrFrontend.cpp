@@ -3,8 +3,6 @@
 #include <QApplication>
 #include <QPointer>
 
-//#define DEBUG_CONNECT_TO_LOCAL
-
 ArrFrontend::ArrFrontend(QObject* parent)
     : QObject(parent)
 {
@@ -47,21 +45,17 @@ void ArrFrontend::connect()
 
     if (m_rrFrontend)
     {
-        setStatus(AccountConnectionStatus::Disconnected);
+        setStatus(AccountConnectionStatus::NotAuthenticated);
         m_rrFrontend = nullptr;
     }
 
     if (!m_region.empty() && !m_accountId.empty() && !m_accountKey.empty())
     {
-        setStatus(AccountConnectionStatus::Connecting);
+        setStatus(AccountConnectionStatus::CheckingCredentials);
 
         RR::AzureFrontendAccountInfo fi;
         memset(&fi, 0, sizeof(RR::AzureFrontendAccountInfo));
-#ifdef DEBUG_CONNECT_TO_LOCAL
-        fi.AccountDomain = "builtin://localhost";
-#else
-        fi.AccountDomain = m_region + ".mixedreality.azure.com";
-#endif
+        fi.AccountDomain = m_region;
         fi.AccountId = m_accountId;
         fi.AccountKey = m_accountKey;
 
@@ -89,7 +83,7 @@ void ArrFrontend::connect()
                                                   const RR::Result contextResult = context ? context.value().Result : RR::Result::Fail;
                                                   thisPtr->m_sessionPropertiesAsync = nullptr;
                                                   thisPtr->m_rrFrontend = frontend;
-                                                  thisPtr->setStatus(result == RR::Result::Success && contextResult == RR::Result::Success ? AccountConnectionStatus::Connected : AccountConnectionStatus::FailedToConnect);
+                                                  thisPtr->setStatus(result == RR::Result::Success && contextResult == RR::Result::Success ? AccountConnectionStatus::Authenticated : AccountConnectionStatus::InvalidCredentials);
                                               }
                                           });
             });

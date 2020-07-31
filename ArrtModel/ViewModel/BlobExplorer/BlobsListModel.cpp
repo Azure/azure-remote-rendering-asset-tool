@@ -24,7 +24,7 @@ BlobsListModel::BlobsListModel(DirectoryProvider* directoryProvider, AzureStorag
     m_fileFilter.setAllowedExtensions(allowedExtensions);
 
     auto onStatusChanged = [this]() {
-        const bool enabled = m_storageManager->getStatus() == AccountConnectionStatus::Connected;
+        const bool enabled = m_storageManager->getStatus() == AccountConnectionStatus::Authenticated;
         if (m_enabled != enabled)
         {
             m_enabled = enabled;

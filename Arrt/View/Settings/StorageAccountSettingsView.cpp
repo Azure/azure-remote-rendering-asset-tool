@@ -26,17 +26,17 @@ void StorageAccountSettingsView::updateUi()
     const auto status = m_model->getStatus();
     switch (status)
     {
-        case AccountConnectionStatus::Connected:
+        case AccountConnectionStatus::Authenticated:
             setStatusBarColor(Qt::green);
             break;
-        case AccountConnectionStatus::Connecting:
+        case AccountConnectionStatus::CheckingCredentials:
             setStatusBarColor(Qt::yellow);
             break;
-        case AccountConnectionStatus::FailedToConnect:
-        case AccountConnectionStatus::Disconnected:
+        case AccountConnectionStatus::InvalidCredentials:
+        case AccountConnectionStatus::NotAuthenticated:
             setStatusBarColor(Qt::red);
             break;
     }
     m_status->setText(toString(status));
-    m_retryButton->setEnabled(status == AccountConnectionStatus::FailedToConnect);
+    m_retryButton->setEnabled(status == AccountConnectionStatus::InvalidCredentials);
 }

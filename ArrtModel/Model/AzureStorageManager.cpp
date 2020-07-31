@@ -19,7 +19,7 @@ AzureStorageManager::~AzureStorageManager()
 
 void AzureStorageManager::connectAccount(const wchar_t* url, const wchar_t* name, const wchar_t* key)
 {
-    if (getStatus() == AccountConnectionStatus::Connected &&
+    if (getStatus() == AccountConnectionStatus::Authenticated &&
         m_accountName == name && m_key == key && m_storageUrl == url)
     {
         return;
@@ -36,7 +36,7 @@ void AzureStorageManager::connectAccount(const wchar_t* url, const wchar_t* name
     catch (std::exception& /*e*/)
     {
         m_blobClient.reset();
-        setStatus(AccountConnectionStatus::FailedToConnect);
+        setStatus(AccountConnectionStatus::InvalidCredentials);
         return;
     }
 
@@ -54,7 +54,7 @@ void AzureStorageManager::connect()
 
     if (m_blobClient)
     {
-        setStatus(AccountConnectionStatus::Disconnected);
+        setStatus(AccountConnectionStatus::NotAuthenticated);
         m_blobClient = nullptr;
     }
 
@@ -63,7 +63,7 @@ void AzureStorageManager::connect()
         return;
     }
 
-    setStatus(AccountConnectionStatus::Connecting);
+    setStatus(AccountConnectionStatus::InvalidCredentials);
 
     QPointer<AzureStorageManager> thisPtr = this;
     std::thread([this, thisPtr, storageUrl = m_storageUrl, storageCredentials = m_storageCredentials]() {
@@ -86,7 +86,7 @@ void AzureStorageManager::connect()
             if (thisPtr)
             {
                 m_blobClient = std::move(client);
-                setStatus(storageIsValid ? AccountConnectionStatus::Connected : AccountConnectionStatus::FailedToConnect);
+                setStatus(storageIsValid ? AccountConnectionStatus::Authenticated : AccountConnectionStatus::InvalidCredentials);
             }
         });
     })
