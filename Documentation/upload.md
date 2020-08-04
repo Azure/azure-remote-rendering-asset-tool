@@ -28,4 +28,7 @@ To select a new directory, click on the "Add Sub-Directory" button, with a folde
 To upload files from your local hard drive into the current root directory, you can:
 
 * drag and drop the files directly into the list
-* click on the "Upload files" button on the bottom. From that file dialog you can multi-select files and directories, which will then be transferred to your blob container.
+* click on the "Upload files" on the top. You can multi-select all of the files that you want to upload to the current blob container.
+* click on "Upload directory". You can select a whole folder to upload to the current blob container.
+
+To refresh the blob list, press the "Refresh" button on the top.

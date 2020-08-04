@@ -26,6 +26,8 @@ The blob list visualization has two modes:
 
 You can select an input model from the list by double-clicking the row, or selecting it and pressing "Select input".
 
+To refresh the blob list, press the "Refresh" button on the top.
+
 ## Input root directory selection
 
 The root directory is the one under which the input model and any file referenced by it (for example textures files) will be located.
@@ -54,5 +56,6 @@ Like for the upload panel, you can also select a new container by clicking on th
 ## Start conversion
 
 Once everything is set up correctly, you can press the button "Start Conversion" in the bottom-right corner. The status of the conversion will change to "Converting" and, if successful, to "Completed".
+When the conversion is started, its ID will be displayed in the panel.
 
 You can create multiple conversions and run them at the same time. You can also rename them by editing the "Name" field, or delete them from the list when not running.

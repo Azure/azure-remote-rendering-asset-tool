@@ -30,6 +30,7 @@ If the session is running, you can monitor its status by expanding the session p
 ![Session Info](media/statuspanel.png)
 From the panel you can:
 
+* see the session ID. This ID could be used as a reference to get support.
 * visualize the status and configuration of the session
 * extend the lease time by entering an amount of time, and pressing "Extend"
 * set up an automatic time extension by clicking on "Auto Extend"
@@ -53,6 +54,8 @@ Once the session is running, you have access to a panel to load a model. By usin
 
 While the model is loading, you can see the status and the progress bar on the bottom.
 
+To refresh the blob list, for example after a model is converted, press the "Refresh" button on the top.
+
 ## 3. Visualize the model
 
 ![Rendering View](media/renderingview.png)
@@ -73,6 +76,7 @@ The viewport shows the rendered model, streaming it from the ARR service. The ca
 * SHIFT modifier to increase the camera movement speed by a factor of 10
 
 Entities can be selected by clicking on them on the viewport. When you select an entity from the viewport, the corresponding entity gets selected and highlighted in the scene tree, and the other way around.
+Double-clicking on an entity will move the camera to frame the entity in the viewport.
 
 ### Material list
 
