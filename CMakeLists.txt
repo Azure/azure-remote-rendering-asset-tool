@@ -226,7 +226,7 @@ set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Arrt)
 set( gtest_force_shared_crt ON CACHE BOOL "Use dynamically linked crt" )
 add_subdirectory(googletest)
 set_target_properties(gmock gmock_main gtest gtest_main PROPERTIES FOLDER "GTest")
-
+set_target_properties(gmock gmock_main gtest gtest_main PROPERTIES COMPILE_PDB_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/tests)
 enable_testing()
 
 # find all of the *.cpp files in ./Tests and create a test exe for each one of them
