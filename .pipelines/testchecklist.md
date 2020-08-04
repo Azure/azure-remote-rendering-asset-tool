@@ -16,7 +16,8 @@ Test workflows to be done before any release.
 - Drag-drop and remove a whole directory -> It shows the directory and removes the directory.
 - Drag-drop and remove multiple files and a directory at the same time
 - Drag-drop multiple files and a directory at the same time
-- Try all of the above with "select file" button.
+- Try to upload multiple files with "upload files"
+- Try to upload a directory with the "upload directory" button
 - During multi-file upload, check that there is a "progress bar" on top of the main Upload button, showing the progress.
 
 ### Containers
@@ -163,6 +164,9 @@ Test workflows to be done before any release.
 - Press "Reset" -> the previous values are restored and the "Apply" and "Reset" buttons are disabled
 - Change the Video Settings again and press "Apply" -> The model is unloaded and the session is reconnected.
 - Verify that the video settings are applied (maybe change the resolution to a very low value)
+- Verify that loaded models is centered in the viewport
+- Try to change the global scale (remove the auto) and see if it works.
+- Apply auto global scale, load a model, then change the near and far plane to a very small range, and reload the model to see if the global scale (lowered) to adapt to the new range.
 
 ### Selection and Scene tree
 
@@ -177,6 +181,9 @@ Test workflows to be done before any release.
   - The selection is removed from the viewport.
   - The selection is removed from the scene tree.
   - The material list shows all of the materials in the scene.
+- In a complex model, place the camera inside the mesh and try to click something internal -> the picking is affected by the near-sphere clipping
+- Double click on various entities in the viewport and in the scene tree -> the entity is centered and framed in the viewport
+- Change the field and near plane and try double clicking an entity again -> the entity is centered and framed.
 - Select multiple entities from the scene tree by holding shift (range select) or control (toggle single selection).
   - The material list shows the union of the the materials in the selected entities. 
 - Select an entity from the viewport.
