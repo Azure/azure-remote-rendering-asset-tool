@@ -183,6 +183,9 @@ private:
     QVector3D m_modelBbMin;
     QVector3D m_modelBbMax;
 
+    // cached value for the clipping sphere
+    float m_clippingSphereRadius = 0;
+
     void update();
     void initializeClient();
     void deinitializeClient();

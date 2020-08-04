@@ -102,6 +102,7 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
 
 
     connect(m_sessionManager, &ArrSessionManager::rootIdChanged, this, [this]() {
+        m_selectedMaterial.set({});
         Q_EMIT loadedModelChanged();
     });
 

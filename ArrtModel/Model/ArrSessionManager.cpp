@@ -154,11 +154,14 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
     });
 
     connect(m_configuration->getCameraSettings(), &CameraSettings::changed, this, [this] {
-        if (auto cs = m_api->CameraSettings())
+        if (m_api)
         {
-            RR::ApiHandle<RR::CameraSettings> cameraSettings = *cs;
-            cameraSettings->NearPlane(m_configuration->getCameraSettings()->getNearPlane());
-            cameraSettings->FarPlane(m_configuration->getCameraSettings()->getFarPlane());
+            if (auto cs = m_api->CameraSettings())
+            {
+                RR::ApiHandle<RR::CameraSettings> cameraSettings = *cs;
+                cameraSettings->NearPlane(m_configuration->getCameraSettings()->getNearPlane());
+                cameraSettings->FarPlane(m_configuration->getCameraSettings()->getFarPlane());
+            }
         }
     });
 

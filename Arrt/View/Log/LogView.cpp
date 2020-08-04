@@ -144,7 +144,7 @@ LogView::LogView(LogModel* model, QWidget* parent)
         auto* const logDelegate = new LogModelDelegate(m_logList);
 
         m_logList->setItemDelegate(logDelegate);
-        splitter->addWidget(new FocusableContainer(m_logList));
+        splitter->addWidget(new FocusableContainer(m_logList, splitter));
 
         m_logList->setHeaderHidden(true);
 
@@ -177,7 +177,7 @@ LogView::LogView(LogModel* model, QWidget* parent)
         m_textView = new QTextEdit(this);
         m_textView->setReadOnly(true);
         m_textView->setAccessibleName(tr("Log message"));
-        splitter->addWidget(new FocusableContainer(m_textView));
+        splitter->addWidget(new FocusableContainer(m_textView, splitter));
     }
 
     setFrameShape(QFrame::StyledPanel);

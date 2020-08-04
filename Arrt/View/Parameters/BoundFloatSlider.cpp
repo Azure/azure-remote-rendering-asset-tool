@@ -1,9 +1,36 @@
+#include <QEvent>
 #include <QHBoxLayout>
 #include <QSlider>
 #include <QtMath>
 #include <Utils/ScopedBlockers.h>
 #include <View/Parameters/BoundFloatSlider.h>
 #include <View/Parameters/BoundFloatSpinBox.h>
+
+// customized slider which doesn't process wheel events, since sometimes when it's in a scrollable panel,
+// it can grab wheel events that are meant to be used for scrolling
+
+class SliderNoWheel : public QSlider
+{
+public:
+    SliderNoWheel(Qt::Orientation orientation, QWidget* parent = {})
+        : QSlider(orientation, parent)
+    {
+        setFocusPolicy(Qt::StrongFocus);
+    }
+
+    bool event(QEvent* e) override
+    {
+        // Disable handling of scrollwheel by sliders
+        if (e->type() == QEvent::Wheel)
+        {
+            return false;
+        }
+
+        return QSlider::event(e);
+    }
+};
+
+
 
 BoundFloatSlider::BoundFloatSlider(FloatSliderModel* model, QWidget* parent)
     : QWidget(parent)
@@ -13,7 +40,8 @@ BoundFloatSlider::BoundFloatSlider(FloatSliderModel* model, QWidget* parent)
 {
     auto* layout = new QHBoxLayout(this);
 
-    m_slider = new QSlider(Qt::Horizontal, this);
+    m_slider = new SliderNoWheel(Qt::Horizontal, this);
+
     m_slider->setMinimum(0);
     m_slider->setMaximum(m_model->getNumberOfSteps());
     m_slider->setAccessibleName(model->getName());

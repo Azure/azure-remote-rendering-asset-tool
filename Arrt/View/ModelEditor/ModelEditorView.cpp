@@ -79,7 +79,7 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
 
         {
             auto scenePanel = new ScenePanelView(modelEditorModel, splitter);
-            splitter->addWidget(new FocusableContainer(scenePanel));
+            splitter->addWidget(new FocusableContainer(scenePanel, splitter));
         }
 
         {
@@ -99,7 +99,7 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
             auto* materialListView = new MaterialListView(modelEditorModel, materialSplitter);
             auto* materialEditorView = new MaterialEditorView(modelEditorModel->getEditingMaterial(), materialSplitter);
 
-            materialSplitter->addWidget(new FocusableContainer(materialListView));
+            materialSplitter->addWidget(new FocusableContainer(materialListView, materialSplitter));
             materialSplitter->addWidget(materialEditorView);
             materialSplitter->setChildrenCollapsible(false);
             materialSplitter->setMinimumWidth(DpiUtils::size(150));

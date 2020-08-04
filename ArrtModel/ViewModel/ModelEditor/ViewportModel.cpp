@@ -285,16 +285,13 @@ void ViewportModel::pick(int x, int y, bool doubleClick)
 
     const QMatrix4x4 inverse = m_viewMatrixInverse * m_perspectiveMatrixInverse;
 
-    const QVector3D nearFrustumVertex = qVectorNormalizeW(inverse * QVector4D(1, 1, -1, 1)).toVector3D();
-    const float clippingSphereRadius = (nearFrustumVertex - m_cameraPosition).length();
-
     // find the 3d position of the pixel on the near plane, and the the position of the same pixel on the far plane
     const QVector4D p1 = qVectorNormalizeW(inverse * QVector4D(normX, normY, -1, 1));
     const QVector4D p2 = qVectorNormalizeW(inverse * QVector4D(normX, normY, 1, 1));
 
     const QVector4D dir = (p2 - p1).normalized();
 
-    rc.StartPos = toDouble3(m_cameraPosition + dir * clippingSphereRadius);
+    rc.StartPos = toDouble3(m_cameraPosition + dir * m_clippingSphereRadius);
     rc.EndPos = toDouble3(p2);
 
     rc.HitCollection = RR::HitCollectionPolicy::ClosestHit;
@@ -376,6 +373,14 @@ void ViewportModel::updateProjection()
     if (!success)
     {
         qWarning() << tr("Projection matrix is not invertible");
+    }
+
+    //calculates the clipping sphere radius
+    {
+        const float vertAngle = qDegreesToRadians(m_cameraSettings->getFovAngle() / 2.0);
+        const float y = qTan(vertAngle);
+        QVector3D(ratio * y, y, 1).length();
+        m_clippingSphereRadius = QVector3D(ratio * y, y, 1).length() * m_cameraSettings->getNearPlane();
     }
 }
 
@@ -641,19 +646,18 @@ void ViewportModel::zoomOnBoundingBox(const QVector3D& minBB, const QVector3D& m
     QVector3D axisX, axisY, axisZ;
     m_cameraRotation.getAxes(&axisX, &axisY, &axisZ);
 
-    // calculates a sphere including the bounding box
-
+    // calculates a "bounding sphere" from the the bounding box
     QVector3D center = (minBB + maxBB) / 2;
     QVector3D diagonal = maxBB - minBB;
-    qreal bbRadius = qMax(qMax(diagonal.x(), diagonal.y()), diagonal.z()) * 1.5 / 2.0;
+    qreal bbRadius = diagonal.length() / 2.0;
 
-    // the distance is so that the bounding sphere is all inside the fov angle
-    qreal dist = bbRadius / qTan(M_PI * m_cameraSettings->getFovAngle() / 360.0);
+    // the distance is so that the bounding sphere is in the cone determined by the vertical fov angle
+    qreal dist = bbRadius / qSin(M_PI * m_cameraSettings->getFovAngle() / 360.0);
 
     // keeps a minimum distance to avoid clipping
-    if (dist < m_cameraSettings->getNearPlane() * 2)
+    if (dist < bbRadius + m_clippingSphereRadius)
     {
-        dist = m_cameraSettings->getNearPlane() * 2;
+        dist = bbRadius + m_clippingSphereRadius;
     }
 
     // place the camera
