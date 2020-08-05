@@ -27,7 +27,20 @@ public:
     float getCameraSpeed() const { return m_cameraSpeed; }
     float getCameraRotationSpeed() const { return m_cameraRotationSpeed; }
     float getNearPlane() const { return m_nearPlane; }
-    float getFarPlane() const { return m_farPlane; }
+    float getFarPlane() const
+    {
+        // The explicit far plane getter, used by the viewport model, clips the far plane to be strictly bigger than the near plane,
+        // to avoid divisions by zero and asserts in the renderer
+        const float minimumDepth = 0.01f;
+        if (m_farPlane < m_nearPlane + minimumDepth)
+        {
+            return m_nearPlane + minimumDepth;
+        }
+        else
+        {
+            return m_farPlane;
+        }
+    }
     float isGlobalScaleAutomatic() const { return m_autoGlobalScale; }
     void setGlobalScaleAutomatic(bool globalScaleAutomatic);
     float getGlobalScale() const { return m_globalScale; }
