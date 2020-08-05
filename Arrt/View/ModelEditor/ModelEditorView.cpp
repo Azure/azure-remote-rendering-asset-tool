@@ -17,6 +17,8 @@
 // to make sure that the parent widgets won't be turned into native widgets. This is because this might break
 // the accessibility for the non native widgets (the buttons in the main navigator stop handling the focus
 // properly for the narrator)
+// Remove this as soon as https://bugreports.qt.io/browse/QTBUG-81862 is fixed and released in 5.15.1 (scheduled in August)
+
 class ContainerForViewport : public QWidget
 {
 public:
@@ -24,7 +26,9 @@ public:
         : QWidget(parentWidget)
     {
         setContentsMargins(0, 0, 0, 0);
-        setAttribute(Qt::WA_DontCreateNativeAncestors);
+
+        // temporarily disabling it, because it causes a lot of problems with the viewport (shifted or missing rendering, z-order problems with the session panel)
+        //setAttribute(Qt::WA_DontCreateNativeAncestors);
         setAttribute(Qt::WA_LayoutOnEntireRect);
         setMinimumWidth(256);
     }
