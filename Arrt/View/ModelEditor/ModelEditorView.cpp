@@ -6,6 +6,7 @@
 #include <View/ModelEditor/MaterialsList.h>
 #include <View/ModelEditor/ModelEditorView.h>
 #include <View/ModelEditor/ScenePanelView.h>
+#include <View/ModelEditor/StatsPageView.h>
 #include <View/ModelEditor/ViewportView.h>
 #include <ViewModel/ModelEditor/ModelEditorModel.h>
 #include <ViewModel/ModelEditor/ViewportModel.h>
@@ -87,19 +88,33 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
         }
 
         {
-            auto* focusableContainer = new FocusableContainer({}, splitter);
-            auto* container = new ContainerForViewport(focusableContainer);
-            auto* viewportModel = new ViewportView(modelEditorModel->getViewportModel(), container);
-            container->setViewport(viewportModel);
+            auto* viewportSplitter = new QSplitter(Qt::Vertical, splitter);
 
-            auto* viewportLayout = new QHBoxLayout(focusableContainer);
-            viewportLayout->setContentsMargins(0, 0, 0, 0);
-            viewportLayout->addWidget(container);
-            splitter->addWidget(focusableContainer);
+            FocusableContainer* viewportContainer;
+            {
+                viewportContainer = new FocusableContainer({}, viewportSplitter);
+                auto* container = new ContainerForViewport(viewportContainer);
+                auto* viewportView = new ViewportView(modelEditorModel->getViewportModel(), container);
+                container->setViewport(viewportView);
+
+                auto* viewportLayout = new QHBoxLayout(viewportContainer);
+                viewportLayout->setContentsMargins(0, 0, 0, 0);
+                viewportLayout->addWidget(container);
+            }
+
+            FocusableContainer* statsPanelContainer;
+            {
+                statsPanelContainer = new FocusableContainer(new StatsPageView(m_model->getStatsPageModel()), viewportSplitter);
+            }
+
+            viewportSplitter->addWidget(viewportContainer);
+            viewportSplitter->addWidget(statsPanelContainer);
+
+            splitter->addWidget(viewportSplitter);
         }
 
         {
-            auto* materialSplitter = new QSplitter(splitter);
+            auto* materialSplitter = new QSplitter(Qt::Vertical, splitter);
             auto* materialListView = new MaterialListView(modelEditorModel, materialSplitter);
             auto* materialEditorView = new MaterialEditorView(modelEditorModel->getEditingMaterial(), materialSplitter);
 

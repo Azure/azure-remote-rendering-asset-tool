@@ -11,6 +11,7 @@ class MaterialFilteredListModel;
 class MaterialProvider;
 class ViewportModel;
 class EntitySelection;
+class StatsPageModel;
 
 // ViewModel for ModelEditorView, exposing all of the models used by the Material editor and Scene tree
 
@@ -31,6 +32,8 @@ public:
     MaterialProvider* getEditingMaterial() const;
     ViewportModel* getViewportModel() const;
 
+	StatsPageModel* getStatsPageModel() const;
+
     void unloadModel();
 
     QString getLoadedModeName() const;
@@ -46,6 +49,7 @@ private:
     SceneTreeModel* m_sceneTreeModel = nullptr;
     MaterialFilteredListModel* m_materialListModel = nullptr;
     QItemSelectionModel* m_materialListSelectionModel = nullptr;
+	StatsPageModel* m_statsPageModel = nullptr;
     MaterialProvider* m_editingMaterial = nullptr;
     Value<RR::ApiHandle<RR::Material>> m_selectedMaterial;
 

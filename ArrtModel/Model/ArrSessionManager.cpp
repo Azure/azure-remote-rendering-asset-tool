@@ -1,4 +1,5 @@
 #include <AzureRemoteRendering.h>
+#include <Model/ARRServiceStats.h>
 #include <Model/ArrFrontend.h>
 #include <Model/ArrSessionManager.h>
 #include <Model/Configuration.h>
@@ -173,6 +174,16 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
     {
         qFatal("Viewport couldn't be initialized");
     }
+
+    m_serviceStats = new ArrServiceStats(this);
+	connect(m_viewportModel, &ViewportModel::onRefresh, this, 
+		[this]()
+		{
+			if (m_session)
+			{
+				m_serviceStats->update(m_session);
+			}
+		});
 
     connect(m_frontend, &ArrFrontend::onStatusChanged, this,
             [this]() {
@@ -790,6 +801,10 @@ std::string ArrSessionManager::getSessionUuid() const
     return sessionUuid;
 }
 
+RR::ApiHandle<RR::AzureSession> ArrSessionManager::getCurrentSession() const
+{
+    return m_session;
+}
 
 void ArrSessionManager::deinitializeSession()
 {

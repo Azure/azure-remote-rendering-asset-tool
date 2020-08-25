@@ -5,6 +5,7 @@
 #include <ViewModel/ModelEditor/ModelEditorModel.h>
 #include <ViewModel/ModelEditor/SceneTreeModel.h>
 #include <ViewModel/ModelEditor/ViewportModel.h>
+#include <ViewModel/ModelEditor/StatsPageModel.h>
 
 #include <utility>
 
@@ -14,7 +15,9 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
     , m_selectedMaterial(nullptr)
 {
     m_sceneTreeModel = new SceneTreeModel(sessionManager, this);
-    m_materialListModel = new MaterialFilteredListModel(this);
+    m_statsPageModel = new StatsPageModel(sessionManager->getServiceStats(), this);
+
+	m_materialListModel = new MaterialFilteredListModel(this);
     auto* materialListModel = new MaterialListModel(sessionManager, m_materialListModel);
     m_materialListModel->setSourceModel(materialListModel);
 
@@ -147,6 +150,10 @@ ViewportModel* ModelEditorModel::getViewportModel() const
     return m_sessionManager->getViewportModel();
 }
 
+StatsPageModel* ModelEditorModel::getStatsPageModel() const
+{
+	return m_statsPageModel;
+}
 
 void ModelEditorModel::onSelectionChanged(const QItemSelection& /*selected*/, const QItemSelection& /*deselected*/)
 {
