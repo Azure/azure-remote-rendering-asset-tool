@@ -5,18 +5,19 @@ StatsPageModel::StatsPageModel(ArrServiceStats* serviceStats, QObject* parent)
     : QObject(parent)
     , m_serviceStats(serviceStats)
 {
-	connect(m_serviceStats, &ArrServiceStats::updated, this,
-		[this]()
-		{
-			m_serviceStats->getStats(m_stats);
-			Q_EMIT valuesChanged();
-		});
+    m_serviceStats->startCollecting();
+    connect(m_serviceStats, &ArrServiceStats::updated, this,
+            [this]() {
+                m_stats = m_serviceStats->getStats();
+                Q_EMIT valuesChanged();
+            });
 }
 
 int StatsPageModel::getParameterCount() const
 {
-    return 11;
+    return 18;
 }
+
 
 void StatsPageModel::getParameterInfo(int index, QString& name, QString& units, std::optional<double>& minValue, std::optional<double>& maxValue) const
 {
@@ -59,15 +60,43 @@ void StatsPageModel::getParameterInfo(int index, QString& name, QString& units, 
             break;
         case 8:
             name = tr("Frame minimum delta");
-            units = "";
+            units = "ms";
             break;
         case 9:
             name = tr("Frame maximum delta");
-            units = "";
+            units = "ms";
             break;
         case 10:
-            name = tr("Network roundtrip");
+            name = tr("Frame time CPU");
             units = "ms";
+            break;
+        case 11:
+            name = tr("Frame time GPU");
+            units = "ms";
+            break;
+        case 12:
+            name = tr("Utilization CPU");
+            units = "%";
+            break;
+        case 13:
+            name = tr("Utilization GPU");
+            units = "%";
+            break;
+        case 14:
+            name = tr("Memory CPU");
+            units = "%";
+            break;
+        case 15:
+            name = tr("Memory GPU");
+            units = "%";
+            break;
+        case 16:
+            name = tr("Network round-trip");
+            units = "ms";
+            break;
+        case 17:
+            name = tr("Polygons rendered");
+            units = "";
             break;
     }
 }
@@ -77,38 +106,70 @@ double StatsPageModel::getParameter(int index) const
     switch (index)
     {
         case 0:
-            return m_stats.m_latencyPoseToReceiveAvg;
+            return m_stats.m_latencyPoseToReceive.m_perWindowStats.m_value;
         case 1:
-            return m_stats.m_latencyReceiveToPresentAvg;
+            return m_stats.m_latencyReceiveToPresent.m_perWindowStats.m_value;
         case 2:
-            return m_stats.m_latencyPresentToDisplayAvg;
+            return m_stats.m_latencyPresentToDisplay.m_perWindowStats.m_value;
         case 3:
-            return m_stats.m_timeSinceLastPresentAvg;
+            return m_stats.m_timeSinceLastPresent.m_perWindowStats.m_value;
         case 4:
-            return m_stats.m_videoFramesReused;
+            return m_stats.m_videoFramesReused.m_perWindowStats.m_value;
         case 5:
-            return m_stats.m_videoFramesSkipped;
+            return m_stats.m_videoFramesSkipped.m_perWindowStats.m_value;
         case 6:
-            return m_stats.m_videoFramesReceived;
+            return m_stats.m_videoFramesReceived.m_perWindowStats.m_value;
         case 7:
-            return m_stats.m_videoFramesDiscarded;
+            return m_stats.m_videoFramesDiscarded.m_perWindowStats.m_value;
         case 8:
-            return m_stats.m_videoFrameMinDelta;
+            return m_stats.m_videoFrameMinDelta.m_perWindowStats.m_value;
         case 9:
-            return m_stats.m_videoFrameMaxDelta;
+            return m_stats.m_videoFrameMaxDelta.m_perWindowStats.m_value;
         case 10:
-            return m_stats.m_currentPerformanceAssessment.networkLatency.aggregate;
+            return m_stats.m_timeCPU.m_perWindowStats.m_value;
+        case 11:
+            return m_stats.m_timeGPU.m_perWindowStats.m_value;
+        case 12:
+            return m_stats.m_utilizationCPU.m_perWindowStats.m_value;
+        case 13:
+            return m_stats.m_utilizationGPU.m_perWindowStats.m_value;
+        case 14:
+            return m_stats.m_memoryCPU.m_perWindowStats.m_value;
+        case 15:
+            return m_stats.m_memoryGPU.m_perWindowStats.m_value;
+        case 16:
+            return m_stats.m_networkLatency.m_perWindowStats.m_value;
+        case 17:
+            return m_stats.m_polygonsRendered.m_perWindowStats.m_value;
         default:
             return 0;
     }
 }
 
-std::optional<RR::PerformanceRating> StatsPageModel::getParameterRating(int index) const
+std::optional<RR::PerformanceRating> StatsPageModel::getParameterRating(int /*index*/) const
 {
-	switch (index)
-	{
-	case 10:
-		return m_stats.m_currentPerformanceAssessment.networkLatency.rating;
-	default: return {};
-	}	
+    /*
+    switch (index)
+    {
+        case 10:
+            return m_stats.m_currentPerformanceAssessment.timeCPU.rating;
+        case 11:
+            return m_stats.m_currentPerformanceAssessment.timeGPU.rating;
+        case 12:
+            return m_stats.m_currentPerformanceAssessment.utilizationCPU.rating;
+        case 13:
+            return m_stats.m_currentPerformanceAssessment.utilizationGPU.rating;
+        case 14:
+            return m_stats.m_currentPerformanceAssessment.memoryCPU.rating;
+        case 15:
+            return m_stats.m_currentPerformanceAssessment.memoryGPU.rating;
+        case 16:
+            return m_stats.m_currentPerformanceAssessment.networkLatency.rating;
+        case 17:
+            return m_stats.m_currentPerformanceAssessment.polygonsRendered.rating;
+        default:
+            return {};
+    }
+	*/
+    return {};
 }

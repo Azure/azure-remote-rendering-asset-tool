@@ -32,7 +32,7 @@ public:
     MaterialProvider* getEditingMaterial() const;
     ViewportModel* getViewportModel() const;
 
-	StatsPageModel* getStatsPageModel() const;
+    StatsPageModel* getStatsPageModel() const;
 
     void unloadModel();
 
@@ -49,7 +49,7 @@ private:
     SceneTreeModel* m_sceneTreeModel = nullptr;
     MaterialFilteredListModel* m_materialListModel = nullptr;
     QItemSelectionModel* m_materialListSelectionModel = nullptr;
-	StatsPageModel* m_statsPageModel = nullptr;
+    StatsPageModel* m_statsPageModel = nullptr;
     MaterialProvider* m_editingMaterial = nullptr;
     Value<RR::ApiHandle<RR::Material>> m_selectedMaterial;
 

@@ -176,14 +176,13 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
     }
 
     m_serviceStats = new ArrServiceStats(this);
-	connect(m_viewportModel, &ViewportModel::onRefresh, this, 
-		[this]()
-		{
-			if (m_session)
-			{
-				m_serviceStats->update(m_session);
-			}
-		});
+    connect(m_viewportModel, &ViewportModel::onRefresh, this,
+            [this]() {
+                if (m_session)
+                {
+                    m_serviceStats->update(m_session);
+                }
+            });
 
     connect(m_frontend, &ArrFrontend::onStatusChanged, this,
             [this]() {

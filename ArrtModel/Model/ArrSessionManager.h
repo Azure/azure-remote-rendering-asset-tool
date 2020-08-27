@@ -109,8 +109,8 @@ public:
     // return the model used for the viewport
     ViewportModel* getViewportModel() const { return m_viewportModel; }
 
-	// return the object used to retrieve remote rendering statistics on the current session
-	ArrServiceStats* getServiceStats() const { return m_serviceStats; }
+    // return the object used to retrieve remote rendering statistics on the current session
+    ArrServiceStats* getServiceStats() const { return m_serviceStats; }
 
     RR::ApiHandle<RR::RemoteManager>& getClientApi();
 
@@ -126,8 +126,8 @@ public:
     // return the string of the current session uuid
     std::string getSessionUuid() const;
 
-	// return the current session
-	RR::ApiHandle<RR::AzureSession> getCurrentSession() const;
+    // return the current session
+    RR::ApiHandle<RR::AzureSession> getCurrentSession() const;
 
 Q_SIGNALS:
     void onEnabledChanged();
@@ -190,7 +190,7 @@ private:
 
     ViewportModel* m_viewportModel;
 
-	ArrServiceStats* m_serviceStats;
+    ArrServiceStats* m_serviceStats;
 
     // Async holders
     RR::ApiHandle<RR::SessionAsync> m_renewAsync = nullptr;

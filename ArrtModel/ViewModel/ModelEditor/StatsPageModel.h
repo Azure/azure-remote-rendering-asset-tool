@@ -1,6 +1,6 @@
 #pragma once
-#include <Model/IncludesAzureRemoteRendering.h>
 #include <Model/ARRServiceStats.h>
+#include <Model/IncludesAzureRemoteRendering.h>
 #include <QAbstractItemModel>
 #include <optional>
 
@@ -9,20 +9,20 @@
 
 class StatsPageModel : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 
 public:
-	StatsPageModel(ArrServiceStats* serviceStats, QObject* parent = nullptr);
-	
-	int getParameterCount() const;
-    void getParameterInfo(int index, QString& name, QString& units, std::optional<double> &minValue, std::optional<double> &maxValue) const;
+    StatsPageModel(ArrServiceStats* serviceStats, QObject* parent = nullptr);
+
+    int getParameterCount() const;
+    void getParameterInfo(int index, QString& name, QString& units, std::optional<double>& minValue, std::optional<double>& maxValue) const;
     double getParameter(int index) const;
-	std::optional<RR::PerformanceRating> getParameterRating(int index) const;
+    std::optional<RR::PerformanceRating> getParameterRating(int index) const;
 
 Q_SIGNALS:
-	void valuesChanged();
+    void valuesChanged();
 
 private:
-	ArrServiceStats* const m_serviceStats;
-	ArrServiceStats::Stats m_stats;
+    ArrServiceStats* const m_serviceStats;
+    ArrServiceStats::Stats m_stats;
 };
