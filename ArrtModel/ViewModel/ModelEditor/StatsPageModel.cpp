@@ -146,6 +146,68 @@ double StatsPageModel::getParameter(int index) const
     }
 }
 
+void StatsPageModel::getGraphData(int index, std::vector<QPointF>& graph) const
+{
+    switch (index)
+    {
+        case 0:
+            m_stats.m_latencyPoseToReceive.getGraphData(graph);
+            break;
+        case 1:
+            m_stats.m_latencyReceiveToPresent.getGraphData(graph);
+            break;
+        case 2:
+            m_stats.m_latencyPresentToDisplay.getGraphData(graph);
+            break;
+        case 3:
+            m_stats.m_timeSinceLastPresent.getGraphData(graph);
+            break;
+        case 4:
+            m_stats.m_videoFramesReused.getGraphData(graph);
+            break;
+        case 5:
+            m_stats.m_videoFramesSkipped.getGraphData(graph);
+            break;
+        case 6:
+            m_stats.m_videoFramesReceived.getGraphData(graph);
+            break;
+        case 7:
+            m_stats.m_videoFramesDiscarded.getGraphData(graph);
+            break;
+        case 8:
+            m_stats.m_videoFrameMinDelta.getGraphData(graph);
+            break;
+        case 9:
+            m_stats.m_videoFrameMaxDelta.getGraphData(graph);
+            break;
+        case 10:
+            m_stats.m_timeCPU.getGraphData(graph);
+            break;
+        case 11:
+            m_stats.m_timeGPU.getGraphData(graph);
+            break;
+        case 12:
+            m_stats.m_utilizationCPU.getGraphData(graph);
+            break;
+        case 13:
+            m_stats.m_utilizationGPU.getGraphData(graph);
+            break;
+        case 14:
+            m_stats.m_memoryCPU.getGraphData(graph);
+            break;
+        case 15:
+            m_stats.m_memoryGPU.getGraphData(graph);
+            break;
+        case 16:
+            m_stats.m_networkLatency.getGraphData(graph);
+            break;
+        case 17:
+            m_stats.m_polygonsRendered.getGraphData(graph);
+            break;
+    }
+}
+
+
 std::optional<RR::PerformanceRating> StatsPageModel::getParameterRating(int /*index*/) const
 {
     /*

@@ -3,6 +3,44 @@
 #include <QElapsedTimer>
 #include <QObject>
 
+template <typename T, int BufferSize>
+class FixedCircularBuffer
+{
+public:
+    const T& getValue(uint index) const
+    {
+        assert(index < m_size);
+        index = (BufferSize + m_start - index) % BufferSize;
+        return m_buffer[index];
+    }
+
+    void addFront(T value)
+    {
+        m_start = (m_start + 1) % BufferSize;
+        m_buffer[m_start] = std::move(value);
+        if (m_size != BufferSize)
+        {
+            ++m_size;
+        }
+    }
+
+    uint getSize() const
+    {
+        return m_size;
+    }
+
+    void clear()
+    {
+        m_size = 0;
+    }
+
+private:
+    T m_buffer[BufferSize];
+    uint m_start = 0;
+    uint m_size = 0;
+};
+
+
 template <typename T>
 struct MinValue
 {
@@ -82,12 +120,39 @@ struct AvgMinMaxValue
 template <typename T>
 struct Accumulator
 {
-    T m_accumulation = {};
-    typedef decltype(m_accumulation.m_value) ValueType;
+    typedef decltype(T::m_value) ValueType;
+    struct GraphValue
+    {
+        ValueType m_value;
+        uint m_tick;
+    };
 
-    void addValue(const ValueType& value)
+    T m_accumulation = {};
+    FixedCircularBuffer<GraphValue, 2048> m_buffer;
+
+    void addValue(const ValueType& value, uint tick)
     {
         m_accumulation.addValue(value);
+        m_buffer.addFront({value, tick});
+    }
+
+    void getGraphData(std::vector<QPointF>& graph) const
+    {
+        graph.clear();
+
+        if (m_buffer.getSize() > 0)
+        {
+            const ValueType minValue = m_perWindowStats.m_min.m_value;
+            const ValueType maxValue = m_perWindowStats.m_max.m_value;
+            const qreal rangeY = qMax(qreal(maxValue - minValue), qreal(0.001f));
+            const uint tickOffset = m_buffer.getValue(0).m_tick;
+
+            for (uint i = 0; i < m_buffer.getSize(); ++i)
+            {
+                auto val = m_buffer.getValue(i);
+                graph.push_back(QPointF(tickOffset - val.m_tick, qreal(val.m_value - minValue) / rangeY));
+            }
+        }
     }
 
     AvgMinMaxValue<ValueType> m_perWindowStats;
@@ -160,6 +225,7 @@ private:
     RR::ApiHandle<RR::PerformanceAssessmentAsync> m_runningPerformanceAssesment;
     RR::PerformanceAssessment m_lastPerformanceAssessment;
     bool m_collecting = false;
+    uint m_tick;
 
     void updateStats(RR::ApiHandle<RR::AzureSession> session);
 };
