@@ -8,24 +8,59 @@
 #include <View/ArrtStyle.h>
 #include <ViewUtils/DpiUtils.h>
 #include <Widgets/FocusableContainer.h>
+#include <windows.h>
 
 namespace
 {
-    static QWindow* qt_getWindow(const QWidget* widget)
+    QWindow* qt_getWindow(const QWidget* widget)
     {
         return widget ? widget->window()->windowHandle() : 0;
     }
+
+    bool isHighContrastOn()
+    {
+        HIGHCONTRAST info = {0};
+        info.cbSize = sizeof(HIGHCONTRAST);
+        BOOL ok = ::SystemParametersInfoW(SPI_GETHIGHCONTRAST, 0, &info, 0);
+
+        if (ok)
+        {
+            return info.dwFlags & HCF_HIGHCONTRASTON;
+        }
+        else
+        {
+            return false;
+        }
+    }
 } // namespace
 
-const QColor ArrtStyle::s_listSeparatorColor = QColor(60, 60, 60);
+QColor ArrtStyle::s_focusedControlBorderColor;
+
+QColor ArrtStyle::s_listSeparatorColor;
+QColor ArrtStyle::s_buttonPressedBackgroundColor;
+QColor ArrtStyle::s_buttonBackgroundColor;
+QColor ArrtStyle::s_underTextColor;
+
+QColor ArrtStyle::s_buttonBorderColor;
+QColor ArrtStyle::s_buttonPressedBorderColor;
+QColor ArrtStyle::s_buttonHoverBorderColor;
+QColor ArrtStyle::s_buttonTextColor;
+QColor ArrtStyle::s_buttonPressedTextColor;
+
+
+static QColor s_listSeparatorColor;
+static QColor s_buttonCheckedColor;
+
+static QColor s_buttonBorderColor;
+static QColor s_buttonHoverBorderColor;
+static QColor s_buttonPressedBorderColor;
+
+
+
 const QColor ArrtStyle::s_debugColor = QColor(180, 180, 0);
 const QColor ArrtStyle::s_warningColor = QColor(170, 100, 0);
 const QColor ArrtStyle::s_errorColor = QColor(200, 0, 0);
 const QColor ArrtStyle::s_infoColor = QColor(0, 40, 200);
-const QColor ArrtStyle::s_buttonCheckedColor = QColor(35, 35, 35);
-const QColor ArrtStyle::s_buttonUncheckedColor = QColor(63, 63, 63);
-const QColor ArrtStyle::s_underTextColor = QColor(200, 200, 200);
-const QColor ArrtStyle::s_formControlFocusedColor = QColor(70, 70, 70);
 
 const QColor ArrtStyle::s_successColor = Qt::darkGreen;
 const QColor ArrtStyle::s_runningColor = Qt::darkYellow;
@@ -105,28 +140,73 @@ ArrtStyle::ArrtStyle()
 
 void ArrtStyle::polish(QPalette& pal)
 {
-    pal.setColor(QPalette::Window, QColor(53, 53, 53));
-    pal.setColor(QPalette::WindowText, Qt::white);
-    pal.setColor(QPalette::Disabled, QPalette::WindowText, QColor(127, 127, 127));
-    pal.setColor(QPalette::Base, QColor(42, 42, 42));
-    pal.setColor(QPalette::AlternateBase, QColor(66, 66, 66));
-    pal.setColor(QPalette::Text, Qt::white);
-    pal.setColor(QPalette::Disabled, QPalette::Text, QColor(127, 127, 127));
-    pal.setColor(QPalette::Dark, QColor(35, 35, 35));
-    pal.setColor(QPalette::Shadow, QColor(20, 20, 20));
-    pal.setColor(QPalette::Button, QColor(53, 53, 53));
-    pal.setColor(QPalette::ButtonText, Qt::white);
-    pal.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(127, 127, 127));
-    pal.setColor(QPalette::BrightText, Qt::red);
-    pal.setColor(QPalette::Link, QColor(42, 130, 218));
-    pal.setColor(QPalette::Highlight, QColor(240, 180, 50));
-    pal.setColor(QPalette::Disabled, QPalette::Highlight, QColor(80, 80, 80));
-    pal.setColor(QPalette::HighlightedText, Qt::black);
-    pal.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor(127, 127, 127));
+    if (!isHighContrastOn())
+    {
+        pal.setColor(QPalette::Window, QColor(53, 53, 53));
+        pal.setColor(QPalette::WindowText, Qt::white);
+        pal.setColor(QPalette::Disabled, QPalette::WindowText, QColor(127, 127, 127));
+        pal.setColor(QPalette::Base, QColor(42, 42, 42));
+        pal.setColor(QPalette::AlternateBase, QColor(66, 66, 66));
+        pal.setColor(QPalette::Text, Qt::white);
+        pal.setColor(QPalette::Disabled, QPalette::Text, QColor(127, 127, 127));
+        pal.setColor(QPalette::Dark, QColor(35, 35, 35));
+        pal.setColor(QPalette::Shadow, QColor(20, 20, 20));
+        pal.setColor(QPalette::Button, QColor(53, 53, 53));
+        pal.setColor(QPalette::ButtonText, Qt::white);
+        pal.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(127, 127, 127));
+        pal.setColor(QPalette::BrightText, Qt::red);
+        pal.setColor(QPalette::Link, QColor(42, 130, 218));
+        pal.setColor(QPalette::Highlight, QColor(240, 180, 50));
+        pal.setColor(QPalette::Disabled, QPalette::Highlight, QColor(80, 80, 80));
+        pal.setColor(QPalette::HighlightedText, Qt::black);
+        pal.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor(127, 127, 127));
 
+
+        s_focusedControlBorderColor = pal.highlight().color();
+        s_listSeparatorColor = QColor(60, 60, 60);
+        s_buttonPressedBackgroundColor = QColor(35, 35, 35);
+        s_buttonBackgroundColor = QColor(63, 63, 63);
+        s_underTextColor = QColor(200, 200, 200);
+        s_buttonBorderColor = QColor(0, 0, 0, 0);
+        s_buttonPressedBorderColor = pal.mid().color();
+        s_buttonHoverBorderColor = s_buttonBorderColor;
+        s_buttonTextColor = pal.text().color();
+        s_buttonPressedTextColor = s_buttonTextColor;
+    }
+    else
+    {
+        pal.setColor(QPalette::Window, Qt::black);
+        pal.setColor(QPalette::WindowText, Qt::white);
+        pal.setColor(QPalette::Disabled, QPalette::WindowText, Qt::green);
+        pal.setColor(QPalette::Base, Qt::black);
+        pal.setColor(QPalette::AlternateBase, Qt::black);
+        pal.setColor(QPalette::Text, Qt::white);
+        pal.setColor(QPalette::Disabled, QPalette::Text, Qt::green);
+        pal.setColor(QPalette::Dark, Qt::black);
+        pal.setColor(QPalette::Shadow, Qt::black);
+        pal.setColor(QPalette::Button, Qt::black);
+        pal.setColor(QPalette::ButtonText, Qt::white);
+        pal.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::green);
+        pal.setColor(QPalette::BrightText, Qt::red);
+        pal.setColor(QPalette::Link, Qt::yellow);
+        pal.setColor(QPalette::Highlight, Qt::cyan);
+        pal.setColor(QPalette::Disabled, QPalette::Highlight, Qt::green);
+        pal.setColor(QPalette::HighlightedText, Qt::black);
+        pal.setColor(QPalette::Disabled, QPalette::HighlightedText, Qt::black);
+
+        s_focusedControlBorderColor = Qt::white;
+        s_listSeparatorColor = Qt::white;
+        s_buttonPressedBackgroundColor = Qt::darkCyan;
+        s_buttonBackgroundColor = Qt::black;
+        s_underTextColor = Qt::white;
+        s_buttonBorderColor = Qt::white;
+        s_buttonPressedBorderColor = Qt::cyan;
+        s_buttonHoverBorderColor = Qt::cyan;
+        s_buttonTextColor = Qt::white;
+        s_buttonPressedTextColor = Qt::black;
+    }
     pal.setColor(QPalette::ToolTipBase, pal.base().color());
     pal.setColor(QPalette::ToolTipText, pal.mid().color());
-
     QToolTip::setPalette(pal);
 }
 
@@ -218,7 +298,9 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                     mode = QIcon::Active;
                 else
                     mode = QIcon::Normal;
+
                 pm = toolbutton->icon.pixmap(qt_getWindow(widget), toolbutton->rect.size().boundedTo(toolbutton->iconSize), mode, state);
+
                 pmSize = pm.size() / pm.devicePixelRatio();
 
                 shiftX += pmSize.width() / 3;
@@ -229,6 +311,20 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                 int alignment = Qt::TextShowMnemonic;
                 if (!proxy()->styleHint(SH_UnderlineShortcut, opt, widget))
                     alignment |= Qt::TextHideMnemonic;
+
+                // text color override, using our palette
+                QColor textColor = toolbutton->state & State_Raised ? s_buttonTextColor : s_buttonPressedTextColor;
+                QPalette pal = toolbutton->palette;
+
+                if (textColor != toolbutton->palette.text().color())
+                {
+                    // changes the icon color to match the text color, in case the text color is different from the default
+                    pal.setColor(QPalette::ButtonText, textColor);
+                    QPainter pPixmap(&pm);
+                    pPixmap.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+                    // just override the icon color using the origin alpha channel
+                    pPixmap.fillRect(pm.rect(), textColor);
+                }
 
                 if (toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon)
                 {
@@ -248,7 +344,8 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                 }
                 tr.translate(shiftX, shiftY);
                 const QString text = toolbutton->text; //not eliding
-                proxy()->drawItemText(p, QStyle::visualRect(opt->direction, rect, tr), alignment, toolbutton->palette,
+
+                proxy()->drawItemText(p, QStyle::visualRect(opt->direction, rect, tr), alignment, pal,
                                       toolbutton->state & State_Enabled, text,
                                       QPalette::ButtonText);
 
@@ -297,7 +394,7 @@ void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* opti
     {
         QRect r = option->rect.adjusted(0, 1, -1, 0);
         // on a toggle button the checked state is dark and unchecked one is slightly lighter than the background
-        QColor rectColor = option->state.testFlag(State_Raised) ? s_buttonUncheckedColor : s_buttonCheckedColor;
+        QColor rectColor = option->state.testFlag(State_Raised) ? s_buttonBackgroundColor : s_buttonPressedBackgroundColor;
 
         // while mouse is pressed, the button is a bit darker
         if (option->state.testFlag(State_Sunken))
@@ -318,17 +415,17 @@ void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* opti
 
         if (option->state.testFlag(State_HasFocus))
         {
-            painter->setPen(option->palette.highlight().color());
+            painter->setPen(s_focusedControlBorderColor);
         }
         else
         {
             if (option->state.testFlag(State_Raised))
             {
-                painter->setPen(Qt::NoPen);
+                painter->setPen(s_buttonBorderColor);
             }
             else
             {
-                painter->setPen(option->palette.mid().color());
+                painter->setPen(s_buttonPressedBorderColor);
             }
         }
         painter->setBrush(rectColor);

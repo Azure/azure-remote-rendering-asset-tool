@@ -47,7 +47,7 @@ void SessionInfoButton::paintEvent(QPaintEvent*)
         if (opt.state & (QStyle::State_HasFocus | QStyle::State_Sunken | QStyle::State_MouseOver))
         {
             QRect r = rect();
-            QColor rectColor = ArrtStyle::s_buttonUncheckedColor;
+            QColor rectColor = ArrtStyle::s_buttonBackgroundColor;
 
             if (opt.state.testFlag(QStyle::State_Sunken))
             {
@@ -103,7 +103,7 @@ void SessionInfoButton::paintEvent(QPaintEvent*)
     timeIconBox.moveRight(r.right() - arrowSpace);
 
     p.setPen(Qt::NoPen);
-    p.setBrush(ArrtStyle::s_buttonCheckedColor);
+    p.setBrush(ArrtStyle::s_buttonPressedBackgroundColor);
     p.drawRoundedRect(timeIconBox, 8.0, 8.0);
 
     QRect iconRect;

@@ -11,15 +11,24 @@ class ArrtStyle : public QProxyStyle
 public:
     ArrtStyle();
 
-    static const QColor s_listSeparatorColor;
+    static QColor s_focusedControlBorderColor;
+
+    static QColor s_buttonBorderColor;
+    static QColor s_buttonHoverBorderColor;
+    static QColor s_buttonPressedBorderColor;
+    static QColor s_buttonTextColor;
+    static QColor s_buttonPressedTextColor;
+
+    static QColor s_listSeparatorColor;
+    static QColor s_buttonPressedBackgroundColor;
+    static QColor s_buttonBackgroundColor;
+    static QColor s_underTextColor;
+
+
     static const QColor s_debugColor;
     static const QColor s_warningColor;
     static const QColor s_errorColor;
     static const QColor s_infoColor;
-    static const QColor s_buttonCheckedColor;
-    static const QColor s_buttonUncheckedColor;
-    static const QColor s_underTextColor;
-    static const QColor s_formControlFocusedColor;
     static const QColor s_successColor;
     static const QColor s_runningColor;
     static const QColor s_failureColor;

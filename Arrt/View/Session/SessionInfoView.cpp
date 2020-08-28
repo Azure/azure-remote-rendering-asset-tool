@@ -25,10 +25,10 @@ public:
         p.translate(0.5, 0.5);
 
         QRect r = rect();
-        QColor rectColor = ArrtStyle::s_buttonUncheckedColor;
+        QColor rectColor = ArrtStyle::s_buttonBackgroundColor;
 
         p.setPen(palette().mid().color());
-        p.setBrush(ArrtStyle::s_buttonUncheckedColor);
+        p.setBrush(rectColor);
         p.drawRoundedRect(r.adjusted(1, 1, -1, -1), 8.0, 8.0);
 
         QWidget::paintEvent(e);
