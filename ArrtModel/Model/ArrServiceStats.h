@@ -201,7 +201,6 @@ public:
         return m_collecting;
     }
 
-
     /// Call every frame to collect statistics for given frame from the graphics binding.
     void update(RR::ApiHandle<RR::AzureSession> session);
 
@@ -216,9 +215,6 @@ Q_SIGNALS:
 
 private:
     QElapsedTimer m_currWindowsElapsedTimer;
-    //uint m_videoFramesDiscardedTotal = 0;
-    //QVector<RR::FrameStatistics> m_currWindowFrameStats;
-    //QVector<RR::FrameStatistics> m_lastWindowFrameStats;
 
     Stats m_currentStats;
 
