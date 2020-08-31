@@ -90,7 +90,7 @@ const QFont ArrtStyle::s_notificationFont = QFont("Segoe UI", 8);
 const QFont ArrtStyle::s_mainButtonFont = QFont("Segoe UI", 20);
 const QFont ArrtStyle::s_toolbarFont = QFont("Segoe UI", 14);
 
-const int ArrtStyle::s_focusedControlBorderWidth = 2;
+int ArrtStyle::s_focusedControlBorderWidth;
 
 QIcon ArrtStyle::s_expandedIcon;
 QIcon ArrtStyle::s_notexpandedIcon;
@@ -176,6 +176,7 @@ void ArrtStyle::polish(QPalette& pal)
         s_buttonHoverBorderColor = s_buttonBorderColor;
         s_buttonTextColor = pal.text().color();
         s_buttonPressedTextColor = s_buttonTextColor;
+        s_focusedControlBorderWidth = 2;
     }
     else
     {
@@ -200,7 +201,7 @@ void ArrtStyle::polish(QPalette& pal)
 
         s_focusedControlBorderColor = Qt::white;
         s_listSeparatorColor = Qt::white;
-        s_buttonPressedBackgroundColor = Qt::darkCyan;
+        s_buttonPressedBackgroundColor = Qt::cyan;
         s_buttonBackgroundColor = Qt::black;
         s_underTextColor = Qt::white;
         s_buttonBorderColor = Qt::white;
@@ -208,6 +209,7 @@ void ArrtStyle::polish(QPalette& pal)
         s_buttonHoverBorderColor = Qt::cyan;
         s_buttonTextColor = Qt::white;
         s_buttonPressedTextColor = Qt::black;
+        s_focusedControlBorderWidth = 4;
     }
     pal.setColor(QPalette::ToolTipBase, pal.base().color());
     pal.setColor(QPalette::ToolTipText, pal.mid().color());
@@ -280,8 +282,7 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
             // This code is a modified version of qfusionstyle.cpp
 
             bool hasArrow = toolbutton->features & QStyleOptionToolButton::Arrow;
-            if (!hasArrow && !toolbutton->icon.isNull() && !toolbutton->text.isEmpty() &&
-                toolbutton->toolButtonStyle == Qt::ToolButtonTextBesideIcon)
+            if (!hasArrow && !toolbutton->icon.isNull())
             {
                 QRect rect = toolbutton->rect;
                 int shiftX = 0;
@@ -311,8 +312,8 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                 shiftX += pmSize.width() / 3;
 
                 p->setFont(toolbutton->font);
-                QRect pr = rect,
-                      tr = rect;
+                QRect pr = rect;
+                QRect tr = rect;
                 int alignment = Qt::TextShowMnemonic;
                 if (!proxy()->styleHint(SH_UnderlineShortcut, opt, widget))
                     alignment |= Qt::TextHideMnemonic;
@@ -341,19 +342,30 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                 }
                 else
                 {
-                    pr.setWidth(pmSize.width() + 2);
-                    tr.adjust(pr.width() + spaceBetweenIconAndText, 0, 0, 0);
-                    pr.translate(shiftX, shiftY);
-                    proxy()->drawItemPixmap(p, QStyle::visualRect(opt->direction, rect, pr), Qt::AlignCenter, pm);
+                    if (toolbutton->toolButtonStyle == Qt::ToolButtonIconOnly)
+                    {
+                        QRect iconRect = pm.rect();
+                        iconRect.moveCenter(rect.center());
+                        proxy()->drawItemPixmap(p, iconRect, Qt::AlignCenter, pm);
+                    }
+                    else
+                    {
+                        pr.setWidth(pmSize.width() + 2);
+                        tr.adjust(pr.width() + spaceBetweenIconAndText, 0, 0, 0);
+                        pr.translate(shiftX, shiftY);
+                        proxy()->drawItemPixmap(p, QStyle::visualRect(opt->direction, rect, pr), Qt::AlignCenter, pm);
+                    }
                     alignment |= Qt::AlignLeft | Qt::AlignBaseline;
                 }
-                tr.translate(shiftX, shiftY);
-                const QString text = toolbutton->text; //not eliding
+                if (toolbutton->toolButtonStyle != Qt::ToolButtonIconOnly)
+                {
+                    tr.translate(shiftX, shiftY);
+                    const QString text = toolbutton->text; //not eliding
 
-                proxy()->drawItemText(p, QStyle::visualRect(opt->direction, rect, tr), alignment, pal,
-                                      toolbutton->state & State_Enabled, text,
-                                      QPalette::ButtonText);
-
+                    proxy()->drawItemText(p, QStyle::visualRect(opt->direction, rect, tr), alignment, pal,
+                                          toolbutton->state & State_Enabled, text,
+                                          QPalette::ButtonText);
+                }
                 return;
             }
         }
@@ -397,7 +409,7 @@ void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* opti
         case QStyle::PE_PanelButtonTool:
         case QStyle::PE_PanelButtonCommand:
         {
-            QRect r = option->rect.adjusted(s_focusedControlBorderWidth, s_focusedControlBorderWidth, -s_focusedControlBorderWidth, -s_focusedControlBorderWidth);
+            QRect r = option->rect.adjusted(0, 0, -1, -1);
 
             // on a toggle button the checked state is dark and unchecked one is slightly lighter than the background
             QColor rectColor = option->state.testFlag(State_Raised) ? s_buttonBackgroundColor : s_buttonPressedBackgroundColor;

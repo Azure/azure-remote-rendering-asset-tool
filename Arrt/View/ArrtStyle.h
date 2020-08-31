@@ -14,7 +14,7 @@ public:
     static const int s_controlHeight;
 
     static QColor s_focusedControlBorderColor;
-    static const int s_focusedControlBorderWidth;
+    static int s_focusedControlBorderWidth;
 
     static QColor s_buttonBorderColor;
     static QColor s_buttonHoverBorderColor;

@@ -99,7 +99,7 @@ void SessionInfoButton::paintEvent(QPaintEvent*)
     QPointF diff = timeRect.center() - timeTightRect.center() + QPoint(0, 1);
     timeBoundingRect.translate(diff);
 
-    p.setPen(palette().text().color());
+    p.setPen(ArrtStyle::s_buttonPressedTextColor);
     p.setFont(ArrtStyle::s_sessionTimeFont);
     p.drawText(timeBoundingRect, Qt::AlignTop, getTimeString());
 
