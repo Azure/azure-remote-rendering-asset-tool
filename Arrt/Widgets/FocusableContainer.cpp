@@ -51,7 +51,7 @@ private:
 FocusableContainer::FocusableContainer(QWidget* childWidget, QWidget* parent)
     : QWidget(parent)
 {
-    setContentsMargins(1, 1, 1, 1);
+    setContentsMargins(0, 0, 0, 0);
     if (childWidget)
     {
         setChild(childWidget);
@@ -61,8 +61,9 @@ FocusableContainer::FocusableContainer(QWidget* childWidget, QWidget* parent)
 void FocusableContainer::setChild(QWidget* child)
 {
     assert(child);
+    const int borderW = ArrtStyle::s_focusedControlBorderWidth;
     auto* l = new QHBoxLayout(this);
-    l->setContentsMargins(0, 0, 0, 0);
+    l->setContentsMargins(borderW, borderW, -borderW, -borderW);
     l->addWidget(child);
 }
 
@@ -84,8 +85,7 @@ void FocusableContainer::paintEvent(QPaintEvent* e)
     if (m_highlighted)
     {
         QStylePainter p(this);
-        p.setPen(palette().highlight().color());
-        p.drawRect(rect().adjusted(0, 0, -1, -1));
+        ArrtStyle::drawFocusedBorder(&p, rect());
     }
     QWidget::paintEvent(e);
 }

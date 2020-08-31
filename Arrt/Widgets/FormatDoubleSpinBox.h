@@ -53,6 +53,8 @@ protected:
     virtual bool eventFilter(QObject* watched, QEvent* event) override;
     virtual void showEvent(QShowEvent* event) override;
     virtual void fixup(QString& input) const override;
+    virtual void paintEvent(QPaintEvent* event) override;
+
 protected Q_SLOTS:
     void startEdit(bool isDelayed = false);
     void endEdit(bool isDelayed = false);

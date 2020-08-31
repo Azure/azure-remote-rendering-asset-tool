@@ -3,8 +3,10 @@
 #include <QLineEdit>
 #include <QMouseEvent>
 #include <QScreen>
+#include <QStylePainter>
 #include <QTimer>
 #include <QWindow>
+#include <View/ArrtStyle.h>
 #include <Widgets/FormatDoubleSpinBox.h>
 
 FormatDoubleSpinBox::FormatDoubleSpinBox(QWidget* parent, QString format, NumberFormatter::FormatterType type)
@@ -553,6 +555,16 @@ void FormatDoubleSpinBox::fixup(QString& input) const
     else
     {
         QDoubleSpinBox::fixup(input);
+    }
+}
+
+void FormatDoubleSpinBox::paintEvent(QPaintEvent* event)
+{
+    QDoubleSpinBox::paintEvent(event);
+    if (hasFocus())
+    {
+        QStylePainter p(this);
+        ArrtStyle::drawFocusedBorder(&p, rect());
     }
 }
 

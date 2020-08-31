@@ -41,36 +41,10 @@ void SessionInfoButton::paintEvent(QPaintEvent*)
     p.translate(0.5, 0.5);
 
     {
-        // draw background like a button
         QStyleOptionToolButton opt;
         initStyleOption(&opt);
-        if (opt.state & (QStyle::State_HasFocus | QStyle::State_Sunken | QStyle::State_MouseOver))
-        {
-            QRect r = rect();
-            QColor rectColor = ArrtStyle::s_buttonBackgroundColor;
-
-            if (opt.state.testFlag(QStyle::State_Sunken))
-            {
-                rectColor = rectColor.darker();
-            }
-
-            // on mouse over the button is a bit lighter
-            if (opt.state.testFlag(QStyle::State_MouseOver))
-            {
-                rectColor = rectColor.lighter(120);
-            }
-            if (opt.state.testFlag(QStyle::State_HasFocus))
-            {
-                rectColor = rectColor.lighter(120);
-                p.setPen(opt.palette.highlight().color());
-            }
-            else
-            {
-                p.setPen(Qt::NoPen);
-            }
-            p.setBrush(rectColor);
-            p.drawRoundedRect(r.adjusted(1, 1, -1, -1), 8.0, 8.0);
-        }
+        opt.state |= QStyle::State_Raised;
+        style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, &p, this);
     }
 
     QRect r = rect();

@@ -34,6 +34,8 @@ namespace
     }
 } // namespace
 
+const int ArrtStyle::s_controlHeight = 30;
+
 QColor ArrtStyle::s_focusedControlBorderColor;
 
 QColor ArrtStyle::s_listSeparatorColor;
@@ -87,6 +89,8 @@ const QFont ArrtStyle::s_formHeaderFont = QFont("Segoe UI", 10);
 const QFont ArrtStyle::s_notificationFont = QFont("Segoe UI", 8);
 const QFont ArrtStyle::s_mainButtonFont = QFont("Segoe UI", 20);
 const QFont ArrtStyle::s_toolbarFont = QFont("Segoe UI", 14);
+
+const int ArrtStyle::s_focusedControlBorderWidth = 2;
 
 QIcon ArrtStyle::s_expandedIcon;
 QIcon ArrtStyle::s_notexpandedIcon;
@@ -162,7 +166,7 @@ void ArrtStyle::polish(QPalette& pal)
         pal.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor(127, 127, 127));
 
 
-        s_focusedControlBorderColor = pal.highlight().color();
+        s_focusedControlBorderColor = pal.windowText().color();
         s_listSeparatorColor = QColor(60, 60, 60);
         s_buttonPressedBackgroundColor = QColor(35, 35, 35);
         s_buttonBackgroundColor = QColor(63, 63, 63);
@@ -207,6 +211,7 @@ void ArrtStyle::polish(QPalette& pal)
     }
     pal.setColor(QPalette::ToolTipBase, pal.base().color());
     pal.setColor(QPalette::ToolTipText, pal.mid().color());
+
     QToolTip::setPalette(pal);
 }
 
@@ -387,38 +392,29 @@ QSize ArrtStyle::sizeFromContents(ContentsType type, const QStyleOption* option,
 
 void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget) const
 {
-    if (element == QStyle::PE_PanelButtonCommand)
+    switch (element)
     {
-    }
-    if (element == QStyle::PE_PanelButtonTool || element == QStyle::PE_PanelButtonCommand)
-    {
-        QRect r = option->rect.adjusted(0, 1, -1, 0);
-        // on a toggle button the checked state is dark and unchecked one is slightly lighter than the background
-        QColor rectColor = option->state.testFlag(State_Raised) ? s_buttonBackgroundColor : s_buttonPressedBackgroundColor;
+        case QStyle::PE_PanelButtonTool:
+        case QStyle::PE_PanelButtonCommand:
+        {
+            QRect r = option->rect.adjusted(s_focusedControlBorderWidth, s_focusedControlBorderWidth, -s_focusedControlBorderWidth, -s_focusedControlBorderWidth);
 
-        // while mouse is pressed, the button is a bit darker
-        if (option->state.testFlag(State_Sunken))
-        {
-            rectColor = rectColor.darker();
-        }
+            // on a toggle button the checked state is dark and unchecked one is slightly lighter than the background
+            QColor rectColor = option->state.testFlag(State_Raised) ? s_buttonBackgroundColor : s_buttonPressedBackgroundColor;
 
-        // on mouse over the button is a bit lighter
-        if (option->state.testFlag(State_MouseOver))
-        {
-            rectColor = rectColor.lighter(120);
-        }
+            // while mouse is pressed, the button is a bit darker
+            if (option->state.testFlag(State_Sunken))
+            {
+                rectColor = rectColor.darker();
+            }
 
-        if (option->state.testFlag(State_HasFocus))
-        {
-            rectColor = rectColor.lighter(120);
-        }
+            // on mouse over the button is a bit lighter
+            if (option->state.testFlag(State_MouseOver))
+            {
+                rectColor = rectColor.lighter(120);
+            }
 
-        if (option->state.testFlag(State_HasFocus))
-        {
-            painter->setPen(s_focusedControlBorderColor);
-        }
-        else
-        {
+
             if (option->state.testFlag(State_Raised))
             {
                 painter->setPen(s_buttonBorderColor);
@@ -427,11 +423,26 @@ void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* opti
             {
                 painter->setPen(s_buttonPressedBorderColor);
             }
-        }
-        painter->setBrush(rectColor);
 
-        painter->drawRoundedRect(r.adjusted(1, 1, -1, -1), 5.0, 5.0);
-        return;
+            painter->setBrush(rectColor);
+
+            painter->drawRoundedRect(r.adjusted(1, 1, -1, -1), 5.0, 5.0);
+            if (option->state.testFlag(State_HasFocus))
+            {
+                drawFocusedBorder(painter, option->rect);
+            }
+
+            return;
+        }
+        case QStyle::PE_FrameLineEdit:
+        {
+            QProxyStyle::drawPrimitive(element, option, painter, widget);
+            if (option->state & QStyle::State_HasFocus)
+            {
+                drawFocusedBorder(painter, widget->rect());
+            }
+            return;
+        }
     }
     return QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
@@ -455,4 +466,16 @@ QLabel* ArrtStyle::createHeaderLabel(const QString& title, const QString& text)
 QString ArrtStyle::formatToolTip(const QString& title, const QString& details)
 {
     return QString("<font color=\'white\'><b>%1</b></font><br>%2").arg(title).arg(details);
+}
+
+int ArrtStyle::controlHeight()
+{
+    return DpiUtils::size(s_controlHeight);
+}
+
+void ArrtStyle::drawFocusedBorder(QPainter* p, QRect rect)
+{
+    const int borderW = ArrtStyle::s_focusedControlBorderWidth;
+    p->setPen(QPen(ArrtStyle::s_focusedControlBorderColor, borderW));
+    p->drawRect(rect.adjusted(borderW / 2, borderW / 2, -borderW / 2, -borderW / 2));
 }

@@ -1,8 +1,10 @@
 #include <QEvent>
 #include <QHBoxLayout>
 #include <QSlider>
+#include <QStylePainter>
 #include <QtMath>
 #include <Utils/ScopedBlockers.h>
+#include <View/ArrtStyle.h>
 #include <View/Parameters/BoundFloatSlider.h>
 #include <View/Parameters/BoundFloatSpinBox.h>
 
@@ -16,6 +18,7 @@ public:
         : QSlider(orientation, parent)
     {
         setFocusPolicy(Qt::StrongFocus);
+        setFixedHeight(ArrtStyle::controlHeight());
     }
 
     bool event(QEvent* e) override
@@ -27,6 +30,19 @@ public:
         }
 
         return QSlider::event(e);
+    }
+
+    virtual void paintEvent(QPaintEvent* ev) override
+    {
+        QSlider::paintEvent(ev);
+        if (hasFocus())
+        {
+            QStylePainter p(this);
+            const int w = ArrtStyle::s_focusedControlBorderWidth;
+            p.setPen(QPen(ArrtStyle::s_focusedControlBorderColor, w));
+            p.setBrush(Qt::NoBrush);
+            p.drawRect(rect().adjusted(w / 2, w / 2, -w / 2, -w / 2));
+        }
     }
 };
 

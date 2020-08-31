@@ -11,7 +11,10 @@ class ArrtStyle : public QProxyStyle
 public:
     ArrtStyle();
 
+    static const int s_controlHeight;
+
     static QColor s_focusedControlBorderColor;
+    static const int s_focusedControlBorderWidth;
 
     static QColor s_buttonBorderColor;
     static QColor s_buttonHoverBorderColor;
@@ -111,9 +114,13 @@ public:
 
     virtual int styleHint(StyleHint hint, const QStyleOption* option = {}, const QWidget* widget = {}, QStyleHintReturn* returnData = {}) const override;
 
+    static int controlHeight();
+
     // helper function to create a styled label on top of every panel
     static QLabel* createHeaderLabel(const QString& title, const QString& text);
 
     // helper to format the tooltip with a title and details
     static QString formatToolTip(const QString& title, const QString& details);
+
+    static void drawFocusedBorder(QPainter* p, QRect rect);
 };
