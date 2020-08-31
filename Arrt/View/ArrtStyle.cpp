@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QComboBox>
 #include <QLabel>
 #include <QPainter>
 #include <QStyleOptionToolButton>
@@ -281,7 +282,7 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
             // only fixes the alignment when the button has an icon+text and no arrow.
             // This code is a modified version of qfusionstyle.cpp
 
-            bool hasArrow = toolbutton->features & QStyleOptionToolButton::Arrow;
+            bool hasArrow = toolbutton->features.testFlag(QStyleOptionToolButton::Arrow);
             if (!hasArrow && !toolbutton->icon.isNull())
             {
                 QRect rect = toolbutton->rect;
@@ -296,11 +297,11 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                 QPixmap pm;
                 QSize pmSize = toolbutton->iconSize;
 
-                QIcon::State state = toolbutton->state & State_On ? QIcon::On : QIcon::Off;
+                QIcon::State state = toolbutton->state.testFlag(State_On) ? QIcon::On : QIcon::Off;
                 QIcon::Mode mode;
-                if (!(toolbutton->state & State_Enabled))
+                if (!(toolbutton->state.testFlag(State_Enabled)))
                     mode = QIcon::Disabled;
-                else if ((opt->state & State_MouseOver) && (opt->state & State_AutoRaise))
+                else if ((opt->state.testFlag(State_MouseOver)) && (opt->state & State_AutoRaise))
                     mode = QIcon::Active;
                 else
                     mode = QIcon::Normal;
@@ -319,7 +320,7 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                     alignment |= Qt::TextHideMnemonic;
 
                 // text color override, using our palette
-                QColor textColor = toolbutton->state & State_Raised ? s_buttonTextColor : s_buttonPressedTextColor;
+                QColor textColor = toolbutton->state.testFlag(State_Raised) ? s_buttonTextColor : s_buttonPressedTextColor;
                 QPalette pal = toolbutton->palette;
 
                 if (textColor != toolbutton->palette.text().color())
@@ -363,7 +364,7 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                     const QString text = toolbutton->text; //not eliding
 
                     proxy()->drawItemText(p, QStyle::visualRect(opt->direction, rect, tr), alignment, pal,
-                                          toolbutton->state & State_Enabled, text,
+                                          toolbutton->state.testFlag(State_Enabled), text,
                                           QPalette::ButtonText);
                 }
                 return;
@@ -411,8 +412,14 @@ void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* opti
         {
             QRect r = option->rect.adjusted(0, 0, -1, -1);
 
+
+            bool isRaised = option->state.testFlag(State_Raised);
+            if (qobject_cast<const QComboBox*>(widget) != nullptr)
+            {
+                isRaised = true;
+            }
             // on a toggle button the checked state is dark and unchecked one is slightly lighter than the background
-            QColor rectColor = option->state.testFlag(State_Raised) ? s_buttonBackgroundColor : s_buttonPressedBackgroundColor;
+            QColor rectColor = isRaised ? s_buttonBackgroundColor : s_buttonPressedBackgroundColor;
 
             // while mouse is pressed, the button is a bit darker
             if (option->state.testFlag(State_Sunken))
@@ -427,13 +434,9 @@ void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* opti
             }
 
 
-            if (option->state.testFlag(State_Raised))
+            if (isRaised)
             {
-                painter->setPen(s_buttonBorderColor);
-            }
-            else
-            {
-                painter->setPen(s_buttonPressedBorderColor);
+                painter->setPen(isRaised ? s_buttonBorderColor : s_buttonPressedBorderColor);
             }
 
             painter->setBrush(rectColor);
@@ -449,7 +452,7 @@ void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* opti
         case QStyle::PE_FrameLineEdit:
         {
             QProxyStyle::drawPrimitive(element, option, painter, widget);
-            if (option->state & QStyle::State_HasFocus)
+            if (option->state.testFlag(QStyle::State_HasFocus))
             {
                 drawFocusedBorder(painter, widget->rect());
             }
