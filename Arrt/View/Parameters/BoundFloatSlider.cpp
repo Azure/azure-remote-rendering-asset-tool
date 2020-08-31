@@ -38,10 +38,7 @@ public:
         if (hasFocus())
         {
             QStylePainter p(this);
-            const int w = ArrtStyle::s_focusedControlBorderWidth;
-            p.setPen(QPen(ArrtStyle::s_focusedControlBorderColor, w));
-            p.setBrush(Qt::NoBrush);
-            p.drawRect(rect().adjusted(w / 2, w / 2, -w / 2, -w / 2));
+            ArrtStyle::drawFocusedBorder(&p, rect());
         }
     }
 };

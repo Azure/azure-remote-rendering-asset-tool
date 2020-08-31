@@ -283,7 +283,7 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
             // This code is a modified version of qfusionstyle.cpp
 
             bool hasArrow = toolbutton->features.testFlag(QStyleOptionToolButton::Arrow);
-            if (!hasArrow && !toolbutton->icon.isNull())
+            if (!hasArrow)
             {
                 QRect rect = toolbutton->rect;
                 int shiftX = 0;
@@ -294,9 +294,6 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                     shiftY += proxy()->pixelMetric(PM_ButtonShiftVertical, toolbutton, widget);
                 }
 
-                QPixmap pm;
-                QSize pmSize = toolbutton->iconSize;
-
                 QIcon::State state = toolbutton->state.testFlag(State_On) ? QIcon::On : QIcon::Off;
                 QIcon::Mode mode;
                 if (!(toolbutton->state.testFlag(State_Enabled)))
@@ -306,11 +303,15 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                 else
                     mode = QIcon::Normal;
 
-                pm = toolbutton->icon.pixmap(qt_getWindow(widget), toolbutton->rect.size().boundedTo(toolbutton->iconSize), mode, state);
-
-                pmSize = pm.size() / pm.devicePixelRatio();
-
-                shiftX += pmSize.width() / 3;
+                QPixmap pm;
+                QSize pmSize;
+                if (!toolbutton->icon.isNull())
+                {
+                    pmSize = toolbutton->iconSize;
+                    pm = toolbutton->icon.pixmap(qt_getWindow(widget), toolbutton->rect.size().boundedTo(toolbutton->iconSize), mode, state);
+                    pmSize = pm.size() / pm.devicePixelRatio();
+                    shiftX += pmSize.width() / 3;
+                }
 
                 p->setFont(toolbutton->font);
                 QRect pr = rect;
@@ -327,36 +328,46 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                 {
                     // changes the icon color to match the text color, in case the text color is different from the default
                     pal.setColor(QPalette::ButtonText, textColor);
-                    QPainter pPixmap(&pm);
-                    pPixmap.setCompositionMode(QPainter::CompositionMode_SourceAtop);
-                    // just override the icon color using the origin alpha channel
-                    pPixmap.fillRect(pm.rect(), textColor);
+                    if (!pm.isNull())
+                    {
+                        QPainter pPixmap(&pm);
+                        pPixmap.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+                        // just override the icon color using the origin alpha channel
+                        pPixmap.fillRect(pm.rect(), textColor);
+                    }
                 }
 
-                if (toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon)
+                if (!pm.isNull())
                 {
-                    pr.setHeight(pmSize.height() + 4); //### 4 is currently hardcoded in QToolButton::sizeHint()
-                    tr.adjust(0, pr.height() - 1, 0, -1);
-                    pr.translate(shiftX, shiftY);
-                    proxy()->drawItemPixmap(p, pr, Qt::AlignCenter, pm);
-                    alignment |= Qt::AlignCenter;
-                }
-                else
-                {
-                    if (toolbutton->toolButtonStyle == Qt::ToolButtonIconOnly)
+                    if (toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon)
                     {
-                        QRect iconRect = pm.rect();
-                        iconRect.moveCenter(rect.center());
-                        proxy()->drawItemPixmap(p, iconRect, Qt::AlignCenter, pm);
+                        pr.setHeight(pmSize.height() + 4); //### 4 is currently hardcoded in QToolButton::sizeHint()
+                        tr.adjust(0, pr.height() - 1, 0, -1);
+                        pr.translate(shiftX, shiftY);
+                        proxy()->drawItemPixmap(p, pr, Qt::AlignCenter, pm);
+                        alignment |= Qt::AlignCenter;
                     }
                     else
                     {
-                        pr.setWidth(pmSize.width() + 2);
-                        tr.adjust(pr.width() + spaceBetweenIconAndText, 0, 0, 0);
-                        pr.translate(shiftX, shiftY);
-                        proxy()->drawItemPixmap(p, QStyle::visualRect(opt->direction, rect, pr), Qt::AlignCenter, pm);
+                        if (toolbutton->toolButtonStyle == Qt::ToolButtonIconOnly)
+                        {
+                            QRect iconRect = pm.rect();
+                            iconRect.moveCenter(rect.center());
+                            proxy()->drawItemPixmap(p, iconRect, Qt::AlignCenter, pm);
+                        }
+                        else
+                        {
+                            pr.setWidth(pmSize.width() + 2);
+                            tr.adjust(pr.width() + spaceBetweenIconAndText, 0, 0, 0);
+                            pr.translate(shiftX, shiftY);
+                            proxy()->drawItemPixmap(p, QStyle::visualRect(opt->direction, rect, pr), Qt::AlignCenter, pm);
+                        }
+                        alignment |= Qt::AlignLeft | Qt::AlignBaseline;
                     }
-                    alignment |= Qt::AlignLeft | Qt::AlignBaseline;
+                }
+                else
+                {
+                    alignment |= Qt::AlignCenter;
                 }
                 if (toolbutton->toolButtonStyle != Qt::ToolButtonIconOnly)
                 {
@@ -411,7 +422,6 @@ void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* opti
         case QStyle::PE_PanelButtonCommand:
         {
             QRect r = option->rect.adjusted(0, 0, -1, -1);
-
 
             bool isRaised = option->state.testFlag(State_Raised);
             if (qobject_cast<const QComboBox*>(widget) != nullptr)
