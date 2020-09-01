@@ -109,7 +109,11 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
 
             viewportSplitter->addWidget(viewportContainer);
             viewportSplitter->addWidget(statsPanelContainer);
-
+            viewportSplitter->setCollapsible(0, false);
+            viewportSplitter->setCollapsible(1, true);
+            viewportSplitter->setStretchFactor(0, 1);
+            viewportSplitter->setStretchFactor(1, 0);
+            viewportSplitter->setSizes({(int)DpiUtils::size(800), 0});
             splitter->addWidget(viewportSplitter);
         }
 
@@ -122,12 +126,17 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
             materialSplitter->addWidget(materialEditorView);
             materialSplitter->setChildrenCollapsible(false);
             materialSplitter->setMinimumWidth(DpiUtils::size(150));
-            materialSplitter->setSizes({10, 15});
+            materialSplitter->setSizes({(int)DpiUtils::size(300), (int)DpiUtils::size(500)});
+            materialSplitter->setStretchFactor(0, 0);
+            materialSplitter->setStretchFactor(1, 1);
 
             splitter->addWidget(materialSplitter);
         }
 
-        splitter->setSizes({10, 40, 15});
+        splitter->setStretchFactor(0, 0);
+        splitter->setStretchFactor(1, 1);
+        splitter->setStretchFactor(2, 0);
+        splitter->setSizes({(int)DpiUtils::size(300), (int)DpiUtils::size(800), (int)DpiUtils::size(300)});
     }
 
     l->addWidget(splitter, 1);

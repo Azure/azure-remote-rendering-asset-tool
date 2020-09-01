@@ -42,6 +42,16 @@ StatsPageModel::StatsPageModel(ArrServiceStats* serviceStats, QObject* parent)
             });
 }
 
+void StatsPageModel::startCollecting()
+{
+    m_serviceStats->startCollecting();
+}
+
+void StatsPageModel::stopCollecting()
+{
+    m_serviceStats->stopCollecting();
+}
+
 int StatsPageModel::getParameterCount() const
 {
     return sizeof(m_plotInfo) / sizeof(m_plotInfo[0]);

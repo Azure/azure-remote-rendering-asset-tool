@@ -6,6 +6,7 @@
 #include <View/ModelEditor/StatsPageView.h>
 #include <ViewModel/ModelEditor/StatsPageModel.h>
 #include <ViewUtils/DpiUtils.h>
+#include <Widgets/FlatButton.h>
 
 class ColoredBox : public QWidget
 {
@@ -160,28 +161,58 @@ std::vector<QPointF>& SimpleGraph::accessPlotData(int index)
 StatsPageView::StatsPageView(StatsPageModel* statsPageModel)
     : m_model(statsPageModel)
 {
-    auto* l = new QVBoxLayout(this);
+    setContentsMargins(0, 0, 0, 0);
 
-    ParametersWidget* widget = nullptr;
-    for (int i = 0; i < m_model->getParameterCount(); ++i)
+    auto* mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+
+    auto* showButton = new FlatButton({}, this);
+    mainLayout->addWidget(showButton);
+
+    QWidget* statsPanel = new QWidget(this);
     {
-        if (!widget)
+        auto* l = new QVBoxLayout(statsPanel);
+
+        ParametersWidget* widget = nullptr;
+        for (int i = 0; i < m_model->getParameterCount(); ++i)
         {
-            widget = new ParametersWidget(m_model, this);
-            l->addWidget(widget);
-            m_graphs.push_back(widget);
+            if (!widget)
+            {
+                widget = new ParametersWidget(m_model, statsPanel);
+                l->addWidget(widget);
+                m_graphs.push_back(widget);
+            }
+
+            widget->addParameter(i);
+            if (m_model->getPlotInfo(i).m_endGroup)
+            {
+                widget = nullptr;
+            }
         }
 
-        widget->addParameter(i);
-        if (m_model->getPlotInfo(i).m_endGroup)
-        {
-            widget = nullptr;
-        }
+        connect(m_model, &StatsPageModel::valuesChanged, this, [this]() { updateUi(); });
+
+        updateUi();
     }
 
-    connect(m_model, &StatsPageModel::valuesChanged, this, [this]() { updateUi(); });
-
-    updateUi();
+    mainLayout->addWidget(showButton);
+    mainLayout->addWidget(statsPanel);
+    auto toggleCollection = [this, showButton, statsPanel](bool checked) {
+        if (checked)
+        {
+            m_model->startCollecting();
+            showButton->setText(tr("Stop statistics collection"));
+        }
+        else
+        {
+            m_model->stopCollecting();
+            showButton->setText(tr("Start statistics collection"));
+        }
+    };
+    showButton->setCheckable(true);
+    showButton->setChecked(false);
+    connect(showButton, &FlatButton::toggled, this, toggleCollection);
+    toggleCollection(false);
 }
 
 StatsPageView::~StatsPageView()

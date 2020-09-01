@@ -44,6 +44,9 @@ public:
 
     StatsPageModel(ArrServiceStats* serviceStats, QObject* parent = nullptr);
 
+    void startCollecting();
+    void stopCollecting();
+
     int getParameterCount() const;
     const PlotInfo& getPlotInfo(int index) const;
     double getParameter(int index) const;
