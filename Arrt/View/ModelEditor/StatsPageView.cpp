@@ -43,6 +43,14 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
     p.fillRect(e->rect(), Qt::black);
     p.translate(QPoint(width(), height()));
     p.scale(-1, -height());
+    p.translate(1, -m_minimum);
+    qreal yrange = m_maximum - m_minimum;
+    if (yrange < 0.001)
+    {
+        yrange = 1;
+    }
+    p.scale(1, 1.0 / yrange);
+
     p.setBrush(Qt::NoBrush);
 
     for (int i = 0; i < getPlotCount(); ++i)
@@ -61,6 +69,11 @@ int SimpleGraph::getPlotCount() const
     return (int)m_infos.size();
 }
 
+void SimpleGraph::setMinMax(qreal minimum, qreal maximum)
+{
+    m_minimum = minimum;
+    m_maximum = maximum;
+}
 
 int SimpleGraph::addPlot(StatsPageModel::PlotInfo type)
 {
@@ -114,6 +127,9 @@ void ParametersWidget::addParameter(int index)
 
 void ParametersWidget::updateUi()
 {
+    MinValue<double> minValue;
+    MaxValue<double> maxValue;
+    AvgMinMaxValue<double> stats;
     for (int i = 0; i < m_indices.size(); ++i)
     {
         const int idx = m_indices[i];
@@ -125,8 +141,11 @@ void ParametersWidget::updateUi()
         }
         m_values[i]->setText(toPrint);
 
-        m_model->getGraphData(idx, m_graph->accessPlotData(i));
+        m_model->getGraphData(idx, m_graph->accessPlotData(i), stats);
+        minValue.addValue(stats.m_min.m_value);
+        maxValue.addValue(stats.m_max.m_value);
     }
+    m_graph->setMinMax(minValue.m_value, maxValue.m_value);
     m_graph->update();
 }
 

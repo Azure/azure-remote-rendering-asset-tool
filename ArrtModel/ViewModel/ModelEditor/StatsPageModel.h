@@ -47,7 +47,7 @@ public:
     int getParameterCount() const;
     const PlotInfo& getPlotInfo(int index) const;
     double getParameter(int index) const;
-    void getGraphData(int index, std::vector<QPointF>& graph) const;
+    void getGraphData(int index, std::vector<QPointF>& graph, AvgMinMaxValue<double>& globalStats) const;
     std::optional<RR::PerformanceRating> getParameterRating(int index) const;
 
 Q_SIGNALS:

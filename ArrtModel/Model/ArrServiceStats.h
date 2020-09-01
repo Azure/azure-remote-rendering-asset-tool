@@ -48,6 +48,10 @@ struct MinValue
     {
         m_value = qMin(m_value, value);
     }
+    bool hasValue() const
+    {
+        return m_value != std::numeric_limits<T>::max();
+    }
     T m_value = std::numeric_limits<T>::max();
 };
 
@@ -57,6 +61,10 @@ struct MaxValue
     void addValue(const T& value)
     {
         m_value = qMax(m_value, value);
+    }
+    bool hasValue() const
+    {
+        return m_value != std::numeric_limits<T>::min();
     }
     T m_value = std::numeric_limits<T>::min();
 };
@@ -142,20 +150,17 @@ struct Accumulator
 
         if (m_buffer.getSize() > 0)
         {
-            const ValueType minValue = m_perWindowStats.m_min.m_value;
-            const ValueType maxValue = m_perWindowStats.m_max.m_value;
-            const qreal rangeY = qMax(qreal(maxValue - minValue), qreal(0.001f));
             const uint tickOffset = m_buffer.getValue(0).m_tick;
 
             for (uint i = 0; i < m_buffer.getSize(); ++i)
             {
                 auto val = m_buffer.getValue(i);
-                graph.push_back(QPointF(tickOffset - val.m_tick, qreal(val.m_value - minValue) / rangeY));
+                graph.push_back(QPointF(tickOffset - val.m_tick, val.m_value));
             }
         }
     }
 
-    AvgMinMaxValue<ValueType> m_perWindowStats;
+    AvgMinMaxValue<double> m_perWindowStats;
     void endWindow()
     {
         m_perWindowStats.addValue(m_accumulation.m_value);

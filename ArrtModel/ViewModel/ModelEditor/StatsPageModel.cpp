@@ -98,64 +98,51 @@ double StatsPageModel::getParameter(int index) const
     }
 }
 
-void StatsPageModel::getGraphData(int index, std::vector<QPointF>& graph) const
+#define GRAPH_DATA(PARAM)                                            \
+    m_stats.##PARAM.getGraphData(graph);                             \
+    globalStats = m_stats.##PARAM.m_perWindowStats; \
+    break
+
+void StatsPageModel::getGraphData(int index, std::vector<QPointF>& graph, AvgMinMaxValue<double>& globalStats) const
 {
     switch (index)
     {
         case 0:
-            m_stats.m_polygonsRendered.getGraphData(graph);
-            break;
+            GRAPH_DATA(m_polygonsRendered);
         case 1:
-            m_stats.m_latencyPoseToReceive.getGraphData(graph);
-            break;
+            GRAPH_DATA(m_latencyPoseToReceive);
         case 2:
-            m_stats.m_latencyReceiveToPresent.getGraphData(graph);
-            break;
-        case 3:
-            m_stats.m_latencyPresentToDisplay.getGraphData(graph);
-            break;
-        case 4:
-            m_stats.m_timeSinceLastPresent.getGraphData(graph);
-            break;
-        case 5:
-            m_stats.m_videoFramesReused.getGraphData(graph);
-            break;
-        case 6:
-            m_stats.m_videoFramesSkipped.getGraphData(graph);
-            break;
-        case 7:
-            m_stats.m_videoFramesReceived.getGraphData(graph);
-            break;
+            GRAPH_DATA(m_latencyReceiveToPresent);
+		case 3:
+			GRAPH_DATA(m_latencyPresentToDisplay);
+		case 4:
+			GRAPH_DATA(m_timeSinceLastPresent);
+		case 5:
+			GRAPH_DATA(m_videoFramesReused);
+		case 6:
+			GRAPH_DATA(m_videoFramesSkipped);
+		case 7:
+			GRAPH_DATA(m_videoFramesReceived);
         case 8:
-            m_stats.m_videoFramesDiscarded.getGraphData(graph);
-            break;
+			GRAPH_DATA(m_videoFramesDiscarded);
         case 9:
-            m_stats.m_videoFrameMinDelta.getGraphData(graph);
-            break;
+			GRAPH_DATA(m_videoFrameMinDelta);
         case 10:
-            m_stats.m_videoFrameMaxDelta.getGraphData(graph);
-            break;
+			GRAPH_DATA(m_videoFrameMaxDelta);
         case 11:
-            m_stats.m_networkLatency.getGraphData(graph);
-            break;
+			GRAPH_DATA(m_networkLatency);
         case 12:
-            m_stats.m_timeCPU.getGraphData(graph);
-            break;
+			GRAPH_DATA(m_timeCPU);
         case 13:
-            m_stats.m_timeGPU.getGraphData(graph);
-            break;
+			GRAPH_DATA(m_timeGPU);
         case 14:
-            m_stats.m_utilizationCPU.getGraphData(graph);
-            break;
+			GRAPH_DATA(m_utilizationCPU);
         case 15:
-            m_stats.m_utilizationGPU.getGraphData(graph);
-            break;
+			GRAPH_DATA(m_utilizationGPU);
         case 16:
-            m_stats.m_memoryCPU.getGraphData(graph);
-            break;
+			GRAPH_DATA(m_memoryCPU);
         case 17:
-            m_stats.m_memoryGPU.getGraphData(graph);
-            break;
+			GRAPH_DATA(m_memoryGPU);
     }
 }
 

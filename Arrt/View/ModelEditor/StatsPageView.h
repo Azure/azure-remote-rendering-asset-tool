@@ -17,9 +17,13 @@ public:
     int addPlot(StatsPageModel::PlotInfo info);
     std::vector<QPointF>& accessPlotData(int index);
 
+    void setMinMax(qreal minimum, qreal maximum);
+
 private:
     std::vector<std::vector<QPointF>> m_data;
     std::vector<StatsPageModel::PlotInfo> m_infos;
+    qreal m_minimum;
+    qreal m_maximum;
 };
 
 
