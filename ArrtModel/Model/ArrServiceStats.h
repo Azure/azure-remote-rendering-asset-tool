@@ -76,6 +76,10 @@ struct SumValue
     {
         m_value += value;
     }
+    bool hasValue() const
+    {
+        return m_value != 0;
+    }
     T m_value = {};
 };
 
@@ -87,6 +91,12 @@ struct AvgValue
         m_value += value;
         ++m_values;
     }
+
+    bool hasValue() const
+    {
+        return m_values > 0;
+    }
+
     double getAverage() const
     {
         if (m_values > 0)
@@ -110,6 +120,12 @@ struct AvgMinMaxValue
         m_max.addValue(value);
         ++m_values;
     }
+
+    bool hasValue() const
+    {
+        return m_values > 0;
+    }
+
     double getAverage() const
     {
         if (m_values > 0)
@@ -163,7 +179,10 @@ struct Accumulator
     AvgMinMaxValue<double> m_perWindowStats;
     void endWindow()
     {
-        m_perWindowStats.addValue(m_accumulation.m_value);
+        if (m_accumulation.hasValue())
+        {
+            m_perWindowStats.addValue(m_accumulation.m_value);
+        }
         m_accumulation = {};
     }
 };

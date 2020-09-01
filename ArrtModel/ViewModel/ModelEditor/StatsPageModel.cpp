@@ -2,26 +2,26 @@
 #include <ViewModel/ModelEditor/StatsPageModel.h>
 
 StatsPageModel::PlotInfo StatsPageModel::m_plotInfo[] = {
-    {"Polygons rendered", PlotInfo::Line, PlotInfo::Continuous, Qt::white, "", true, {}, {}},
+    {"Polygons rendered", PlotInfo::Line, PlotInfo::Continuous, Qt::white, "", true, 0, {}},
 
-    {"Latency (pose to receive average)", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, "ms", false, {}, {}},
-    {"Latency (receive to present average)", PlotInfo::Line, PlotInfo::Continuous, Qt::cyan, "ms", false, {}, {}},
-    {"Latency (present to display average)", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, "ms", true, {}, {}},
+    {"Latency (pose to receive average)", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, "ms", false, 0, {}},
+    {"Latency (receive to present average)", PlotInfo::Line, PlotInfo::Continuous, Qt::cyan, "ms", false, 0, {}},
+    {"Latency (present to display average)", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, "ms", true, 0, {}},
 
-    {"Time since last present", PlotInfo::Line, PlotInfo::Continuous, Qt::white, "ms", true, {}, {}},
+    {"Time since last present", PlotInfo::Line, PlotInfo::Continuous, Qt::white, "ms", true, 0, {}},
 
-    {"Frames reused", PlotInfo::Line, PlotInfo::Continuous, Qt::cyan, "", false, {}, {}},
-    {"Frames skipped", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, "", false, {}, {}},
-    {"Frames received", PlotInfo::Line, PlotInfo::Continuous, Qt::green, "", false, {}, {}},
-    {"Frames discarded", PlotInfo::Line, PlotInfo::Continuous, Qt::red, "", true, {}, {}},
+    {"Frames reused", PlotInfo::Line, PlotInfo::Continuous, Qt::cyan, "", false, 0, {}},
+    {"Frames skipped", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, "", false, 0, {}},
+    {"Frames received", PlotInfo::Line, PlotInfo::Continuous, Qt::green, "", false, 0, {}},
+    {"Frames discarded", PlotInfo::Line, PlotInfo::Continuous, Qt::red, "", true, 0, {}},
 
-    {"Frame minimum delta", PlotInfo::AreaLowerBound, PlotInfo::Continuous, Qt::white, QString("ms"), false, {}, {}},
-    {"Frame maximum delta", PlotInfo::AreaHigherBound, PlotInfo::Continuous, Qt::white, QString("ms"), true, {}, {}},
+    {"Frame minimum delta", PlotInfo::AreaLowerBound, PlotInfo::Continuous, Qt::yellow, QString("ms"), false, 0, {}},
+    {"Frame maximum delta", PlotInfo::AreaHigherBound, PlotInfo::Continuous, Qt::white, QString("ms"), true, 0, {}},
 
-    {"Network round-trip", PlotInfo::Line, PlotInfo::Continuous, Qt::white, QString("ms"), true, {}, {}},
+    {"Network round-trip", PlotInfo::Line, PlotInfo::Continuous, Qt::white, QString("ms"), true, 0, {}},
 
-    {"Frame time CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString("ms"), false, {}, {}},
-    {"Frame time GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString("ms"), true, {}, {}},
+    {"Frame time CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString("ms"), false, 0, {}},
+    {"Frame time GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString("ms"), true, 0, {}},
 
     {"Utilization CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString("%"), false, 0, 100},
     {"Utilization GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString("%"), true, 0, 100},
@@ -98,8 +98,8 @@ double StatsPageModel::getParameter(int index) const
     }
 }
 
-#define GRAPH_DATA(PARAM)                                            \
-    m_stats.##PARAM.getGraphData(graph);                             \
+#define GRAPH_DATA(PARAM)                           \
+    m_stats.##PARAM.getGraphData(graph);            \
     globalStats = m_stats.##PARAM.m_perWindowStats; \
     break
 
@@ -113,36 +113,36 @@ void StatsPageModel::getGraphData(int index, std::vector<QPointF>& graph, AvgMin
             GRAPH_DATA(m_latencyPoseToReceive);
         case 2:
             GRAPH_DATA(m_latencyReceiveToPresent);
-		case 3:
-			GRAPH_DATA(m_latencyPresentToDisplay);
-		case 4:
-			GRAPH_DATA(m_timeSinceLastPresent);
-		case 5:
-			GRAPH_DATA(m_videoFramesReused);
-		case 6:
-			GRAPH_DATA(m_videoFramesSkipped);
-		case 7:
-			GRAPH_DATA(m_videoFramesReceived);
+        case 3:
+            GRAPH_DATA(m_latencyPresentToDisplay);
+        case 4:
+            GRAPH_DATA(m_timeSinceLastPresent);
+        case 5:
+            GRAPH_DATA(m_videoFramesReused);
+        case 6:
+            GRAPH_DATA(m_videoFramesSkipped);
+        case 7:
+            GRAPH_DATA(m_videoFramesReceived);
         case 8:
-			GRAPH_DATA(m_videoFramesDiscarded);
+            GRAPH_DATA(m_videoFramesDiscarded);
         case 9:
-			GRAPH_DATA(m_videoFrameMinDelta);
+            GRAPH_DATA(m_videoFrameMinDelta);
         case 10:
-			GRAPH_DATA(m_videoFrameMaxDelta);
+            GRAPH_DATA(m_videoFrameMaxDelta);
         case 11:
-			GRAPH_DATA(m_networkLatency);
+            GRAPH_DATA(m_networkLatency);
         case 12:
-			GRAPH_DATA(m_timeCPU);
+            GRAPH_DATA(m_timeCPU);
         case 13:
-			GRAPH_DATA(m_timeGPU);
+            GRAPH_DATA(m_timeGPU);
         case 14:
-			GRAPH_DATA(m_utilizationCPU);
+            GRAPH_DATA(m_utilizationCPU);
         case 15:
-			GRAPH_DATA(m_utilizationGPU);
+            GRAPH_DATA(m_utilizationGPU);
         case 16:
-			GRAPH_DATA(m_memoryCPU);
+            GRAPH_DATA(m_memoryCPU);
         case 17:
-			GRAPH_DATA(m_memoryGPU);
+            GRAPH_DATA(m_memoryGPU);
     }
 }
 

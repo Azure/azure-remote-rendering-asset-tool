@@ -134,7 +134,9 @@ void ParametersWidget::updateUi()
     {
         const int idx = m_indices[i];
         QString toPrint = QString::number(m_model->getParameter(idx));
-        const QString& unit = m_model->getPlotInfo(idx).m_units;
+        const auto& info = m_model->getPlotInfo(idx);
+
+        const QString& unit = info.m_units;
         if (!unit.isEmpty())
         {
             toPrint += " " + unit;
@@ -142,8 +144,8 @@ void ParametersWidget::updateUi()
         m_values[i]->setText(toPrint);
 
         m_model->getGraphData(idx, m_graph->accessPlotData(i), stats);
-        minValue.addValue(stats.m_min.m_value);
-        maxValue.addValue(stats.m_max.m_value);
+        minValue.addValue(info.m_minValue.value_or(stats.m_min.m_value));
+        maxValue.addValue(info.m_maxValue.value_or(stats.m_max.m_value));
     }
     m_graph->setMinMax(minValue.m_value, maxValue.m_value);
     m_graph->update();
