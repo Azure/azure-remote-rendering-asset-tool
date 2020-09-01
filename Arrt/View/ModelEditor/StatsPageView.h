@@ -1,5 +1,6 @@
 #pragma once
-#include <qwidget.h>
+#include <QWidget>
+#include <ViewModel/ModelEditor/StatsPageModel.h>
 
 class StatsPageModel;
 class QLabel;
@@ -11,10 +12,31 @@ public:
     SimpleGraph(QWidget* parent = {});
 
     virtual void paintEvent(QPaintEvent* event) override;
-    std::vector<QPointF>& accessPlotData();
+    int getPlotCount() const;
+
+    int addPlot(StatsPageModel::PlotInfo info);
+    std::vector<QPointF>& accessPlotData(int index);
 
 private:
-    std::vector<QPointF> m_data;
+    std::vector<std::vector<QPointF>> m_data;
+    std::vector<StatsPageModel::PlotInfo> m_infos;
+};
+
+
+class ParametersWidget : public QWidget
+{
+public:
+    ParametersWidget(StatsPageModel* model, QWidget* parent = {});
+    void addParameter(int index);
+    void updateUi();
+
+private:
+    StatsPageModel* const m_model;
+    std::vector<int> m_indices;
+    std::vector<QLabel*> m_labels;
+    std::vector<QLabel*> m_values;
+    QVBoxLayout* m_parametersLayout;
+    SimpleGraph* m_graph;
 };
 
 // panel with rendering statistics
@@ -26,10 +48,14 @@ public:
     ~StatsPageView();
 
 private:
+    struct GraphWithInfo
+    {
+        std::vector<int> m_parametersIndices;
+        SimpleGraph* m_graph;
+    };
+
     StatsPageModel* const m_model;
-    QList<QLabel*> m_values;
-    QList<SimpleGraph*> m_graphs;
-    QStringList m_units;
+    QList<ParametersWidget*> m_graphs;
 
     void updateUi();
 };
