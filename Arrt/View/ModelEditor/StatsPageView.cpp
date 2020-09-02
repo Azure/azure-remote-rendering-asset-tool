@@ -36,7 +36,7 @@ SimpleGraph::SimpleGraph(QWidget* parent)
 {
     setAutoFillBackground(true);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    setMinimumHeight(80);
+    setMinimumHeight(200);
 }
 
 void SimpleGraph::paintEvent(QPaintEvent* e)
@@ -44,7 +44,7 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
     QStylePainter p(this);
     p.fillRect(e->rect(), Qt::black);
     p.translate(QPoint(width(), height()));
-    p.scale(-1, -height());
+    p.scale(-2, -height());
     p.translate(1, -m_minimum);
     qreal yrange = m_maximum - m_minimum;
     if (yrange < 0.001)
@@ -92,7 +92,7 @@ ParametersWidget::ParametersWidget(StatsPageModel* model, QWidget* parent)
     setFocusPolicy(Qt::StrongFocus);
 
     setContentsMargins(0, 0, 0, 0);
-    auto* l = new QHBoxLayout(this);
+    auto* l = new QVBoxLayout(this);
     auto* mainDataLayout = new QVBoxLayout();
 
     m_parametersLayout = new QVBoxLayout();
@@ -102,7 +102,31 @@ ParametersWidget::ParametersWidget(StatsPageModel* model, QWidget* parent)
     l->addLayout(mainDataLayout, 1);
 
     m_graph = new SimpleGraph(this);
+    m_graph->setVisible(m_isSelected);
     l->addWidget(m_graph, 1);
+}
+
+void ParametersWidget::focusInEvent(QFocusEvent* /*event*/)
+{
+    Q_EMIT onFocus(true);
+}
+
+void ParametersWidget::focusOutEvent(QFocusEvent* /*event*/)
+{
+    Q_EMIT onFocus(false);
+}
+
+void ParametersWidget::setSelected(bool selected)
+{
+    if (m_isSelected != selected)
+    {
+        m_isSelected = selected;
+        m_graph->setVisible(m_isSelected);
+        for (auto&& w : m_legendColors)
+        {
+            w->setVisible(m_isSelected);
+        }
+    }
 }
 
 void ParametersWidget::addParameter(int index)
@@ -112,7 +136,9 @@ void ParametersWidget::addParameter(int index)
     auto* bl = new QHBoxLayout();
 
     auto* coloredBox = new ColoredBox(info.m_color, this);
+    m_legendColors.push_back(coloredBox);
     bl->addWidget(coloredBox);
+    coloredBox->setVisible(m_isSelected);
     auto* label = new QLabel(info.m_name);
 
     bl->addWidget(label);
@@ -158,7 +184,6 @@ void ParametersWidget::updateUi()
     m_graph->update();
 }
 
-
 std::vector<QPointF>& SimpleGraph::accessPlotData(int index)
 {
     return m_data[index];
@@ -192,9 +217,17 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel)
         {
             if (!widget)
             {
+                const int idx = m_graphs.size();
                 widget = new ParametersWidget(m_model, statsPanel);
                 l->addWidget(widget);
                 m_graphs.push_back(widget);
+
+                connect(widget, &ParametersWidget::onFocus, [this, idx](bool focused) {
+                    if (focused)
+                    {
+                        setSelectedGraph(idx);
+                    }
+                });
             }
 
             widget->addParameter(i);
@@ -241,6 +274,8 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel)
     perSecond->setChecked(false);
     connect(perSecond, &FlatButton::toggled, this, togglePerSecond);
     togglePerSecond(false);
+
+    setSelectedGraph(0);
 }
 
 StatsPageView::~StatsPageView()
@@ -252,5 +287,23 @@ void StatsPageView::updateUi()
     for (auto&& graph : m_graphs)
     {
         graph->updateUi();
+    }
+}
+
+void StatsPageView::setSelectedGraph(int idx)
+{
+    if (m_selectedGraph != idx)
+    {
+        if (m_selectedGraph >= 0)
+        {
+            m_graphs[m_selectedGraph]->setSelected(false);
+        }
+
+        m_selectedGraph = idx;
+
+        if (m_selectedGraph >= 0)
+        {
+            m_graphs[m_selectedGraph]->setSelected(true);
+        }
     }
 }
