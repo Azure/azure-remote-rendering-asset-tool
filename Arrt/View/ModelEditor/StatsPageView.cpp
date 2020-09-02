@@ -116,6 +116,18 @@ void ParametersWidget::focusOutEvent(QFocusEvent* /*event*/)
     Q_EMIT onFocus(false);
 }
 
+void ParametersWidget::paintEvent(QPaintEvent* event)
+{
+    QWidget::paintEvent(event);
+    if (m_isSelected)
+    {
+        QStylePainter p(this);
+        p.setPen(QPen(palette().highlight(), 2));
+        p.setBrush(Qt::NoBrush);
+        p.drawRect(rect().adjusted(1, 1, -2, -2));
+    }
+}
+
 void ParametersWidget::setSelected(bool selected)
 {
     if (m_isSelected != selected)

@@ -44,6 +44,7 @@ Q_SIGNALS:
 protected:
     virtual void focusInEvent(QFocusEvent* event) override;
     virtual void focusOutEvent(QFocusEvent* event) override;
+    virtual void paintEvent(QPaintEvent* event) override;
 
 private:
     StatsPageModel* const m_model;
