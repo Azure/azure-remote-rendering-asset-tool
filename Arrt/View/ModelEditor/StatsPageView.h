@@ -27,6 +27,21 @@ private:
     qreal m_maximum;
 };
 
+class ParameterWidget : public QWidget
+{
+public:
+    ParameterWidget(QString name, QString unit, QColor color, QWidget* parent = {});
+    void setLegendVisibility(bool visible);
+    void setValues(float value, float minValue, float maxValue, float averageValue);
+
+private:
+    QWidget* m_legend;
+    QLabel* m_valueLabel;
+    QLabel* m_minLabel;
+    QLabel* m_maxLabel;
+    QLabel* m_averageLabel;
+    QString m_unit;
+};
 
 class ParametersWidget : public QWidget
 {
@@ -50,8 +65,8 @@ private:
     StatsPageModel* const m_model;
     std::vector<int> m_indices;
     std::vector<QLabel*> m_labels;
-    std::vector<QWidget*> m_legendColors;
-    std::vector<QLabel*> m_values;
+    std::vector<ParameterWidget*> m_parameters;
+
     QVBoxLayout* m_parametersLayout;
     SimpleGraph* m_graph;
     bool m_graphPerWindow = false;

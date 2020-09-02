@@ -50,6 +50,7 @@ public:
     int getParameterCount() const;
     const PlotInfo& getPlotInfo(int index) const;
     double getParameter(int index) const;
+    void getParameterStats(int index, float& minValue, float& maxValue, float& averageValue);
     void getGraphData(int index, bool perWindow, std::vector<QPointF>& graph, AvgMinMaxValue<float>& globalStats) const;
     std::optional<RR::PerformanceRating> getParameterRating(int index) const;
 

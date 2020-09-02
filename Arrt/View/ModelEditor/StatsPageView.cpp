@@ -85,6 +85,56 @@ int SimpleGraph::addPlot(StatsPageModel::PlotInfo type)
     return ret;
 }
 
+ParameterWidget::ParameterWidget(QString name, QString unit, QColor color, QWidget* parent)
+    : QWidget(parent)
+{
+    setContentsMargins(0, 0, 0, 0);
+    m_unit = unit.isEmpty() ? "" : (" " + unit);
+
+    auto* bl = new QHBoxLayout(this);
+    bl->setContentsMargins(0, 0, 0, 0);
+
+    m_legend = new ColoredBox(color, this);
+    bl->addWidget(m_legend, 0);
+    m_legend->setVisible(false);
+    auto* label = new QLabel(name);
+    bl->addWidget(label, 1);
+
+    m_valueLabel = new QLabel(this);
+    m_valueLabel->setMinimumWidth(200);
+    m_valueLabel->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    bl->addWidget(m_valueLabel);
+
+    m_minLabel = new QLabel(this);
+    m_minLabel->setMinimumWidth(150);
+    m_minLabel->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    bl->addWidget(m_minLabel, 0);
+
+    m_maxLabel = new QLabel(this);
+    m_maxLabel->setMinimumWidth(150);
+    m_maxLabel->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    bl->addWidget(m_maxLabel, 0);
+
+    m_averageLabel = new QLabel(this);
+    m_averageLabel->setMinimumWidth(150);
+    m_averageLabel->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    bl->addWidget(m_averageLabel, 0);
+}
+
+void ParameterWidget::setLegendVisibility(bool visible)
+{
+    m_legend->setVisible(visible);
+}
+
+void ParameterWidget::setValues(float value, float minValue, float maxValue, float averageValue)
+{
+    m_valueLabel->setText(QString::number(value) + m_unit);
+    m_minLabel->setText(QString::number(minValue) + m_unit);
+    m_maxLabel->setText(QString::number(maxValue) + m_unit);
+    m_averageLabel->setText(QString::number(averageValue) + m_unit);
+}
+
+
 ParametersWidget::ParametersWidget(StatsPageModel* model, QWidget* parent)
     : m_model(model)
     , QWidget(parent)
@@ -134,9 +184,9 @@ void ParametersWidget::setSelected(bool selected)
     {
         m_isSelected = selected;
         m_graph->setVisible(m_isSelected);
-        for (auto&& w : m_legendColors)
+        for (auto&& w : m_parameters)
         {
-            w->setVisible(m_isSelected);
+            w->setLegendVisibility(m_isSelected);
         }
     }
 }
@@ -145,23 +195,11 @@ void ParametersWidget::addParameter(int index)
 {
     m_indices.push_back(index);
     auto& info = m_model->getPlotInfo(index);
-    auto* bl = new QHBoxLayout();
-
-    auto* coloredBox = new ColoredBox(info.m_color, this);
-    m_legendColors.push_back(coloredBox);
-    bl->addWidget(coloredBox);
-    coloredBox->setVisible(m_isSelected);
-    auto* label = new QLabel(info.m_name);
-
-    bl->addWidget(label);
-    auto* value = new QLabel(this);
-    value->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    m_values.push_back(value);
-    bl->addWidget(m_values.back());
-
+    auto* parameter = new ParameterWidget(info.m_name, info.m_units, info.m_color, this);
+    m_parameters.push_back(parameter);
     m_graph->addPlot(info);
 
-    m_parametersLayout->addLayout(bl);
+    m_parametersLayout->addWidget(parameter);
     updateUi();
 }
 
@@ -178,19 +216,15 @@ void ParametersWidget::updateUi()
     for (int i = 0; i < m_indices.size(); ++i)
     {
         const int idx = m_indices[i];
-        QString toPrint = QString::number(m_model->getParameter(idx));
-        const auto& info = m_model->getPlotInfo(idx);
-
-        const QString& unit = info.m_units;
-        if (!unit.isEmpty())
-        {
-            toPrint += " " + unit;
-        }
-        m_values[i]->setText(toPrint);
 
         m_model->getGraphData(idx, m_graphPerWindow, m_graph->accessPlotData(i), stats);
+
+        auto& info = m_model->getPlotInfo(idx);
         minValue.addValue(info.m_minValue.value_or(stats.m_min.m_value));
         maxValue.addValue(info.m_maxValue.value_or(stats.m_max.m_value));
+
+        float value = m_model->getParameter(idx);
+        m_parameters[i]->setValues(value, stats.m_min.hasValue() ? stats.m_min.m_value : 0, stats.m_max.hasValue() ? stats.m_max.m_value : 0, stats.getAverage());
     }
     m_graph->setMinMax(minValue.m_value, maxValue.m_value);
     m_graph->update();
