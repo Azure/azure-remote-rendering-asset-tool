@@ -72,25 +72,26 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::AzureSession> session)
     //var now = QDateTime::currentDateTime();
     if (m_currWindowsElapsedTimer.elapsed() >= 1000)
     {
+        m_secondsTick++;
         m_currWindowsElapsedTimer.start();
-        m_currentStats.m_timeSinceLastPresent.endWindow();
-        m_currentStats.m_videoFramesSkipped.endWindow();
-        m_currentStats.m_videoFramesReused.endWindow();
-        m_currentStats.m_videoFramesReceived.endWindow();
-        m_currentStats.m_videoFrameMinDelta.endWindow();
-        m_currentStats.m_videoFrameMaxDelta.endWindow();
-        m_currentStats.m_latencyPoseToReceive.endWindow();
-        m_currentStats.m_latencyReceiveToPresent.endWindow();
-        m_currentStats.m_latencyPresentToDisplay.endWindow();
-        m_currentStats.m_videoFramesDiscarded.endWindow();
-        m_currentStats.m_timeCPU.endWindow();
-        m_currentStats.m_timeGPU.endWindow();
-        m_currentStats.m_utilizationCPU.endWindow();
-        m_currentStats.m_utilizationGPU.endWindow();
-        m_currentStats.m_memoryCPU.endWindow();
-        m_currentStats.m_memoryGPU.endWindow();
-        m_currentStats.m_networkLatency.endWindow();
-        m_currentStats.m_polygonsRendered.endWindow();
+        m_currentStats.m_timeSinceLastPresent.endWindow(m_secondsTick);
+        m_currentStats.m_videoFramesSkipped.endWindow(m_secondsTick);
+        m_currentStats.m_videoFramesReused.endWindow(m_secondsTick);
+        m_currentStats.m_videoFramesReceived.endWindow(m_secondsTick);
+        m_currentStats.m_videoFrameMinDelta.endWindow(m_secondsTick);
+        m_currentStats.m_videoFrameMaxDelta.endWindow(m_secondsTick);
+        m_currentStats.m_latencyPoseToReceive.endWindow(m_secondsTick);
+        m_currentStats.m_latencyReceiveToPresent.endWindow(m_secondsTick);
+        m_currentStats.m_latencyPresentToDisplay.endWindow(m_secondsTick);
+        m_currentStats.m_videoFramesDiscarded.endWindow(m_secondsTick);
+        m_currentStats.m_timeCPU.endWindow(m_secondsTick);
+        m_currentStats.m_timeGPU.endWindow(m_secondsTick);
+        m_currentStats.m_utilizationCPU.endWindow(m_secondsTick);
+        m_currentStats.m_utilizationGPU.endWindow(m_secondsTick);
+        m_currentStats.m_memoryCPU.endWindow(m_secondsTick);
+        m_currentStats.m_memoryGPU.endWindow(m_secondsTick);
+        m_currentStats.m_networkLatency.endWindow(m_secondsTick);
+        m_currentStats.m_polygonsRendered.endWindow(m_secondsTick);
 
         // query the performance assessment (assuming the previous query is completed)
         if (!m_runningPerformanceAssesment)
@@ -108,6 +109,7 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::AzureSession> session)
 void ArrServiceStats::startCollecting()
 {
     m_tick = 0;
+    m_secondsTick = 0;
     m_collecting = true;
     m_currentStats = {};
     m_currWindowsElapsedTimer.start();

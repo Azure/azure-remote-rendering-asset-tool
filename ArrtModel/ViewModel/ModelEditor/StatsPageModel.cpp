@@ -109,11 +109,11 @@ double StatsPageModel::getParameter(int index) const
 }
 
 #define GRAPH_DATA(PARAM)                           \
-    m_stats.##PARAM.getGraphData(graph);            \
+    m_stats.##PARAM.getGraphData(graph, perWindow); \
     globalStats = m_stats.##PARAM.m_perWindowStats; \
     break
 
-void StatsPageModel::getGraphData(int index, std::vector<QPointF>& graph, AvgMinMaxValue<double>& globalStats) const
+void StatsPageModel::getGraphData(int index, bool perWindow, std::vector<QPointF>& graph, AvgMinMaxValue<float>& globalStats) const
 {
     switch (index)
     {

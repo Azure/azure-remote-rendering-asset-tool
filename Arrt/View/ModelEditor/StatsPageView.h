@@ -33,6 +33,7 @@ public:
     ParametersWidget(StatsPageModel* model, QWidget* parent = {});
     void addParameter(int index);
     void updateUi();
+    void setGraphPerWindow(bool perWindow);
 
 private:
     StatsPageModel* const m_model;
@@ -41,6 +42,7 @@ private:
     std::vector<QLabel*> m_values;
     QVBoxLayout* m_parametersLayout;
     SimpleGraph* m_graph;
+    bool m_graphPerWindow = false;
 };
 
 // panel with rendering statistics

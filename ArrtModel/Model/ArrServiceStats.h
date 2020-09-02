@@ -154,34 +154,52 @@ struct Accumulator
     T m_accumulation = {};
     FixedCircularBuffer<GraphValue, 2048> m_buffer;
 
+    FixedCircularBuffer<GraphValue, 1024> m_perWindowBuffer;
+    AvgMinMaxValue<float> m_perWindowStats;
+
     void addValue(const ValueType& value, uint tick)
     {
         m_accumulation.addValue(value);
         m_buffer.addFront({value, tick});
     }
 
-    void getGraphData(std::vector<QPointF>& graph) const
+    void getGraphData(std::vector<QPointF>& graph, bool perWindow) const
     {
         graph.clear();
 
-        if (m_buffer.getSize() > 0)
+        if (perWindow)
         {
-            const uint tickOffset = m_buffer.getValue(0).m_tick;
-
-            for (uint i = 0; i < m_buffer.getSize(); ++i)
+            if (m_perWindowBuffer.getSize() > 0)
             {
-                auto val = m_buffer.getValue(i);
-                graph.push_back(QPointF(tickOffset - val.m_tick, val.m_value));
+                const uint tickOffset = m_perWindowBuffer.getValue(0).m_tick;
+                for (uint i = 0; i < m_perWindowBuffer.getSize(); ++i)
+                {
+                    auto val = m_perWindowBuffer.getValue(i);
+                    const int x = tickOffset - val.m_tick;
+                    graph.push_back(QPointF(x, val.m_value));
+                }
+            }
+        }
+        else
+        {
+            if (m_buffer.getSize() > 0)
+            {
+                const uint tickOffset = m_buffer.getValue(0).m_tick;
+                for (uint i = 0; i < m_buffer.getSize(); ++i)
+                {
+                    auto val = m_buffer.getValue(i);
+                    graph.push_back(QPointF(tickOffset - val.m_tick, val.m_value));
+                }
             }
         }
     }
 
-    AvgMinMaxValue<double> m_perWindowStats;
-    void endWindow()
+    void endWindow(uint tick)
     {
         if (m_accumulation.hasValue())
         {
             m_perWindowStats.addValue(m_accumulation.m_value);
+            m_perWindowBuffer.addFront({m_accumulation.m_value, tick});
         }
         m_accumulation = {};
     }
@@ -246,6 +264,7 @@ private:
     RR::PerformanceAssessment m_lastPerformanceAssessment;
     bool m_collecting = false;
     uint m_tick;
+    uint m_secondsTick;
 
     void updateStats(RR::ApiHandle<RR::AzureSession> session);
 };

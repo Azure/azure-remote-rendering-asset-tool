@@ -267,11 +267,13 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
 
     QString inputSasToken = QString::fromStdWString(storageManager->getSasToken(newConversion->m_inputContainer,
                                                                                 azure::storage::blob_shared_access_policy::read |
-                                                                                    azure::storage::blob_shared_access_policy::list));
+                                                                                    azure::storage::blob_shared_access_policy::list,
+                                                                                60 * 24));
     QString outputSasToken = QString::fromStdWString(storageManager->getSasToken(newConversion->m_outputContainer,
                                                                                  azure::storage::blob_shared_access_policy::write |
                                                                                      azure::storage::blob_shared_access_policy::list |
-                                                                                     azure::storage::blob_shared_access_policy::create));
+                                                                                     azure::storage::blob_shared_access_policy::create,
+                                                                                 60 * 24));
 
     RR::AssetConversionInputSasParams input;
     input.BlobContainerInformation.StorageAccountName = newConversion->m_input_storage_account_name;

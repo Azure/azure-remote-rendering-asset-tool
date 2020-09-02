@@ -7,6 +7,7 @@
 #include <ViewModel/ModelEditor/StatsPageModel.h>
 #include <ViewUtils/DpiUtils.h>
 #include <Widgets/FlatButton.h>
+#include <Widgets/VerticalScrollArea.h>
 
 class ColoredBox : public QWidget
 {
@@ -126,11 +127,16 @@ void ParametersWidget::addParameter(int index)
     updateUi();
 }
 
+void ParametersWidget::setGraphPerWindow(bool perWindow)
+{
+    m_graphPerWindow = perWindow;
+}
+
 void ParametersWidget::updateUi()
 {
     MinValue<double> minValue;
     MaxValue<double> maxValue;
-    AvgMinMaxValue<double> stats;
+    AvgMinMaxValue<float> stats;
     for (int i = 0; i < m_indices.size(); ++i)
     {
         const int idx = m_indices[i];
@@ -144,7 +150,7 @@ void ParametersWidget::updateUi()
         }
         m_values[i]->setText(toPrint);
 
-        m_model->getGraphData(idx, m_graph->accessPlotData(i), stats);
+        m_model->getGraphData(idx, m_graphPerWindow, m_graph->accessPlotData(i), stats);
         minValue.addValue(info.m_minValue.value_or(stats.m_min.m_value));
         maxValue.addValue(info.m_maxValue.value_or(stats.m_max.m_value));
     }
@@ -166,12 +172,20 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel)
     auto* mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0, 0, 0, 0);
 
-    auto* showButton = new FlatButton({}, this);
-    mainLayout->addWidget(showButton);
+    auto* buttonsLayout = new QHBoxLayout();
 
-    QWidget* statsPanel = new QWidget(this);
+    auto* showButton = new FlatButton({}, this);
+    buttonsLayout->addWidget(showButton);
+
+    auto* perSecond = new FlatButton(tr("Per second stats"), this);
+    buttonsLayout->addWidget(perSecond);
+
+    mainLayout->addLayout(buttonsLayout);
+
+    auto* statsPanel = new VerticalScrollArea(this);
+
     {
-        auto* l = new QVBoxLayout(statsPanel);
+        auto* l = statsPanel->getContentLayout();
 
         ParametersWidget* widget = nullptr;
         for (int i = 0; i < m_model->getParameterCount(); ++i)
@@ -195,7 +209,9 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel)
         updateUi();
     }
 
-    mainLayout->addWidget(showButton);
+    mainLayout->addWidget(statsPanel);
+
+
     mainLayout->addWidget(statsPanel);
     auto toggleCollection = [this, showButton, statsPanel](bool checked) {
         if (checked)
@@ -213,6 +229,18 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel)
     showButton->setChecked(false);
     connect(showButton, &FlatButton::toggled, this, toggleCollection);
     toggleCollection(false);
+
+    auto togglePerSecond = [this, statsPanel](bool checked) {
+        for (auto&& graph : m_graphs)
+        {
+            graph->setGraphPerWindow(checked);
+        }
+        updateUi();
+    };
+    perSecond->setCheckable(true);
+    perSecond->setChecked(false);
+    connect(perSecond, &FlatButton::toggled, this, togglePerSecond);
+    togglePerSecond(false);
 }
 
 StatsPageView::~StatsPageView()
