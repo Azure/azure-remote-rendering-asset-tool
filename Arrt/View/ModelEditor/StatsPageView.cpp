@@ -255,6 +255,38 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel)
 
     auto* statsPanel = new VerticalScrollArea(this);
 
+    auto* headerLayout = new QHBoxLayout();
+    {
+        headerLayout->addWidget(new QLabel(tr("Parameter Name")), 1);
+
+        auto* l = new QLabel(tr("Value"), this);
+        l->setFixedWidth(200);
+        l->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        headerLayout->addWidget(l, 0);
+
+        l = new QLabel(tr("Minimum"), this);
+        l->setFixedWidth(150);
+        l->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        headerLayout->addWidget(l, 0);
+
+        l = new QLabel(tr("Maximum"), this);
+        l->setFixedWidth(150);
+        l->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        headerLayout->addWidget(l, 0);
+
+        l = new QLabel(tr("Average"), this);
+        l->setFixedWidth(150);
+        l->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        headerLayout->addWidget(l, 0);
+    }
+    mainLayout->addLayout(headerLayout);
+
+    {
+        auto* separator = new QFrame(this);
+        separator->setFrameShape(QFrame::HLine);
+        mainLayout->addWidget(separator);
+    }
+
     {
         auto* l = statsPanel->getContentLayout();
 
