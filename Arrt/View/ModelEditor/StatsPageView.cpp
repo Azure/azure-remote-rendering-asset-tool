@@ -96,9 +96,10 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
     findScale(graphRect.width(), 100, 0, graphRect.width() / m_xZoom, xMin, xMax, xStep);
 
     QTransform transform;
-    transform.translate(graphRect.right(), graphRect.bottom());
-    transform.scale(-graphRect.width(), -graphRect.height());
-    transform.translate(-xMin, -yMin);
+    transform.translate(graphRect.left(), graphRect.bottom());
+    transform.scale(graphRect.width(), -graphRect.height());
+    transform.translate(0, -yMin);
+
     qreal yrange = yMax - yMin;
     if (yrange < 0.001)
     {
@@ -110,23 +111,30 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
         xrange = 1;
     }
     transform.scale(1.0 / xrange, 1.0 / yrange);
+    QTransform invTransform = transform.inverted();
 
-    p.save();
-    p.setClipRect(graphRect.adjusted(-1, -1, 1, 1));
-    p.setTransform(transform);
-
-    p.setBrush(Qt::NoBrush);
-
-    for (int i = 0; i < getPlotCount(); ++i)
     {
-        const auto& pd = accessPlotData(i);
+        const auto& pd = accessPlotData(0);
         if (pd.size() > 0)
         {
-            p.setPen(QPen(m_infos[i].m_color, 0));
-            p.drawPolyline(pd.data(), (int)pd.size());
+            qreal lastX = pd.front().x();
+            QPointF pt = transform.map(QPointF(lastX, 0));
+            if (pt.x() > graphRect.right())
+            {
+                float dX = invTransform.map(QPointF(graphRect.right(), 0)).x() - invTransform.map(pt).x();
+                transform.translate(dX, 0);
+                invTransform = transform.inverted();
+            }
         }
     }
-    p.restore();
+
+    if (xStep > 0)
+    {
+        xMin = invTransform.map(QPointF(graphRect.left(), 0)).x();
+        xMin = qCeil(xMin / xStep) * xStep;
+        xMax = invTransform.map(QPointF(graphRect.right(), 0)).x();
+        xMax = qFloor(xMax / xStep) * xStep;
+    }
 
     QColor linesColor = palette().mid().color();
     QPen linePen(linesColor, 0);
@@ -167,9 +175,29 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
             p.setPen(linePen);
             p.drawText(pt.x() - w / 2, graphRect.bottom() + smallFontM.height(), toPrint);
         }
+
+        p.setPen(scaleLinesPen);
+        p.drawLine(graphRect.topRight(), graphRect.bottomRight());
     }
 
-    p.setPen(linePen);
+    p.save();
+    p.setClipRect(graphRect.adjusted(-1, -1, 1, 1));
+    p.setTransform(transform);
+
+    p.setBrush(Qt::NoBrush);
+
+    for (int i = 0; i < getPlotCount(); ++i)
+    {
+        const auto& pd = accessPlotData(i);
+        if (pd.size() > 0)
+        {
+            p.setPen(QPen(m_infos[i].m_color, 0));
+            p.drawPolyline(pd.data(), (int)pd.size());
+        }
+    }
+    p.restore();
+
+    p.setPen(QPen(linesColor, 2));
     p.drawLine(graphRect.bottomLeft(), graphRect.bottomRight());
     p.drawLine(graphRect.bottomLeft(), graphRect.topLeft());
 

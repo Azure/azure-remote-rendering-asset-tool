@@ -166,30 +166,22 @@ struct Accumulator
     void getGraphData(std::vector<QPointF>& graph, bool perWindow) const
     {
         graph.clear();
+        graph.reserve(m_perWindowBuffer.getSize());
 
         if (perWindow)
         {
-            if (m_perWindowBuffer.getSize() > 0)
+            for (uint i = 0; i < m_perWindowBuffer.getSize(); ++i)
             {
-                const uint tickOffset = m_perWindowBuffer.getValue(0).m_tick;
-                for (uint i = 0; i < m_perWindowBuffer.getSize(); ++i)
-                {
-                    auto val = m_perWindowBuffer.getValue(i);
-                    const int x = tickOffset - val.m_tick;
-                    graph.push_back(QPointF(x, val.m_value));
-                }
+                auto val = m_perWindowBuffer.getValue(i);
+                graph.push_back({(qreal)val.m_tick, (qreal)val.m_value});
             }
         }
         else
         {
-            if (m_buffer.getSize() > 0)
+            for (uint i = 0; i < m_buffer.getSize(); ++i)
             {
-                const uint tickOffset = m_buffer.getValue(0).m_tick;
-                for (uint i = 0; i < m_buffer.getSize(); ++i)
-                {
-                    auto val = m_buffer.getValue(i);
-                    graph.push_back(QPointF(tickOffset - val.m_tick, val.m_value));
-                }
+                auto val = m_buffer.getValue(i);
+                graph.push_back({(qreal)val.m_tick, (qreal)val.m_value});
             }
         }
     }
