@@ -20,11 +20,16 @@ public:
 
     void setMinMax(qreal minimum, qreal maximum);
 
+    void setXLabel(QString text);
+    void setXZoom(float zoom);
+
 private:
     std::vector<std::vector<QPointF>> m_data;
     std::vector<StatsPageModel::PlotInfo> m_infos;
     qreal m_minimum;
     qreal m_maximum;
+    QString m_xLabelText;
+    float m_xZoom = 2.0;
 };
 
 class ParameterWidget : public QWidget

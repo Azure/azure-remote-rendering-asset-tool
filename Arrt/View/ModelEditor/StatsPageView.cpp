@@ -2,7 +2,9 @@
 #include <QLabel>
 #include <QPaintEvent>
 #include <QStylePainter>
+#include <QTransform>
 #include <QVBoxLayout>
+#include <QtMath>
 #include <View/ModelEditor/StatsPageView.h>
 #include <ViewModel/ModelEditor/StatsPageModel.h>
 #include <ViewUtils/DpiUtils.h>
@@ -39,19 +41,79 @@ SimpleGraph::SimpleGraph(QWidget* parent)
     setMinimumHeight(200);
 }
 
+namespace
+{
+    void findScale(int pixels, int minStepPixelDistance, float minimum, float maximum, float& outMinimum, float& outMaximum, float& outStep)
+    {
+        if (maximum - minimum < 0.001)
+        {
+            outMinimum = minimum;
+            outMaximum = maximum;
+            outStep = 0;
+            return;
+        }
+        const int maxSteps = qFloor(pixels / minStepPixelDistance);
+
+        float step = (maximum - minimum) / maxSteps;
+        const float nextPowerOf10 = qPow(10.0, qCeil(qLn(step) / qLn(10.0)));
+        const float stepRatio = step / nextPowerOf10;
+        if (stepRatio > 0.5)
+        {
+            step = nextPowerOf10;
+        }
+        else if (stepRatio > 0.2)
+        {
+            step = nextPowerOf10 / 2.0;
+        }
+        else if (stepRatio > 0.1)
+        {
+            step = nextPowerOf10 / 5.0;
+        }
+        else
+        {
+            step = nextPowerOf10 / 10.0;
+        }
+        outMinimum = qFloor(minimum / step) * step;
+        outMaximum = qCeil(maximum / step) * step;
+        outStep = step;
+    }
+} // namespace
+
 void SimpleGraph::paintEvent(QPaintEvent* e)
 {
     QStylePainter p(this);
     p.fillRect(e->rect(), Qt::black);
-    p.translate(QPoint(width(), height()));
-    p.scale(-2, -height());
-    p.translate(1, -m_minimum);
-    qreal yrange = m_maximum - m_minimum;
+
+    float yMin, yMax, yStep;
+    float xMin, xMax, xStep;
+
+    QFont smallFont("Segoe UI", 8);
+    QFontMetrics smallFontM(smallFont, this);
+
+    const float unit = smallFontM.height();
+    QRect graphRect = rect().adjusted(unit * 3, unit, -unit * 3, -unit * 2);
+    findScale(graphRect.height(), 40, m_minimum, m_maximum, yMin, yMax, yStep);
+    findScale(graphRect.width(), 100, 0, graphRect.width() / m_xZoom, xMin, xMax, xStep);
+
+    QTransform transform;
+    transform.translate(graphRect.right(), graphRect.bottom());
+    transform.scale(-graphRect.width(), -graphRect.height());
+    transform.translate(-xMin, -yMin);
+    qreal yrange = yMax - yMin;
     if (yrange < 0.001)
     {
         yrange = 1;
     }
-    p.scale(1, 1.0 / yrange);
+    qreal xrange = xMax - xMin;
+    if (xrange < 0.001)
+    {
+        xrange = 1;
+    }
+    transform.scale(1.0 / xrange, 1.0 / yrange);
+
+    p.save();
+    p.setClipRect(graphRect.adjusted(-1, -1, 1, 1));
+    p.setTransform(transform);
 
     p.setBrush(Qt::NoBrush);
 
@@ -64,6 +126,57 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
             p.drawPolyline(pd.data(), (int)pd.size());
         }
     }
+    p.restore();
+
+    QColor linesColor = palette().mid().color();
+    QPen linePen(linesColor, 0);
+
+    QColor scaleLinesColor(70, 70, 70);
+    QPen scaleLinesPen(scaleLinesColor, 0);
+
+    p.setFont(smallFont);
+
+    if (yStep > 0)
+    {
+        for (qreal y = yMin; y < yMax + yStep / 2; y += yStep)
+        {
+            QPoint pt;
+            pt = transform.map(QPoint(0, y));
+
+            p.setPen(scaleLinesPen);
+            p.drawLine(graphRect.left(), pt.y(), graphRect.right(), pt.y());
+            QString toPrint = QString::number(y) + m_infos[0].m_units;
+            int w = smallFontM.horizontalAdvance(toPrint);
+
+            p.setPen(linePen);
+            p.drawText(graphRect.left() - w - unit * 0.3, pt.y(), toPrint);
+        }
+    }
+    if (xStep > 0)
+    {
+        for (qreal x = xMin; x <= xMax; x += xStep)
+        {
+            QPoint pt;
+            pt = transform.map(QPoint(x, 0));
+
+            p.setPen(scaleLinesPen);
+            p.drawLine(pt.x(), graphRect.top(), pt.x(), graphRect.bottom());
+            QString toPrint = QString::number(x);
+            int w = smallFontM.horizontalAdvance(toPrint);
+
+            p.setPen(linePen);
+            p.drawText(pt.x() - w / 2, graphRect.bottom() + smallFontM.height(), toPrint);
+        }
+    }
+
+    p.setPen(linePen);
+    p.drawLine(graphRect.bottomLeft(), graphRect.bottomRight());
+    p.drawLine(graphRect.bottomLeft(), graphRect.topLeft());
+
+    {
+        int w = smallFontM.horizontalAdvance(m_xLabelText);
+        p.drawText((graphRect.right() - graphRect.left()) / 2 - w / 2, height() - unit * 0.2, m_xLabelText);
+    }
 }
 
 int SimpleGraph::getPlotCount() const
@@ -75,6 +188,16 @@ void SimpleGraph::setMinMax(qreal minimum, qreal maximum)
 {
     m_minimum = minimum;
     m_maximum = maximum;
+}
+
+void SimpleGraph::setXLabel(QString text)
+{
+    m_xLabelText = text;
+}
+
+void SimpleGraph::setXZoom(float xZoom)
+{
+    m_xZoom = xZoom;
 }
 
 int SimpleGraph::addPlot(StatsPageModel::PlotInfo type)
@@ -134,7 +257,6 @@ void ParameterWidget::setValues(float value, float minValue, float maxValue, flo
     m_averageLabel->setText(QString::number(averageValue) + m_unit);
 }
 
-
 ParametersWidget::ParametersWidget(StatsPageModel* model, QWidget* parent)
     : m_model(model)
     , QWidget(parent)
@@ -154,6 +276,8 @@ ParametersWidget::ParametersWidget(StatsPageModel* model, QWidget* parent)
     m_graph = new SimpleGraph(this);
     m_graph->setVisible(m_isSelected);
     l->addWidget(m_graph, 1);
+
+    setGraphPerWindow(false);
 }
 
 void ParametersWidget::focusInEvent(QFocusEvent* /*event*/)
@@ -205,6 +329,8 @@ void ParametersWidget::addParameter(int index)
 
 void ParametersWidget::setGraphPerWindow(bool perWindow)
 {
+    m_graph->setXLabel(perWindow ? tr("seconds") : tr("frames"));
+    m_graph->setXZoom(perWindow ? 6 : 2);
     m_graphPerWindow = perWindow;
 }
 
