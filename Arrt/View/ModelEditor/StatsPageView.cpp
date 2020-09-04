@@ -11,6 +11,7 @@
 #include <Widgets/FlatButton.h>
 #include <Widgets/VerticalScrollArea.h>
 
+
 class ColoredBox : public QWidget
 {
 public:
@@ -78,6 +79,21 @@ namespace
         outMaximum = qCeil(maximum / step) * step;
         outStep = step;
     }
+
+    QString toString(double d)
+    {
+        QString s;
+        if (qFloor(d) == d)
+        {
+            s.sprintf("%.0f", d);
+        }
+        else
+        {
+            s.sprintf("%.2f", d);
+        }
+        return s;
+    }
+
 } // namespace
 
 QRect SimpleGraph::getGraphRect() const
@@ -162,7 +178,8 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
         yMin = m_currentTransformInverse.map(QPointF(0, graphRect.bottom())).y();
         yMin = qCeil(yMin / m_yStep) * m_yStep;
         yMax = m_currentTransformInverse.map(QPointF(0, graphRect.top())).y();
-        yMax = qFloor(yMax / m_yStep) * m_yStep;
+        // yMax uses qCeil because we assume we want to include the last step, which should be always on the top of the graph
+        yMax = qCeil(yMax / m_yStep) * m_yStep;
     }
 
     QColor linesColor = palette().mid().color();
@@ -189,7 +206,7 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
 
             p.setPen(scaleLinesPen);
             p.drawLine(graphRect.left(), pt.y(), graphRect.right(), pt.y());
-            QString toPrint = QString::number(y) + m_infos[0].m_units;
+            QString toPrint = toString(y) + m_infos[0].m_units;
             int w = smallFontM.horizontalAdvance(toPrint);
 
             p.setPen(linePen);
@@ -205,7 +222,7 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
 
             p.setPen(scaleLinesPen);
             p.drawLine(pt.x(), graphRect.top(), pt.x(), graphRect.bottom());
-            QString toPrint = QString::number(x);
+            QString toPrint = toString(x);
             int w = smallFontM.horizontalAdvance(toPrint);
 
             p.setPen(linePen);
@@ -315,7 +332,7 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
     {
         float highlightedX = m_currentTransform.map(QPointF(*m_highlightedX, 0)).x();
         p.drawLine(QPointF(highlightedX, graphRect.bottom()), QPointF(highlightedX, graphRect.top()));
-        QString text = QString::number(*m_highlightedX);
+        QString text = toString(*m_highlightedX);
         QRect r = smallFontM.boundingRect(text);
         r.moveCenter(QPoint(highlightedX, graphRect.bottom()));
         r.moveTop(graphRect.bottom() + unit * 0.2);
@@ -377,9 +394,7 @@ void SimpleGraph::setHighlightX(std::optional<float> x)
 
     if (m_highlightedXInPixels.has_value())
     {
-        const float oldX = *m_highlightedXInPixels;
         update();
-        //update(QRect(oldX - 20, graphRect.top(), oldX + 20, graphRect.bottom()));
     }
 
     m_highlightedXInPixels = x;
@@ -417,14 +432,13 @@ void SimpleGraph::setHighlightX(std::optional<float> x)
                             m_highlightedPoints.clear();
                             m_highlightedX = chosen.x();
                         }
-                        m_highlightedPoints.push_back({m_infos[valIdx].m_color, QString("%1: %2%3").arg(m_infos[valIdx].m_name).arg(chosen.y()).arg(m_infos[valIdx].m_units), chosen});
+                        m_highlightedPoints.push_back({m_infos[valIdx].m_color, QString("%1: %2%3").arg(m_infos[valIdx].m_name).arg(toString(chosen.y())).arg(m_infos[valIdx].m_units), chosen});
                         break;
                     }
                     previousDistance = dist;
                 }
             }
         }
-        //update(QRect(newX - 20, graphRect.top(), newX + 20, graphRect.bottom()));
         update();
     }
     else
@@ -495,10 +509,10 @@ void ParameterWidget::setLegendVisibility(bool visible)
 
 void ParameterWidget::setValues(float value, float minValue, float maxValue, float averageValue)
 {
-    m_valueLabel->setText(QString::number(value) + m_unit);
-    m_minLabel->setText(QString::number(minValue) + m_unit);
-    m_maxLabel->setText(QString::number(maxValue) + m_unit);
-    m_averageLabel->setText(QString::number(averageValue) + m_unit);
+    m_valueLabel->setText(toString(value) + m_unit);
+    m_minLabel->setText(toString(minValue) + m_unit);
+    m_maxLabel->setText(toString(maxValue) + m_unit);
+    m_averageLabel->setText(toString(averageValue) + m_unit);
 }
 
 ParametersWidget::ParametersWidget(StatsPageModel* model, QWidget* parent)
