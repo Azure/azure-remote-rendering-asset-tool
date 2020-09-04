@@ -199,7 +199,7 @@ void ColorPicker::paintEvent(QPaintEvent*)
 {
     QColor c = m_color;
     const int borderW = ArrtStyle::s_focusedControlBorderWidth + 1;
-    QRect r = rect().adjusted(borderW, borderW, -borderW, -borderW - 1);
+    QRect r = rect().adjusted(borderW, borderW, -borderW - 1, -borderW - 1);
     QStylePainter p(this);
 
     if (m_useAlpha)
