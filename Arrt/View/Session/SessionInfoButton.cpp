@@ -41,36 +41,10 @@ void SessionInfoButton::paintEvent(QPaintEvent*)
     p.translate(0.5, 0.5);
 
     {
-        // draw background like a button
         QStyleOptionToolButton opt;
         initStyleOption(&opt);
-        if (opt.state & (QStyle::State_HasFocus | QStyle::State_Sunken | QStyle::State_MouseOver))
-        {
-            QRect r = rect();
-            QColor rectColor = ArrtStyle::s_buttonUncheckedColor;
-
-            if (opt.state.testFlag(QStyle::State_Sunken))
-            {
-                rectColor = rectColor.darker();
-            }
-
-            // on mouse over the button is a bit lighter
-            if (opt.state.testFlag(QStyle::State_MouseOver))
-            {
-                rectColor = rectColor.lighter(120);
-            }
-            if (opt.state.testFlag(QStyle::State_HasFocus))
-            {
-                rectColor = rectColor.lighter(120);
-                p.setPen(opt.palette.highlight().color());
-            }
-            else
-            {
-                p.setPen(Qt::NoPen);
-            }
-            p.setBrush(rectColor);
-            p.drawRoundedRect(r.adjusted(1, 1, -1, -1), 8.0, 8.0);
-        }
+        opt.state |= QStyle::State_Raised;
+        style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, &p, this);
     }
 
     QRect r = rect();
@@ -103,7 +77,7 @@ void SessionInfoButton::paintEvent(QPaintEvent*)
     timeIconBox.moveRight(r.right() - arrowSpace);
 
     p.setPen(Qt::NoPen);
-    p.setBrush(ArrtStyle::s_buttonCheckedColor);
+    p.setBrush(ArrtStyle::s_buttonPressedBackgroundColor);
     p.drawRoundedRect(timeIconBox, 8.0, 8.0);
 
     QRect iconRect;
@@ -125,7 +99,7 @@ void SessionInfoButton::paintEvent(QPaintEvent*)
     QPointF diff = timeRect.center() - timeTightRect.center() + QPoint(0, 1);
     timeBoundingRect.translate(diff);
 
-    p.setPen(palette().text().color());
+    p.setPen(ArrtStyle::s_buttonPressedTextColor);
     p.setFont(ArrtStyle::s_sessionTimeFont);
     p.drawText(timeBoundingRect, Qt::AlignTop, getTimeString());
 

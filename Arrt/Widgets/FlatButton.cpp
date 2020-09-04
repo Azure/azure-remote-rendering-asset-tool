@@ -10,6 +10,7 @@ FlatButton::FlatButton(const QString& text, QWidget* parent)
     setAccessibleName(text);
     setFocusPolicy(Qt::StrongFocus);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    setMinimumHeight(ArrtStyle::controlHeight());
 }
 
 void FlatButton::setIcon(const QIcon& icon, bool keepText)

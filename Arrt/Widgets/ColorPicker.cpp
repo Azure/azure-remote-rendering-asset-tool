@@ -1,3 +1,4 @@
+#include <View/ArrtStyle.h>
 #include <Widgets/ColorPicker.h>
 #include <Widgets/FormatDoubleSpinBox.h>
 
@@ -61,7 +62,7 @@ void ColorDialog::setMultiplier(double multiplier)
 ColorPicker::ColorPicker(QWidget* parent)
     : QToolButton(parent)
 {
-    setFixedHeight(fontMetrics().height());
+    setFixedHeight(ArrtStyle::controlHeight());
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 
     setContentsMargins(0, 0, 0, 0);
@@ -197,7 +198,8 @@ static void drawCheckerboardPattern(QPainter& painter, const QRect& rect)
 void ColorPicker::paintEvent(QPaintEvent*)
 {
     QColor c = m_color;
-    QRect r = rect().adjusted(0, 0, -1, -1);
+    const int borderW = ArrtStyle::s_focusedControlBorderWidth + 1;
+    QRect r = rect().adjusted(borderW, borderW, -borderW - 1, -borderW - 1);
     QStylePainter p(this);
 
     if (m_useAlpha)
@@ -226,9 +228,14 @@ void ColorPicker::paintEvent(QPaintEvent*)
         p.drawRect(r.adjusted(0, 0, 0, -r.height() / 2));
     }
 
-    p.setPen(hasFocus() ? palette().highlight().color() : palette().windowText().color());
+    p.setPen(palette().windowText().color());
     p.setBrush(Qt::NoBrush);
     p.drawRect(r);
+
+    if (hasFocus())
+    {
+        ArrtStyle::drawFocusedBorder(&p, rect());
+    }
 }
 
 void ColorPicker::ensureItIsEditing()
