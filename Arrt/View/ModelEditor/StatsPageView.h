@@ -107,7 +107,7 @@ private:
 class StatsPageView : public QWidget
 {
 public:
-    StatsPageView(StatsPageModel* statsPageModel);
+    StatsPageView(StatsPageModel* statsPageModel, QWidget* parent = {});
     ~StatsPageView();
 
 private:

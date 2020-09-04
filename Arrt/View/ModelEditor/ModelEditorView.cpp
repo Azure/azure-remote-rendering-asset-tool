@@ -102,13 +102,13 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
                 viewportLayout->addWidget(container);
             }
 
-            FocusableContainer* statsPanelContainer;
+            StatsPageView* statsPanel;
             {
-                statsPanelContainer = new FocusableContainer(new StatsPageView(m_model->getStatsPageModel()), viewportSplitter);
+                statsPanel = new StatsPageView(m_model->getStatsPageModel(), viewportSplitter);
             }
 
             viewportSplitter->addWidget(viewportContainer);
-            viewportSplitter->addWidget(statsPanelContainer);
+            viewportSplitter->addWidget(statsPanel);
             viewportSplitter->setCollapsible(0, false);
             viewportSplitter->setCollapsible(1, true);
             viewportSplitter->setStretchFactor(0, 1);

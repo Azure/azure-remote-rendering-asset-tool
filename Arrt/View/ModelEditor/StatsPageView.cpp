@@ -18,7 +18,7 @@ public:
         : QWidget(parent)
         , m_color(color)
     {
-        setContentsMargins(0, 0, 0, 0);
+        setContentsMargins(QMargins());
         setFixedSize(DpiUtils::size(16), DpiUtils::size(16));
     }
     virtual void paintEvent(QPaintEvent* /*event*/)
@@ -455,11 +455,11 @@ void SimpleGraph::setPlotData(int index, std::vector<QPointF> plotData)
 ParameterWidget::ParameterWidget(QString name, QString unit, QColor color, QWidget* parent)
     : QWidget(parent)
 {
-    setContentsMargins(0, 0, 0, 0);
+    setContentsMargins(QMargins());
     m_unit = unit;
 
     auto* bl = new QHBoxLayout(this);
-    bl->setContentsMargins(0, 0, 0, 0);
+    bl->setContentsMargins(QMargins());
 
     m_legend = new ColoredBox(color, this);
     bl->addWidget(m_legend, 0);
@@ -468,7 +468,7 @@ ParameterWidget::ParameterWidget(QString name, QString unit, QColor color, QWidg
     bl->addWidget(label, 1);
 
     m_valueLabel = new QLabel(this);
-    m_valueLabel->setMinimumWidth(200);
+    m_valueLabel->setMinimumWidth(150);
     m_valueLabel->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     bl->addWidget(m_valueLabel);
 
@@ -507,7 +507,7 @@ ParametersWidget::ParametersWidget(StatsPageModel* model, QWidget* parent)
 {
     setFocusPolicy(Qt::StrongFocus);
 
-    setContentsMargins(0, 0, 0, 0);
+    setContentsMargins(QMargins() + 8);
     auto* l = new QVBoxLayout(this);
     auto* mainDataLayout = new QVBoxLayout();
 
@@ -542,7 +542,7 @@ void ParametersWidget::paintEvent(QPaintEvent* event)
         QStylePainter p(this);
         p.setPen(QPen(palette().highlight(), 2));
         p.setBrush(Qt::NoBrush);
-        p.drawRect(rect().adjusted(1, 1, -2, -2));
+        p.drawRect(contentsRect());
     }
 }
 
@@ -602,13 +602,14 @@ void ParametersWidget::updateUi()
 }
 
 
-StatsPageView::StatsPageView(StatsPageModel* statsPageModel)
-    : m_model(statsPageModel)
+StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
+    : QWidget(parent)
+    , m_model(statsPageModel)
 {
-    setContentsMargins(0, 0, 0, 0);
+    setContentsMargins(QMargins());
 
     auto* mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setContentsMargins(QMargins());
 
     auto* buttonsLayout = new QHBoxLayout();
 
@@ -627,7 +628,7 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel)
         headerLayout->addWidget(new QLabel(tr("Parameter Name")), 1);
 
         auto* l = new QLabel(tr("Value"), this);
-        l->setFixedWidth(200);
+        l->setFixedWidth(150);
         l->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
         headerLayout->addWidget(l, 0);
 
