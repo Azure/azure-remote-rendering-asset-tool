@@ -56,9 +56,9 @@ public:
         }
     }
 
-	static QString toString(double value, const char* format, bool removeTrailingDecimals)
-	{
-		QString result;
+    static QString toString(double value, const char* format, bool removeTrailingDecimals)
+    {
+        QString result;
         result.sprintf(format, value);
         if (removeTrailingDecimals && !result.isEmpty())
         {
@@ -89,12 +89,12 @@ public:
                 }
             }
         }
-		return result;
-	}
+        return result;
+    }
 
     QString textFromValue(double value) const
     {
-        return  toString(value, m_format.toUtf8().data(), m_removeTrailingZeros);
+        return toString(value, m_format.toUtf8().data(), m_removeTrailingZeros);
     }
 
     double valueFromText(const QString& text, bool* ok) const
