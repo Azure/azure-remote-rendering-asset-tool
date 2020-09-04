@@ -1,0 +1,98 @@
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QPaintEvent>
+#include <QStylePainter>
+#include <View/ModelEditor/Stats/ParameterWidget.h>
+#include <View/ModelEditor/Stats/StatsGraph.h>
+#include <ViewUtils/DpiUtils.h>
+#include <ViewUtils/Formatter.h>
+
+namespace
+{
+    QLabel* newValueLabel(QString text = "", QWidget* parent = {})
+    {
+        QLabel* ret = new QLabel(text, parent);
+        ret->setMinimumWidth(DpiUtils::size(100));
+        ret->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        return ret;
+    }
+} // namespace
+
+class ColoredBox : public QWidget
+{
+public:
+    ColoredBox(QColor color, QWidget* parent = {})
+        : QWidget(parent)
+        , m_color(color)
+    {
+        setContentsMargins(QMargins());
+        setFixedSize(DpiUtils::size(16), DpiUtils::size(16));
+    }
+    virtual void paintEvent(QPaintEvent* /*event*/)
+    {
+        QStylePainter p(this);
+        p.setBrush(m_color);
+        p.setPen(Qt::NoPen);
+        p.drawRoundedRect(rect(), DpiUtils::size(4), DpiUtils::size(4), Qt::AbsoluteSize);
+    }
+
+private:
+    const QColor m_color;
+};
+
+
+ParameterWidget::ParameterWidget(QString name, QString unit, QColor color, QWidget* parent)
+    : QWidget(parent)
+{
+    setContentsMargins(QMargins());
+    m_unit = unit;
+
+    auto* bl = new QHBoxLayout(this);
+    bl->setContentsMargins(QMargins());
+
+    m_legend = new ColoredBox(color, this);
+    bl->addWidget(m_legend, 0);
+    m_legend->setVisible(false);
+    auto* label = new QLabel(name);
+    bl->addWidget(label, 1);
+
+    m_valueLabel = newValueLabel("", this);
+    bl->addWidget(m_valueLabel);
+
+    m_minLabel = newValueLabel("", this);
+    bl->addWidget(m_minLabel, 0);
+
+    m_maxLabel = newValueLabel("", this);
+    bl->addWidget(m_maxLabel, 0);
+
+    m_averageLabel = newValueLabel("", this);
+    bl->addWidget(m_averageLabel, 0);
+}
+
+void ParameterWidget::setLegendVisibility(bool visible)
+{
+    m_legend->setVisible(visible);
+}
+
+void ParameterWidget::setValues(float value, float minValue, float maxValue, float averageValue)
+{
+    m_valueLabel->setText(DoubleFormatter::toString(value, "%.2f", true) + m_unit);
+    m_minLabel->setText(DoubleFormatter::toString(minValue, "%.2f", true) + m_unit);
+    m_maxLabel->setText(DoubleFormatter::toString(maxValue, "%.2f", true) + m_unit);
+    m_averageLabel->setText(DoubleFormatter::toString(averageValue, "%.2f", true) + m_unit);
+}
+
+
+QWidget* ParameterWidget::createHeader(QWidget* parent)
+{
+    QWidget* header = new QWidget(parent);
+    auto* headerLayout = new QHBoxLayout(header);
+    {
+        headerLayout->addWidget(new QLabel(tr("Parameter Name")), 1);
+        headerLayout->addWidget(newValueLabel(tr("Value"), header), 0);
+        headerLayout->addWidget(newValueLabel(tr("Minimum"), header), 0);
+        headerLayout->addWidget(newValueLabel(tr("Maximum"), header), 0);
+        headerLayout->addWidget(newValueLabel(tr("Average"), header), 0);
+    }
+    return header;
+}
