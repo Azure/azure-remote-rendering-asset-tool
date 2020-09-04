@@ -44,6 +44,12 @@ QColor ArrtStyle::s_buttonPressedBackgroundColor;
 QColor ArrtStyle::s_buttonBackgroundColor;
 QColor ArrtStyle::s_underTextColor;
 
+QColor ArrtStyle::s_graphForegroundColor;
+QColor ArrtStyle::s_graphBackgroundColor;
+QColor ArrtStyle::s_graphTextColor;
+QColor ArrtStyle::s_graphLinesColor;
+QColor ArrtStyle::s_graphTooltipBackgroundColor;
+
 QColor ArrtStyle::s_buttonBorderColor;
 QColor ArrtStyle::s_buttonPressedBorderColor;
 QColor ArrtStyle::s_buttonHoverBorderColor;
@@ -90,6 +96,7 @@ const QFont ArrtStyle::s_formHeaderFont = QFont("Segoe UI", 10);
 const QFont ArrtStyle::s_notificationFont = QFont("Segoe UI", 8);
 const QFont ArrtStyle::s_mainButtonFont = QFont("Segoe UI", 20);
 const QFont ArrtStyle::s_toolbarFont = QFont("Segoe UI", 14);
+const QFont ArrtStyle::s_graphFont = QFont("Segoe UI", 8);
 
 int ArrtStyle::s_focusedControlBorderWidth;
 
@@ -172,6 +179,13 @@ void ArrtStyle::polish(QPalette& pal)
         s_buttonPressedBackgroundColor = QColor(35, 35, 35);
         s_buttonBackgroundColor = QColor(63, 63, 63);
         s_underTextColor = QColor(200, 200, 200);
+
+        s_graphForegroundColor = Qt::white;
+        s_graphBackgroundColor = Qt::black;
+        s_graphTextColor = pal.mid().color();
+        s_graphLinesColor = QColor(70, 70, 70);
+        s_graphTooltipBackgroundColor = QColor(0, 0, 0, 200);
+
         s_buttonBorderColor = QColor(0, 0, 0, 0);
         s_buttonPressedBorderColor = pal.mid().color();
         s_buttonHoverBorderColor = s_buttonBorderColor;
@@ -205,6 +219,13 @@ void ArrtStyle::polish(QPalette& pal)
         s_buttonPressedBackgroundColor = Qt::cyan;
         s_buttonBackgroundColor = Qt::black;
         s_underTextColor = Qt::white;
+
+        s_graphForegroundColor = Qt::white;
+        s_graphBackgroundColor = Qt::black;
+        s_graphTextColor = Qt::white;
+        s_graphLinesColor = Qt::white;
+        s_graphTooltipBackgroundColor = Qt::black;
+
         s_buttonBorderColor = Qt::white;
         s_buttonPressedBorderColor = Qt::cyan;
         s_buttonHoverBorderColor = Qt::cyan;

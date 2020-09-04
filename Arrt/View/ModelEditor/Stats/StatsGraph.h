@@ -5,7 +5,7 @@
 class StatsGraph : public QWidget
 {
 public:
-	StatsGraph(QWidget* parent = {});
+    StatsGraph(QWidget* parent = {});
 
     virtual void paintEvent(QPaintEvent* event) override;
     int getPlotCount() const;

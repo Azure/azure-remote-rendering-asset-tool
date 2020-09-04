@@ -27,6 +27,11 @@ public:
     static QColor s_buttonBackgroundColor;
     static QColor s_underTextColor;
 
+    static QColor s_graphForegroundColor;
+    static QColor s_graphBackgroundColor;
+    static QColor s_graphTextColor;
+    static QColor s_graphLinesColor;
+    static QColor s_graphTooltipBackgroundColor;
 
     static const QColor s_debugColor;
     static const QColor s_warningColor;
@@ -56,6 +61,7 @@ public:
     static const QFont s_notificationFont;
     static const QFont s_mainButtonFont;
     static const QFont s_toolbarFont;
+    static const QFont s_graphFont;
 
     static QIcon s_expandedIcon;
     static QIcon s_notexpandedIcon;

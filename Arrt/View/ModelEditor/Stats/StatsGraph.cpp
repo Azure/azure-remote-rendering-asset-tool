@@ -2,6 +2,7 @@
 #include <QStylePainter>
 #include <QTransform>
 #include <QtMath>
+#include <View/ArrtStyle.h>
 #include <View/ModelEditor/Stats/StatsGraph.h>
 #include <ViewUtils/DpiUtils.h>
 #include <ViewUtils/Formatter.h>
@@ -61,8 +62,7 @@ namespace
 
 QRect StatsGraph::getGraphRect() const
 {
-    QFont smallFont("Segoe UI", 8);
-    QFontMetrics smallFontM(smallFont, this);
+    QFontMetrics smallFontM(ArrtStyle::s_graphFont, this);
 
     const float unit = smallFontM.height();
     return rect().adjusted(unit * 3, unit, -unit * 3, -unit * 2);
@@ -80,8 +80,8 @@ void StatsGraph::updateTransformAndGrid()
     float xMin, xMax;
 
     QRect graphRect = getGraphRect();
-    findScale(graphRect.height(), 40, m_minimum, m_maximum, yMin, yMax, m_yStep);
-    findScale(graphRect.width(), 100, 0, graphRect.width() / m_xZoom, xMin, xMax, m_xStep);
+    findScale(graphRect.height(), DpiUtils::size(40), m_minimum, m_maximum, yMin, yMax, m_yStep);
+    findScale(graphRect.width(), DpiUtils::size(100), 0, graphRect.width() / m_xZoom, xMin, xMax, m_xStep);
 
     m_currentTransform.reset();
     m_currentTransform.translate(graphRect.left(), graphRect.bottom());
@@ -122,7 +122,7 @@ void StatsGraph::paintEvent(QPaintEvent* e)
     updateTransformAndGrid();
 
     QStylePainter p(this);
-    p.fillRect(e->rect(), Qt::black);
+    p.fillRect(e->rect(), ArrtStyle::s_graphBackgroundColor);
     QRect graphRect = getGraphRect();
 
     float yMin = 0, yMax = 0;
@@ -145,20 +145,14 @@ void StatsGraph::paintEvent(QPaintEvent* e)
         yMax = qCeil(yMax / m_yStep) * m_yStep;
     }
 
-    QColor linesColor = palette().mid().color();
-    QPen linePen(linesColor, 0);
+    QPen linePen(ArrtStyle::s_graphForegroundColor, 0);
+    QPen scaleLinesPen(ArrtStyle::s_graphLinesColor, 0);
+    QPen textPen(ArrtStyle::s_graphTextColor, 0);
 
-    QColor scaleLinesColor(70, 70, 70);
-    QPen scaleLinesPen(scaleLinesColor, 0);
-
-    QColor foregroundColor = palette().text().color();
-    QPen foregroundPen(foregroundColor, 0);
-
-    QFont smallFont("Segoe UI", 8);
-    QFontMetrics smallFontM(smallFont, this);
+    QFontMetrics smallFontM(ArrtStyle::s_graphFont, this);
     const float unit = smallFontM.height();
 
-    p.setFont(smallFont);
+    p.setFont(ArrtStyle::s_graphFont);
 
     if (m_yStep > 0)
     {
@@ -228,54 +222,55 @@ void StatsGraph::paintEvent(QPaintEvent* e)
     {
         //QString toDisplay;
         QPointF location;
+        const int legendColorSize = DpiUtils::size(8);
+        const int padding = DpiUtils::size(6);
+        const int externalMargin = DpiUtils::size(7);
+        const int contentMargin = DpiUtils::size(6);
+
         const int rowHeight = smallFontM.height();
         int textWidth = 0;
         int textHeight = 0;
-        int legendColorSize = 8;
-        int padding = 8;
 
         for (const HighlightPoint& pt : m_highlightedPoints)
         {
             const int rectSize = 8;
             QPoint pos = m_currentTransform.map(pt.m_pt).toPoint();
-            p.setPen(foregroundPen);
+            p.setPen(textPen);
             p.drawRect(pos.x() - rectSize / 2, pos.y() - rectSize / 2, rectSize, rectSize);
             textWidth = qMax(textWidth, smallFontM.horizontalAdvance(pt.m_text));
             location += pt.m_pt;
             textHeight += rowHeight;
         }
 
-        QRect shrunkVisibleArea = graphRect.marginsRemoved(QMargins() + 2);
-        const int borderWidth = 6;
-        const int marginsWidth = 10;
+        QRect shrunkVisibleArea = graphRect.marginsRemoved(QMargins() + 1);
         // draw the "tooltip" with the value
         location /= m_highlightedPoints.size();
         QPoint locationOnScreen = m_currentTransform.map(location).toPoint();
         // clamp location in the visible area
         locationOnScreen = QPoint(std::clamp(locationOnScreen.x(), shrunkVisibleArea.left(), shrunkVisibleArea.right()), std::clamp(locationOnScreen.y(), shrunkVisibleArea.top(), shrunkVisibleArea.bottom()));
 
-        QRect textBr = QRect(0, 0, textWidth + padding + legendColorSize + marginsWidth * 2, textHeight + marginsWidth * 2);
-        QRect border = textBr.marginsAdded(QMargins() + borderWidth);
-        QRect borderAndMarging = border.marginsAdded(QMargins() + marginsWidth);
-        QPoint delta = m_currentTransform.map(location).toPoint() - borderAndMarging.topLeft();
+        QRect tooltipBr = QRect(0, 0, externalMargin * 2 + textWidth + padding + legendColorSize + contentMargin * 2, externalMargin * 2 + textHeight + contentMargin * 2);
+        QPoint locInPixel = m_currentTransform.map(location).toPoint();
+        tooltipBr.moveTopLeft(locInPixel);
 
         // flip the rectangle position if it hits the borders
-        if (borderAndMarging.bottom() + delta.y() > shrunkVisibleArea.bottom())
+        if (tooltipBr.bottom() > shrunkVisibleArea.bottom())
         {
-            delta.setY(delta.y() - borderAndMarging.height());
+            tooltipBr.moveBottom(tooltipBr.top());
         }
-        if (borderAndMarging.right() + delta.x() > shrunkVisibleArea.right())
+        if (tooltipBr.right() > shrunkVisibleArea.right())
         {
-            delta.setX(delta.x() - borderAndMarging.width());
+            tooltipBr.moveRight(tooltipBr.left());
         }
+        tooltipBr.moveTop(qMax(tooltipBr.top(), shrunkVisibleArea.top()));
+        tooltipBr.moveBottom(qMin(tooltipBr.bottom(), shrunkVisibleArea.bottom()));
 
-        border.translate(delta);
-        textBr.translate(delta);
         p.setPen(linePen);
-        p.setBrush(QColor(0, 0, 0, 200));
-        p.drawRect(border);
-        int yOrigin = delta.y() + marginsWidth;
-        int xOrigin = delta.x() + marginsWidth;
+        p.setBrush(ArrtStyle::s_graphTooltipBackgroundColor);
+        QRect content = tooltipBr.marginsRemoved(QMargins() + externalMargin);
+        p.drawRect(content);
+        int yOrigin = content.top() + contentMargin;
+        int xOrigin = content.left() + contentMargin;
         for (const HighlightPoint& pt : m_highlightedPoints)
         {
             p.setBrush(pt.m_color);
@@ -284,7 +279,7 @@ void StatsGraph::paintEvent(QPaintEvent* e)
             int x = xOrigin;
             p.drawRect(x, yOrigin + rowHeight / 2 - legendColorSize / 2, legendColorSize, legendColorSize);
             x += legendColorSize + padding;
-            p.setPen(foregroundColor);
+            p.setPen(textPen);
             p.drawText(QRect(x, yOrigin, textWidth, rowHeight), Qt::AlignVCenter, pt.m_text);
             yOrigin += rowHeight;
         }
@@ -300,13 +295,13 @@ void StatsGraph::paintEvent(QPaintEvent* e)
         r.moveCenter(QPoint(highlightedX, graphRect.bottom()));
         r.moveTop(graphRect.bottom() + unit * 0.2);
         p.setPen(linePen);
-        p.setBrush(QColor(0, 0, 0, 200));
+        p.setBrush(ArrtStyle::s_graphTooltipBackgroundColor);
         p.drawRect(r.adjusted(-10, 0, 10, 0));
-        p.setPen(foregroundPen);
+        p.setPen(textPen);
         p.drawText(r, text);
     }
 
-    p.setPen(QPen(linesColor, 2));
+    p.setPen(QPen(ArrtStyle::s_graphForegroundColor, 2));
     p.drawLine(graphRect.bottomLeft(), graphRect.bottomRight());
     p.drawLine(graphRect.bottomLeft(), graphRect.topLeft());
 
