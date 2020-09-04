@@ -56,11 +56,11 @@ public:
         }
     }
 
-    QString textFromValue(double value) const
-    {
-        QString result;
-        result.sprintf(m_format.toUtf8().data(), value);
-        if (m_removeTrailingZeros && !result.isEmpty())
+	static QString toString(double value, const char* format, bool removeTrailingDecimals)
+	{
+		QString result;
+        result.sprintf(format, value);
+        if (removeTrailingDecimals && !result.isEmpty())
         {
             //find the first non zero digit at the end of the formatted number
             int lastValidDigit = result.size() - 1;
@@ -89,7 +89,12 @@ public:
                 }
             }
         }
-        return result;
+		return result;
+	}
+
+    QString textFromValue(double value) const
+    {
+        return  toString(value, m_format.toUtf8().data(), m_removeTrailingZeros);
     }
 
     double valueFromText(const QString& text, bool* ok) const
