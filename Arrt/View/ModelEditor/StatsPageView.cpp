@@ -36,9 +36,10 @@ private:
 SimpleGraph::SimpleGraph(QWidget* parent)
     : QWidget(parent)
 {
+    setMouseTracking(true);
     setAutoFillBackground(true);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    setMinimumHeight(200);
+    setMinimumHeight(250);
 }
 
 namespace
@@ -79,26 +80,34 @@ namespace
     }
 } // namespace
 
-void SimpleGraph::paintEvent(QPaintEvent* e)
+QRect SimpleGraph::getGraphRect() const
 {
-    QStylePainter p(this);
-    p.fillRect(e->rect(), Qt::black);
-
-    float yMin, yMax, yStep;
-    float xMin, xMax, xStep;
-
     QFont smallFont("Segoe UI", 8);
     QFontMetrics smallFontM(smallFont, this);
 
     const float unit = smallFontM.height();
-    QRect graphRect = rect().adjusted(unit * 3, unit, -unit * 3, -unit * 2);
-    findScale(graphRect.height(), 40, m_minimum, m_maximum, yMin, yMax, yStep);
-    findScale(graphRect.width(), 100, 0, graphRect.width() / m_xZoom, xMin, xMax, xStep);
+    return rect().adjusted(unit * 3, unit, -unit * 3, -unit * 2);
+}
 
-    QTransform transform;
-    transform.translate(graphRect.left(), graphRect.bottom());
-    transform.scale(graphRect.width(), -graphRect.height());
-    transform.translate(0, -yMin);
+void SimpleGraph::updateTransformAndGrid()
+{
+    if (m_transformAndGridComputed)
+    {
+        return;
+    }
+    m_transformAndGridComputed = true;
+
+    float yMin, yMax;
+    float xMin, xMax;
+
+    QRect graphRect = getGraphRect();
+    findScale(graphRect.height(), 40, m_minimum, m_maximum, yMin, yMax, m_yStep);
+    findScale(graphRect.width(), 100, 0, graphRect.width() / m_xZoom, xMin, xMax, m_xStep);
+
+    m_currentTransform.reset();
+    m_currentTransform.translate(graphRect.left(), graphRect.bottom());
+    m_currentTransform.scale(graphRect.width(), -graphRect.height());
+    m_currentTransform.translate(0, -yMin);
 
     qreal yrange = yMax - yMin;
     if (yrange < 0.001)
@@ -110,30 +119,50 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
     {
         xrange = 1;
     }
-    transform.scale(1.0 / xrange, 1.0 / yrange);
-    QTransform invTransform = transform.inverted();
+    m_currentTransform.scale(1.0 / xrange, 1.0 / yrange);
+    m_currentTransformInverse = m_currentTransform.inverted();
 
     {
-        const auto& pd = accessPlotData(0);
+        const auto& pd = m_data[0];
         if (pd.size() > 0)
         {
             qreal lastX = pd.front().x();
-            QPointF pt = transform.map(QPointF(lastX, 0));
+            QPointF pt = m_currentTransform.map(QPointF(lastX, 0));
             if (pt.x() > graphRect.right())
             {
-                float dX = invTransform.map(QPointF(graphRect.right(), 0)).x() - invTransform.map(pt).x();
-                transform.translate(dX, 0);
-                invTransform = transform.inverted();
+                float dX = m_currentTransformInverse.map(QPointF(graphRect.right(), 0)).x() - m_currentTransformInverse.map(pt).x();
+                m_currentTransform.translate(dX, 0);
+                m_currentTransformInverse = m_currentTransform.inverted();
             }
         }
     }
+}
 
-    if (xStep > 0)
+void SimpleGraph::paintEvent(QPaintEvent* e)
+{
+    updateTransformAndGrid();
+
+    QStylePainter p(this);
+    p.fillRect(e->rect(), Qt::black);
+    QRect graphRect = getGraphRect();
+
+    float yMin = 0, yMax = 0;
+    float xMin = 0, xMax = 0;
+
+    if (m_xStep > 0)
     {
-        xMin = invTransform.map(QPointF(graphRect.left(), 0)).x();
-        xMin = qCeil(xMin / xStep) * xStep;
-        xMax = invTransform.map(QPointF(graphRect.right(), 0)).x();
-        xMax = qFloor(xMax / xStep) * xStep;
+        xMin = m_currentTransformInverse.map(QPointF(graphRect.left(), 0)).x();
+        xMin = qCeil(xMin / m_xStep) * m_xStep;
+        xMax = m_currentTransformInverse.map(QPointF(graphRect.right(), 0)).x();
+        xMax = qFloor(xMax / m_xStep) * m_xStep;
+    }
+
+    if (m_yStep > 0)
+    {
+        yMin = m_currentTransformInverse.map(QPointF(0, graphRect.bottom())).y();
+        yMin = qCeil(yMin / m_yStep) * m_yStep;
+        yMax = m_currentTransformInverse.map(QPointF(0, graphRect.top())).y();
+        yMax = qFloor(yMax / m_yStep) * m_yStep;
     }
 
     QColor linesColor = palette().mid().color();
@@ -142,14 +171,21 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
     QColor scaleLinesColor(70, 70, 70);
     QPen scaleLinesPen(scaleLinesColor, 0);
 
+    QColor foregroundColor = palette().text().color();
+    QPen foregroundPen(foregroundColor, 0);
+
+    QFont smallFont("Segoe UI", 8);
+    QFontMetrics smallFontM(smallFont, this);
+    const float unit = smallFontM.height();
+
     p.setFont(smallFont);
 
-    if (yStep > 0)
+    if (m_yStep > 0)
     {
-        for (qreal y = yMin; y < yMax + yStep / 2; y += yStep)
+        for (qreal y = yMin; y < yMax + m_yStep / 2; y += m_yStep)
         {
             QPoint pt;
-            pt = transform.map(QPoint(0, y));
+            pt = m_currentTransform.map(QPoint(0, y));
 
             p.setPen(scaleLinesPen);
             p.drawLine(graphRect.left(), pt.y(), graphRect.right(), pt.y());
@@ -160,12 +196,12 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
             p.drawText(graphRect.left() - w - unit * 0.3, pt.y(), toPrint);
         }
     }
-    if (xStep > 0)
+    if (m_xStep > 0)
     {
-        for (qreal x = xMin; x <= xMax; x += xStep)
+        for (qreal x = xMin; x <= xMax; x += m_xStep)
         {
             QPoint pt;
-            pt = transform.map(QPoint(x, 0));
+            pt = m_currentTransform.map(QPoint(x, 0));
 
             p.setPen(scaleLinesPen);
             p.drawLine(pt.x(), graphRect.top(), pt.x(), graphRect.bottom());
@@ -182,20 +218,113 @@ void SimpleGraph::paintEvent(QPaintEvent* e)
 
     p.save();
     p.setClipRect(graphRect.adjusted(-1, -1, 1, 1));
-    p.setTransform(transform);
 
     p.setBrush(Qt::NoBrush);
 
     for (int i = 0; i < getPlotCount(); ++i)
     {
-        const auto& pd = accessPlotData(i);
+        const auto& pd = m_data[i];
         if (pd.size() > 0)
         {
-            p.setPen(QPen(m_infos[i].m_color, 0));
-            p.drawPolyline(pd.data(), (int)pd.size());
+            p.setPen(QPen(m_infos[i].m_color, 1));
+            float leftX = m_currentTransformInverse.map(QPointF(graphRect.left(), 0)).x();
+            //assume the points are organized right to left
+            QPolygonF polygon;
+            size_t pointsToDraw = 0;
+            while (pointsToDraw < pd.size() && pd[pointsToDraw].x() > leftX)
+            {
+                polygon.append(m_currentTransform.map(pd[pointsToDraw]));
+                ++pointsToDraw;
+            }
+            if (++pointsToDraw < pd.size())
+            {
+                polygon.append(m_currentTransform.map(pd[pointsToDraw]));
+            }
+            p.drawPolyline(polygon);
+        }
+    }
+
+    if (m_highlightedPoints.size() > 0)
+    {
+        //QString toDisplay;
+        QPointF location;
+        const int rowHeight = smallFontM.height();
+        int textWidth = 0;
+        int textHeight = 0;
+        int legendColorSize = 8;
+        int padding = 8;
+
+        for (const HighlightPoint& pt : m_highlightedPoints)
+        {
+            const int rectSize = 8;
+            QPoint pos = m_currentTransform.map(pt.m_pt).toPoint();
+            p.setPen(foregroundPen);
+            p.drawRect(pos.x() - rectSize / 2, pos.y() - rectSize / 2, rectSize, rectSize);
+            textWidth = qMax(textWidth, smallFontM.horizontalAdvance(pt.m_text));
+            location += pt.m_pt;
+            textHeight += rowHeight;
+        }
+
+        QRect shrunkVisibleArea = graphRect.marginsRemoved(QMargins() + 2);
+        const int borderWidth = 6;
+        const int marginsWidth = 10;
+        // draw the "tooltip" with the value
+        location /= m_highlightedPoints.size();
+        QPoint locationOnScreen = m_currentTransform.map(location).toPoint();
+        // clamp location in the visible area
+        locationOnScreen = QPoint(std::clamp(locationOnScreen.x(), shrunkVisibleArea.left(), shrunkVisibleArea.right()), std::clamp(locationOnScreen.y(), shrunkVisibleArea.top(), shrunkVisibleArea.bottom()));
+
+        QRect textBr = QRect(0, 0, textWidth + padding + legendColorSize + marginsWidth * 2, textHeight + marginsWidth * 2);
+        QRect border = textBr.marginsAdded(QMargins() + borderWidth);
+        QRect borderAndMarging = border.marginsAdded(QMargins() + marginsWidth);
+        QPoint delta = m_currentTransform.map(location).toPoint() - borderAndMarging.topLeft();
+
+        // flip the rectangle position if it hits the borders
+        if (borderAndMarging.bottom() + delta.y() > shrunkVisibleArea.bottom())
+        {
+            delta.setY(delta.y() - borderAndMarging.height());
+        }
+        if (borderAndMarging.right() + delta.x() > shrunkVisibleArea.right())
+        {
+            delta.setX(delta.x() - borderAndMarging.width());
+        }
+
+        border.translate(delta);
+        textBr.translate(delta);
+        p.setPen(linePen);
+        p.setBrush(QColor(0, 0, 0, 200));
+        p.drawRect(border);
+        int yOrigin = delta.y() + marginsWidth;
+        int xOrigin = delta.x() + marginsWidth;
+        for (const HighlightPoint& pt : m_highlightedPoints)
+        {
+            p.setBrush(pt.m_color);
+            p.setPen(Qt::NoPen);
+
+            int x = xOrigin;
+            p.drawRect(x, yOrigin + rowHeight / 2 - legendColorSize / 2, legendColorSize, legendColorSize);
+            x += legendColorSize + padding;
+            p.setPen(foregroundColor);
+            p.drawText(QRect(x, yOrigin, textWidth, rowHeight), Qt::AlignVCenter, pt.m_text);
+            yOrigin += rowHeight;
         }
     }
     p.restore();
+
+    if (m_highlightedX.has_value())
+    {
+        float highlightedX = m_currentTransform.map(QPointF(*m_highlightedX, 0)).x();
+        p.drawLine(QPointF(highlightedX, graphRect.bottom()), QPointF(highlightedX, graphRect.top()));
+        QString text = QString::number(*m_highlightedX);
+        QRect r = smallFontM.boundingRect(text);
+        r.moveCenter(QPoint(highlightedX, graphRect.bottom()));
+        r.moveTop(graphRect.bottom() + unit * 0.2);
+        p.setPen(linePen);
+        p.setBrush(QColor(0, 0, 0, 200));
+        p.drawRect(r.adjusted(-10, 0, 10, 0));
+        p.setPen(foregroundPen);
+        p.drawText(r, text);
+    }
 
     p.setPen(QPen(linesColor, 2));
     p.drawLine(graphRect.bottomLeft(), graphRect.bottomRight());
@@ -216,6 +345,8 @@ void SimpleGraph::setMinMax(qreal minimum, qreal maximum)
 {
     m_minimum = minimum;
     m_maximum = maximum;
+    m_transformAndGridComputed = false;
+    update();
 }
 
 void SimpleGraph::setXLabel(QString text)
@@ -228,19 +359,104 @@ void SimpleGraph::setXZoom(float xZoom)
     m_xZoom = xZoom;
 }
 
+void SimpleGraph::mouseMoveEvent(QMouseEvent* event)
+{
+    setHighlightX(event->pos().x());
+}
+
+void SimpleGraph::leaveEvent(QEvent* event)
+{
+    QWidget::leaveEvent(event);
+    setHighlightX({});
+}
+
+void SimpleGraph::setHighlightX(std::optional<float> x)
+{
+    updateTransformAndGrid();
+    QRect graphRect = getGraphRect();
+
+    if (m_highlightedXInPixels.has_value())
+    {
+        const float oldX = *m_highlightedXInPixels;
+        update();
+        //update(QRect(oldX - 20, graphRect.top(), oldX + 20, graphRect.bottom()));
+    }
+
+    m_highlightedXInPixels = x;
+
+    if (m_highlightedXInPixels.has_value())
+    {
+        const float newX = *m_highlightedXInPixels;
+        const float xValue = m_currentTransformInverse.map(QPointF(newX, 0)).x();
+        m_highlightedX = xValue;
+
+        //find the points to highlight
+        m_highlightedPoints.clear();
+
+        float chosenPointClosestDistanceToCursor = std::numeric_limits<float>::max();
+
+        // simple linear search.
+        if (m_data.size() > 0)
+        {
+            for (int valIdx = 0; valIdx < getPlotCount(); ++valIdx)
+            {
+                auto& d = m_data[valIdx];
+                float previousDistance = std::numeric_limits<float>::max();
+                for (int i = 0; i < d.size(); ++i)
+                {
+                    const auto& pt = d[i];
+                    const float dist = pt.x() - xValue;
+                    if (dist < 0)
+                    {
+                        const QPointF& chosen = (previousDistance < -dist) ? d[i - 1] : pt;
+                        const float newDistance = qAbs(chosen.x() - xValue);
+
+                        if (chosenPointClosestDistanceToCursor != newDistance)
+                        {
+                            chosenPointClosestDistanceToCursor = newDistance;
+                            m_highlightedPoints.clear();
+                            m_highlightedX = chosen.x();
+                        }
+                        m_highlightedPoints.push_back({m_infos[valIdx].m_color, QString("%1: %2%3").arg(m_infos[valIdx].m_name).arg(chosen.y()).arg(m_infos[valIdx].m_units), chosen});
+                        break;
+                    }
+                    previousDistance = dist;
+                }
+            }
+        }
+        //update(QRect(newX - 20, graphRect.top(), newX + 20, graphRect.bottom()));
+        update();
+    }
+    else
+    {
+        m_highlightedPoints.clear();
+        m_highlightedX.reset();
+    }
+}
+
 int SimpleGraph::addPlot(StatsPageModel::PlotInfo type)
 {
     const int ret = (int)m_infos.size();
     m_infos.push_back(std::move(type));
     m_data.push_back({});
+    update();
     return ret;
 }
+
+void SimpleGraph::setPlotData(int index, std::vector<QPointF> plotData)
+{
+    m_data[index].swap(plotData);
+    m_transformAndGridComputed = false;
+    setHighlightX(m_highlightedXInPixels);
+    update();
+}
+
 
 ParameterWidget::ParameterWidget(QString name, QString unit, QColor color, QWidget* parent)
     : QWidget(parent)
 {
     setContentsMargins(0, 0, 0, 0);
-    m_unit = unit.isEmpty() ? "" : (" " + unit);
+    m_unit = unit;
 
     auto* bl = new QHBoxLayout(this);
     bl->setContentsMargins(0, 0, 0, 0);
@@ -371,7 +587,9 @@ void ParametersWidget::updateUi()
     {
         const int idx = m_indices[i];
 
-        m_model->getGraphData(idx, m_graphPerWindow, m_graph->accessPlotData(i), stats);
+        std::vector<QPointF> plotData;
+        m_model->getGraphData(idx, m_graphPerWindow, plotData, stats);
+        m_graph->setPlotData(i, std::move(plotData));
 
         auto& info = m_model->getPlotInfo(idx);
         minValue.addValue(info.m_minValue.value_or(stats.m_min.m_value));
@@ -381,13 +599,8 @@ void ParametersWidget::updateUi()
         m_parameters[i]->setValues(value, stats.m_min.hasValue() ? stats.m_min.m_value : 0, stats.m_max.hasValue() ? stats.m_max.m_value : 0, stats.getAverage());
     }
     m_graph->setMinMax(minValue.m_value, maxValue.m_value);
-    m_graph->update();
 }
 
-std::vector<QPointF>& SimpleGraph::accessPlotData(int index)
-{
-    return m_data[index];
-}
 
 StatsPageView::StatsPageView(StatsPageModel* statsPageModel)
     : m_model(statsPageModel)

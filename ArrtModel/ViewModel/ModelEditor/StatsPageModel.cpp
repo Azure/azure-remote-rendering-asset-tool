@@ -4,30 +4,30 @@
 StatsPageModel::PlotInfo StatsPageModel::m_plotInfo[] = {
     {"Polygons rendered", PlotInfo::Line, PlotInfo::Continuous, Qt::white, "", true, 0, {}},
 
-    {"Latency (pose to receive average)", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, "ms", false, 0, {}},
-    {"Latency (receive to present average)", PlotInfo::Line, PlotInfo::Continuous, Qt::cyan, "ms", false, 0, {}},
-    {"Latency (present to display average)", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, "ms", true, 0, {}},
+    {"Latency (pose to receive average)", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, " ms", false, 0, {}},
+    {"Latency (receive to present average)", PlotInfo::Line, PlotInfo::Continuous, Qt::cyan, " ms", false, 0, {}},
+    {"Latency (present to display average)", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, " ms", true, 0, {}},
 
-    {"Time since last present", PlotInfo::Line, PlotInfo::Continuous, Qt::white, "ms", true, 0, {}},
+    {"Time since last present", PlotInfo::Line, PlotInfo::Continuous, Qt::white, " ms", true, 0, {}},
 
     {"Frames reused", PlotInfo::Line, PlotInfo::Continuous, Qt::cyan, "", false, 0, {}},
     {"Frames skipped", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, "", false, 0, {}},
     {"Frames received", PlotInfo::Line, PlotInfo::Continuous, Qt::green, "", false, 0, {}},
     {"Frames discarded", PlotInfo::Line, PlotInfo::Continuous, Qt::red, "", true, 0, {}},
 
-    {"Frame minimum delta", PlotInfo::AreaLowerBound, PlotInfo::Continuous, Qt::yellow, QString("ms"), false, 0, {}},
-    {"Frame maximum delta", PlotInfo::AreaHigherBound, PlotInfo::Continuous, Qt::white, QString("ms"), true, 0, {}},
+    {"Frame minimum delta", PlotInfo::AreaLowerBound, PlotInfo::Continuous, Qt::yellow, QString(" ms"), false, 0, {}},
+    {"Frame maximum delta", PlotInfo::AreaHigherBound, PlotInfo::Continuous, Qt::white, QString(" ms"), true, 0, {}},
 
-    {"Network round-trip", PlotInfo::Line, PlotInfo::Continuous, Qt::white, QString("ms"), true, 0, {}},
+    {"Network round-trip", PlotInfo::Line, PlotInfo::Continuous, Qt::white, QString(" ms"), true, 0, {}},
 
-    {"Frame time CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString("ms"), false, 0, {}},
-    {"Frame time GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString("ms"), true, 0, {}},
+    {"Frame time CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString(" ms"), false, 0, {}},
+    {"Frame time GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString(" ms"), true, 0, {}},
 
-    {"Utilization CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString("%"), false, 0, 100},
-    {"Utilization GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString("%"), true, 0, 100},
+    {"Utilization CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString(" %"), false, 0, 100},
+    {"Utilization GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString(" %"), true, 0, 100},
 
-    {"Memory CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString("%"), false, 0, 100},
-    {"Memory GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString("%"), true, 0, 100}};
+    {"Memory CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString(" %"), false, 0, 100},
+    {"Memory GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString(" %"), true, 0, 100}};
 
 
 StatsPageModel::StatsPageModel(ArrServiceStats* serviceStats, QObject* parent)
