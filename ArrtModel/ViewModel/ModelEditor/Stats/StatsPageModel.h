@@ -5,7 +5,7 @@
 #include <optional>
 
 
-// model for the stats panel, holding the statistics per frame
+// model for the stats panel, holding the statistics per frame and per second
 
 class StatsPageModel : public QObject
 {
@@ -15,19 +15,7 @@ public:
     struct PlotInfo
     {
         QString m_name;
-        enum GraphType
-        {
-            AreaLowerBound,
-            AreaHigherBound,
-            Line
-        } m_graphType;
-
-        enum CurveType
-        {
-            Continuous, //the curve is a polyline between points
-            Discrete    // y is constant between the previous x and the current x and equal to the current value y
-        } m_curveType;
-
+        
         // plot color
         QColor m_color;
 
@@ -41,7 +29,6 @@ public:
         std::optional<double> m_maxValue;
     };
 
-
     StatsPageModel(ArrServiceStats* serviceStats, QObject* parent = nullptr);
 
     void startCollecting();
@@ -52,7 +39,6 @@ public:
     double getParameter(int index) const;
     void getParameterStats(int index, float& minValue, float& maxValue, float& averageValue);
     void getGraphData(int index, bool perWindow, std::vector<QPointF>& graph, AvgMinMaxValue<float>& globalStats) const;
-    std::optional<RR::PerformanceRating> getParameterRating(int index) const;
 
 Q_SIGNALS:
     void valuesChanged();

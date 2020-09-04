@@ -2,6 +2,8 @@
 #include <QWidget>
 #include <ViewModel/ModelEditor/Stats/StatsPageModel.h>
 
+// graph widget showing a line graph with multiple colored lines, scale lines, and tooltip when hovered with a mouse
+
 class StatsGraph : public QWidget
 {
 public:

@@ -2,200 +2,9 @@
 #include <Model/IncludesAzureRemoteRendering.h>
 #include <QElapsedTimer>
 #include <QObject>
+#include <Utils/Accumulators.h>
 
-template <typename T, int BufferSize>
-class FixedCircularBuffer
-{
-public:
-    const T& getValue(uint index) const
-    {
-        assert(index < m_size);
-        index = (BufferSize + m_start - index) % BufferSize;
-        return m_buffer[index];
-    }
-
-    void addFront(T value)
-    {
-        m_start = (m_start + 1) % BufferSize;
-        m_buffer[m_start] = std::move(value);
-        if (m_size != BufferSize)
-        {
-            ++m_size;
-        }
-    }
-
-    uint getSize() const
-    {
-        return m_size;
-    }
-
-    void clear()
-    {
-        m_size = 0;
-    }
-
-private:
-    T m_buffer[BufferSize];
-    uint m_start = 0;
-    uint m_size = 0;
-};
-
-
-template <typename T>
-struct MinValue
-{
-    void addValue(const T& value)
-    {
-        m_value = qMin(m_value, value);
-    }
-    bool hasValue() const
-    {
-        return m_value != std::numeric_limits<T>::max();
-    }
-    T m_value = std::numeric_limits<T>::max();
-};
-
-template <typename T>
-struct MaxValue
-{
-    void addValue(const T& value)
-    {
-        m_value = qMax(m_value, value);
-    }
-    bool hasValue() const
-    {
-        return m_value != std::numeric_limits<T>::min();
-    }
-    T m_value = std::numeric_limits<T>::min();
-};
-
-template <typename T>
-struct SumValue
-{
-    void addValue(const T& value)
-    {
-        m_value += value;
-    }
-    bool hasValue() const
-    {
-        return m_value != 0;
-    }
-    T m_value = {};
-};
-
-template <typename T>
-struct AvgValue
-{
-    void addValue(const T& value)
-    {
-        m_value += value;
-        ++m_values;
-    }
-
-    bool hasValue() const
-    {
-        return m_values > 0;
-    }
-
-    double getAverage() const
-    {
-        if (m_values > 0)
-        {
-            return (double)m_value / m_values;
-        }
-        return {};
-    }
-    T m_value;
-    uint m_values = {};
-};
-
-template <typename T>
-struct AvgMinMaxValue
-{
-    void addValue(const T& value)
-    {
-        m_value = value;
-        m_sum.addValue(value);
-        m_min.addValue(value);
-        m_max.addValue(value);
-        ++m_values;
-    }
-
-    bool hasValue() const
-    {
-        return m_values > 0;
-    }
-
-    double getAverage() const
-    {
-        if (m_values > 0)
-        {
-            return (double)m_sum.m_value / m_values;
-        }
-        return {};
-    }
-    T m_value = {};
-    SumValue<T> m_sum;
-    MinValue<T> m_min;
-    MaxValue<T> m_max;
-    uint m_values = {};
-};
-
-template <typename T>
-struct Accumulator
-{
-    typedef decltype(T::m_value) ValueType;
-    struct GraphValue
-    {
-        ValueType m_value;
-        uint m_tick;
-    };
-
-    T m_accumulation = {};
-    FixedCircularBuffer<GraphValue, 2048> m_buffer;
-
-    FixedCircularBuffer<GraphValue, 1024> m_perWindowBuffer;
-    AvgMinMaxValue<float> m_perWindowStats;
-
-    void addValue(const ValueType& value, uint tick)
-    {
-        m_accumulation.addValue(value);
-        m_buffer.addFront({value, tick});
-    }
-
-    void getGraphData(std::vector<QPointF>& graph, bool perWindow) const
-    {
-        graph.clear();
-        graph.reserve(m_perWindowBuffer.getSize());
-
-        if (perWindow)
-        {
-            for (uint i = 0; i < m_perWindowBuffer.getSize(); ++i)
-            {
-                auto val = m_perWindowBuffer.getValue(i);
-                graph.push_back({(qreal)val.m_tick, (qreal)val.m_value});
-            }
-        }
-        else
-        {
-            for (uint i = 0; i < m_buffer.getSize(); ++i)
-            {
-                auto val = m_buffer.getValue(i);
-                graph.push_back({(qreal)val.m_tick, (qreal)val.m_value});
-            }
-        }
-    }
-
-    void endWindow(uint tick)
-    {
-        if (m_accumulation.hasValue())
-        {
-            m_perWindowStats.addValue(m_accumulation.m_value);
-            m_perWindowBuffer.addFront({m_accumulation.m_value, tick});
-        }
-        m_accumulation = {};
-    }
-};
+// service statistics object, collecting and analyzing per-frame stats in an ARR session 
 
 class ArrServiceStats : public QObject
 {
@@ -206,25 +15,25 @@ public:
     struct Stats
     {
     public:
-        Accumulator<AvgMinMaxValue<float>> m_timeSinceLastPresent;
-        Accumulator<SumValue<uint>> m_videoFramesSkipped;
-        Accumulator<SumValue<uint>> m_videoFramesReused;
-        Accumulator<SumValue<uint>> m_videoFramesReceived;
-        Accumulator<MinValue<float>> m_videoFrameMinDelta;
-        Accumulator<MaxValue<float>> m_videoFrameMaxDelta;
-        Accumulator<AvgMinMaxValue<float>> m_latencyPoseToReceive;
-        Accumulator<AvgMinMaxValue<float>> m_latencyReceiveToPresent;
-        Accumulator<AvgMinMaxValue<float>> m_latencyPresentToDisplay;
-        Accumulator<SumValue<uint>> m_videoFramesDiscarded;
+        AccumulatorWithStorage<AvgMinMaxValue<float>> m_timeSinceLastPresent;
+        AccumulatorWithStorage<SumValue<uint>> m_videoFramesSkipped;
+        AccumulatorWithStorage<SumValue<uint>> m_videoFramesReused;
+        AccumulatorWithStorage<SumValue<uint>> m_videoFramesReceived;
+        AccumulatorWithStorage<MinValue<float>> m_videoFrameMinDelta;
+        AccumulatorWithStorage<MaxValue<float>> m_videoFrameMaxDelta;
+        AccumulatorWithStorage<AvgMinMaxValue<float>> m_latencyPoseToReceive;
+        AccumulatorWithStorage<AvgMinMaxValue<float>> m_latencyReceiveToPresent;
+        AccumulatorWithStorage<AvgMinMaxValue<float>> m_latencyPresentToDisplay;
+        AccumulatorWithStorage<SumValue<uint>> m_videoFramesDiscarded;
 
-        Accumulator<AvgValue<float>> m_timeCPU;
-        Accumulator<AvgValue<float>> m_timeGPU;
-        Accumulator<AvgValue<float>> m_utilizationCPU;
-        Accumulator<AvgValue<float>> m_utilizationGPU;
-        Accumulator<AvgValue<float>> m_memoryCPU;
-        Accumulator<AvgValue<float>> m_memoryGPU;
-        Accumulator<AvgValue<float>> m_networkLatency;
-        Accumulator<AvgValue<uint>> m_polygonsRendered;
+        AccumulatorWithStorage<AvgValue<float>> m_timeCPU;
+        AccumulatorWithStorage<AvgValue<float>> m_timeGPU;
+        AccumulatorWithStorage<AvgValue<float>> m_utilizationCPU;
+        AccumulatorWithStorage<AvgValue<float>> m_utilizationGPU;
+        AccumulatorWithStorage<AvgValue<float>> m_memoryCPU;
+        AccumulatorWithStorage<AvgValue<float>> m_memoryGPU;
+        AccumulatorWithStorage<AvgValue<float>> m_networkLatency;
+        AccumulatorWithStorage<AvgValue<uint>> m_polygonsRendered;
     };
 
     void startCollecting();

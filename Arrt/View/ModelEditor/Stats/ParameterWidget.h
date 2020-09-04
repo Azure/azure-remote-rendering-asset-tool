@@ -3,6 +3,8 @@
 
 class QLabel;
 
+// Row in a ParametersWidget, with stats for a single parameter
+
 class ParameterWidget : public QWidget
 {
 public:

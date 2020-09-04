@@ -7,6 +7,8 @@ class StatsGraph;
 class QLabel;
 class QVBoxLayout;
 
+// widget used to show a group of parameters in a stat panel, with its own graph
+
 class ParametersWidget : public QWidget
 {
     Q_OBJECT

@@ -2,32 +2,32 @@
 #include <ViewModel/ModelEditor/Stats/StatsPageModel.h>
 
 StatsPageModel::PlotInfo StatsPageModel::m_plotInfo[] = {
-    {"Polygons rendered", PlotInfo::Line, PlotInfo::Continuous, Qt::white, "", true, 0, {}},
+    {"Polygons rendered", Qt::white, "", true, 0, {}},
 
-    {"Latency (pose to receive average)", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, " ms", false, 0, {}},
-    {"Latency (receive to present average)", PlotInfo::Line, PlotInfo::Continuous, Qt::cyan, " ms", false, 0, {}},
-    {"Latency (present to display average)", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, " ms", true, 0, {}},
+    {"Latency (pose to receive average)", Qt::yellow, " ms", false, 0, {}},
+    {"Latency (receive to present average)", Qt::cyan, " ms", false, 0, {}},
+    {"Latency (present to display average)", Qt::magenta, " ms", true, 0, {}},
 
-    {"Time since last present", PlotInfo::Line, PlotInfo::Continuous, Qt::white, " ms", true, 0, {}},
+    {"Time since last present", Qt::white, " ms", true, 0, {}},
 
-    {"Frames reused", PlotInfo::Line, PlotInfo::Continuous, Qt::cyan, "", false, 0, {}},
-    {"Frames skipped", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, "", false, 0, {}},
-    {"Frames received", PlotInfo::Line, PlotInfo::Continuous, Qt::green, "", false, 0, {}},
-    {"Frames discarded", PlotInfo::Line, PlotInfo::Continuous, Qt::red, "", true, 0, {}},
+    {"Frames reused", Qt::cyan, "", false, 0, {}},
+    {"Frames skipped", Qt::yellow, "", false, 0, {}},
+    {"Frames received", Qt::green, "", false, 0, {}},
+    {"Frames discarded", Qt::red, "", true, 0, {}},
 
-    {"Frame minimum delta", PlotInfo::AreaLowerBound, PlotInfo::Continuous, Qt::yellow, QString(" ms"), false, 0, {}},
-    {"Frame maximum delta", PlotInfo::AreaHigherBound, PlotInfo::Continuous, Qt::white, QString(" ms"), true, 0, {}},
+    {"Frame minimum delta", Qt::yellow, QString(" ms"), false, 0, {}},
+    {"Frame maximum delta", Qt::white, QString(" ms"), true, 0, {}},
 
-    {"Network round-trip", PlotInfo::Line, PlotInfo::Continuous, Qt::white, QString(" ms"), true, 0, {}},
+    {"Network round-trip", Qt::white, QString(" ms"), true, 0, {}},
 
-    {"Frame time CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString(" ms"), false, 0, {}},
-    {"Frame time GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString(" ms"), true, 0, {}},
+    {"Frame time CPU", Qt::yellow, QString(" ms"), false, 0, {}},
+    {"Frame time GPU", Qt::magenta, QString(" ms"), true, 0, {}},
 
-    {"Utilization CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString(" %"), false, 0, 100},
-    {"Utilization GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString(" %"), true, 0, 100},
+    {"Utilization CPU", Qt::yellow, QString(" %"), false, 0, 100},
+    {"Utilization GPU", Qt::magenta, QString(" %"), true, 0, 100},
 
-    {"Memory CPU", PlotInfo::Line, PlotInfo::Continuous, Qt::yellow, QString(" %"), false, 0, 100},
-    {"Memory GPU", PlotInfo::Line, PlotInfo::Continuous, Qt::magenta, QString(" %"), true, 0, 100}};
+    {"Memory CPU", Qt::yellow, QString(" %"), false, 0, 100},
+    {"Memory GPU", Qt::magenta, QString(" %"), true, 0, 100}};
 
 
 StatsPageModel::StatsPageModel(ArrServiceStats* serviceStats, QObject* parent)
@@ -154,33 +154,4 @@ void StatsPageModel::getGraphData(int index, bool perWindow, std::vector<QPointF
         case 17:
             GRAPH_DATA(m_memoryGPU);
     }
-}
-
-
-std::optional<RR::PerformanceRating> StatsPageModel::getParameterRating(int /*index*/) const
-{
-    /*
-    switch (index)
-    {
-        case 10:
-            return m_stats.m_currentPerformanceAssessment.timeCPU.rating;
-        case 11:
-            return m_stats.m_currentPerformanceAssessment.timeGPU.rating;
-        case 12:
-            return m_stats.m_currentPerformanceAssessment.utilizationCPU.rating;
-        case 13:
-            return m_stats.m_currentPerformanceAssessment.utilizationGPU.rating;
-        case 14:
-            return m_stats.m_currentPerformanceAssessment.memoryCPU.rating;
-        case 15:
-            return m_stats.m_currentPerformanceAssessment.memoryGPU.rating;
-        case 16:
-            return m_stats.m_currentPerformanceAssessment.networkLatency.rating;
-        case 17:
-            return m_stats.m_currentPerformanceAssessment.polygonsRendered.rating;
-        default:
-            return {};
-    }
-	*/
-    return {};
 }
