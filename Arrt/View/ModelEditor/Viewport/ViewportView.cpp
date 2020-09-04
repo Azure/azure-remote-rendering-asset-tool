@@ -1,10 +1,10 @@
-#include <View/ModelEditor/ViewportView.h>
+#include <View/ModelEditor/Viewport/ViewportView.h>
 #include <d3d11.h>
 #include <dxgi.h>
 
 #include <QResizeEvent>
 #include <ViewModel/ModelEditor/ModelEditorModel.h>
-#include <ViewModel/ModelEditor/ViewportModel.h>
+#include <ViewModel/ModelEditor/Viewport/ViewportModel.h>
 
 ViewportView::ViewportView(ViewportModel* model, QWidget* parent)
     : QWidget(parent)

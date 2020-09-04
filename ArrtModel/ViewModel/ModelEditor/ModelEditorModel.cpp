@@ -1,11 +1,11 @@
 #include <Model/ArrSessionManager.h>
 #include <Model/ModelEditor/EntitySelection.h>
 #include <Model/ModelEditor/MaterialProvider.h>
-#include <ViewModel/ModelEditor/MaterialListModel.h>
+#include <ViewModel/ModelEditor/MaterialEditor/MaterialListModel.h>
 #include <ViewModel/ModelEditor/ModelEditorModel.h>
-#include <ViewModel/ModelEditor/SceneTreeModel.h>
-#include <ViewModel/ModelEditor/StatsPageModel.h>
-#include <ViewModel/ModelEditor/ViewportModel.h>
+#include <ViewModel/ModelEditor/Scene/SceneTreeModel.h>
+#include <ViewModel/ModelEditor/Stats/StatsPageModel.h>
+#include <ViewModel/ModelEditor/Viewport/ViewportModel.h>
 
 #include <utility>
 

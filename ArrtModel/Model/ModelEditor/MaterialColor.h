@@ -1,6 +1,6 @@
 #pragma once
 #include <Model/IncludesAzureRemoteRendering.h>
-#include <ViewModel/ModelEditor/MaterialModel.h>
+#include <ViewModel/ModelEditor/MaterialEditor/MaterialModel.h>
 
 class ArrSessionManager;
 

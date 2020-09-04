@@ -10,7 +10,7 @@
 #include <QDebug>
 #include <QDesktopServices>
 #include <QUrl>
-#include <ViewModel/ModelEditor/ViewportModel.h>
+#include <ViewModel/ModelEditor/Viewport/ViewportModel.h>
 #include <ctime>
 #include <memory>
 

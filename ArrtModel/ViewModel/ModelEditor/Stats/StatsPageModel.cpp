@@ -1,5 +1,5 @@
 #include <Model/ArrSessionManager.h>
-#include <ViewModel/ModelEditor/StatsPageModel.h>
+#include <ViewModel/ModelEditor/Stats/StatsPageModel.h>
 
 StatsPageModel::PlotInfo StatsPageModel::m_plotInfo[] = {
     {"Polygons rendered", PlotInfo::Line, PlotInfo::Continuous, Qt::white, "", true, 0, {}},

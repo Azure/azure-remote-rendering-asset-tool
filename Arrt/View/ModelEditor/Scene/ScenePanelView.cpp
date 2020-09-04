@@ -1,6 +1,6 @@
 #include <QHBoxLayout>
 #include <QTreeView>
-#include <View/ModelEditor/ScenePanelView.h>
+#include <View/ModelEditor/Scene/ScenePanelView.h>
 #include <ViewModel/ModelEditor/ModelEditorModel.h>
 
 ScenePanelView::ScenePanelView(ModelEditorModel* model, QWidget* parent /* = nullptr */)

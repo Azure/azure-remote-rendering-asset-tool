@@ -5,8 +5,8 @@
 #include <QTransform>
 #include <QVBoxLayout>
 #include <QtMath>
-#include <View/ModelEditor/StatsPageView.h>
-#include <ViewModel/ModelEditor/StatsPageModel.h>
+#include <View/ModelEditor/Stats/StatsPageView.h>
+#include <ViewModel/ModelEditor/Stats/StatsPageModel.h>
 #include <ViewUtils/DpiUtils.h>
 #include <Widgets/FlatButton.h>
 #include <Widgets/VerticalScrollArea.h>

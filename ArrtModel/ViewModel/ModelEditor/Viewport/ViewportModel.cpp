@@ -1,4 +1,4 @@
-#include <ViewModel/ModelEditor/ViewportModel.h>
+#include <ViewModel/ModelEditor/Viewport/ViewportModel.h>
 
 #include <QMatrix4x4>
 #include <QtMath>

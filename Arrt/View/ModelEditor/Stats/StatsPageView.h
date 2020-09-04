@@ -1,6 +1,6 @@
 #pragma once
 #include <QWidget>
-#include <ViewModel/ModelEditor/StatsPageModel.h>
+#include <ViewModel/ModelEditor/Stats/StatsPageModel.h>
 
 class StatsPageModel;
 class QLabel;
