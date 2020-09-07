@@ -62,6 +62,7 @@ public:
     static const QFont s_mainButtonFont;
     static const QFont s_toolbarFont;
     static const QFont s_graphFont;
+    static const QFont s_splitterHandleFont;
 
     static QIcon s_expandedIcon;
     static QIcon s_notexpandedIcon;
@@ -107,6 +108,13 @@ public:
     static QIcon s_refreshIcon;
     static QIcon s_backIcon;
     static QIcon s_moreActionsIcon;
+    static QIcon s_arrowUpIcon;
+    static QIcon s_arrowDownIcon;
+    static QIcon s_arrowLeftIcon;
+    static QIcon s_arrowRightIcon;
+    static QIcon s_sceneIcon;
+    static QIcon s_materialsIcon;
+    static QIcon s_statsIcon;
 
 
     virtual void polish(QPalette& pal) override;

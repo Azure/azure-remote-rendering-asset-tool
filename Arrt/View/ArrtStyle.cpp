@@ -97,6 +97,7 @@ const QFont ArrtStyle::s_notificationFont = QFont("Segoe UI", 8);
 const QFont ArrtStyle::s_mainButtonFont = QFont("Segoe UI", 20);
 const QFont ArrtStyle::s_toolbarFont = QFont("Segoe UI", 14);
 const QFont ArrtStyle::s_graphFont = QFont("Segoe UI", 8);
+const QFont ArrtStyle::s_splitterHandleFont = QFont("Segoe UI", 11, 60);
 
 int ArrtStyle::s_focusedControlBorderWidth;
 
@@ -144,6 +145,13 @@ QIcon ArrtStyle::s_conversion_failedIcon;
 QIcon ArrtStyle::s_refreshIcon;
 QIcon ArrtStyle::s_backIcon;
 QIcon ArrtStyle::s_moreActionsIcon;
+QIcon ArrtStyle::s_arrowUpIcon;
+QIcon ArrtStyle::s_arrowDownIcon;
+QIcon ArrtStyle::s_arrowLeftIcon;
+QIcon ArrtStyle::s_arrowRightIcon;
+QIcon ArrtStyle::s_sceneIcon;
+QIcon ArrtStyle::s_materialsIcon;
+QIcon ArrtStyle::s_statsIcon;
 
 ArrtStyle::ArrtStyle()
     : QProxyStyle("Fusion")
@@ -288,6 +296,13 @@ void ArrtStyle::polish(QApplication* app)
     s_refreshIcon = QIcon(":/ArrtApplication/Icons/refresh.svg");
     s_backIcon = QIcon(":/ArrtApplication/Icons/back.svg");
     s_moreActionsIcon = QIcon(":/ArrtApplication/Icons/more_actions.svg");
+    s_arrowUpIcon = QIcon(":/ArrtApplication/Icons/arrow_up.svg");
+    s_arrowDownIcon = QIcon(":/ArrtApplication/Icons/arrow_down.svg");
+    s_arrowLeftIcon = QIcon(":/ArrtApplication/Icons/arrow_left.svg");
+    s_arrowRightIcon = QIcon(":/ArrtApplication/Icons/arrow_right.svg");
+    s_sceneIcon = QIcon(":/ArrtApplication/Icons/scene.svg");
+    s_materialsIcon = QIcon(":/ArrtApplication/Icons/materials.svg");
+    s_statsIcon = QIcon(":/ArrtApplication/Icons/stats.svg");
 
     FocusableContainer::installFocusListener(app);
 }

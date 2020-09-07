@@ -4,7 +4,7 @@
 #include <QObject>
 #include <Utils/Accumulators.h>
 
-// service statistics object, collecting and analyzing per-frame stats in an ARR session 
+// service statistics object, collecting and analyzing per-frame stats in an ARR session
 
 class ArrServiceStats : public QObject
 {
