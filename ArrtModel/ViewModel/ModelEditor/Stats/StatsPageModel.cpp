@@ -10,9 +10,10 @@ StatsPageModel::PlotInfo StatsPageModel::m_plotInfo[] = {
 
     {"Time since last present", Qt::white, " ms", true, 0, {}},
 
+    {"Frames received", Qt::green, "", true, 0, {}},
+
     {"Frames reused", Qt::cyan, "", false, 0, {}},
     {"Frames skipped", Qt::yellow, "", false, 0, {}},
-    {"Frames received", Qt::green, "", false, 0, {}},
     {"Frames discarded", Qt::red, "", true, 0, {}},
 
     {"Frame minimum delta", Qt::yellow, QString(" ms"), false, 0, {}},
@@ -78,11 +79,11 @@ double StatsPageModel::getParameter(int index) const
         case 4:
             return m_stats.m_timeSinceLastPresent.m_perWindowStats.m_value;
         case 5:
-            return m_stats.m_videoFramesReused.m_perWindowStats.m_value;
-        case 6:
-            return m_stats.m_videoFramesSkipped.m_perWindowStats.m_value;
-        case 7:
             return m_stats.m_videoFramesReceived.m_perWindowStats.m_value;
+        case 6:
+            return m_stats.m_videoFramesReused.m_perWindowStats.m_value;
+        case 7:
+            return m_stats.m_videoFramesSkipped.m_perWindowStats.m_value;
         case 8:
             return m_stats.m_videoFramesDiscarded.m_perWindowStats.m_value;
         case 9:
@@ -128,11 +129,11 @@ void StatsPageModel::getGraphData(int index, bool perWindow, std::vector<QPointF
         case 4:
             GRAPH_DATA(m_timeSinceLastPresent);
         case 5:
-            GRAPH_DATA(m_videoFramesReused);
-        case 6:
-            GRAPH_DATA(m_videoFramesSkipped);
-        case 7:
             GRAPH_DATA(m_videoFramesReceived);
+        case 6:
+            GRAPH_DATA(m_videoFramesReused);
+        case 7:
+            GRAPH_DATA(m_videoFramesSkipped);
         case 8:
             GRAPH_DATA(m_videoFramesDiscarded);
         case 9:
