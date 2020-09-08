@@ -51,7 +51,7 @@
         <file>Icons/arrow_right.svg</file>
         <file>Icons/arrow_up.svg</file>
         <file>Icons/materials.svg</file>
-        <file>Icons/scene.svg</file>
         <file>Icons/stats.svg</file>
+        <file>Icons/scene.svg</file>
     </qresource>
 </RCC>
