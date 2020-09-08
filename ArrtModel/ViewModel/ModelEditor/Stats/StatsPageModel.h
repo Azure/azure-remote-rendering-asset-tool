@@ -15,7 +15,7 @@ public:
     struct PlotInfo
     {
         QString m_name;
-        
+
         // plot color
         QColor m_color;
 
