@@ -1,5 +1,7 @@
+#include <QComboBox>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <View/ArrtStyle.h>
 #include <View/ModelEditor/Stats/ParameterWidget.h>
 #include <View/ModelEditor/Stats/ParametersWidget.h>
 #include <View/ModelEditor/Stats/StatsPageView.h>
@@ -21,8 +23,10 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
     auto* showButton = new FlatButton({}, this);
     buttonsLayout->addWidget(showButton);
 
-    auto* perSecond = new FlatButton(tr("Per second stats"), this);
-    buttonsLayout->addWidget(perSecond);
+    auto* timeAxis = new QComboBox(this);
+
+    buttonsLayout->addStretch(1);
+    buttonsLayout->addWidget(timeAxis);
 
     mainLayout->addLayout(buttonsLayout);
 
@@ -77,11 +81,13 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
         if (checked)
         {
             m_model->startCollecting();
+            showButton->setIcon(ArrtStyle::s_stopIcon, true);
             showButton->setText(tr("Stop statistics collection"));
         }
         else
         {
             m_model->stopCollecting();
+            showButton->setIcon(ArrtStyle::s_startIcon, true);
             showButton->setText(tr("Start statistics collection"));
         }
     };
@@ -97,10 +103,12 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
         }
         updateUi();
     };
-    perSecond->setCheckable(true);
-    perSecond->setChecked(false);
-    connect(perSecond, &FlatButton::toggled, this, togglePerSecond);
-    togglePerSecond(false);
+    timeAxis->addItem(tr("Show stats per frame"));
+    timeAxis->addItem(tr("Show stats per second"));
+    connect(timeAxis, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, [togglePerSecond](int index) {
+        togglePerSecond(index == 1);
+    });
+    timeAxis->setCurrentIndex(0);
 
     setSelectedGraph(0);
 }
