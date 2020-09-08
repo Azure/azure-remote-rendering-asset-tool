@@ -17,6 +17,7 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
 
     auto* mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(QMargins());
+    mainLayout->setSpacing(0);
 
     auto* buttonsLayout = new QHBoxLayout();
 
@@ -32,7 +33,8 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
 
     auto* statsPanel = new VerticalScrollArea(this);
 
-    mainLayout->addWidget(ParameterWidget::createHeader(this));
+    auto* header = ParameterWidget::createHeader(this);
+    mainLayout->addWidget(header);
 
     {
         auto* separator = new QFrame(this);

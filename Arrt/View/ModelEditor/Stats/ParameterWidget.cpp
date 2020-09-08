@@ -99,5 +99,8 @@ QWidget* ParameterWidget::createHeader(QWidget* parent)
         headerLayout->addWidget(newValueLabel(tr("Maximum"), header), 0);
         headerLayout->addWidget(newValueLabel(tr("Average"), header), 0);
     }
+    QMargins m = header->contentsMargins();
+    m.setBottom(0);
+    header->setContentsMargins(m);
     return header;
 }

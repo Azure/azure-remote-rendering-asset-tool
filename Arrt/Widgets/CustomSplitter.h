@@ -7,22 +7,22 @@ class CustomHandle;
 class CustomSplitter : public QSplitter
 {
 public:
-	CustomSplitter(Qt::Orientation orientation, QWidget* parent);
+    CustomSplitter(Qt::Orientation orientation, QWidget* parent);
 
-	// set the panel name/icon for a widget and makes the widget collapsible
-	void setCollapsedLabelForWidget(int widgetIndex, QString panelName, QIcon icon);
+    // set the panel name/icon for a widget and makes the widget collapsible
+    void setCollapsedLabelForWidget(int widgetIndex, QString panelName, QIcon icon);
 
-	// programmatically collapse a widget
-	void setCollapsed(int widgetIndex, bool collapsed);
+    // programmatically collapse a widget
+    void setCollapsed(int widgetIndex, bool collapsed);
 
 protected:
-	virtual QSplitterHandle* createHandle() override;
-	virtual void showEvent(QShowEvent* event) override;
+    virtual QSplitterHandle* createHandle() override;
+    virtual void showEvent(QShowEvent* event) override;
 
 private:
-	// true when showEvent has been called
+    // true when showEvent has been called
     bool m_showing = false;
 
-	void updateCollapsedWidgets();
+    void updateCollapsedWidgets();
     CustomHandle* getHandle(int index);
 };

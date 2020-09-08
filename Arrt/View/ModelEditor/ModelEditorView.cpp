@@ -134,7 +134,6 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
             materialSplitter->addWidget(new FocusableContainer(materialListView, materialSplitter));
             materialSplitter->addWidget(materialEditorView);
             materialSplitter->setChildrenCollapsible(false);
-            materialSplitter->setMinimumWidth(DpiUtils::size(150));
             materialSplitter->setStretchFactor(0, 0);
             materialSplitter->setStretchFactor(1, 1);
             materialSplitter->setSizes({(int)DpiUtils::size(150), (int)DpiUtils::size(500)});

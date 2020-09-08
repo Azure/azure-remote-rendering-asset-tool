@@ -9,15 +9,16 @@ ParametersWidget::ParametersWidget(StatsPageModel* model, QWidget* parent)
     : m_model(model)
     , QWidget(parent)
 {
-    const int margins = DpiUtils::size(8);
     setFocusPolicy(Qt::StrongFocus);
     setAccessibleName(tr("Stats group"));
 
-    setContentsMargins(QMargins() + margins);
+    setContentsMargins({});
     auto* l = new QVBoxLayout(this);
+    l->setSpacing(0);
     auto* mainDataLayout = new QVBoxLayout();
 
     m_parametersLayout = new QVBoxLayout();
+    m_parametersLayout->setSpacing(0);
     mainDataLayout->addLayout(m_parametersLayout);
     mainDataLayout->addStretch(1);
 
@@ -48,7 +49,7 @@ void ParametersWidget::paintEvent(QPaintEvent* event)
         QStylePainter p(this);
         p.setPen(QPen(palette().highlight(), 2));
         p.setBrush(Qt::NoBrush);
-        p.drawRect(contentsRect());
+        p.drawRect(contentsRect().marginsRemoved(QMargins() + 1));
     }
 }
 
@@ -58,6 +59,7 @@ void ParametersWidget::setSelected(bool selected)
     {
         m_isSelected = selected;
         m_graph->setVisible(m_isSelected);
+
         for (auto&& w : m_parameters)
         {
             w->setLegendVisibility(m_isSelected);
