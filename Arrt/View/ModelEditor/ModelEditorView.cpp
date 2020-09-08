@@ -135,8 +135,9 @@ public:
 
         m_collapsed = false;
 
-        m_collapseButton = new FlatButton(tr("show/hide panel"), this);
-        m_collapseButton->setFixedSize(DpiUtils::size(15), DpiUtils::size(15));
+        m_collapseButton = new FlatButton("", this);
+        QSize buttonSize(DpiUtils::size(60), DpiUtils::size(15));
+        m_collapseButton->setFixedSize(orientation == Qt::Vertical ? buttonSize : buttonSize.transposed());
 
         QBoxLayout* l;
         if (orientation == Qt::Horizontal)
@@ -154,6 +155,8 @@ public:
         l->addStretch(1);
 
         updateButtons();
+
+        connect(m_collapseButton, &FlatButton::clicked, this, [this]() { setCollapsed(!m_collapsed); });
     }
 
     void setCollapsedLabel(WidgetLocation collapsibleWidgetLocation, QString name, QIcon icon)
@@ -169,12 +172,56 @@ public:
 
     void setCollapsed(bool collapsed)
     {
-        if (m_collapsed != collapsed)
+        if (m_collapsed == collapsed)
         {
-            m_collapsed = collapsed;
+            return;
+        }
+        const int widgetIdx = getCollapsibledWidgetIndex();
+        if (widgetIdx < 0)
+        {
+            return;
+        }
+
+        auto sizes = splitter()->sizes();
+        if (collapsed)
+        {
+            m_uncollapsedSize = sizes[widgetIdx];
+            sizes[widgetIdx] = 0;
+        }
+        else
+        {
+            if (m_uncollapsedSize == 0)
+            {
+                QWidget* w = splitter()->widget(widgetIdx);
+                const QSize s = w->minimumSizeHint();
+                m_uncollapsedSize = orientation() == Qt::Horizontal ? s.width() : s.height();
+            }
+            sizes[widgetIdx] = m_uncollapsedSize;
+        }
+        splitter()->setSizes(sizes);
+        checkCollapsed();
+    }
+
+
+    void checkCollapsed()
+    {
+        if (m_collapsibleWidgetLocation == WidgetLocation::NotSet)
+        {
+            return;
+        }
+        const int widgetIdx = getCollapsibledWidgetIndex();
+        if (widgetIdx < 0)
+        {
+            return;
+        }
+        const auto sizes = splitter()->sizes();
+        const bool isCollapsed = sizes[widgetIdx] == 0;
+        if (m_collapsed != isCollapsed)
+        {
+            m_collapsed = isCollapsed;
             if (m_label)
             {
-                m_label->setVisible(collapsed);
+                m_label->setVisible(isCollapsed);
             }
             updateButtons();
         }
@@ -212,9 +259,47 @@ private:
     QString m_name;
     CollapsedPanelLabel* m_label = {};
 
+    int m_uncollapsedSize = 0;
+
     WidgetLocation m_collapsibleWidgetLocation = WidgetLocation::NotSet;
     FlatButton* m_collapseButton = {};
     bool m_collapsed = false;
+    mutable int m_thisHandleIndex = -1;
+
+    int getThisHandleIndex() const
+    {
+        if (m_thisHandleIndex < 0)
+        {
+            // find the index of this handle
+            for (m_thisHandleIndex = splitter()->count() - 1; m_thisHandleIndex >= 0; --m_thisHandleIndex)
+            {
+                if (splitter()->handle(m_thisHandleIndex) == this)
+                {
+                    break;
+                }
+            }
+        }
+        return m_thisHandleIndex;
+    }
+
+    int getCollapsibledWidgetIndex() const
+    {
+        if (m_collapsibleWidgetLocation == WidgetLocation::NotSet)
+        {
+            return -1;
+        }
+        const int idx = getThisHandleIndex();
+        if (idx < 0)
+        {
+            return -1;
+        }
+        const int widgetIdx = (m_collapsibleWidgetLocation == WidgetLocation::AfterHandle) ? idx : (idx - 1);
+        if (idx >= splitter()->count())
+        {
+            return -1;
+        }
+        return widgetIdx;
+    }
 
     void updateButtons()
     {
@@ -243,6 +328,8 @@ private:
                 }
                 m_collapseButton->setIcon(left ? ArrtStyle::s_arrowLeftIcon : ArrtStyle::s_arrowRightIcon);
             }
+
+            m_collapseButton->setText((m_collapsed ? tr("Show %1 panel") : tr("Hide %1 panel")).arg(m_name));
         }
     }
 };
@@ -273,6 +360,23 @@ public:
         updateCollapsedWidgets();
     }
 
+    void setCollapsed(int widgetIndex, bool collapsed)
+    {
+        if (widgetIndex == 0)
+        {
+            getHandle(widgetIndex + 1)->setCollapsed(collapsed);
+        }
+        else if (widgetIndex == count() - 1)
+        {
+            getHandle(widgetIndex)->setCollapsed(collapsed);
+        }
+    }
+
+    CustomHandle* getHandle(int index)
+    {
+        return static_cast<CustomHandle*>(handle(index));
+    }
+
 protected:
     virtual QSplitterHandle* createHandle()
     {
@@ -282,34 +386,23 @@ protected:
     virtual void showEvent(QShowEvent* event)
     {
         QSplitter::showEvent(event);
+        m_showing = true;
         updateCollapsedWidgets();
     }
 
 private:
     void updateCollapsedWidgets()
     {
-        QList<int> widgetSizes = this->sizes();
-
-        for (int i = 0; i < count(); ++i)
+        if (m_showing)
         {
-            const bool widgetCollapsed = widgetSizes[i] == 0;
+            for (int i = 0; i < count(); ++i)
             {
-                auto* h = static_cast<CustomHandle*>(handle(i));
-                if (h->getCollapsibleWidgetLocation() == CustomHandle::WidgetLocation::AfterHandle)
-                {
-                    h->setCollapsed(widgetCollapsed);
-                }
-            }
-            if (i < count() - 1)
-            {
-                auto* h = static_cast<CustomHandle*>(handle(i + 1));
-                if (h->getCollapsibleWidgetLocation() == CustomHandle::WidgetLocation::BeforeHandle)
-                {
-                    h->setCollapsed(widgetCollapsed);
-                }
+                static_cast<CustomHandle*>(handle(i))->checkCollapsed();
             }
         }
     }
+
+    bool m_showing = false;
 };
 
 
@@ -344,6 +437,7 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
 
         {
             auto scenePanel = new ScenePanelView(modelEditorModel, splitter);
+            scenePanel->setMinimumWidth(DpiUtils::size(300));
             splitter->addWidget(new FocusableContainer(scenePanel, splitter));
         }
 
@@ -362,20 +456,21 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
                 viewportLayout->addWidget(container);
             }
 
-            StatsPageView* statsPanel;
-            {
-                statsPanel = new StatsPageView(m_model->getStatsPageModel(), viewportSplitter);
-            }
+            StatsPageView* statsPanel = new StatsPageView(m_model->getStatsPageModel(), viewportSplitter);
+            statsPanel->setMinimumHeight(DpiUtils::size(300));
 
             viewportSplitter->addWidget(viewportContainer);
             viewportSplitter->addWidget(statsPanel);
+
             viewportSplitter->setCollapsible(0, false);
             viewportSplitter->setCollapsible(1, true);
             viewportSplitter->setStretchFactor(0, 1);
             viewportSplitter->setStretchFactor(1, 0);
-            viewportSplitter->setSizes({(int)DpiUtils::size(800), 0});
+            viewportSplitter->setSizes({(int)DpiUtils::size(800), (int)DpiUtils::size(400)});
 
             viewportSplitter->setCollapsedLabelForWidget(1, tr("Statistics"), ArrtStyle::s_statsIcon);
+            viewportSplitter->setCollapsed(1, true);
+
             splitter->addWidget(viewportSplitter);
         }
 
@@ -388,19 +483,24 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
             materialSplitter->addWidget(materialEditorView);
             materialSplitter->setChildrenCollapsible(false);
             materialSplitter->setMinimumWidth(DpiUtils::size(150));
-            materialSplitter->setSizes({(int)DpiUtils::size(300), (int)DpiUtils::size(500)});
             materialSplitter->setStretchFactor(0, 0);
             materialSplitter->setStretchFactor(1, 1);
+            materialSplitter->setSizes({(int)DpiUtils::size(150), (int)DpiUtils::size(500)});
+            materialSplitter->setMinimumWidth(DpiUtils::size(300));
 
             splitter->addWidget(materialSplitter);
         }
-        splitter->setCollapsedLabelForWidget(0, tr("Scene entities"), ArrtStyle::s_sceneIcon);
-        splitter->setCollapsedLabelForWidget(2, tr("Materials"), ArrtStyle::s_materialsIcon);
 
         splitter->setStretchFactor(0, 0);
         splitter->setStretchFactor(1, 1);
         splitter->setStretchFactor(2, 0);
+
+        splitter->setCollapsible(1, false);
+
+        splitter->setCollapsedLabelForWidget(0, tr("Scene entities"), ArrtStyle::s_sceneIcon);
+        splitter->setCollapsedLabelForWidget(2, tr("Materials"), ArrtStyle::s_materialsIcon);
         splitter->setSizes({(int)DpiUtils::size(300), (int)DpiUtils::size(800), (int)DpiUtils::size(300)});
+        splitter->setCollapsed(0, true);
     }
 
     l->addWidget(splitter, 1);
