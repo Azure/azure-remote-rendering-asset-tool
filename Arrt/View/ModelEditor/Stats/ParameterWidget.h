@@ -1,7 +1,7 @@
 #pragma once
 #include <QWidget>
 
-class QLabel;
+class ReadOnlyText;
 
 // Row in a ParametersWidget, with stats for a single parameter
 
@@ -16,9 +16,9 @@ public:
 
 private:
     QWidget* m_legend;
-    QLabel* m_valueLabel;
-    QLabel* m_minLabel;
-    QLabel* m_maxLabel;
-    QLabel* m_averageLabel;
+    ReadOnlyText* m_valueLabel;
+    ReadOnlyText* m_minLabel;
+    ReadOnlyText* m_maxLabel;
+    ReadOnlyText* m_averageLabel;
     QString m_unit;
 };

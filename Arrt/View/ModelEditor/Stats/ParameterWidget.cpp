@@ -6,12 +6,13 @@
 #include <View/ModelEditor/Stats/StatsGraph.h>
 #include <ViewUtils/DpiUtils.h>
 #include <ViewUtils/Formatter.h>
+#include <Widgets/ReadOnlyText.h>
 
 namespace
 {
-    QLabel* newValueLabel(QString text = "", QWidget* parent = {})
+    ReadOnlyText* newValueLabel(QString text = "", QWidget* parent = {})
     {
-        QLabel* ret = new QLabel(text, parent);
+        auto* ret = new ReadOnlyText(text, parent);
         ret->setMinimumWidth(DpiUtils::size(100));
         ret->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
         return ret;
@@ -57,15 +58,19 @@ ParameterWidget::ParameterWidget(QString name, QString unit, QColor color, QWidg
     bl->addWidget(label, 1);
 
     m_valueLabel = newValueLabel("", this);
+    m_valueLabel->setAccessibleName(name + " " + tr("value"));
     bl->addWidget(m_valueLabel);
 
     m_minLabel = newValueLabel("", this);
+    m_minLabel->setAccessibleName(name + " " + tr("minimum"));
     bl->addWidget(m_minLabel, 0);
 
     m_maxLabel = newValueLabel("", this);
+    m_maxLabel->setAccessibleName(name + " " + tr("maximum"));
     bl->addWidget(m_maxLabel, 0);
 
     m_averageLabel = newValueLabel("", this);
+    m_averageLabel->setAccessibleName(name + " " + tr("average"));
     bl->addWidget(m_averageLabel, 0);
 }
 

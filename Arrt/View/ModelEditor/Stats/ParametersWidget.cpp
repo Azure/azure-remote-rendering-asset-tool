@@ -11,6 +11,7 @@ ParametersWidget::ParametersWidget(StatsPageModel* model, QWidget* parent)
 {
     const int margins = DpiUtils::size(8);
     setFocusPolicy(Qt::StrongFocus);
+    setAccessibleName(tr("Stats group"));
 
     setContentsMargins(QMargins() + margins);
     auto* l = new QVBoxLayout(this);

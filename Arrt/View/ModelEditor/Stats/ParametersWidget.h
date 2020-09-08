@@ -19,8 +19,6 @@ public:
     void setGraphPerWindow(bool perWindow);
     void setSelected(bool selected);
 
-    static QWidget* createHeader(QWidget* parent);
-
 Q_SIGNALS:
     void onFocus(bool focused);
 
