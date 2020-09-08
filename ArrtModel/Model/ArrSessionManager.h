@@ -182,7 +182,6 @@ private:
     bool m_extendAutomatically;
 
     QTimer* m_updateTimer = nullptr;
-    QTimer* m_clientUpdateTimer = nullptr;
 
     RR::ApiHandle<RR::LoadModelResult> m_loadedModel = nullptr;
 

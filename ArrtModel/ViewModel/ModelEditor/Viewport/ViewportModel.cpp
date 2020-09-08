@@ -87,6 +87,7 @@ ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* camer
     });
 
     initializeD3D();
+    setModelAutoRotation(true);
 }
 
 ViewportModel::~ViewportModel()
@@ -396,6 +397,19 @@ void ViewportModel::stepCamera()
         timeDelta = float(double(m_timeFromLastUpdate.restart()) / 1000.0);
     }
 
+    if (m_modelAutoRotation)
+    {
+        m_autoRotationAngle += float(m_videoSettings->getRefreshRate()) / 30.0f;
+        QVector3D center = (m_modelBbMin + m_modelBbMax) / 2.0;
+
+        RR::ApiHandle<RR::Entity> root = getRoot();
+        if (root)
+        {
+            QVector4D v = QQuaternion::fromEulerAngles(10.0f + qSin(m_autoRotationAngle / 100) * 30.0, m_autoRotationAngle, 0).inverted().toVector4D();
+            root->Rotation({v.x(), v.y(), v.z(), v.w()});
+        }
+    }
+
     // only step if the time delta is 0 < d < 1s
     if (timeDelta > 0 && timeDelta < 1.0f)
     {
@@ -478,6 +492,19 @@ void ViewportModel::setSelectionModel(EntitySelection* selectionModel)
     }
 }
 
+void ViewportModel::setModelAutoRotation(bool autoRotation)
+{
+    if (m_modelAutoRotation != autoRotation)
+    {
+        m_modelAutoRotation = autoRotation;
+        if (m_modelAutoRotation)
+        {
+            m_autoRotationAngle = 0.0;
+        }
+    }
+}
+
+
 void ViewportModel::update()
 {
     if (auto&& binding = getBinding())
@@ -486,8 +513,10 @@ void ViewportModel::update()
         m_simUpdate.frameId++;
 
         QMatrix4x4 m;
+
         m.rotate(m_cameraRotation.inverted());
         m.translate(-m_cameraPosition);
+        QVector3D center = (m_modelBbMin + m_modelBbMax) / 2.0;
 
         convertMatrix(m_simUpdate.viewTransform, m);
         bool success = false;
@@ -498,8 +527,6 @@ void ViewportModel::update()
         }
 
         binding->Update(m_simUpdate, &outputUpdate);
-        float np = outputUpdate.nearPlaneDistance;
-        np = np;
     }
 }
 

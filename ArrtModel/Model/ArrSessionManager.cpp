@@ -27,8 +27,6 @@ namespace
     const std::chrono::milliseconds s_updateTime = 10s;
     // interval to check the status (elapsed time, connection status etc) when the session is connected
     const std::chrono::milliseconds s_updateTimeWhenConnected = 30s;
-    // interval to call the update function in the remote rendering client. See Microsoft::Azure::RemoteRendering::Internal::RemoteRenderingClient::Update()
-    const std::chrono::milliseconds s_updateClientTime = 100ms;
     // timeout for connecting to the azure session, once it's ready
     const std::chrono::milliseconds s_connectionTimeout = 10s;
 
@@ -141,15 +139,6 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
     m_updateTimer->setInterval(s_updateTime);
     connect(m_updateTimer, &QTimer::timeout, this, [this]() { updateStatus(); });
 
-    m_clientUpdateTimer = new QTimer(this);
-    m_clientUpdateTimer->setInterval(s_updateClientTime);
-    connect(m_clientUpdateTimer, &QTimer::timeout, this, [this]() {
-        if (m_api)
-        {
-            m_api->Update();
-        }
-    });
-
     connect(m_configuration->getVideoSettings(), &VideoSettings::changed, this, [this]() {
         m_waitForVideoFormatChange = false;
     });
@@ -174,6 +163,13 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
     {
         qFatal("Viewport couldn't be initialized");
     }
+
+    connect(m_viewportModel, &ViewportModel::onRefresh, this, [this]() {
+        if (m_api)
+        {
+            m_api->Update();
+        }
+    });
 
     m_serviceStats = new ArrServiceStats(this);
     connect(m_viewportModel, &ViewportModel::onRefresh, this,
@@ -645,9 +641,7 @@ void ArrSessionManager::onStatusUpdated()
     {
         if (m_reconnecting)
         {
-            m_clientUpdateTimer->stop();
             m_viewportModel->setSession(RR::ApiHandle<RR::AzureSession>());
-            m_clientUpdateTimer->start();
             m_reconnecting = false;
         }
         connectToSessionRuntime();
@@ -769,17 +763,14 @@ void ArrSessionManager::updateTimers()
         {
             case STOPPED:
                 m_updateTimer->stop();
-                m_clientUpdateTimer->stop();
                 break;
             case FAST_UPDATE:
                 m_updateTimer->setInterval(s_updateTime);
                 m_updateTimer->start();
-                m_clientUpdateTimer->start();
                 break;
             case SLOW_UPDATE:
                 m_updateTimer->setInterval(s_updateTimeWhenConnected);
                 m_updateTimer->start();
-                m_clientUpdateTimer->start();
                 break;
         }
     }

@@ -110,6 +110,8 @@ public:
 
     bool isEnabled() const { return m_desktopSimCreated; }
 
+    void setModelAutoRotation(bool autoRotation);
+
 Q_SIGNALS:
     void onRefresh();
     void videoResolutionChanged();
@@ -185,6 +187,9 @@ private:
 
     // cached value for the clipping sphere
     float m_clippingSphereRadius = 0;
+
+    bool m_modelAutoRotation = false;
+    float m_autoRotationAngle = 0.0;
 
     void update();
     void initializeClient();
