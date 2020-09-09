@@ -12,7 +12,7 @@
 
 namespace
 {
-    static const int s_sasReadDurationInMinutes = 30;
+    static const int s_sasReadDurationInMinutes = 60;
 }
 
 ModelsPageModel::ModelsPageModel(AzureStorageManager* storageManager, ArrSessionManager* sessionManager, Configuration* configuration, QObject* parent)
