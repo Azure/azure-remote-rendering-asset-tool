@@ -1,6 +1,8 @@
 #include <Model/ArrSessionManager.h>
 #include <ViewModel/ModelEditor/Stats/StatsPageModel.h>
 
+using namespace std::literals;
+
 StatsPageModel::PlotInfo StatsPageModel::m_plotInfo[] = {
     {"Polygons rendered", Qt::white, "", true, 0, {}},
 
@@ -31,26 +33,78 @@ StatsPageModel::PlotInfo StatsPageModel::m_plotInfo[] = {
     {"Memory GPU", Qt::magenta, QString(" %"), true, 0, 100}};
 
 
-StatsPageModel::StatsPageModel(ArrServiceStats* serviceStats, QObject* parent)
+StatsPageModel::StatsPageModel(ArrServiceStats* serviceStats, ArrSessionManager* sessionManager, QObject* parent)
     : QObject(parent)
     , m_serviceStats(serviceStats)
+    , m_sessionManager(sessionManager)
 {
-    m_serviceStats->startCollecting();
     connect(m_serviceStats, &ArrServiceStats::updated, this,
             [this]() {
                 m_stats = m_serviceStats->getStats();
                 Q_EMIT valuesChanged();
             });
+
+    m_autoCollectUpdateTimer = new QTimer(this);
+    connect(m_autoCollectUpdateTimer, &QTimer::timeout, [this]() {
+        --m_autoCollectRemainingSeconds;
+        if (m_autoCollectRemainingSeconds == 0)
+        {
+            stopCollecting();
+        }
+        Q_EMIT autoCollectStateChanged();
+    });
 }
 
 void StatsPageModel::startCollecting()
 {
     m_serviceStats->startCollecting();
+    Q_EMIT collectingStateChanged();
 }
 
 void StatsPageModel::stopCollecting()
 {
     m_serviceStats->stopCollecting();
+    m_autoCollectUpdateTimer->stop();
+    m_autoCollectRemainingSeconds = 0;
+    Q_EMIT collectingStateChanged();
+    Q_EMIT autoCollectStateChanged();
+}
+
+bool StatsPageModel::isCollecting() const
+{
+    return m_serviceStats->isCollecting();
+}
+
+void StatsPageModel::startAutoCollect()
+{
+    m_autoCollectRemainingSeconds = 15;
+    m_autoCollectUpdateTimer->start(1s);
+    m_sessionManager->setAutoRotateRoot(true);
+    startCollecting();
+    Q_EMIT autoCollectStateChanged();
+}
+
+void StatsPageModel::stopAutoCollect()
+{
+    m_sessionManager->setAutoRotateRoot(false);
+    stopCollecting();
+}
+
+bool StatsPageModel::isAutoCollecting() const
+{
+    return m_autoCollectUpdateTimer->isActive();
+}
+
+QString StatsPageModel::getAutoCollectText() const
+{
+    if (!isAutoCollecting())
+    {
+        return tr("Start auto-collecting");
+    }
+    else
+    {
+        return tr("Collecting: remaining %1 seconds").arg(m_autoCollectRemainingSeconds);
+    }
 }
 
 int StatsPageModel::getParameterCount() const

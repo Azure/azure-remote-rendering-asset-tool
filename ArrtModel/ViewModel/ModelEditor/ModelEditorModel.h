@@ -40,9 +40,13 @@ public:
 
     bool isEnabled() const;
 
+    bool getAutoRotateRoot() const;
+    void setAutoRotateRoot(bool autoRotateRoot);
+
 Q_SIGNALS:
     void onEnabledChanged();
     void loadedModelChanged();
+    void autoRotateRootChanged();
 
 private:
     ArrSessionManager* const m_sessionManager;

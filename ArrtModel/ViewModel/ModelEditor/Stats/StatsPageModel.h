@@ -4,6 +4,7 @@
 #include <QColor>
 #include <optional>
 
+class ArrSessionManager;
 
 // model for the stats panel, holding the statistics per frame and per second
 
@@ -29,10 +30,16 @@ public:
         std::optional<double> m_maxValue;
     };
 
-    StatsPageModel(ArrServiceStats* serviceStats, QObject* parent = nullptr);
+    StatsPageModel(ArrServiceStats* serviceStats, ArrSessionManager* sessionManager, QObject* parent = nullptr);
 
     void startCollecting();
     void stopCollecting();
+    bool isCollecting() const;
+
+    void startAutoCollect();
+    void stopAutoCollect();
+    bool isAutoCollecting() const;
+    QString getAutoCollectText() const;
 
     int getParameterCount() const;
     const PlotInfo& getPlotInfo(int index) const;
@@ -42,9 +49,14 @@ public:
 
 Q_SIGNALS:
     void valuesChanged();
+    void collectingStateChanged();
+    void autoCollectStateChanged();
 
 private:
     ArrServiceStats* const m_serviceStats;
+    ArrSessionManager* const m_sessionManager;
     ArrServiceStats::Stats m_stats;
     static PlotInfo m_plotInfo[];
+    QTimer* m_autoCollectUpdateTimer = {};
+    int m_autoCollectRemainingSeconds = 0;
 };

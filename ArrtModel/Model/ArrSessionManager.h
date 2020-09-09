@@ -129,6 +129,9 @@ public:
     // return the current session
     RR::ApiHandle<RR::AzureSession> getCurrentSession() const;
 
+    bool getAutoRotateRoot() const;
+    void setAutoRotateRoot(bool autoRotateRoot);
+
 Q_SIGNALS:
     void onEnabledChanged();
     void changed();
@@ -138,6 +141,7 @@ Q_SIGNALS:
 
     void sessionAboutToChange();
     void sessionChanged();
+    void autoRotateRootChanged();
 
 private:
     static SessionStatus::Status convertStatus(RR::RenderingSessionStatus status);
@@ -207,4 +211,6 @@ private:
     bool m_reconnecting = false;
     bool m_waitForVideoFormatChange = false;
     RR::Result m_lastError = RR::Result::Success;
+
+    bool m_autoRotateRoot = false;
 };

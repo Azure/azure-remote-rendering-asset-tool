@@ -110,8 +110,6 @@ public:
 
     bool isEnabled() const { return m_desktopSimCreated; }
 
-    void setModelAutoRotation(bool autoRotation);
-
 Q_SIGNALS:
     void onRefresh();
     void videoResolutionChanged();
@@ -190,6 +188,7 @@ private:
 
     bool m_modelAutoRotation = false;
     float m_autoRotationAngle = 0.0;
+    RR::Quaternion m_originalRotation;
 
     void update();
     void initializeClient();

@@ -21,8 +21,11 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
 
     auto* buttonsLayout = new QHBoxLayout();
 
-    auto* showButton = new FlatButton({}, this);
-    buttonsLayout->addWidget(showButton);
+    auto* startStopButton = new FlatButton({}, this);
+    buttonsLayout->addWidget(startStopButton);
+
+    auto* autoCollectButton = new FlatButton({}, this);
+    buttonsLayout->addWidget(autoCollectButton);
 
     auto* timeAxis = new QComboBox(this);
 
@@ -77,41 +80,76 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
 
     mainLayout->addWidget(statsPanel);
 
+    {
+        auto toggleCollection = [this, startStopButton, statsPanel](bool checked) {
+            if (checked)
+            {
+                m_model->startCollecting();
+            }
+            else
+            {
+                m_model->stopCollecting();
+            }
+        };
+        startStopButton->setCheckable(true);
+        connect(startStopButton, &FlatButton::toggled, this, toggleCollection);
 
-    mainLayout->addWidget(statsPanel);
-    auto toggleCollection = [this, showButton, statsPanel](bool checked) {
-        if (checked)
-        {
-            m_model->startCollecting();
-            showButton->setIcon(ArrtStyle::s_stopIcon, true);
-            showButton->setText(tr("Stop statistics collection"));
-        }
-        else
-        {
-            m_model->stopCollecting();
-            showButton->setIcon(ArrtStyle::s_startIcon, true);
-            showButton->setText(tr("Start statistics collection"));
-        }
-    };
-    showButton->setCheckable(true);
-    showButton->setChecked(false);
-    connect(showButton, &FlatButton::toggled, this, toggleCollection);
-    toggleCollection(false);
+        auto updateCollectingState = [this, startStopButton] {
+            if (m_model->isCollecting())
+            {
+                startStopButton->setChecked(true);
+                startStopButton->setIcon(ArrtStyle::s_stopIcon, true);
+                startStopButton->setText(tr("Stop statistics collection"));
+            }
+            else
+            {
+                startStopButton->setChecked(false);
+                startStopButton->setIcon(ArrtStyle::s_startIcon, true);
+                startStopButton->setText(tr("Start statistics collection"));
+            }
+        };
+        connect(m_model, &StatsPageModel::collectingStateChanged, this, updateCollectingState);
+        updateCollectingState();
+    }
 
-    auto togglePerSecond = [this, statsPanel](bool checked) {
-        for (auto&& graph : m_graphs)
-        {
-            graph->setGraphPerWindow(checked);
-        }
-        updateUi();
-    };
-    timeAxis->addItem(tr("Show stats per frame"));
-    timeAxis->addItem(tr("Show stats per second"));
-    connect(timeAxis, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, [togglePerSecond](int index) {
-        togglePerSecond(index == 1);
-    });
-    timeAxis->setCurrentIndex(0);
+    {
+        autoCollectButton->setCheckable(true);
+        connect(autoCollectButton, &FlatButton::toggled, this, [autoCollectButton, this](bool checked) {
+            if (checked)
+            {
+                m_model->startAutoCollect();
+            }
+            else
+            {
+                m_model->stopAutoCollect();
+            }
+        });
 
+        auto updateAutoCollectState = [autoCollectButton, this] {
+            autoCollectButton->setChecked(m_model->isAutoCollecting());
+            autoCollectButton->setText(m_model->getAutoCollectText());
+            autoCollectButton->setIcon(m_model->isAutoCollecting() ? ArrtStyle::s_stopIcon : ArrtStyle::s_startIcon, true);
+        };
+
+        connect(m_model, &StatsPageModel::autoCollectStateChanged, this, updateAutoCollectState);
+        updateAutoCollectState();
+    }
+
+    {
+        auto togglePerSecond = [this, statsPanel](bool checked) {
+            for (auto&& graph : m_graphs)
+            {
+                graph->setGraphPerWindow(checked);
+            }
+            updateUi();
+        };
+        timeAxis->addItem(tr("Show stats per frame"));
+        timeAxis->addItem(tr("Show stats per second"));
+        connect(timeAxis, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, [togglePerSecond](int index) {
+            togglePerSecond(index == 1);
+        });
+        timeAxis->setCurrentIndex(0);
+    }
     setSelectedGraph(0);
 }
 

@@ -989,3 +989,17 @@ QString ArrSessionManager::getModelName() const
 {
     return m_modelName.mid(m_modelName.lastIndexOf(QChar('/')) + 1);
 }
+
+bool ArrSessionManager::getAutoRotateRoot() const
+{
+    return m_autoRotateRoot;
+}
+
+void ArrSessionManager::setAutoRotateRoot(bool autoRotateRoot)
+{
+    if (m_autoRotateRoot != autoRotateRoot)
+    {
+        m_autoRotateRoot = autoRotateRoot;
+        Q_EMIT autoRotateRootChanged();
+    }
+}

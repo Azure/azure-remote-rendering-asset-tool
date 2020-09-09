@@ -86,8 +86,19 @@ ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* camer
         }
     });
 
+    QObject::connect(m_sessionManager, &ArrSessionManager::autoRotateRootChanged, this, [this]() {
+        m_autoRotationAngle = 0.0;
+        if (!m_sessionManager->getAutoRotateRoot())
+        {
+            //reset root rotation
+            if (RR::ApiHandle<RR::Entity> root = getRoot())
+            {
+                root->Rotation(m_originalRotation);
+            }
+        }
+    });
+
     initializeD3D();
-    setModelAutoRotation(true);
 }
 
 ViewportModel::~ViewportModel()
@@ -397,7 +408,7 @@ void ViewportModel::stepCamera()
         timeDelta = float(double(m_timeFromLastUpdate.restart()) / 1000.0);
     }
 
-    if (m_modelAutoRotation)
+    if (m_sessionManager->getAutoRotateRoot())
     {
         m_autoRotationAngle += float(m_videoSettings->getRefreshRate()) / 30.0f;
         QVector3D center = (m_modelBbMin + m_modelBbMax) / 2.0;
@@ -489,18 +500,6 @@ void ViewportModel::setSelectionModel(EntitySelection* selectionModel)
                 [this](RR::ApiHandle<RR::Entity> entity) {
                     zoomOnEntity(entity);
                 });
-    }
-}
-
-void ViewportModel::setModelAutoRotation(bool autoRotation)
-{
-    if (m_modelAutoRotation != autoRotation)
-    {
-        m_modelAutoRotation = autoRotation;
-        if (m_modelAutoRotation)
-        {
-            m_autoRotationAngle = 0.0;
-        }
     }
 }
 
@@ -637,6 +636,7 @@ void ViewportModel::initAfterLoading(const QVector3D& minBB, const QVector3D& ma
     {
         RR::Float3 scale = *root->Scale();
         m_modelScale = QVector3D(scale.x, scale.y, scale.z);
+        m_originalRotation = *root->Rotation();
     }
     m_oldScale = 1.0;
 

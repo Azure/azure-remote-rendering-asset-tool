@@ -15,7 +15,7 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
     , m_selectedMaterial(nullptr)
 {
     m_sceneTreeModel = new SceneTreeModel(sessionManager, this);
-    m_statsPageModel = new StatsPageModel(sessionManager->getServiceStats(), this);
+    m_statsPageModel = new StatsPageModel(sessionManager->getServiceStats(), sessionManager, this);
 
     m_materialListModel = new MaterialFilteredListModel(this);
     auto* materialListModel = new MaterialListModel(sessionManager, m_materialListModel);
@@ -112,6 +112,10 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
     connect(m_sessionManager, &ArrSessionManager::onEnabledChanged, this, [this]() {
         Q_EMIT onEnabledChanged();
     });
+
+    connect(m_sessionManager, &ArrSessionManager::autoRotateRootChanged, this, [this]() {
+        Q_EMIT autoRotateRootChanged();
+    });
 }
 
 QAbstractItemModel* ModelEditorModel::getSceneTreeModel() const
@@ -206,4 +210,14 @@ QString ModelEditorModel::getLoadedModeName() const
 bool ModelEditorModel::isEnabled() const
 {
     return m_sessionManager->isEnabled();
+}
+
+bool ModelEditorModel::getAutoRotateRoot() const
+{
+    return m_sessionManager->getAutoRotateRoot();
+}
+
+void ModelEditorModel::setAutoRotateRoot(bool autoRotateRoot)
+{
+    m_sessionManager->setAutoRotateRoot(autoRotateRoot);
 }

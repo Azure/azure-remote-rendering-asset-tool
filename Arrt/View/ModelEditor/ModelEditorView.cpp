@@ -17,6 +17,7 @@
 #include <Widgets/CustomSplitter.h>
 #include <Widgets/FlatButton.h>
 #include <Widgets/FocusableContainer.h>
+#include <Widgets/ToolbarButton.h>
 
 // the viewport widget has to be wrapped by a non native widget with WA_DontCreateNativeAncestors set,
 // to make sure that the parent widgets won't be turned into native widgets. This is because this might break
@@ -68,15 +69,34 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
         toolBar = new QWidget(this);
         auto* toolbarLayout = new QHBoxLayout(toolBar);
 
-        m_currentlyLoadedModel = new QLabel();
-        toolbarLayout->addWidget(m_currentlyLoadedModel);
+        {
+            m_currentlyLoadedModel = new QLabel();
+            toolbarLayout->addWidget(m_currentlyLoadedModel);
+        }
+        {
+            auto* unloadButton = new ToolbarButton(tr("Unload model"), toolBar);
+            unloadButton->setToolTip(tr("Unload 3D model"), tr("Unload and go back to the panel for selecting another 3D model"));
+            QObject::connect(unloadButton, &FlatButton::clicked, this, [this]() {
+                m_model->unloadModel();
+            });
+            toolbarLayout->addWidget(unloadButton);
+        }
+        {
+            auto* autoRotationButton = new ToolbarButton(tr("Auto rotate model"), toolBar);
+            autoRotationButton->setCheckable(true);
+            autoRotationButton->setChecked(m_model->getAutoRotateRoot());
+            QObject::connect(autoRotationButton, &FlatButton::toggled, this, [this](bool checked) {
+                m_model->setAutoRotateRoot(checked);
+            });
+            auto onAutoRotateChanged = [this, autoRotationButton]() {
+                autoRotationButton->setChecked(m_model->getAutoRotateRoot());
+            };
+            QObject::connect(m_model, &ModelEditorModel::autoRotateRootChanged, this, onAutoRotateChanged);
+            onAutoRotateChanged();
 
-        auto* unloadButton = new FlatButton(tr("Unload model"), toolBar);
-        unloadButton->setToolTip(tr("Unload 3D model"), tr("Unload and go back to the panel for selecting another 3D model"));
-        QObject::connect(unloadButton, &FlatButton::clicked, this, [this]() {
-            m_model->unloadModel();
-        });
-        toolbarLayout->addWidget(unloadButton);
+            toolbarLayout->addWidget(autoRotationButton);
+        }
+
 
         toolbarLayout->addStretch(1);
     }
