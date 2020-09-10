@@ -59,10 +59,10 @@ public:
     void deleteBlobOrDirectory(const QString& containerName, const utility::string_t& prefix);
 
     // generate a Sas token for a specified blob with a timeout. The accessTypeMask is composed of azure::storage::blob_shared_access_policy flags
-    utility::string_t getSasToken(const azure::storage::storage_uri& uri, int accessTypeMask = azure::storage::blob_shared_access_policy::permissions::read, unsigned int minutes = 20) const;
+    utility::string_t getSasToken(const azure::storage::storage_uri& uri, int accessTypeMask = azure::storage::blob_shared_access_policy::permissions::read, unsigned int minutes = 60*24) const;
 
     // generate a Sas for a specified blob with a timeout. The accessTypeMask is composed of azure::storage::blob_shared_access_policy flags
-    utility::string_t getSasUrl(const azure::storage::storage_uri& uri, int accessTypeMask = azure::storage::blob_shared_access_policy::permissions::read, unsigned int minutes = 20) const;
+    utility::string_t getSasUrl(const azure::storage::storage_uri& uri, int accessTypeMask = azure::storage::blob_shared_access_policy::permissions::read, unsigned int minutes = 60*24) const;
 
     // write a text file to azure in a certain container, returns true if the upload succeeded
     bool writeTextFileSync(const utility::string_t& data, const azure::storage::storage_uri& containerUri, const utility::string_t& fileName);

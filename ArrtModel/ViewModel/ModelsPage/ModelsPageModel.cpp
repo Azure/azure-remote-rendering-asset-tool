@@ -10,11 +10,6 @@
 #include <ViewModel/ModelsPage/ModelsPageModel.h>
 #include <utility>
 
-namespace
-{
-    static const int s_sasReadDurationInMinutes = 30;
-}
-
 ModelsPageModel::ModelsPageModel(AzureStorageManager* storageManager, ArrSessionManager* sessionManager, Configuration* configuration, QObject* parent)
     : QObject(parent)
     , m_storageManager(storageManager)
@@ -267,7 +262,7 @@ void ModelsPageModel::load(LoadingMode mode)
 
             if (!uri.primary_uri().is_empty())
             {
-                utility::string_t blobUri = m_storageManager->getSasUrl(uri, azure::storage::blob_shared_access_policy::permissions::read, s_sasReadDurationInMinutes);
+                utility::string_t blobUri = m_storageManager->getSasUrl(uri, azure::storage::blob_shared_access_policy::permissions::read);
                 loadModelImpl(path, QString::fromStdWString(blobUri), true);
             }
             break;
