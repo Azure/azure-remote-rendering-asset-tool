@@ -28,29 +28,29 @@ protected:
 
 // macro used to create a Q_PROPERTY around a
 // getMaterial()->Get[PropertyName]() and getMaterial()->Set[PropertyName]()
-#define ARRT_PROPERTY(type, name)                                             \
-    Q_PROPERTY(type name READ get##name WRITE set##name)                      \
-    type get##name() const                                                    \
-    {                                                                         \
-        if (const auto m = getMaterial())                                     \
-        {                                                                     \
-            return static_cast<type>(*m->name());                             \
-        }                                                                     \
-        return {};                                                            \
-    }                                                                         \
-    bool set##name(const type& value)                                         \
-    {                                                                         \
-        if (auto m = getMaterial())                                           \
-        {                                                                     \
-            try                                                               \
-            {                                                                 \
-                m->name(static_cast<decltype(m->name())::value_type>(value)); \
-            }                                                                 \
-            catch (...)                                                       \
-            {                                                                 \
-                return false;                                                 \
-            }                                                                 \
-            return true;                                                      \
-        }                                                                     \
-        return false;                                                         \
+#define ARRT_PROPERTY(t, name)                                              \
+    Q_PROPERTY(t name READ get##name WRITE set##name)                       \
+    t get##name() const                                                     \
+    {                                                                       \
+        if (const auto m = getMaterial())                                   \
+        {                                                                   \
+            return static_cast<t>(m->Get##name());                          \
+        }                                                                   \
+        return {};                                                          \
+    }                                                                       \
+    bool set##name(const t& value)                                          \
+    {                                                                       \
+        if (auto m = getMaterial())                                         \
+        {                                                                   \
+            try                                                             \
+            {                                                               \
+                m->Set##name(static_cast<decltype(m->Get##name())>(value)); \
+            }                                                               \
+            catch (...)                                                     \
+            {                                                               \
+                return false;                                               \
+            }                                                               \
+            return true;                                                    \
+        }                                                                   \
+        return false;                                                       \
     }

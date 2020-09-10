@@ -21,25 +21,18 @@ public:
         auto val = ParameterModel::getValue().value<RR::ApiHandle<RR::Texture>>();
         if (val.valid())
         {
-            auto& txt = val.get();
             std::string name;
-            if (txt.Name(name))
+            val->GetName(name);
+            //remove the part between :{}
+            if (name._Starts_with(":{"))
             {
-                //remove the part between :{}
-                if (name._Starts_with(":{"))
+                auto lastToRemove = name.find("}");
+                if (lastToRemove != -1)
                 {
-                    auto lastToRemove = name.find("}");
-                    if (lastToRemove != -1)
-                    {
-                        name = name.substr(lastToRemove + 1);
-                    }
+                    name = name.substr(lastToRemove + 1);
                 }
-                return QString::fromStdString(name);
             }
-            else
-            {
-                return tr("Invalid");
-            }
+            return QString::fromStdString(name);
         }
         else
         {

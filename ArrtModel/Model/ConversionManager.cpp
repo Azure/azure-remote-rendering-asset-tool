@@ -232,29 +232,28 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
     QPointer<ConversionManager> thisPtr = this;
 
     auto onConversionStartRequestFinished = [thisPtr, newConversionId](const RR::ApiHandle<RR::StartAssetConversionAsync>& finishedAsync) {
-        logContext(finishedAsync->Context().value());
-        QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, newConversionId, async = finishedAsync]() {
+        const auto status = finishedAsync->GetStatus();
+        std::string conversionUUID;
+
+        if (status == RR::Result::Success)
+        {
+            logContext(finishedAsync->GetContext());
+            finishedAsync->GetResult(conversionUUID);
+        }
+        QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, newConversionId, status, conversionUUID]() {
             if (thisPtr)
             {
                 if (Conversion* conversion = thisPtr->getConversion(newConversionId))
                 {
-                    if (async->Status().value() == RR::Result::Success)
+                    if (status == RR::Result::Success)
                     {
-                        auto result = async->Result(conversion->m_conversionUUID);
-                        if (result)
-                        {
-                            conversion->updateConversionStatus(Conversion::SYNCHRONIZING);
-                        }
-                        else
-                        {
-                            conversion->m_endConversionTime.start();
-                            conversion->updateConversionStatus(Conversion::SYNCHRONIZATION_FAILED, tr("Failure reason: %1.").arg(tr("Failed retrieving the session UUID")));
-                        }
+                        conversion->m_conversionUUID = conversionUUID;
+                        conversion->updateConversionStatus(Conversion::SYNCHRONIZING);
                     }
                     else
                     {
                         conversion->m_endConversionTime.start();
-                        conversion->updateConversionStatus(Conversion::SYNCHRONIZATION_FAILED, tr("Failure reason: %1.").arg(RR::ResultToString(async->Status().value())));
+                        conversion->updateConversionStatus(Conversion::SYNCHRONIZATION_FAILED, tr("Failure reason: %1.").arg(RR::ResultToString(status)));
                     }
                 }
                 Q_EMIT thisPtr->conversionUpdated(newConversionId);
@@ -360,13 +359,22 @@ void ConversionManager::updateConversions(bool updateRemotely)
                 conversion->m_statusAsync = async.value();
 
                 conversion->m_statusAsync->Completed([id, thisPtr](const RR::ApiHandle<RR::ConversionStatusAsync>& async) {
-                    logContext(async->Context().value());
+                    const auto status = async->GetStatus();
                     std::string message;
-                    if (!async->Message(message))
+                    RR::ConversionSessionStatus result;
+                    if (status == RR::Result::Success)
                     {
-                        message = tr("Error retrieving message").toStdString();
+                        logContext(async->GetContext());
+                        async->GetErrorMessage(message);
+                        result = async->GetResult();
                     }
-                    QMetaObject::invokeMethod(QApplication::instance(), [id, thisPtr, message, status = async->Status().value(), result = async->Result().value()]() {
+                    else
+                    {
+                        result = RR::ConversionSessionStatus::Failure;
+                        message = "Failure";
+                    }
+
+                    QMetaObject::invokeMethod(QApplication::instance(), [id, thisPtr, message, status, result]() {
                         if (thisPtr)
                         {
                             if (Conversion* conversion = thisPtr->getConversion(id))

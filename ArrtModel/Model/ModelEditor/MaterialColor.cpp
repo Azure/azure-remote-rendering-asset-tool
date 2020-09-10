@@ -27,15 +27,9 @@ MaterialColor::MaterialColor(ArrSessionManager* sessionManager, QObject* parent)
 
 RR::ApiHandle<RR::ColorMaterial> MaterialColor::getMaterial()
 {
-    if (m_material)
+    if (m_material && m_material->GetValid() && m_material->GetMaterialSubType() == RR::MaterialType::Color)
     {
-        if (auto type = m_material->MaterialSubType())
-        {
-            if (type.value() == RR::MaterialType::Color)
-            {
-                return m_material.as<RR::ColorMaterial>();
-            }
-        }
+        return m_material.as<RR::ColorMaterial>();
     }
     return {};
 }
@@ -43,16 +37,9 @@ RR::ApiHandle<RR::ColorMaterial> MaterialColor::getMaterial()
 
 const RR::ApiHandle<RR::ColorMaterial> MaterialColor::getMaterial() const
 {
-    if (m_material && *m_material->MaterialSubType() == RR::MaterialType::Color)
+    if (m_material && m_material->GetValid() && m_material->GetMaterialSubType() == RR::MaterialType::Color)
     {
-        if (auto type = m_material->MaterialSubType())
-        {
-            if (type.value() == RR::MaterialType::Color)
-            {
-                auto material = m_material;
-                return material.as<RR::ColorMaterial>();
-            }
-        }
+        return m_material.as<RR::ColorMaterial>();
     }
     return {};
 }

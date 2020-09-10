@@ -112,7 +112,7 @@ public:
     // return the object used to retrieve remote rendering statistics on the current session
     ArrServiceStats* getServiceStats() const { return m_serviceStats; }
 
-    RR::ApiHandle<RR::RemoteManager>& getClientApi();
+    RR::ApiHandle<RR::RemoteManager> getClientApi();
 
     // start the arrInspector on the running session
     void startInspector();

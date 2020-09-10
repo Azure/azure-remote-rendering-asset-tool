@@ -15,14 +15,14 @@ void ArrServiceStats::update(RR::ApiHandle<RR::AzureSession> session)
 
 void ArrServiceStats::updateStats(RR::ApiHandle<RR::AzureSession> session)
 {
-    if (!m_collecting || !session || !session->IsConnected())
+    if (!m_collecting || !session || !session->GetIsConnected())
     {
         return;
     }
     ++m_tick;
 
     RR::FrameStatistics frameStatistics;
-    if (*session->GetGraphicsBinding()->GetLastFrameStatistics(&frameStatistics) != RR::Result::Success)
+    if (session->GetGraphicsBinding()->GetLastFrameStatistics(&frameStatistics) != RR::Result::Success)
     {
         return;
     }
@@ -41,30 +41,29 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::AzureSession> session)
     m_currentStats.m_latencyPresentToDisplay.addValue(frameStatistics.latencyPresentToDisplay * 1000.0, m_tick);
     m_currentStats.m_videoFramesDiscarded.addValue(frameStatistics.videoFramesDiscarded, m_tick);
 
-    if (m_runningPerformanceAssesment && m_runningPerformanceAssesment->IsCompleted())
+    if (m_runningPerformanceAssesment && m_runningPerformanceAssesment->GetIsCompleted())
     {
-        if (m_runningPerformanceAssesment->IsRanToCompletion())
+        if (m_runningPerformanceAssesment->GetIsFaulted())
         {
-            auto result = m_runningPerformanceAssesment->Result();
-            if (result.has_value())
-            {
-                m_currentStats.m_timeCPU.addValue(result->timeCPU.aggregate, m_tick);
-                m_currentStats.m_timeGPU.addValue(result->timeGPU.aggregate, m_tick);
-                m_currentStats.m_utilizationCPU.addValue(result->utilizationCPU.aggregate, m_tick);
-                m_currentStats.m_utilizationGPU.addValue(result->utilizationGPU.aggregate, m_tick);
-                m_currentStats.m_memoryCPU.addValue(result->memoryCPU.aggregate, m_tick);
-                m_currentStats.m_memoryGPU.addValue(result->memoryGPU.aggregate, m_tick);
-                m_currentStats.m_networkLatency.addValue(result->networkLatency.aggregate, m_tick);
-                m_currentStats.m_polygonsRendered.addValue(result->networkLatency.aggregate, m_tick);
-
-                m_lastPerformanceAssessment = *result;
-                m_runningPerformanceAssesment = {};
-            }
-            else if (result.error() != RR::Status::InProgress)
-            {
-                qWarning(LoggingCategory::renderingSession) << tr("Error retrieving the performance assessment. Failure reason: ") << result.error();
-                m_runningPerformanceAssesment = {};
-            }
+            qWarning(LoggingCategory::renderingSession) << tr("Error retrieving the performance assessment. Failure reason: ") << m_runningPerformanceAssesment->GetStatus();
+            m_runningPerformanceAssesment = {};
+        }
+        else if (m_runningPerformanceAssesment->GetStatus() == RR::Result::Success)
+        {
+            m_lastPerformanceAssessment = m_runningPerformanceAssesment->GetResult();
+            m_currentStats.m_timeCPU.addValue(m_lastPerformanceAssessment.timeCPU.aggregate, m_tick);
+            m_currentStats.m_timeGPU.addValue(m_lastPerformanceAssessment.timeGPU.aggregate, m_tick);
+            m_currentStats.m_utilizationCPU.addValue(m_lastPerformanceAssessment.utilizationCPU.aggregate, m_tick);
+            m_currentStats.m_utilizationGPU.addValue(m_lastPerformanceAssessment.utilizationGPU.aggregate, m_tick);
+            m_currentStats.m_memoryCPU.addValue(m_lastPerformanceAssessment.memoryCPU.aggregate, m_tick);
+            m_currentStats.m_memoryGPU.addValue(m_lastPerformanceAssessment.memoryGPU.aggregate, m_tick);
+            m_currentStats.m_networkLatency.addValue(m_lastPerformanceAssessment.networkLatency.aggregate, m_tick);
+            m_currentStats.m_polygonsRendered.addValue(m_lastPerformanceAssessment.networkLatency.aggregate, m_tick);
+            m_runningPerformanceAssesment = {};
+        }
+        else
+        {
+            qWarning(LoggingCategory::renderingSession) << tr("what?");
         }
     }
 

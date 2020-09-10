@@ -24,14 +24,15 @@ void MaterialListModel::reset()
     if (auto loadedModel = m_sessionManager->loadedModel())
     {
         std::vector<RR::ApiHandle<RR::ResourceBase>> materials;
-        if (loadedModel->GetLoadedResourceOfType(RR::ObjectType::Material, materials))
+        if (loadedModel->GetLoadedResourceOfType(RR::ObjectType::Material, materials) == RR::Status::OK)
         {
             for (auto&& res : materials)
             {
                 const RR::ApiHandle<RR::Material> material = res.as<RR::Material>();
-                std::string name;
-                if (material->Name(name))
+                if (material && material->GetValid())
                 {
+                    std::string name;
+                    material->GetName(name);
                     auto* newItem = new QStandardItem(QString::fromUtf8(name.c_str()));
                     newItem->setData(QVariant::fromValue(material), OBJECT_MATERIAL_ROLE);
                     appendRow(newItem);
@@ -47,7 +48,7 @@ void MaterialFilteredListModel::filterBasedOnEntities(const QList<RR::ApiHandle<
 
     for (const RR::ApiHandle<RR::Entity>& entity : entityIds)
     {
-        if (!entity->Valid())
+        if (!entity->GetValid())
         {
             qCritical() << tr("Invalid entity ") << entity->Handle();
         }
@@ -55,23 +56,19 @@ void MaterialFilteredListModel::filterBasedOnEntities(const QList<RR::ApiHandle<
         {
             //find all of the materials
             std::vector<RR::ApiHandle<RR::ComponentBase>> components;
-            if (entity->Components(components))
+            entity->GetComponents(components);
+            for (auto&& component : components)
             {
-                for (auto&& component : components)
+                if (component->GetType() == RR::ObjectType::MeshComponent)
                 {
-                    if (*component->Type() == RR::ObjectType::MeshComponent)
+                    const RR::ApiHandle<RR::MeshComponent> meshComponent = component.as<RR::MeshComponent>();
+                    std::vector<RR::ApiHandle<RR::Material>> materials;
+                    meshComponent->GetUsedMaterials(materials);
+                    for (auto&& material : materials)
                     {
-                        const RR::ApiHandle<RR::MeshComponent> meshComponent = component.as<RR::MeshComponent>();
-                        std::vector<RR::ApiHandle<RR::Material>> materials;
-                        if (meshComponent->UsedMaterials(materials))
+                        if (material->GetValid())
                         {
-                            for (auto&& material : materials)
-                            {
-                                if (material->Valid().value())
-                                {
-                                    m_materials.insert(material);
-                                }
-                            }
+                            m_materials.insert(material);
                         }
                     }
                 }

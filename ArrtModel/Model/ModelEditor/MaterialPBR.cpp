@@ -32,15 +32,9 @@ MaterialPBR::MaterialPBR(ArrSessionManager* sessionManager, QObject* parent)
 
 RR::ApiHandle<RR::PbrMaterial> MaterialPBR::getMaterial()
 {
-    if (m_material)
+    if (m_material && m_material->GetValid() && m_material->GetMaterialSubType() == RR::MaterialType::Pbr)
     {
-        if (auto type = m_material->MaterialSubType())
-        {
-            if (type.value() == RR::MaterialType::Pbr)
-            {
-                return m_material.as<RR::PbrMaterial>();
-            }
-        }
+        return m_material.as<RR::PbrMaterial>();
     }
     return {};
 }
@@ -48,16 +42,9 @@ RR::ApiHandle<RR::PbrMaterial> MaterialPBR::getMaterial()
 
 const RR::ApiHandle<RR::PbrMaterial> MaterialPBR::getMaterial() const
 {
-    if (m_material && *m_material->MaterialSubType() == RR::MaterialType::Pbr)
+    if (m_material && m_material->GetMaterialSubType() == RR::MaterialType::Pbr)
     {
-        if (auto type = m_material->MaterialSubType())
-        {
-            if (type.value() == RR::MaterialType::Pbr)
-            {
-                auto material = m_material;
-                return material.as<RR::PbrMaterial>();
-            }
-        }
+        return m_material.as<RR::PbrMaterial>();
     }
     return {};
 }
