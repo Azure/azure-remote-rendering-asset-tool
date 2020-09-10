@@ -59,12 +59,13 @@ To refresh the blob list, for example after a model is converted, press the "Ref
 ## 3. Visualize the model
 
 ![Rendering View](media/renderingview.png)
-If the model is loaded correctly, the model will be shown in a new view. On the top the model name is visualized, and a button allows you to unload the model.
-In the view there are four vertical panels, which can be resized vertically. From left to right:
+If the model is loaded correctly, the model will be shown in a new view. On the top you can see from left to right:
 
-### Scene tree
+* The name of the loaded model.
+* "Unload model" button to unload the model and return to the loading page.
+* "Auto-rotate" button to toggle the automatic rotation of the model.
 
-This panel shows a tree view with the hierarchy of all the entities in the loaded model. You can expand every node, and select them.
+The view has a viewport in the center, and three panels around it.
 
 ### Viewport
 
@@ -78,10 +79,29 @@ The viewport shows the rendered model, streaming it from the ARR service. The ca
 Entities can be selected by clicking on them on the viewport. When you select an entity from the viewport, the corresponding entity gets selected and highlighted in the scene tree, and the other way around.
 Double-clicking on an entity will move the camera to frame the entity in the viewport.
 
-### Material list
+### Scene tree panel
 
-This panel shows a list of the materials in the selected entities, or, if there's no selected entity, it shows the full list of materials. Materials can be selected with mouse click.
+This panel shows a tree view with the hierarchy of all the entities in the loaded model. You can expand every node, and select them.
 
-### Material properties
+### Material panel
 
-When a material is selected, this panel shows all of its editable properties. You can change properties (colors, parameters, flags) and see the results immediately reflected in the rendered model. There is no support for editing the material textures. For more information on the supported ARR materials, see [Materials](https://docs.microsoft.com/azure/remote-rendering/concepts/materials)
+This panel shows on the top a list of the materials in the selected entities, or, if there's no selected entity, the full list of materials. Materials can be selected with mouse click.
+
+When a material is selected, the lower area shows all of its editable properties. You can change properties (colors, parameters, flags) and see the results immediately reflected in the rendered model. There is no support for editing the material textures. For more information on the supported ARR materials, see [Materials](https://docs.microsoft.com/azure/remote-rendering/concepts/materials)
+
+### Statistics panel
+
+![Statistics panel](media/statspanel.png)
+
+At the bottom of the windows you have access to the panel for the statistics. Here you can start and stop the stats collection and visualize the data of the current collection.
+
+Each stats value has 4 values displayed in the table:
+
+* Value. This is the summary of the values in the last second. The type of summarization depends on the source value (sum for the frame usage stats, min/max for the delta, average for all of the others)
+* Minimum/Maximum/Average. This is the minimum/maximum/average of the summarized per-second value, computed since the collection started.
+
+The stats values are organized in groups. If you click on the value, its group is expanded and a graph will show the live progress over time. On the X axis you can have either the raw data received each frame, or the summarized data per second. Switch between the two modes using the combobox on the top right corner.
+
+Hover with the mouse to inspect the values on the graph at a specific time.
+
+To have an automatic benchmark of the performance, you can click on "Start auto-collecting". This function runs a collection for a fixed amount of time, while rotating the model, to emulate a client activity.
