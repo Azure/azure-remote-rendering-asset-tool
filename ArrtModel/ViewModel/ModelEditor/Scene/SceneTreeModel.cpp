@@ -27,7 +27,7 @@ void SceneTreeModel::reset(bool makeEmpty)
     RR::ApiHandle<RR::Entity> root = nullptr;
     if (m_sessionManager->loadedModel())
     {
-        root = m_sessionManager->loadedModel()->Root().value();
+        root = m_sessionManager->loadedModel()->GetRoot();
     }
     m_rootItem.reset(new EntityCache(root, QModelIndex()));
     if (makeEmpty)
@@ -92,9 +92,9 @@ QModelIndex SceneTreeModel::getIndexFromEntity(const RR::ApiHandle<RR::Entity>& 
         QList<RR::ApiHandle<RR::Entity>> parents;
 
         RR::ApiHandle<RR::Entity> parent = nullptr;
-        if (entity && entity->Valid().value())
+        if (entity && entity->GetValid())
         {
-            parent = entity->Parent().value();
+            parent = entity->GetParent();
         }
 
         while (parent)
@@ -104,7 +104,7 @@ QModelIndex SceneTreeModel::getIndexFromEntity(const RR::ApiHandle<RR::Entity>& 
             {
                 break;
             }
-            parent = parent->Parent().value();
+            parent = parent->GetParent();
         }
         if (!parent)
         {
@@ -173,19 +173,17 @@ SceneTreeModel::EntityCache::~EntityCache()
 
 QVariant SceneTreeModel::EntityCache::data(ArrSessionManager* sessionManager, int role) const
 {
-    if (auto& clientApi = sessionManager->getClientApi())
+    if (auto clientApi = sessionManager->getClientApi())
     {
         switch (role)
         {
             case Qt::DisplayRole:
             {
-                if (m_entity && m_entity->Valid().value())
+                if (m_entity && m_entity->GetValid())
                 {
                     std::string name;
-                    if (m_entity->Name(name))
-                    {
-                        return QString::fromStdString(name);
-                    }
+                    m_entity->GetName(name);
+                    return QString::fromStdString(name);
                 }
                 return QString();
             }
@@ -199,19 +197,17 @@ void SceneTreeModel::EntityCache::ensureChildrenComputed(const SceneTreeModel* m
     if (!m_childrenComputed)
     {
         m_childrenComputed = true;
-        if (auto& clientApi = model->m_sessionManager->getClientApi())
+        if (auto clientApi = model->m_sessionManager->getClientApi())
         {
-            if (m_entity && m_entity->Valid())
+            if (m_entity && m_entity->GetValid())
             {
                 int childNumber = 0;
                 std::vector<RR::ApiHandle<RR::Entity>> children;
-                if (m_entity->Children(children))
+                m_entity->GetChildren(children);
+                for (auto&& child : children)
                 {
-                    for (auto&& child : children)
-                    {
-                        m_children.push_back(new EntityCache(child, thisModelIndex));
-                        model->m_indices.insert(child, model->index(childNumber++, 0, thisModelIndex));
-                    }
+                    m_children.push_back(new EntityCache(child, thisModelIndex));
+                    model->m_indices.insert(child, model->index(childNumber++, 0, thisModelIndex));
                 }
             }
         }

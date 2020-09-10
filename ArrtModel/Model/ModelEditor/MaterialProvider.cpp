@@ -25,17 +25,14 @@ void MaterialProvider::updateControls()
 
     if (auto material = m_material->get())
     {
-        if (auto subType = material->MaterialSubType())
+        switch (material->GetMaterialSubType())
         {
-            switch (subType.value())
-            {
-                case RR::MaterialType::Pbr:
-                    m = m_materialPBR;
-                    break;
-                case RR::MaterialType::Color:
-                    m = m_materialColor;
-                    break;
-            }
+            case RR::MaterialType::Pbr:
+                m = m_materialPBR;
+                break;
+            case RR::MaterialType::Color:
+                m = m_materialColor;
+                break;
         }
     }
     m_currentMaterial = m;

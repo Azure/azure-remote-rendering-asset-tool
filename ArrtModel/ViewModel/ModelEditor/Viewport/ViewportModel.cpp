@@ -93,7 +93,7 @@ ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* camer
             //reset root rotation
             if (RR::ApiHandle<RR::Entity> root = getRoot())
             {
-                root->Rotation(m_originalRotation);
+                root->SetRotation(m_originalRotation);
             }
         }
     });
@@ -137,7 +137,7 @@ void ViewportModel::initializeClient()
     {
         const auto refreshRate = m_videoSettings->getRefreshRate();
         auto result = binding->InitSimulation(m_device, m_proxyDepthTarget, m_proxyColorTarget, refreshRate, false, false);
-        if (!result || result.value() != RR::Result::Success)
+        if (result != RR::Result::Success)
         {
             return;
         }
@@ -315,8 +315,9 @@ void ViewportModel::pick(int x, int y, bool doubleClick)
         (*async)->Completed([thisPtr, doubleClick](const RR::ApiHandle<RR::RaycastQueryAsync>& finishedAsync) {
             RR::ApiHandle<RR::Entity> hit = nullptr;
             std::vector<RR::RayCastHit> rayCastHits;
-            if (finishedAsync->Result(rayCastHits))
+            if (finishedAsync->GetStatus() == RR::Result::Success)
             {
+                finishedAsync->GetResult(rayCastHits);
                 if (rayCastHits.size() > 0)
                 {
                     hit = rayCastHits[0].HitObject;
@@ -417,7 +418,7 @@ void ViewportModel::stepCamera()
         if (root)
         {
             QVector4D v = QQuaternion::fromEulerAngles(10.0f + qSin(m_autoRotationAngle / 100) * 30.0, m_autoRotationAngle, 0).inverted().toVector4D();
-            root->Rotation({v.x(), v.y(), v.z(), v.w()});
+            root->SetRotation({v.x(), v.y(), v.z(), v.w()});
         }
     }
 
@@ -543,19 +544,16 @@ void ViewportModel::updateSelection(const QList<RR::ApiHandle<RR::Entity>>& sele
 
     for (const RR::ApiHandle<RR::Entity>& entity : deselected)
     {
-        const auto validEx = entity->Valid();
-        if (validEx && validEx.value())
+        if (entity->GetValid())
         {
             std::vector<RR::ApiHandle<RR::ComponentBase>> components;
-            if (entity->Components(components))
+            entity->GetComponents(components);
+            for (auto&& comp : components)
             {
-                for (auto&& comp : components)
+                if (comp->GetType() == RR::ObjectType::HierarchicalStateOverrideComponent)
                 {
-                    if (comp->Type().value() == RR::ObjectType::HierarchicalStateOverrideComponent)
-                    {
-                        comp->Destroy();
-                        break;
-                    }
+                    comp->Destroy();
+                    break;
                 }
             }
         }
@@ -587,11 +585,11 @@ void ViewportModel::zoomOnEntity(RR::ApiHandle<RR::Entity> entity)
     if (auto async = entity->QueryWorldBoundsAsync())
     {
         (*async)->Completed([thisPtr](const RR::ApiHandle<RR::BoundsQueryAsync>& finishedAsync) {
-            auto result = finishedAsync->Result();
-            if (result && result->IsValid())
+            if (thisPtr && finishedAsync->GetStatus() == RR::Result::Success)
             {
-                auto minBB = result->min;
-                auto maxBB = result->max;
+                const auto result = finishedAsync->GetResult();
+                auto minBB = result.min;
+                auto maxBB = result.max;
                 thisPtr->zoomOnBoundingBox(QVector3D(minBB.x, minBB.y, minBB.z), QVector3D(maxBB.x, maxBB.y, maxBB.z));
             }
         });
@@ -607,18 +605,15 @@ void ViewportModel::initAfterLoading()
         if (auto async = root->QueryWorldBoundsAsync())
         {
             (*async)->Completed([thisPtr, root](const RR::ApiHandle<RR::BoundsQueryAsync>& finishedAsync) {
-                if (thisPtr)
+                if (thisPtr && finishedAsync->GetStatus() == RR::Result::Success)
                 {
-                    const auto result = finishedAsync->Result();
-                    if (result && result->IsValid())
-                    {
-                        const auto minBB = result->min;
-                        const auto maxBB = result->max;
-                        const QVector3D vMin(minBB.x, minBB.y, minBB.z);
-                        const QVector3D vMax(maxBB.x, maxBB.y, maxBB.z);
+                    const auto result = finishedAsync->GetResult();
+                    const auto minBB = result.min;
+                    const auto maxBB = result.max;
+                    const QVector3D vMin(minBB.x, minBB.y, minBB.z);
+                    const QVector3D vMax(maxBB.x, maxBB.y, maxBB.z);
 
-                        thisPtr->initAfterLoading(vMin, vMax);
-                    }
+                    thisPtr->initAfterLoading(vMin, vMax);
                 }
             });
         }
@@ -634,9 +629,9 @@ void ViewportModel::initAfterLoading(const QVector3D& minBB, const QVector3D& ma
     RR::ApiHandle<RR::Entity> root = getRoot();
     if (root)
     {
-        RR::Float3 scale = *root->Scale();
+        RR::Float3 scale = root->GetScale();
         m_modelScale = QVector3D(scale.x, scale.y, scale.z);
-        m_originalRotation = *root->Rotation();
+        m_originalRotation = root->GetRotation();
     }
     m_oldScale = 1.0;
 
@@ -697,10 +692,10 @@ RR::ApiHandle<RR::Entity> ViewportModel::getRoot() const
     RR::ApiHandle<RR::LoadModelResult> loadedModel = m_sessionManager->loadedModel();
     if (loadedModel.valid())
     {
-        const auto root = loadedModel->Root();
-        if (root)
+        auto root = loadedModel->GetRoot();
+        if (root->GetValid())
         {
-            return *root;
+            return root;
         }
     }
     return {};
@@ -726,7 +721,7 @@ void ViewportModel::updateScale()
             {
                 m_oldScale = scale;
                 QVector3D newScale = m_modelScale * scale;
-                root->Scale({newScale.x(), newScale.y(), newScale.z()});
+                root->SetScale({newScale.x(), newScale.y(), newScale.z()});
             }
         }
     }

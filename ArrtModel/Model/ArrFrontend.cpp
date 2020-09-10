@@ -61,7 +61,7 @@ void ArrFrontend::connect()
 
         auto frontend = RR::ApiHandle(RR::AzureFrontend(fi));
         frontend->MessageLogged(&qArrSdkMessage);
-        frontend->LogLevel(RR::LogLevel::Debug);
+        frontend->SetLogLevel(RR::LogLevel::Debug);
         QPointer<ArrFrontend> thisPtr = this;
         auto async = frontend->GetCurrentRenderingSessionsAsync();
         if (async)
@@ -76,14 +76,17 @@ void ArrFrontend::connect()
                                           [thisPtr, frontend]() {
                                               if (thisPtr != nullptr)
                                               {
-                                                  auto status = thisPtr->m_sessionPropertiesAsync->Status();
-                                                  auto context = thisPtr->m_sessionPropertiesAsync->Context();
-
-                                                  const RR::Result result = status ? status.value() : RR::Result::Fail;
-                                                  const RR::Result contextResult = context ? context.value().Result : RR::Result::Fail;
+                                                  auto status = thisPtr->m_sessionPropertiesAsync->GetStatus();
+                                                  if (status == RR::Result::Success && thisPtr->m_sessionPropertiesAsync->GetContext().Result == RR::Result::Success)
+                                                  {
+                                                      thisPtr->m_rrFrontend = frontend;
+                                                      thisPtr->setStatus(AccountConnectionStatus::Authenticated);
+                                                  }
+                                                  else
+                                                  {
+                                                      thisPtr->setStatus(AccountConnectionStatus::InvalidCredentials);
+                                                  }
                                                   thisPtr->m_sessionPropertiesAsync = nullptr;
-                                                  thisPtr->m_rrFrontend = frontend;
-                                                  thisPtr->setStatus(result == RR::Result::Success && contextResult == RR::Result::Success ? AccountConnectionStatus::Authenticated : AccountConnectionStatus::InvalidCredentials);
                                               }
                                           });
             });
@@ -105,12 +108,10 @@ ArrFrontend::~ArrFrontend()
     std::unique_lock<std::mutex> lk(m_mutex);
     if (m_sessionPropertiesAsync)
     {
-        if (auto asyncStatus = m_sessionPropertiesAsync->Status())
+        auto asyncStatus = m_sessionPropertiesAsync->GetStatus();
+        if (asyncStatus == RR::Result::InProgress)
         {
-            if (asyncStatus.value() == RR::Result::InProgress)
-            {
-                m_condVar.wait(lk);
-            }
+            m_condVar.wait(lk);
         }
     }
 

@@ -12,5 +12,5 @@ uint qHash(const RR::ApiHandle<RR::Entity>& e)
 
 uint qHash(const RR::ApiHandle<RR::Material>& m)
 {
-    return static_cast<uint>(std::hash<unsigned long long>()(m && *m->Valid() ? m->Handle() : 0));
+    return static_cast<uint>(std::hash<unsigned long long>()(m && m->GetValid() ? m->Handle() : 0));
 }

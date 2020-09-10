@@ -144,14 +144,9 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
     });
 
     connect(m_configuration->getCameraSettings(), &CameraSettings::changed, this, [this] {
-        if (m_api)
+        if (auto api = getClientApi())
         {
-            if (auto cs = m_api->CameraSettings())
-            {
-                RR::ApiHandle<RR::CameraSettings> cameraSettings = *cs;
-                cameraSettings->NearPlane(m_configuration->getCameraSettings()->getNearPlane());
-                cameraSettings->FarPlane(m_configuration->getCameraSettings()->getFarPlane());
-            }
+            api->GetCameraSettings()->SetNearAndFarPlane(m_configuration->getCameraSettings()->getNearPlane(), m_configuration->getCameraSettings()->getFarPlane());
         }
     });
 
@@ -165,9 +160,9 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
     }
 
     connect(m_viewportModel, &ViewportModel::onRefresh, this, [this]() {
-        if (m_api)
+        if (auto api = getClientApi())
         {
-            m_api->Update();
+            api->Update();
         }
     });
 
@@ -244,15 +239,16 @@ bool ArrSessionManager::startSession(const RR::RenderingSessionCreationParams& i
     {
         m_startRequested = async.value();
         m_startRequested->Completed([thisPtr](const RR::ApiHandle<RR::CreateSessionAsync>& completedAsync) {
-            if (auto context = completedAsync->Context())
+            const auto status = completedAsync->GetStatus();
+            RR::ApiHandle<RR::AzureSession> session;
+
+            if (status == RR::Result::Success)
             {
-                logContext(context.value());
+                logContext(completedAsync->GetContext());
+                session = completedAsync->GetResult();
             }
 
-            const auto statusEx = completedAsync->Status();
-            const auto status = statusEx ? statusEx.value() : RR::Result::Fail;
-            const auto sessionEx = completedAsync->Result();
-            QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, session = sessionEx ? sessionEx.value() : nullptr, status] {
+            QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, session, status] {
                 if (thisPtr)
                 {
                     thisPtr->m_startRequested = nullptr;
@@ -294,12 +290,12 @@ bool ArrSessionManager::stopSession()
     {
         m_stopRequested = async.value();
         m_stopRequested->Completed([thisPtr](const RR::ApiHandle<RR::SessionAsync>& completedAsync) {
-            if (auto context = completedAsync->Context())
+            const auto status = completedAsync->GetStatus();
+            if (status == RR::Result::Success)
             {
-                logContext(context.value());
+                logContext(completedAsync->GetContext());
             }
-            const auto statusEx = completedAsync->Status();
-            QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, status = statusEx ? statusEx.value() : RR::Result::Fail]() {
+            QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, status]() {
                 if (thisPtr)
                 {
                     if (status != RR::Result::Success)
@@ -327,7 +323,7 @@ SessionStatus ArrSessionManager::getSessionStatus() const
 {
     SessionStatus status = {};
 
-    if (m_session)
+    if (m_session && m_session->GetValid())
     {
         const SessionStatus::Status s = convertStatus(m_lastProperties.Status);
 
@@ -339,20 +335,17 @@ SessionStatus ArrSessionManager::getSessionStatus() const
             }
             else
             {
-                if (auto connectionStatus = m_session->ConnectionStatus())
+                switch (m_session->GetConnectionStatus())
                 {
-                    switch (connectionStatus.value())
-                    {
-                        case RR::ConnectionStatus::Disconnected:
-                            status.m_status = SessionStatus::Status::ReadyNotConnected;
-                            break;
-                        case RR::ConnectionStatus::Connecting:
-                            status.m_status = SessionStatus::Status::ReadyConnecting;
-                            break;
-                        case RR::ConnectionStatus::Connected:
-                            status.m_status = SessionStatus::Status::ReadyConnected;
-                            break;
-                    }
+                    case RR::ConnectionStatus::Disconnected:
+                        status.m_status = SessionStatus::Status::ReadyNotConnected;
+                        break;
+                    case RR::ConnectionStatus::Connecting:
+                        status.m_status = SessionStatus::Status::ReadyConnecting;
+                        break;
+                    case RR::ConnectionStatus::Connected:
+                        status.m_status = SessionStatus::Status::ReadyConnected;
+                        break;
                 }
             }
         }
@@ -430,9 +423,9 @@ bool ArrSessionManager::extendMaxSessionTime()
         {
             m_renewAsync = async.value();
             m_renewAsync->Completed([thisPtr](const RR::ApiHandle<RR::SessionAsync>& completedAsync) {
-                if (auto context = completedAsync->Context())
+                if (completedAsync->GetStatus() == RR::Result::Success)
                 {
-                    logContext(context.value());
+                    logContext(completedAsync->GetContext());
                 }
                 QMetaObject::invokeMethod(QApplication::instance(), [thisPtr] {
                     if (thisPtr)
@@ -496,25 +489,18 @@ void ArrSessionManager::updateStatus()
         {
             m_getPropertiesAsync = async.value();
             m_getPropertiesAsync->Completed([thisPtr](const RR::ApiHandle<RR::SessionPropertiesAsync>& completedAsync) {
-                if (auto context = completedAsync->Context())
+                const auto status = completedAsync->GetStatus();
+                if (status == RR::Result::Success)
                 {
-                    logContext(context.value());
-                }
-                if (const auto status = completedAsync->Status())
-                {
-                    if (status.value() == RR::Result::Success)
-                    {
-                        if (auto propsEx = completedAsync->Result())
+                    logContext(completedAsync->GetContext());
+                    auto props = completedAsync->GetResult();
+                    QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, props] {
+                        if (thisPtr)
                         {
-                            QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, props = propsEx.value()] {
-                                if (thisPtr)
-                                {
-                                    thisPtr->updateSessionProperties(props);
-                                    thisPtr->onStatusUpdated();
-                                }
-                            });
+                            thisPtr->updateSessionProperties(props);
+                            thisPtr->onStatusUpdated();
                         }
-                    }
+                    });
                 }
             });
         }
@@ -550,26 +536,16 @@ void ArrSessionManager::connectToSessionRuntime()
         {
             m_connecting = async.value();
             m_connecting->Completed([thisPtr](const RR::ApiHandle<RR::ConnectToRuntimeAsync>& completedAsync) {
-                RR::Result status = RR::Result::Fail;
-                const auto statusEx = completedAsync->Status();
-                if (statusEx)
+                const RR::Result status = completedAsync->GetStatus();
+                if (status != RR::Result::Success)
                 {
-                    status = statusEx.value();
-                    if (statusEx.value() != RR::Result::Success)
-                    {
-                        qWarning(LoggingCategory::renderingSession)
-                            << tr("Connection failed. Failure reason:") << statusEx.value();
-                    }
-                    else
-                    {
-                        qInfo(LoggingCategory::renderingSession)
-                            << tr("Connection succeeded.");
-                    }
+                    qWarning(LoggingCategory::renderingSession)
+                        << tr("Connection failed. Failure reason:") << status;
                 }
                 else
                 {
-                    qWarning(LoggingCategory::renderingSession)
-                        << tr("Connection failed. Failure reason:") << statusEx.error();
+                    qInfo(LoggingCategory::renderingSession)
+                        << tr("Connection succeeded.");
                 }
 
                 QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, status] {
@@ -688,44 +664,47 @@ void ArrSessionManager::onStatusUpdated()
 void ArrSessionManager::initializeSession()
 {
     QPointer<ArrSessionManager> thisPtr = this;
-    m_api->LogLevel(RR::LogLevel::Debug);
+    if (auto api = getClientApi())
     {
-        const auto token = m_api->MessageLogged(&qArrSdkMessage);
-        if (token)
+        api->SetLogLevel(RR::LogLevel::Debug);
         {
-            m_messageLoggedToken = token.value();
-        }
-        else
-        {
-            qWarning(LoggingCategory::configuration) << tr("Failed to set log handler:") << token.error();
-        }
-    }
-    {
-        const auto token = m_session->ConnectionStatusChanged([thisPtr](RR::ConnectionStatus status, RR::Result error) {
-            if (error != RR::Result::Success)
+            const auto token = api->MessageLogged(&qArrSdkMessage);
+            if (token)
             {
-                qWarning(LoggingCategory::renderingSession)
-                    << tr("Connection status: ") << status << tr("Failure reason : ") << error;
+                m_messageLoggedToken = token.value();
             }
             else
             {
-                qInfo(LoggingCategory::renderingSession)
-                    << tr("Connection status: ") << status;
+                qWarning(LoggingCategory::configuration) << tr("Failed to set log handler:") << token.error();
             }
-            QMetaObject::invokeMethod(QApplication::instance(), [thisPtr] {
-                if (thisPtr)
-                {
-                    thisPtr->updateStatus();
-                }
-            });
-        });
-        if (token)
-        {
-            m_statusChangedToken = token.value();
         }
-        else
         {
-            qWarning(LoggingCategory::configuration) << tr("Failed to set connection statu changed callback:") << token.error();
+            const auto token = m_session->ConnectionStatusChanged([thisPtr](RR::ConnectionStatus status, RR::Result error) {
+                if (error != RR::Result::Success)
+                {
+                    qWarning(LoggingCategory::renderingSession)
+                        << tr("Connection status: ") << status << tr("Failure reason : ") << error;
+                }
+                else
+                {
+                    qInfo(LoggingCategory::renderingSession)
+                        << tr("Connection status: ") << status;
+                }
+                QMetaObject::invokeMethod(QApplication::instance(), [thisPtr] {
+                    if (thisPtr)
+                    {
+                        thisPtr->updateStatus();
+                    }
+                });
+            });
+            if (token)
+            {
+                m_statusChangedToken = token.value();
+            }
+            else
+            {
+                qWarning(LoggingCategory::configuration) << tr("Failed to set connection statu changed callback:") << token.error();
+            }
         }
     }
 }
@@ -778,16 +757,12 @@ void ArrSessionManager::updateTimers()
 
 std::string ArrSessionManager::getSessionUuid() const
 {
-    if (!m_session)
+    if (!m_session && !m_session->GetValid())
     {
         return tr("no session").toStdString();
     }
-
     std::string sessionUuid;
-    if (!m_session->SessionUUID(sessionUuid))
-    {
-        return tr("error").toStdString();
-    }
+    m_session->GetSessionUUID(sessionUuid);
     return sessionUuid;
 }
 
@@ -799,9 +774,9 @@ RR::ApiHandle<RR::AzureSession> ArrSessionManager::getCurrentSession() const
 void ArrSessionManager::deinitializeSession()
 {
     unloadModel();
-    if (m_api)
+    if (auto api = getClientApi())
     {
-        m_api->MessageLogged(m_messageLoggedToken);
+        api->MessageLogged(m_messageLoggedToken);
     }
     m_session->DisconnectFromRuntime();
     m_viewportModel->setSession(RR::ApiHandle<RR::AzureSession>());
@@ -813,7 +788,7 @@ void ArrSessionManager::setRunningSession(const RR::ApiHandle<RR::AzureSession>&
     if (m_session != session)
     {
         Q_EMIT sessionAboutToChange();
-        if (m_session)
+        if (m_session && m_session->GetValid())
         {
             m_configuration->setRunningSession({});
             deinitializeSession();
@@ -821,7 +796,7 @@ void ArrSessionManager::setRunningSession(const RR::ApiHandle<RR::AzureSession>&
         m_api = nullptr;
         m_session = session;
 
-        if (m_session)
+        if (m_session && m_session->GetValid())
         {
             m_api = m_session->Actions();
             initializeSession();
@@ -834,11 +809,7 @@ void ArrSessionManager::setRunningSession(const RR::ApiHandle<RR::AzureSession>&
 
 RR::Result ArrSessionManager::loadModelAsync(const QString& modelName, const char* assetSAS, RR::LoadResult result, RR::LoadProgress progressCallback)
 {
-    if (!m_session)
-    {
-        return RR::Result::ApiUnavailable;
-    }
-    else
+    if (auto api = getClientApi())
     {
         QPointer<ArrSessionManager> thisPtr = this;
 
@@ -847,7 +818,7 @@ RR::Result ArrSessionManager::loadModelAsync(const QString& modelName, const cha
         RR::LoadModelFromSASParams params;
         memset(&params, 0, sizeof(RR::LoadModelFromSASParams));
         params.ModelUrl = assetSAS;
-        if (auto loadModelAsync = m_api->LoadModelFromSASAsync(params))
+        if (auto loadModelAsync = api->LoadModelFromSASAsync(params))
         {
             m_loadModelAsync = loadModelAsync.value();
         }
@@ -861,39 +832,31 @@ RR::Result ArrSessionManager::loadModelAsync(const QString& modelName, const cha
         }
         // Completed lambda is called from the GUI thread
         m_loadModelAsync->Completed([thisPtr, modelName, result(std::move(result))](const RR::ApiHandle<RR::LoadModelAsync>& finishedAsync) {
-            const auto statusEx = finishedAsync->Status();
-            if (statusEx)
+            const auto status = finishedAsync->GetStatus();
+            if (status != RR::Result::Success)
             {
-                if (statusEx.value() != RR::Result::Success)
-                {
-                    qWarning(LoggingCategory::renderingSession)
-                        << tr("Loading of model failed. Failure reason: ") << statusEx.value();
-                    result(statusEx.value(), nullptr);
-                }
-                else
-                {
-                    if (const auto loadResult = finishedAsync->Result())
-                    {
-                        if (const auto root = loadResult.value()->Root())
-                        {
-                            qInfo(LoggingCategory::renderingSession)
-                                << tr("Loading of model succeeded.");
-                            thisPtr->m_modelName = modelName;
-                            thisPtr->setLoadedModel(loadResult.value());
-                            result(statusEx.value(), root.value());
-                            return;
-                        }
-                    }
-                    qWarning(LoggingCategory::renderingSession)
-                        << tr("Loading of model failed. Api failure.");
-                    result(RR::Result::Fail, nullptr);
-                }
+                qWarning(LoggingCategory::renderingSession)
+                    << tr("Loading of model failed. Failure reason: ") << status;
+                result(status, nullptr);
             }
             else
             {
-                qWarning(LoggingCategory::renderingSession)
-                    << tr("Loading of model failed. Failure reason: ") << statusEx.error();
-                result(RR::Result::Fail, nullptr);
+                const auto loadResult = finishedAsync->GetResult();
+                if (loadResult)
+                {
+                    const auto root = loadResult->GetRoot();
+                    qInfo(LoggingCategory::renderingSession)
+                        << tr("Loading of model succeeded.");
+                    thisPtr->m_modelName = modelName;
+                    thisPtr->setLoadedModel(loadResult);
+                    result(status, root);
+                }
+                else
+                {
+                    qWarning(LoggingCategory::renderingSession)
+                        << tr("Loading of model failed.");
+                    result(RR::Result::Fail, nullptr);
+                }
             }
         });
         m_loadModelAsync->ProgressUpdated([thisPtr, progressCallback = std::move(progressCallback)](float loadingProgress) {
@@ -902,10 +865,12 @@ RR::Result ArrSessionManager::loadModelAsync(const QString& modelName, const cha
                 progressCallback(loadingProgress);
             }
         });
-        const auto status = m_loadModelAsync->Status();
-        return status ? status.value() : RR::Result::Fail;
+        return m_loadModelAsync->GetStatus();
     }
-    return RR::Result::Success;
+    else
+    {
+        return RR::Result::ApiUnavailable;
+    }
 }
 
 void ArrSessionManager::setLoadedModel(RR::ApiHandle<RR::LoadModelResult> loadResult)
@@ -916,9 +881,8 @@ void ArrSessionManager::setLoadedModel(RR::ApiHandle<RR::LoadModelResult> loadRe
         {
             if (m_loadedModel)
             {
-                if (auto rootEx = m_loadedModel->Root())
+                if (auto root = m_loadedModel->GetRoot())
                 {
-                    auto root = rootEx.value();
                     root->Destroy();
                 }
             }
@@ -928,9 +892,9 @@ void ArrSessionManager::setLoadedModel(RR::ApiHandle<RR::LoadModelResult> loadRe
     Q_EMIT rootIdChanged();
 }
 
-RR::ApiHandle<RR::RemoteManager>& ArrSessionManager::getClientApi()
+RR::ApiHandle<RR::RemoteManager> ArrSessionManager::getClientApi()
 {
-    return m_api;
+    return (m_session && m_session->GetValid()) ? m_api : RR::ApiHandle<RR::RemoteManager>();
 }
 
 void ArrSessionManager::startInspector()
@@ -947,22 +911,20 @@ void ArrSessionManager::startInspector()
                 if (thisPtr)
                 {
                     thisPtr->m_connectToArrInspector = nullptr;
-                    const auto status = async->Status();
-                    if (status.value() != RR::Result::Success)
+                    const auto status = async->GetStatus();
+                    if (status != RR::Result::Success)
                     {
                         qWarning(LoggingCategory::renderingSession)
-                            << tr("Failed to create connection to ARR inspector. Failure reason: ") << status.value();
+                            << tr("Failed to create connection to ARR inspector. Failure reason: ") << status;
                     }
                     else
                     {
                         std::string result;
-                        if (async->Result(result))
-                        {
-                            qInfo(LoggingCategory::renderingSession)
-                                << tr("Opening inspector web page: ") << result.c_str();
-                            //try and start a browser
-                            QDesktopServices::openUrl(QUrl::fromLocalFile(result.c_str()));
-                        }
+                        async->GetResult(result);
+                        qInfo(LoggingCategory::renderingSession)
+                            << tr("Opening inspector web page: ") << result.c_str();
+                        //try and start a browser
+                        QDesktopServices::openUrl(QUrl::fromLocalFile(result.c_str()));
                     }
                 }
             });
