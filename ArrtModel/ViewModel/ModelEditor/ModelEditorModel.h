@@ -11,6 +11,7 @@ class MaterialFilteredListModel;
 class MaterialProvider;
 class ViewportModel;
 class EntitySelection;
+class StatsPageModel;
 
 // ViewModel for ModelEditorView, exposing all of the models used by the Material editor and Scene tree
 
@@ -31,21 +32,28 @@ public:
     MaterialProvider* getEditingMaterial() const;
     ViewportModel* getViewportModel() const;
 
+    StatsPageModel* getStatsPageModel() const;
+
     void unloadModel();
 
     QString getLoadedModeName() const;
 
     bool isEnabled() const;
 
+    bool getAutoRotateRoot() const;
+    void setAutoRotateRoot(bool autoRotateRoot);
+
 Q_SIGNALS:
     void onEnabledChanged();
     void loadedModelChanged();
+    void autoRotateRootChanged();
 
 private:
     ArrSessionManager* const m_sessionManager;
     SceneTreeModel* m_sceneTreeModel = nullptr;
     MaterialFilteredListModel* m_materialListModel = nullptr;
     QItemSelectionModel* m_materialListSelectionModel = nullptr;
+    StatsPageModel* m_statsPageModel = nullptr;
     MaterialProvider* m_editingMaterial = nullptr;
     Value<RR::ApiHandle<RR::Material>> m_selectedMaterial;
 

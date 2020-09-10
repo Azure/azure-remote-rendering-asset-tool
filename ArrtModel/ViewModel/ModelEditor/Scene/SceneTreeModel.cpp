@@ -1,6 +1,6 @@
 #include <Model/ArrSessionManager.h>
 #include <QDebug>
-#include <ViewModel/ModelEditor/SceneTreeModel.h>
+#include <ViewModel/ModelEditor/Scene/SceneTreeModel.h>
 
 SceneTreeModel::SceneTreeModel(ArrSessionManager* sessionManager, QObject* parent)
     : QAbstractItemModel(parent)

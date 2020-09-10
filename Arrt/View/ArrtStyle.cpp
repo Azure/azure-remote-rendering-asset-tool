@@ -44,6 +44,12 @@ QColor ArrtStyle::s_buttonPressedBackgroundColor;
 QColor ArrtStyle::s_buttonBackgroundColor;
 QColor ArrtStyle::s_underTextColor;
 
+QColor ArrtStyle::s_graphForegroundColor;
+QColor ArrtStyle::s_graphBackgroundColor;
+QColor ArrtStyle::s_graphTextColor;
+QColor ArrtStyle::s_graphLinesColor;
+QColor ArrtStyle::s_graphTooltipBackgroundColor;
+
 QColor ArrtStyle::s_buttonBorderColor;
 QColor ArrtStyle::s_buttonPressedBorderColor;
 QColor ArrtStyle::s_buttonHoverBorderColor;
@@ -90,6 +96,8 @@ const QFont ArrtStyle::s_formHeaderFont = QFont("Segoe UI", 10);
 const QFont ArrtStyle::s_notificationFont = QFont("Segoe UI", 8);
 const QFont ArrtStyle::s_mainButtonFont = QFont("Segoe UI", 20);
 const QFont ArrtStyle::s_toolbarFont = QFont("Segoe UI", 14);
+const QFont ArrtStyle::s_graphFont = QFont("Segoe UI", 8);
+const QFont ArrtStyle::s_splitterHandleFont = QFont("Segoe UI", 11, 60);
 
 int ArrtStyle::s_focusedControlBorderWidth;
 
@@ -137,6 +145,13 @@ QIcon ArrtStyle::s_conversion_failedIcon;
 QIcon ArrtStyle::s_refreshIcon;
 QIcon ArrtStyle::s_backIcon;
 QIcon ArrtStyle::s_moreActionsIcon;
+QIcon ArrtStyle::s_arrowUpIcon;
+QIcon ArrtStyle::s_arrowDownIcon;
+QIcon ArrtStyle::s_arrowLeftIcon;
+QIcon ArrtStyle::s_arrowRightIcon;
+QIcon ArrtStyle::s_sceneIcon;
+QIcon ArrtStyle::s_materialsIcon;
+QIcon ArrtStyle::s_statsIcon;
 
 ArrtStyle::ArrtStyle()
     : QProxyStyle("Fusion")
@@ -172,6 +187,13 @@ void ArrtStyle::polish(QPalette& pal)
         s_buttonPressedBackgroundColor = QColor(35, 35, 35);
         s_buttonBackgroundColor = QColor(63, 63, 63);
         s_underTextColor = QColor(200, 200, 200);
+
+        s_graphForegroundColor = Qt::white;
+        s_graphBackgroundColor = Qt::black;
+        s_graphTextColor = pal.mid().color();
+        s_graphLinesColor = QColor(70, 70, 70);
+        s_graphTooltipBackgroundColor = QColor(0, 0, 0, 200);
+
         s_buttonBorderColor = QColor(0, 0, 0, 0);
         s_buttonPressedBorderColor = pal.mid().color();
         s_buttonHoverBorderColor = s_buttonBorderColor;
@@ -205,6 +227,13 @@ void ArrtStyle::polish(QPalette& pal)
         s_buttonPressedBackgroundColor = Qt::cyan;
         s_buttonBackgroundColor = Qt::black;
         s_underTextColor = Qt::white;
+
+        s_graphForegroundColor = Qt::white;
+        s_graphBackgroundColor = Qt::black;
+        s_graphTextColor = Qt::white;
+        s_graphLinesColor = Qt::white;
+        s_graphTooltipBackgroundColor = Qt::black;
+
         s_buttonBorderColor = Qt::white;
         s_buttonPressedBorderColor = Qt::cyan;
         s_buttonHoverBorderColor = Qt::cyan;
@@ -267,6 +296,13 @@ void ArrtStyle::polish(QApplication* app)
     s_refreshIcon = QIcon(":/ArrtApplication/Icons/refresh.svg");
     s_backIcon = QIcon(":/ArrtApplication/Icons/back.svg");
     s_moreActionsIcon = QIcon(":/ArrtApplication/Icons/more_actions.svg");
+    s_arrowUpIcon = QIcon(":/ArrtApplication/Icons/arrow_up.svg");
+    s_arrowDownIcon = QIcon(":/ArrtApplication/Icons/arrow_down.svg");
+    s_arrowLeftIcon = QIcon(":/ArrtApplication/Icons/arrow_left.svg");
+    s_arrowRightIcon = QIcon(":/ArrtApplication/Icons/arrow_right.svg");
+    s_sceneIcon = QIcon(":/ArrtApplication/Icons/scene.svg");
+    s_materialsIcon = QIcon(":/ArrtApplication/Icons/materials.svg");
+    s_statsIcon = QIcon(":/ArrtApplication/Icons/stats.svg");
 
     FocusableContainer::installFocusListener(app);
 }

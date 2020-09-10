@@ -205,6 +205,11 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         horizontalSplitter->addWidget(m_settingsView);
         horizontalSplitter->addWidget(m_topLevelNavigator);
 
+        m_settingsView->setMinimumWidth(DpiUtils::size(400));
+        horizontalSplitter->setChildrenCollapsible(false);
+        horizontalSplitter->setStretchFactor(0, 0);
+        horizontalSplitter->setStretchFactor(1, 1);
+
         QSplitter* topLevelSplitter = new QSplitter(Qt::Vertical, topLevelWidget);
         topLevelSplitter->addWidget(horizontalSplitter);
         topLevelSplitter->addWidget(m_logView);

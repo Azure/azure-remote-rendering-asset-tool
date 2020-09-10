@@ -1,15 +1,17 @@
 #include <QHBoxLayout>
 #include <QTreeView>
-#include <View/ModelEditor/ScenePanelView.h>
+#include <View/ModelEditor/Scene/ScenePanelView.h>
 #include <ViewModel/ModelEditor/ModelEditorModel.h>
 
 ScenePanelView::ScenePanelView(ModelEditorModel* model, QWidget* parent /* = nullptr */)
     : QWidget(parent)
     , m_model(model)
 {
+    setContentsMargins({});
     auto* l = new QHBoxLayout(this);
-    l->setContentsMargins(0, 0, 0, 0);
+    l->setContentsMargins({});
     auto* treeView = new QTreeView(this);
+    treeView->setContentsMargins({});
     treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     treeView->setHeaderHidden(true);
     treeView->setModel(model->getSceneTreeModel());

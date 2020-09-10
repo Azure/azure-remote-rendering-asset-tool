@@ -1,6 +1,6 @@
 #include <QHBoxLayout>
 #include <QListView>
-#include <View/ModelEditor/MaterialsList.h>
+#include <View/ModelEditor/MaterialEditor/MaterialsList.h>
 #include <ViewModel/ModelEditor/ModelEditorModel.h>
 
 MaterialListView::MaterialListView(ModelEditorModel* model, QWidget* parent /* = nullptr */)

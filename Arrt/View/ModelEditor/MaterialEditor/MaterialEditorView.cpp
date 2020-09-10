@@ -1,6 +1,6 @@
 #include <Model/ModelEditor/MaterialProvider.h>
 #include <QVBoxLayout>
-#include <View/ModelEditor/MaterialEditorView.h>
+#include <View/ModelEditor/MaterialEditor/MaterialEditorView.h>
 #include <View/Parameters/BoundWidget.h>
 #include <View/Parameters/BoundWidgetFactory.h>
 #include <ViewModel/Parameters/ParameterModel.h>

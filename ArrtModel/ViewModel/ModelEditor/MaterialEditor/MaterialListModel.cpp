@@ -1,6 +1,6 @@
 #include <Model/ArrSessionManager.h>
 #include <QDebug>
-#include <ViewModel/ModelEditor/MaterialListModel.h>
+#include <ViewModel/ModelEditor/MaterialEditor/MaterialListModel.h>
 
 MaterialListModel::MaterialListModel(ArrSessionManager* sessionManager, QObject* parent)
     : QStandardItemModel(parent)

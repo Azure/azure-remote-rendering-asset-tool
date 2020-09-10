@@ -18,7 +18,6 @@ VerticalScrollArea::VerticalScrollArea(QWidget* parent)
     }
     setWidgetResizable(false);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    verticalScrollBar()->setFixedWidth(10);
 
     QScrollArea::setWidget(scrollAreaWidget);
 }

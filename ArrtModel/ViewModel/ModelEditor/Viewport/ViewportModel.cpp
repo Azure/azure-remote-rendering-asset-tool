@@ -1,4 +1,4 @@
-#include <ViewModel/ModelEditor/ViewportModel.h>
+#include <ViewModel/ModelEditor/Viewport/ViewportModel.h>
 
 #include <QMatrix4x4>
 #include <QtMath>
@@ -83,6 +83,18 @@ ViewportModel::ViewportModel(VideoSettings* videoSettings, CameraSettings* camer
         if (rootEntity)
         {
             initAfterLoading();
+        }
+    });
+
+    QObject::connect(m_sessionManager, &ArrSessionManager::autoRotateRootChanged, this, [this]() {
+        m_autoRotationAngle = 0.0;
+        if (!m_sessionManager->getAutoRotateRoot())
+        {
+            //reset root rotation
+            if (RR::ApiHandle<RR::Entity> root = getRoot())
+            {
+                root->Rotation(m_originalRotation);
+            }
         }
     });
 
@@ -396,6 +408,19 @@ void ViewportModel::stepCamera()
         timeDelta = float(double(m_timeFromLastUpdate.restart()) / 1000.0);
     }
 
+    if (m_sessionManager->getAutoRotateRoot())
+    {
+        m_autoRotationAngle += float(m_videoSettings->getRefreshRate()) / 30.0f;
+        QVector3D center = (m_modelBbMin + m_modelBbMax) / 2.0;
+
+        RR::ApiHandle<RR::Entity> root = getRoot();
+        if (root)
+        {
+            QVector4D v = QQuaternion::fromEulerAngles(10.0f + qSin(m_autoRotationAngle / 100) * 30.0, m_autoRotationAngle, 0).inverted().toVector4D();
+            root->Rotation({v.x(), v.y(), v.z(), v.w()});
+        }
+    }
+
     // only step if the time delta is 0 < d < 1s
     if (timeDelta > 0 && timeDelta < 1.0f)
     {
@@ -478,6 +503,7 @@ void ViewportModel::setSelectionModel(EntitySelection* selectionModel)
     }
 }
 
+
 void ViewportModel::update()
 {
     if (auto&& binding = getBinding())
@@ -486,8 +512,10 @@ void ViewportModel::update()
         m_simUpdate.frameId++;
 
         QMatrix4x4 m;
+
         m.rotate(m_cameraRotation.inverted());
         m.translate(-m_cameraPosition);
+        QVector3D center = (m_modelBbMin + m_modelBbMax) / 2.0;
 
         convertMatrix(m_simUpdate.viewTransform, m);
         bool success = false;
@@ -498,8 +526,6 @@ void ViewportModel::update()
         }
 
         binding->Update(m_simUpdate, &outputUpdate);
-        float np = outputUpdate.nearPlaneDistance;
-        np = np;
     }
 }
 
@@ -610,6 +636,7 @@ void ViewportModel::initAfterLoading(const QVector3D& minBB, const QVector3D& ma
     {
         RR::Float3 scale = *root->Scale();
         m_modelScale = QVector3D(scale.x, scale.y, scale.z);
+        m_originalRotation = *root->Rotation();
     }
     m_oldScale = 1.0;
 

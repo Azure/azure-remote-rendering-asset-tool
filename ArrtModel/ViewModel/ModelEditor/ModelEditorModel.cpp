@@ -1,10 +1,11 @@
 #include <Model/ArrSessionManager.h>
 #include <Model/ModelEditor/EntitySelection.h>
 #include <Model/ModelEditor/MaterialProvider.h>
-#include <ViewModel/ModelEditor/MaterialListModel.h>
+#include <ViewModel/ModelEditor/MaterialEditor/MaterialListModel.h>
 #include <ViewModel/ModelEditor/ModelEditorModel.h>
-#include <ViewModel/ModelEditor/SceneTreeModel.h>
-#include <ViewModel/ModelEditor/ViewportModel.h>
+#include <ViewModel/ModelEditor/Scene/SceneTreeModel.h>
+#include <ViewModel/ModelEditor/Stats/StatsPageModel.h>
+#include <ViewModel/ModelEditor/Viewport/ViewportModel.h>
 
 #include <utility>
 
@@ -14,6 +15,8 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
     , m_selectedMaterial(nullptr)
 {
     m_sceneTreeModel = new SceneTreeModel(sessionManager, this);
+    m_statsPageModel = new StatsPageModel(sessionManager->getServiceStats(), sessionManager, this);
+
     m_materialListModel = new MaterialFilteredListModel(this);
     auto* materialListModel = new MaterialListModel(sessionManager, m_materialListModel);
     m_materialListModel->setSourceModel(materialListModel);
@@ -109,6 +112,10 @@ ModelEditorModel::ModelEditorModel(ArrSessionManager* sessionManager, QObject* p
     connect(m_sessionManager, &ArrSessionManager::onEnabledChanged, this, [this]() {
         Q_EMIT onEnabledChanged();
     });
+
+    connect(m_sessionManager, &ArrSessionManager::autoRotateRootChanged, this, [this]() {
+        Q_EMIT autoRotateRootChanged();
+    });
 }
 
 QAbstractItemModel* ModelEditorModel::getSceneTreeModel() const
@@ -147,6 +154,10 @@ ViewportModel* ModelEditorModel::getViewportModel() const
     return m_sessionManager->getViewportModel();
 }
 
+StatsPageModel* ModelEditorModel::getStatsPageModel() const
+{
+    return m_statsPageModel;
+}
 
 void ModelEditorModel::onSelectionChanged(const QItemSelection& /*selected*/, const QItemSelection& /*deselected*/)
 {
@@ -199,4 +210,14 @@ QString ModelEditorModel::getLoadedModeName() const
 bool ModelEditorModel::isEnabled() const
 {
     return m_sessionManager->isEnabled();
+}
+
+bool ModelEditorModel::getAutoRotateRoot() const
+{
+    return m_sessionManager->getAutoRotateRoot();
+}
+
+void ModelEditorModel::setAutoRotateRoot(bool autoRotateRoot)
+{
+    m_sessionManager->setAutoRotateRoot(autoRotateRoot);
 }

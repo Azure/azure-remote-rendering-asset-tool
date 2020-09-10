@@ -186,6 +186,10 @@ private:
     // cached value for the clipping sphere
     float m_clippingSphereRadius = 0;
 
+    bool m_modelAutoRotation = false;
+    float m_autoRotationAngle = 0.0;
+    RR::Quaternion m_originalRotation;
+
     void update();
     void initializeClient();
     void deinitializeClient();
