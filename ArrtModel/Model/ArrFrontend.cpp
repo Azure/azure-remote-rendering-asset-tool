@@ -14,7 +14,7 @@ ArrFrontend::ArrFrontend(QObject* parent)
     ci.up = RR::Axis::Y;
     ci.forward = RR::Axis::Z;
     ci.unitsPerMeter = 1.0F;
-    ci.toolId = std::string("ARRT");
+    ci.toolId = std::string("ARRT." ARRT_VERSION );
     RR::StartupRemoteRendering(ci);
 }
 
