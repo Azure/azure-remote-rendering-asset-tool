@@ -93,15 +93,15 @@ When a material is selected, the lower area shows all of its editable properties
 
 ![Statistics panel](media/statspanel.png)
 
-At the bottom of the windows you have access to the panel for the statistics. Here you can start and stop the stats collection and visualize the data of the current collection.
+At the bottom of the windows you have access to the statistics panel. Here you can start and stop the statistics collection and visualize the data of the current collection.
 
-Each stats value has 4 values displayed in the table:
+Each statistic has 4 values displayed in the table:
 
 * Value. This is the summary of the values in the last second. The type of summarization depends on the source value (sum for the frame usage stats, min/max for the delta, average for all of the others)
 * Minimum/Maximum/Average. This is the minimum/maximum/average of the summarized per-second value, computed since the collection started.
 
-The stats values are organized in groups. If you click on the value, its group is expanded and a graph will show the live progress over time. On the X axis you can have either the raw data received each frame, or the summarized data per second. Switch between the two modes using the combobox on the top right corner.
+The statistics are organized in groups. If you click on any statistic, its group is expanded and a graph will show the live progress over time. On the X axis you can have either the raw data received each frame, or the summarized data per second. Switch between the two modes using the combobox at the top right corner.
 
 Hover with the mouse to inspect the values on the graph at a specific time.
 
-To have an automatic benchmark of the performance, you can click on "Start auto-collecting". This function runs a collection for a fixed amount of time, while rotating the model, to emulate a client activity.
+To have an automatic benchmark of the performance, you can click on "Start auto-collecting". This function runs a collection for a fixed amount of time, while rotating the model, to emulate client usage.
