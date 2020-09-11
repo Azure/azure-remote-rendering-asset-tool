@@ -8,7 +8,9 @@
 #include <Model/IncludesAzureRemoteRendering.h>
 #include <Model/IncludesAzureStorage.h>
 #include <QAction>
+#include <QApplication>
 #include <QDesktopServices>
+#include <QPointer>
 #include <QStandardPaths>
 #include <QUrl>
 #include <ViewModel/AboutModel.h>
@@ -120,9 +122,11 @@ LogModel* ApplicationModel::getLogModel() const
 
 void ApplicationModel::checkNewVersion()
 {
+    QPointer<ApplicationModel> thisPtr = this;
+
     using namespace web::http;
     client::http_client client(L"https://api.github.com/repos/Azure/azure-remote-rendering-asset-tool/releases/latest");
-    client.request(methods::GET).then([this](const pplx::task<http_response>& previousTask) {
+    client.request(methods::GET).then([thisPtr](const pplx::task<http_response>& previousTask) {
         // in case of any exception, don't show the dialog
         try
         {
@@ -134,8 +138,13 @@ void ApplicationModel::checkNewVersion()
                 QString currentVersion(ARRT_VERSION);
                 if (currentVersion != newVersion)
                 {
-                    NewVersionModel* model = new NewVersionModel(currentVersion, newVersion);
-                    Q_EMIT openNewVersionDialogRequested(model);
+                    QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, currentVersion, newVersion]() {
+                        if (thisPtr)
+                        {
+                            NewVersionModel* model = new NewVersionModel(currentVersion, newVersion);
+                            Q_EMIT thisPtr->openNewVersionDialogRequested(model);
+                        }
+                    });
                 }
             }
         }

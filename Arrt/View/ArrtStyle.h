@@ -16,15 +16,21 @@ public:
     static QColor s_focusedControlBorderColor;
     static int s_focusedControlBorderWidth;
 
-    static QColor s_buttonBorderColor;
-    static QColor s_buttonHoverBorderColor;
-    static QColor s_buttonPressedBorderColor;
-    static QColor s_buttonTextColor;
-    static QColor s_buttonPressedTextColor;
+    struct ButtonColor
+    {
+        QColor m_text;
+        QColor m_background;
+        QColor m_border;
+    };
+
+    static ButtonColor s_buttonEnabledColors;
+    static ButtonColor s_buttonDisabledColors;
+    static ButtonColor s_buttonHoverColors;
+    static ButtonColor s_buttonPressedColors;
+    static ButtonColor s_buttonPressedDisabledColors;
+    static ButtonColor s_buttonPressedHoverColors;
 
     static QColor s_listSeparatorColor;
-    static QColor s_buttonPressedBackgroundColor;
-    static QColor s_buttonBackgroundColor;
     static QColor s_underTextColor;
 
     static QColor s_graphForegroundColor;

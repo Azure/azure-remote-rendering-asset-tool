@@ -77,7 +77,7 @@ void SessionInfoButton::paintEvent(QPaintEvent*)
     timeIconBox.moveRight(r.right() - arrowSpace);
 
     p.setPen(Qt::NoPen);
-    p.setBrush(ArrtStyle::s_buttonPressedBackgroundColor);
+    p.setBrush(ArrtStyle::s_buttonPressedColors.m_background);
     p.drawRoundedRect(timeIconBox, 8.0, 8.0);
 
     QRect iconRect;
@@ -99,7 +99,7 @@ void SessionInfoButton::paintEvent(QPaintEvent*)
     QPointF diff = timeRect.center() - timeTightRect.center() + QPoint(0, 1);
     timeBoundingRect.translate(diff);
 
-    p.setPen(ArrtStyle::s_buttonPressedTextColor);
+    p.setPen(ArrtStyle::s_buttonPressedColors.m_text);
     p.setFont(ArrtStyle::s_sessionTimeFont);
     p.drawText(timeBoundingRect, Qt::AlignTop, getTimeString());
 
