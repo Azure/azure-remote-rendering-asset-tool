@@ -33,6 +33,32 @@ namespace
             return false;
         }
     }
+
+    ArrtStyle::ButtonColor getColorsFromState(const QStyle::State& state)
+    {
+        if (state.testFlag(QStyle::State_Raised))
+        {
+            if (state.testFlag(QStyle::State_Enabled))
+            {
+                return state.testFlag(QStyle::State_MouseOver) ? ArrtStyle::s_buttonHoverColors : ArrtStyle::s_buttonEnabledColors;
+            }
+            else
+            {
+                return ArrtStyle::s_buttonDisabledColors;
+            }
+        }
+        else
+        {
+            if (state.testFlag(QStyle::State_Enabled))
+            {
+                return state.testFlag(QStyle::State_MouseOver) ? ArrtStyle::s_buttonPressedHoverColors : ArrtStyle::s_buttonPressedColors;
+            }
+            else
+            {
+                return ArrtStyle::s_buttonPressedDisabledColors;
+            }
+        }
+    }
 } // namespace
 
 const int ArrtStyle::s_controlHeight = 30;
@@ -40,8 +66,6 @@ const int ArrtStyle::s_controlHeight = 30;
 QColor ArrtStyle::s_focusedControlBorderColor;
 
 QColor ArrtStyle::s_listSeparatorColor;
-QColor ArrtStyle::s_buttonPressedBackgroundColor;
-QColor ArrtStyle::s_buttonBackgroundColor;
 QColor ArrtStyle::s_underTextColor;
 
 QColor ArrtStyle::s_graphForegroundColor;
@@ -50,12 +74,12 @@ QColor ArrtStyle::s_graphTextColor;
 QColor ArrtStyle::s_graphLinesColor;
 QColor ArrtStyle::s_graphTooltipBackgroundColor;
 
-QColor ArrtStyle::s_buttonBorderColor;
-QColor ArrtStyle::s_buttonPressedBorderColor;
-QColor ArrtStyle::s_buttonHoverBorderColor;
-QColor ArrtStyle::s_buttonTextColor;
-QColor ArrtStyle::s_buttonPressedTextColor;
-
+ArrtStyle::ButtonColor ArrtStyle::s_buttonEnabledColors;
+ArrtStyle::ButtonColor ArrtStyle::s_buttonDisabledColors;
+ArrtStyle::ButtonColor ArrtStyle::s_buttonHoverColors;
+ArrtStyle::ButtonColor ArrtStyle::s_buttonPressedColors;
+ArrtStyle::ButtonColor ArrtStyle::s_buttonPressedDisabledColors;
+ArrtStyle::ButtonColor ArrtStyle::s_buttonPressedHoverColors;
 
 static QColor s_listSeparatorColor;
 static QColor s_buttonCheckedColor;
@@ -184,8 +208,6 @@ void ArrtStyle::polish(QPalette& pal)
 
         s_focusedControlBorderColor = pal.windowText().color();
         s_listSeparatorColor = QColor(60, 60, 60);
-        s_buttonPressedBackgroundColor = QColor(35, 35, 35);
-        s_buttonBackgroundColor = QColor(63, 63, 63);
         s_underTextColor = QColor(200, 200, 200);
 
         s_graphForegroundColor = Qt::white;
@@ -194,12 +216,14 @@ void ArrtStyle::polish(QPalette& pal)
         s_graphLinesColor = QColor(70, 70, 70);
         s_graphTooltipBackgroundColor = QColor(0, 0, 0, 200);
 
-        s_buttonBorderColor = QColor(0, 0, 0, 0);
-        s_buttonPressedBorderColor = pal.mid().color();
-        s_buttonHoverBorderColor = s_buttonBorderColor;
-        s_buttonTextColor = pal.text().color();
-        s_buttonPressedTextColor = s_buttonTextColor;
         s_focusedControlBorderWidth = 2;
+
+        s_buttonEnabledColors = {pal.text().color(), QColor(63, 63, 63), QColor(0, 0, 0, 0)};
+        s_buttonDisabledColors = {pal.color(QPalette::Disabled, QPalette::Text), QColor(63, 63, 63), QColor(0, 0, 0, 0)};
+        s_buttonHoverColors = {pal.text().color().lighter(), QColor(80, 80, 80), QColor(0, 0, 0, 0)};
+        s_buttonPressedColors = {pal.text().color(), QColor(35, 35, 35), pal.mid().color()};
+        s_buttonPressedDisabledColors = {pal.color(QPalette::Disabled, QPalette::Text), QColor(35, 35, 35), pal.mid().color()};
+        s_buttonPressedHoverColors = {pal.text().color().lighter(), QColor(35, 35, 35).lighter(), pal.mid().color().lighter()};
     }
     else
     {
@@ -224,8 +248,6 @@ void ArrtStyle::polish(QPalette& pal)
 
         s_focusedControlBorderColor = Qt::white;
         s_listSeparatorColor = Qt::white;
-        s_buttonPressedBackgroundColor = Qt::cyan;
-        s_buttonBackgroundColor = Qt::black;
         s_underTextColor = Qt::white;
 
         s_graphForegroundColor = Qt::white;
@@ -234,12 +256,14 @@ void ArrtStyle::polish(QPalette& pal)
         s_graphLinesColor = Qt::white;
         s_graphTooltipBackgroundColor = Qt::black;
 
-        s_buttonBorderColor = Qt::white;
-        s_buttonPressedBorderColor = Qt::cyan;
-        s_buttonHoverBorderColor = Qt::cyan;
-        s_buttonTextColor = Qt::white;
-        s_buttonPressedTextColor = Qt::black;
         s_focusedControlBorderWidth = 4;
+
+        s_buttonEnabledColors = {Qt::white, Qt::black, Qt::white};
+        s_buttonDisabledColors = {Qt::green, Qt::black, Qt::green};
+        s_buttonHoverColors = {Qt::white, Qt::black, Qt::cyan};
+        s_buttonPressedColors = {Qt::black, Qt::cyan, Qt::cyan};
+        s_buttonPressedDisabledColors = {Qt::black, Qt::green, Qt::green};
+        s_buttonPressedHoverColors = s_buttonPressedColors;
     }
     pal.setColor(QPalette::ToolTipBase, pal.base().color());
     pal.setColor(QPalette::ToolTipText, pal.mid().color());
@@ -356,8 +380,10 @@ void ArrtStyle::drawControl(ControlElement element, const QStyleOption* opt, QPa
                 if (!proxy()->styleHint(SH_UnderlineShortcut, opt, widget))
                     alignment |= Qt::TextHideMnemonic;
 
+                const ButtonColor bc = getColorsFromState(toolbutton->state);
+
                 // text color override, using our palette
-                QColor textColor = toolbutton->state.testFlag(State_Raised) ? s_buttonTextColor : s_buttonPressedTextColor;
+                const QColor textColor = bc.m_text;
                 QPalette pal = toolbutton->palette;
 
                 if (textColor != toolbutton->palette.text().color())
@@ -459,33 +485,16 @@ void ArrtStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* opti
         {
             QRect r = option->rect.adjusted(0, 0, -1, -1);
 
-            bool isRaised = option->state.testFlag(State_Raised);
-            if (qobject_cast<const QComboBox*>(widget) != nullptr)
+            auto state = option->state;
+            if (qobject_cast<const QComboBox*>(widget))
             {
-                isRaised = true;
-            }
-            // on a toggle button the checked state is dark and unchecked one is slightly lighter than the background
-            QColor rectColor = isRaised ? s_buttonBackgroundColor : s_buttonPressedBackgroundColor;
-
-            // while mouse is pressed, the button is a bit darker
-            if (option->state.testFlag(State_Sunken))
-            {
-                rectColor = rectColor.darker();
+                state.setFlag(State_Raised, true);
             }
 
-            // on mouse over the button is a bit lighter
-            if (option->state.testFlag(State_MouseOver))
-            {
-                rectColor = rectColor.lighter(120);
-            }
+            const ButtonColor bc = getColorsFromState(state);
 
-
-            if (isRaised)
-            {
-                painter->setPen(isRaised ? s_buttonBorderColor : s_buttonPressedBorderColor);
-            }
-
-            painter->setBrush(rectColor);
+            painter->setPen(bc.m_border);
+            painter->setBrush(bc.m_background);
 
             painter->drawRoundedRect(r.adjusted(1, 1, -1, -1), 5.0, 5.0);
             if (option->state.testFlag(State_HasFocus))
