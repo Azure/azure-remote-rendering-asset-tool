@@ -10,8 +10,8 @@ OutputSelectionModel::OutputSelectionModel(AzureStorageManager* storageManager, 
     : QObject(parent)
     , m_storageManager(storageManager)
     , m_configuration(configuration)
-    , m_containersModel(new BlobContainerSelectorModel(storageManager, defaultContainer(std::move(container)), ConversionManager::s_default_output_container, true, this))
-    , m_explorerModel(new BlobExplorerModel(storageManager, m_containersModel->getCurrentContainer(), defaultDirectory(std::move(directory)), this))
+    , m_containersModel(new BlobContainerSelectorModel(storageManager, container, ConversionManager::s_default_output_container, true, this))
+    , m_explorerModel(new BlobExplorerModel(storageManager, m_containersModel->getCurrentContainer(), directory, this))
 {
     auto filterType = m_configuration->getUiState(QLatin1Literal("outputSelection:filterType"), BlobsListModel::FilterType::OnlySubDirectories);
     m_explorerModel->getBlobsModel()->setFilterType(filterType);
@@ -20,31 +20,6 @@ OutputSelectionModel::OutputSelectionModel(AzureStorageManager* storageManager, 
         m_explorerModel->setContainer(m_containersModel->getCurrentContainer());
     });
 }
-
-QString OutputSelectionModel::defaultContainer(QString container) const
-{
-    if (container.isEmpty())
-    {
-        return m_configuration->getUiState(QLatin1Literal("outputSelection:defaultContainer"), QString());
-    }
-    else
-    {
-        return container;
-    }
-}
-
-QString OutputSelectionModel::defaultDirectory(QString directory) const
-{
-    if (directory.isEmpty())
-    {
-        return m_configuration->getUiState(QLatin1Literal("outputSelection:defaultDirectory"), QString());
-    }
-    else
-    {
-        return directory;
-    }
-}
-
 
 OutputSelectionModel::~OutputSelectionModel()
 {

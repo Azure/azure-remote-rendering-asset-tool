@@ -33,7 +33,4 @@ private:
     Configuration* const m_configuration;
     BlobContainerSelectorModel* const m_containersModel;
     BlobExplorerModel* const m_explorerModel;
-
-    QString defaultContainer(QString container) const;
-    QString defaultDirectory(QString directory) const;
 };

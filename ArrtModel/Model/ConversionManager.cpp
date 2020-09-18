@@ -1,5 +1,6 @@
 #include <Model/ArrFrontend.h>
 #include <Model/AzureStorageManager.h>
+#include <Model/Configuration.h>
 #include <Model/ConversionManager.h>
 #include <Model/Log/LogHelpers.h>
 #include <QApplication>
@@ -129,10 +130,11 @@ void Conversion::updateConversionStatus(Conversion::Status newStatus, const QStr
     }
 }
 
-ConversionManager::ConversionManager(ArrFrontend* azureFrontend, AzureStorageManager* storageManager, QObject* parent)
+ConversionManager::ConversionManager(ArrFrontend* azureFrontend, AzureStorageManager* storageManager, Configuration* configuration, QObject* parent)
     : QObject(parent)
     , m_frontend(azureFrontend)
     , m_storageManager(storageManager)
+    , m_configuration(configuration)
 {
     auto onStatusChanged = [this]() {
         const bool enabled = m_frontend->getStatus() == AccountConnectionStatus::Authenticated &&
@@ -214,8 +216,11 @@ ConversionManager::ConversionId ConversionManager::addNewConversion()
 
     auto* newConversion = new Conversion();
     newConversion->m_output_storage_account_name = QString::fromStdWString(m_storageManager->getAccountName()).toStdString();
-    newConversion->m_output_blob_container_name = s_default_output_container.toStdString();
-    newConversion->m_outputContainer = m_storageManager->getContainerUriFromName(s_default_output_container);
+
+    const QString outputContainer = m_configuration->getUiState(QLatin1Literal("outputSelection:defaultContainer"), s_default_output_container);
+    newConversion->m_output_blob_container_name = outputContainer.toStdString();
+    newConversion->m_outputContainer = m_storageManager->getContainerUriFromName(outputContainer);
+    newConversion->m_output_folder = m_configuration->getUiState(QLatin1Literal("outputSelection:defaultDirectory"), QString()).toStdString();
 
     m_conversions.insert(newConversionId, newConversion);
 
