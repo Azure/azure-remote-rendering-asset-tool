@@ -46,7 +46,7 @@ ApplicationModel::ApplicationModel()
     m_logModel = new LogModel(m_configuration, this);
     m_frontend = new ArrFrontend(this);
     m_storageManager = new AzureStorageManager(this);
-    m_conversionManager = new ConversionManager(m_frontend, m_storageManager, this);
+    m_conversionManager = new ConversionManager(m_frontend, m_storageManager, m_configuration, this);
     m_sessionManager = new ArrSessionManager(m_frontend, m_configuration, this);
     m_renderPageModel = new RenderPageModel(m_storageManager, m_sessionManager, m_configuration, this);
     m_uploadModel = new UploadModel(m_storageManager, m_configuration, this);

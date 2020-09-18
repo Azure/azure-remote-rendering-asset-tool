@@ -11,6 +11,7 @@
 
 class AzureStorageManager;
 class ArrFrontend;
+class Configuration;
 
 // struct representing an conversion. It holds the current status and the parameters used (input/output)
 
@@ -133,7 +134,7 @@ class ConversionManager : public QObject
 public:
     typedef uint ConversionId;
 
-    ConversionManager(ArrFrontend* client, AzureStorageManager* storageManager, QObject* parent = nullptr);
+    ConversionManager(ArrFrontend* client, AzureStorageManager* storageManager, Configuration* configuration, QObject* parent = nullptr);
     ~ConversionManager();
 
     int getConversionsCount() const;
@@ -170,6 +171,8 @@ private:
     ArrFrontend* const m_frontend;
     // this is only needed to generate SAS from the input urls. <TODO> see if it can be removed
     AzureStorageManager* const m_storageManager;
+
+    Configuration* const m_configuration;
 
     // map from conversion ID to conversion data
     QMap<ConversionId, Conversion*> m_conversions;
