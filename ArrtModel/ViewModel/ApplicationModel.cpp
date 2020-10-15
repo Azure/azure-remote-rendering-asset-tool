@@ -71,6 +71,11 @@ void ApplicationModel::openDocumentation() const
     QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/blob/master/Documentation/index.md"));
 }
 
+void ApplicationModel::openPrivacyStatement() const
+{
+    QDesktopServices::openUrl(QUrl("https://privacy.microsoft.com/privacystatement"));
+}
+
 AboutModel* ApplicationModel::getAboutModel() const
 {
     return m_aboutModel;
