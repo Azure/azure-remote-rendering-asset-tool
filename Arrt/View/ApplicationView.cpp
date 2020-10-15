@@ -161,6 +161,7 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         connect(menu->addAction(tr("Send feedback")), &QAction::triggered, this, [this]() { m_model->openFeedback(); });
         connect(menu->addAction(tr("File an issue")), &QAction::triggered, this, [this]() { m_model->openFileNewIssue(); });
         connect(menu->addAction(tr("Open documentation")), &QAction::triggered, this, [this]() { m_model->openDocumentation(); });
+        connect(menu->addAction(tr("Privacy statement")), &QAction::triggered, this, [this]() { m_model->openPrivacyStatement(); });
 
         menu->addSeparator();
         connect(menu->addAction(tr("About ARRT")), &QAction::triggered, this, [this]() { openAboutDialog(); });

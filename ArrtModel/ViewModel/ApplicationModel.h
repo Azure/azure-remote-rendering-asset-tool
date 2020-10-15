@@ -39,6 +39,7 @@ public:
     void openFileNewIssue() const;
     void openFeedback() const;
     void openDocumentation() const;
+    void openPrivacyStatement() const;
     AboutModel* getAboutModel() const;
     void closeApplication();
 
