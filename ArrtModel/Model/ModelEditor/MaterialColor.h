@@ -31,7 +31,9 @@ public:
         DoubleSided = 2,    ///< The material is rendered double-sided, otherwise back faces are culled.
         FadeToBlack = 4,    ///< If enabled, this material fades to black as opposed to fading to transparent when used with SetFadeOut. Fading to black has the same effect
                             ///< on see-through devices like Hololens but has less GPU cost associated with it.
-        AlphaClipped = 8    ///< Enables hard cut-outs on a per-pixel basis based on the alpha value being below a threshold. This works for opaque materials as well.
+        AlphaClipped = 8,   ///< Enables hard cut-outs on a per-pixel basis based on the alpha value being below a threshold. This works for opaque materials as well.
+        FresnelEffect = 32, ///< If enabled this material will have a Fresnel effect additively added to the rendering of the base material. Use the FresnelEffectExponent and FresnelEffectColor 
+                            /// to control the effect visuals.
     };
 
     Q_ENUM(ColorMaterialFeatures)
@@ -46,6 +48,8 @@ public:
     ARRT_PROPERTY(float, FadeOut);
     ARRT_PROPERTY(float, VertexMix);
     ARRT_PROPERTY(float, AlphaClipThreshold);
+    ARRT_PROPERTY(RR::Color4, FresnelEffectColor);
+    ARRT_PROPERTY(float, FresnelEffectExponent);
 
 private:
     const RR::ApiHandle<RR::ColorMaterial> getMaterial() const;
