@@ -14,7 +14,7 @@
         "type": "NuGet",
         "NuGet": {
           "Name": "Microsoft.Azure.RemoteRendering.Cpp",
-          "Version": "0.1.52"
+          "Version": "0.1.65"
         }
       }
     },
