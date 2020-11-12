@@ -28,6 +28,8 @@ MaterialPBR::MaterialPBR(ArrSessionManager* sessionManager, QObject* parent)
     m_controls.push_back(new TextureModel(tr("Metalness Map"), this, "MetalnessMap"sv));
     m_controls.push_back(new FloatSliderModel(tr("Alpha Clip Threshold"), this, "AlphaClipThreshold"sv, 0.0f, 1.0f, 1000));
     m_controls.push_back(new FloatSliderModel(tr("Fade Out"), this, "FadeOut"sv, 0.0f, 1.0f, 1000));
+    m_controls.push_back(new ColorModel(tr("Fresnel Effect Color"), this, "FresnelEffectColor"sv));
+    m_controls.push_back(new FloatSliderModel(tr("Fresnel Effect Exponent"), this, "FresnelEffectExponent"sv, 0.01f, 10.0f, 10000));
 }
 
 RR::ApiHandle<RR::PbrMaterial> MaterialPBR::getMaterial()
