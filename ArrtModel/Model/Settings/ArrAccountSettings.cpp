@@ -11,10 +11,16 @@ ArrAccountSettings::ArrAccountSettings(QObject* parent)
 {
     // initialize the regions
     m_availableRegions = {
-        {"West US", "westus2.mixedreality.azure.com"},
+        {"Australia East", "australiaeast.mixedreality.azure.com"},
         {"East US", "eastus.mixedreality.azure.com"},
+        {"East US 2", "eastus2.mixedreality.azure.com"},
+        {"Japan East", "japaneast.mixedreality.azure.com"},
+        {"North Europe", "northeurope.mixedreality.azure.com"},
+        {"South Central US", "southcentralus.mixedreality.azure.com"},
+        {"Southeast Asia", "southeastasia.mixedreality.azure.com"},
+        {"UK South", "uksouth.mixedreality.azure.com"},
         {"West Europe", "westeurope.mixedreality.azure.com"},
-        {"Southeast Asia", "southeastasia.mixedreality.azure.com"}};
+        {"West US", "westus2.mixedreality.azure.com"}};
 }
 
 void ArrAccountSettings::loadFromJson(const QJsonObject& arrAccountConfig)
