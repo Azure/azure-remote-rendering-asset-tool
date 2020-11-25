@@ -37,7 +37,7 @@ FormControl::FormControl(QWidget* parent)
     l->setSpacing(2);
     l->addWidget(m_header);
 
-    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 }
 
 QString FormControl::getHeader() const
