@@ -3,34 +3,37 @@
 
 using namespace std::literals;
 
-StatsPageModel::PlotInfo StatsPageModel::m_plotInfo[] = {
-    {"Polygons rendered", Qt::white, "", true, 0, {}},
+StatsPageModel::PlotInfo StatsPageModel::s_plotInfos[] = {
+    {"Polygons rendered", Qt::white, "", 0, {}},
+    {"Latency (pose to receive average)", Qt::yellow, " ms", 0, {}},
+    {"Latency (receive to present average)", Qt::cyan, " ms", 0, {}},
+    {"Latency (present to display average)", Qt::magenta, " ms", 0, {}},
+    {"Time since last present", Qt::white, " ms", 0, {}},
+    {"Frames received", Qt::green, "", 0, {}},
+    {"Frames reused", Qt::cyan, "", 0, {}},
+    {"Frames skipped", Qt::yellow, "", 0, {}},
+    {"Frames discarded", Qt::red, "", 0, {}},
+    {"Frame minimum delta", Qt::yellow, QString(" ms"), 0, {}},
+    {"Frame maximum delta", Qt::white, QString(" ms"), 0, {}},
+    {"Network round-trip", Qt::white, QString(" ms"), 0, {}},
+    {"Frame time CPU", Qt::yellow, QString(" ms"), 0, {}},
+    {"Frame time GPU", Qt::magenta, QString(" ms"), 0, {}},
+    {"Utilization CPU", Qt::yellow, QString(" %"), 0, 100},
+    {"Utilization GPU", Qt::magenta, QString(" %"), 0, 100},
+    {"Memory CPU", Qt::yellow, QString(" %"), 0, 100},
+    {"Memory GPU", Qt::magenta, QString(" %"), 0, 100}};
 
-    {"Latency (pose to receive average)", Qt::yellow, " ms", false, 0, {}},
-    {"Latency (receive to present average)", Qt::cyan, " ms", false, 0, {}},
-    {"Latency (present to display average)", Qt::magenta, " ms", true, 0, {}},
-
-    {"Time since last present", Qt::white, " ms", true, 0, {}},
-
-    {"Frames received", Qt::green, "", true, 0, {}},
-
-    {"Frames reused", Qt::cyan, "", false, 0, {}},
-    {"Frames skipped", Qt::yellow, "", false, 0, {}},
-    {"Frames discarded", Qt::red, "", true, 0, {}},
-
-    {"Frame minimum delta", Qt::yellow, QString(" ms"), false, 0, {}},
-    {"Frame maximum delta", Qt::white, QString(" ms"), true, 0, {}},
-
-    {"Network round-trip", Qt::white, QString(" ms"), true, 0, {}},
-
-    {"Frame time CPU", Qt::yellow, QString(" ms"), false, 0, {}},
-    {"Frame time GPU", Qt::magenta, QString(" ms"), true, 0, {}},
-
-    {"Utilization CPU", Qt::yellow, QString(" %"), false, 0, 100},
-    {"Utilization GPU", Qt::magenta, QString(" %"), true, 0, 100},
-
-    {"Memory CPU", Qt::yellow, QString(" %"), false, 0, 100},
-    {"Memory GPU", Qt::magenta, QString(" %"), true, 0, 100}};
+StatsPageModel::PlotGroup StatsPageModel::s_plotGroups[] = {
+    {"Polygon count", {POLYGONS_RENDERED}},
+    {"Latency", {LATENCY_POSE_RECEIVE, LATENCY_RECEIVE_PRESENT, LATENCY_PRESENT_DISPLAY}},
+    {{}, {TIME_SINCE_LAST_PRESENT}},
+    {{}, {FRAMES_RECEIVED}},
+    {"Frames information", {FRAMES_REUSED, FRAMES_SKIPPED, FRAMES_DISCARDED}},
+    {"Frame delta", {FRAME_MINIMUM_DELTA, FRAME_MAXIMUM_DELTA}},
+    {{}, {NETWORK_ROUNDTRIP}},
+    {"Frame time", {FRAME_TIME_CPU, FRAME_TIME_GPU}},
+    {"Resources", {UTILIZATION_CPU, UTILIZATION_GPU}},
+    {"Memory", {MEMORY_CPU, MEMORY_GPU}}};
 
 
 StatsPageModel::StatsPageModel(ArrServiceStats* serviceStats, ArrSessionManager* sessionManager, QObject* parent)
@@ -107,56 +110,60 @@ QString StatsPageModel::getAutoCollectText() const
     }
 }
 
-int StatsPageModel::getParameterCount() const
+int StatsPageModel::getPlotGroupCount() const
 {
-    return sizeof(m_plotInfo) / sizeof(m_plotInfo[0]);
+    return sizeof(s_plotGroups) / sizeof(s_plotGroups[0]);
 }
 
-
-const StatsPageModel::PlotInfo& StatsPageModel::getPlotInfo(int index) const
+const StatsPageModel::PlotGroup& StatsPageModel::getPlotGroup(int index) const
 {
-    return m_plotInfo[index];
+    return s_plotGroups[index];
 }
 
-double StatsPageModel::getParameter(int index) const
+const StatsPageModel::PlotInfo& StatsPageModel::getPlotInfo(ValueType type) const
 {
-    switch (index)
+    return s_plotInfos[type];
+}
+
+double StatsPageModel::getParameter(ValueType type) const
+{
+    switch (type)
     {
-        case 0:
+        case POLYGONS_RENDERED:
             return m_stats.m_polygonsRendered.m_perWindowStats.m_value;
-        case 1:
+        case LATENCY_POSE_RECEIVE:
             return m_stats.m_latencyPoseToReceive.m_perWindowStats.m_value;
-        case 2:
+        case LATENCY_RECEIVE_PRESENT:
             return m_stats.m_latencyReceiveToPresent.m_perWindowStats.m_value;
-        case 3:
+        case LATENCY_PRESENT_DISPLAY:
             return m_stats.m_latencyPresentToDisplay.m_perWindowStats.m_value;
-        case 4:
+        case TIME_SINCE_LAST_PRESENT:
             return m_stats.m_timeSinceLastPresent.m_perWindowStats.m_value;
-        case 5:
+        case FRAMES_RECEIVED:
             return m_stats.m_videoFramesReceived.m_perWindowStats.m_value;
-        case 6:
+        case FRAMES_REUSED:
             return m_stats.m_videoFramesReused.m_perWindowStats.m_value;
-        case 7:
+        case FRAMES_SKIPPED:
             return m_stats.m_videoFramesSkipped.m_perWindowStats.m_value;
-        case 8:
+        case FRAMES_DISCARDED:
             return m_stats.m_videoFramesDiscarded.m_perWindowStats.m_value;
-        case 9:
+        case FRAME_MINIMUM_DELTA:
             return m_stats.m_videoFrameMinDelta.m_perWindowStats.m_value;
-        case 10:
+        case FRAME_MAXIMUM_DELTA:
             return m_stats.m_videoFrameMaxDelta.m_perWindowStats.m_value;
-        case 11:
+        case NETWORK_ROUNDTRIP:
             return m_stats.m_networkLatency.m_perWindowStats.m_value;
-        case 12:
+        case FRAME_TIME_CPU:
             return m_stats.m_timeCPU.m_perWindowStats.m_value;
-        case 13:
+        case FRAME_TIME_GPU:
             return m_stats.m_timeGPU.m_perWindowStats.m_value;
-        case 14:
+        case UTILIZATION_CPU:
             return m_stats.m_utilizationCPU.m_perWindowStats.m_value;
-        case 15:
+        case UTILIZATION_GPU:
             return m_stats.m_utilizationGPU.m_perWindowStats.m_value;
-        case 16:
+        case MEMORY_CPU:
             return m_stats.m_memoryCPU.m_perWindowStats.m_value;
-        case 17:
+        case MEMORY_GPU:
             return m_stats.m_memoryGPU.m_perWindowStats.m_value;
         default:
             return 0;
@@ -168,45 +175,45 @@ double StatsPageModel::getParameter(int index) const
     globalStats = m_stats.##PARAM.m_perWindowStats; \
     break
 
-void StatsPageModel::getGraphData(int index, bool perWindow, std::vector<QPointF>& graph, AvgMinMaxValue<float>& globalStats) const
+void StatsPageModel::getGraphData(ValueType type, bool perWindow, std::vector<QPointF>& graph, AvgMinMaxValue<float>& globalStats) const
 {
-    switch (index)
+    switch (type)
     {
-        case 0:
+        case POLYGONS_RENDERED:
             GRAPH_DATA(m_polygonsRendered);
-        case 1:
+        case LATENCY_POSE_RECEIVE:
             GRAPH_DATA(m_latencyPoseToReceive);
-        case 2:
+        case LATENCY_RECEIVE_PRESENT:
             GRAPH_DATA(m_latencyReceiveToPresent);
-        case 3:
+        case LATENCY_PRESENT_DISPLAY:
             GRAPH_DATA(m_latencyPresentToDisplay);
-        case 4:
+        case TIME_SINCE_LAST_PRESENT:
             GRAPH_DATA(m_timeSinceLastPresent);
-        case 5:
+        case FRAMES_RECEIVED:
             GRAPH_DATA(m_videoFramesReceived);
-        case 6:
+        case FRAMES_REUSED:
             GRAPH_DATA(m_videoFramesReused);
-        case 7:
+        case FRAMES_SKIPPED:
             GRAPH_DATA(m_videoFramesSkipped);
-        case 8:
+        case FRAMES_DISCARDED:
             GRAPH_DATA(m_videoFramesDiscarded);
-        case 9:
+        case FRAME_MINIMUM_DELTA:
             GRAPH_DATA(m_videoFrameMinDelta);
-        case 10:
+        case FRAME_MAXIMUM_DELTA:
             GRAPH_DATA(m_videoFrameMaxDelta);
-        case 11:
+        case NETWORK_ROUNDTRIP:
             GRAPH_DATA(m_networkLatency);
-        case 12:
+        case FRAME_TIME_CPU:
             GRAPH_DATA(m_timeCPU);
-        case 13:
+        case FRAME_TIME_GPU:
             GRAPH_DATA(m_timeGPU);
-        case 14:
+        case UTILIZATION_CPU:
             GRAPH_DATA(m_utilizationCPU);
-        case 15:
+        case UTILIZATION_GPU:
             GRAPH_DATA(m_utilizationGPU);
-        case 16:
+        case MEMORY_CPU:
             GRAPH_DATA(m_memoryCPU);
-        case 17:
+        case MEMORY_GPU:
             GRAPH_DATA(m_memoryGPU);
     }
 }
