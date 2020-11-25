@@ -123,7 +123,7 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
                 container->setViewport(viewportView);
 
                 auto* viewportLayout = new QHBoxLayout(viewportContainer);
-                viewportLayout->setContentsMargins(0, 0, 0, 0);
+                viewportLayout->setContentsMargins(1, 1, 1, 1);
                 viewportLayout->addWidget(container);
             }
 
