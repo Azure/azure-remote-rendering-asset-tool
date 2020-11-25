@@ -2,6 +2,7 @@
 #include <QButtonGroup>
 #include <QMenu>
 #include <QMessageBox>
+#include <QScrollArea>
 #include <View/AboutView.h>
 #include <View/ApplicationView.h>
 #include <View/ArrtStyle.h>
@@ -218,7 +219,11 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         topLevelSplitter->addWidget(horizontalSplitter);
         topLevelSplitter->addWidget(m_logView);
 
-        mainVLayout->addWidget(topLevelSplitter, 1);
+        QScrollArea* sa = new QScrollArea(this);
+        sa->setWidget(topLevelSplitter);
+        sa->setWidgetResizable(true);
+
+        mainVLayout->addWidget(sa, 1);
 
         setCentralWidget(topLevelWidget);
     }
