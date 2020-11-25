@@ -3,6 +3,7 @@
 #include <View/Render/RenderPageView.h>
 #include <View/Session/SessionInfoView.h>
 #include <ViewModel/Render/RenderPageModel.h>
+#include <ViewUtils/DpiUtils.h>
 
 
 RenderPageView::RenderPageView(RenderPageModel* model, QWidget* parent)
@@ -10,6 +11,8 @@ RenderPageView::RenderPageView(RenderPageModel* model, QWidget* parent)
     , m_model(model)
     , m_sessionPanelView(new SessionPanelView(model->getSessionPanelModel(), this))
 {
+    // leave space for the collapsed SessionPanelView
+    setContentsMargins(0, DpiUtils::size(18), 0, 0);
     setPageFactory([this](int index) -> QWidget* {
         switch (index)
         {
