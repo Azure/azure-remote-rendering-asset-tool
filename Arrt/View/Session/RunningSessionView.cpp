@@ -8,6 +8,7 @@
 #include <View/Session/RunningSessionView.h>
 #include <ViewModel/Session/RunningSessionModel.h>
 #include <Widgets/FlatButton.h>
+#include <Widgets/FlowLayout.h>
 #include <Widgets/FormControl.h>
 #include <Widgets/HoursMinutesControl.h>
 #include <Widgets/ReadOnlyText.h>
@@ -74,7 +75,7 @@ RunningSessionView::RunningSessionView(RunningSessionModel* model, QWidget* pare
     });
 
     {
-        auto* ext_l = new QHBoxLayout();
+        auto* ext_l = new FlowLayout();
         ext_l->addWidget(m_extendTime);
         ext_l->addWidget(m_extendButton);
         ext_l->addWidget(m_automaticExtend);

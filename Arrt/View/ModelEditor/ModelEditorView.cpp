@@ -16,8 +16,10 @@
 #include <ViewUtils/DpiUtils.h>
 #include <Widgets/CustomSplitter.h>
 #include <Widgets/FlatButton.h>
+#include <Widgets/FlowLayout.h>
 #include <Widgets/FocusableContainer.h>
 #include <Widgets/ToolbarButton.h>
+#include <Widgets/VerticalScrollArea.h>
 
 // the viewport widget has to be wrapped by a non native widget with WA_DontCreateNativeAncestors set,
 // to make sure that the parent widgets won't be turned into native widgets. This is because this might break
@@ -67,7 +69,7 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
     QWidget* toolBar;
     {
         toolBar = new QWidget(this);
-        auto* toolbarLayout = new QHBoxLayout(toolBar);
+        auto* toolbarLayout = new FlowLayout(toolBar);
 
         {
             m_currentlyLoadedModel = new QLabel();
@@ -96,9 +98,6 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
 
             toolbarLayout->addWidget(autoRotationButton);
         }
-
-
-        toolbarLayout->addStretch(1);
     }
 
     l->addWidget(toolBar, 0);
@@ -129,7 +128,7 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
             }
 
             StatsPageView* statsPanel = new StatsPageView(m_model->getStatsPageModel(), viewportSplitter);
-            statsPanel->setMinimumHeight(DpiUtils::size(300));
+            statsPanel->setMinimumHeight(DpiUtils::size(200));
 
             viewportSplitter->addWidget(viewportContainer);
             viewportSplitter->addWidget(statsPanel);
@@ -175,6 +174,8 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
     }
 
     l->addWidget(splitter, 1);
+
+    setMinimumWidth(200);
 
     auto onEnabledChanged = [this]() {
         setEnabled(m_model->isEnabled());
