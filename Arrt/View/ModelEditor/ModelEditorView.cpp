@@ -139,8 +139,8 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
             viewportSplitter->setStretchFactor(1, 0);
             viewportSplitter->setSizes({(int)DpiUtils::size(800), (int)DpiUtils::size(400)});
 
-            viewportSplitter->setCollapsedLabelForWidget(1, tr("Statistics"), ArrtStyle::s_statsIcon);
-            viewportSplitter->setCollapsed(1, true);
+            viewportSplitter->makeWidgetCollapsible(CustomSplitter::LAST, tr("Statistics"), ArrtStyle::s_statsIcon);
+            viewportSplitter->setCollapsed(CustomSplitter::LAST, true);
 
             splitter->addWidget(viewportSplitter);
         }
@@ -167,10 +167,10 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
 
         splitter->setCollapsible(1, false);
 
-        splitter->setCollapsedLabelForWidget(0, tr("Scene entities"), ArrtStyle::s_sceneIcon);
-        splitter->setCollapsedLabelForWidget(2, tr("Materials"), ArrtStyle::s_materialsIcon);
+        splitter->makeWidgetCollapsible(CustomSplitter::FIRST, tr("Scene entities"), ArrtStyle::s_sceneIcon);
+        splitter->makeWidgetCollapsible(CustomSplitter::LAST, tr("Materials"), ArrtStyle::s_materialsIcon);
         splitter->setSizes({(int)DpiUtils::size(300), (int)DpiUtils::size(800), (int)DpiUtils::size(300)});
-        splitter->setCollapsed(0, true);
+        splitter->setCollapsed(CustomSplitter::FIRST, true);
     }
 
     l->addWidget(splitter, 1);

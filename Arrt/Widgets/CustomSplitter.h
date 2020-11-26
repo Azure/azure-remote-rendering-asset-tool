@@ -7,13 +7,18 @@ class CustomHandle;
 class CustomSplitter : public QSplitter
 {
 public:
+    enum WidgetPosition
+    {
+        FIRST,
+        LAST
+    };
     CustomSplitter(Qt::Orientation orientation, QWidget* parent);
 
     // set the panel name/icon for a widget and makes the widget collapsible
-    void setCollapsedLabelForWidget(int widgetIndex, QString panelName, QIcon icon);
+    bool makeWidgetCollapsible(WidgetPosition widget, QString panelName, QIcon icon);
 
     // programmatically collapse a widget
-    void setCollapsed(int widgetIndex, bool collapsed);
+    void setCollapsed(WidgetPosition widgetPosition, bool collapsed);
 
 protected:
     virtual QSplitterHandle* createHandle() override;
