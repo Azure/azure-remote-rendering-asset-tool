@@ -1,6 +1,7 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPainter>
+#include <QFocusFrame>
 #include <Utils/ScopedBlockers.h>
 #include <View/ArrtStyle.h>
 #include <View/Parameters/BoundWidget.h>
@@ -14,11 +15,11 @@
 
 // widget used to draw a coloured vertical line
 
-class StatusIndicator : public QWidget
+class StatusIndicator : public QFocusFrame
 {
 public:
     StatusIndicator(QWidget* parent = nullptr)
-        : QWidget(parent)
+        : QFocusFrame(parent)
     {
         setMinimumWidth(2);
     }
