@@ -13,6 +13,7 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
     : QWidget(parent)
     , m_model(statsPageModel)
 {
+    setAccessibleName(tr("Statistics Panel"));
     setContentsMargins(QMargins());
 
     auto* mainLayout = new QVBoxLayout(this);

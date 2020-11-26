@@ -12,6 +12,7 @@ MaterialEditorView::MaterialEditorView(MaterialProvider* model, QWidget* parent)
     : FocusableContainer({}, parent)
     , m_model(model)
 {
+    setAccessibleName(tr("Material Editor"));
     setMinimumWidth(DpiUtils::size(150));
 
     auto* scrollArea = new VerticalScrollArea(this);

@@ -10,6 +10,8 @@ ViewportView::ViewportView(ViewportModel* model, QWidget* parent)
     : QWidget(parent)
     , m_viewportModel(model)
 {
+    setAccessibleName(tr("Viewport"));
+
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_ShowWithoutActivating);
 
