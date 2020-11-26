@@ -1,6 +1,8 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QPainter>
 #include <Utils/ScopedBlockers.h>
+#include <View/ArrtStyle.h>
 #include <View/Parameters/BoundWidget.h>
 #include <View/Parameters/BoundWidgetFactory.h>
 #include <View/Settings/SettingsBaseView.h>
@@ -9,6 +11,35 @@
 #include <Widgets/FlatButton.h>
 #include <Widgets/FormControl.h>
 #include <Widgets/ReadOnlyText.h>
+
+// widget used to draw a coloured vertical line
+
+class StatusIndicator : public QWidget
+{
+public:
+    StatusIndicator(QWidget* parent = nullptr)
+        : QWidget(parent)
+    {
+        setMinimumWidth(2);
+    }
+
+    void setColor(QColor color)
+    {
+        m_color = color;
+        update();
+    }
+
+    void paintEvent(QPaintEvent*) override
+    {
+        QPainter p(this);
+        p.setPen(QPen(m_color, 2));
+        QRect r = rect();
+        p.drawLine(QPoint(1, r.top()), QPoint(1, r.bottom()));
+    }
+
+private:
+    QColor m_color = Qt::white;
+};
 
 SettingsBaseView::SettingsBaseView(SettingsBaseModel* baseModel, QWidget* parent)
     : QWidget(parent)
@@ -20,10 +51,7 @@ SettingsBaseView::SettingsBaseView(SettingsBaseModel* baseModel, QWidget* parent
     m_listLayout = new QVBoxLayout();
     m_statusLayout = new QHBoxLayout();
 
-    m_statusBar = new QFrame();
-    m_statusBar->setFrameShape(QFrame::VLine);
-
-    setStatusBarColor(palette().midlight().color());
+    m_statusBar = new StatusIndicator();
 
     m_topLayout->addWidget(m_statusBar, 0);
     m_topLayout->addLayout(m_listLayout);
@@ -33,6 +61,7 @@ SettingsBaseView::SettingsBaseView(SettingsBaseModel* baseModel, QWidget* parent
     m_statusLayout->addWidget(m_status);
 
     m_statusLayout->setSpacing(3);
+    setStatus(NEUTRAL, "");
 
     {
         auto* fc = new FormControl(tr("Status"), m_statusLayout);
@@ -55,11 +84,24 @@ SettingsBaseView::SettingsBaseView(SettingsBaseModel* baseModel, QWidget* parent
     updateUi();
 }
 
-void SettingsBaseView::setStatusBarColor(const QColor& color)
+void SettingsBaseView::setStatus(Status status, QString description)
 {
-    auto palette = m_statusBar->palette();
-    palette.setColor(QPalette::WindowText, color);
-    m_statusBar->setPalette(palette);
+    switch (status)
+    {
+        case NEUTRAL:
+            m_statusBar->setColor(palette().midlight().color());
+            break;
+        case OK:
+            m_statusBar->setColor(ArrtStyle::s_connectedColor);
+            break;
+        case INPROGRESS:
+            m_statusBar->setColor(ArrtStyle::s_connectingColor);
+            break;
+        case ERROR:
+            m_statusBar->setColor(ArrtStyle::s_disconnectedColor);
+            break;
+    }
+    m_status->setText(description);
 }
 
 void SettingsBaseView::updateUi()

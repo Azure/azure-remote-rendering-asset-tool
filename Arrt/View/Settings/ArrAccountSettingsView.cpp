@@ -26,19 +26,19 @@ ArrAccountSettingsView::ArrAccountSettingsView(ArrAccountSettingsModel* model, Q
 void ArrAccountSettingsView::updateUi()
 {
     const auto status = m_model->getStatus();
+    QString statusDesc = toString(status);
     switch (status)
     {
         case AccountConnectionStatus::Authenticated:
-            setStatusBarColor(ArrtStyle::s_connectedColor);
+            setStatus(SettingsBaseView::OK, statusDesc);
             break;
         case AccountConnectionStatus::CheckingCredentials:
-            setStatusBarColor(ArrtStyle::s_connectingColor);
+            setStatus(SettingsBaseView::INPROGRESS, statusDesc);
             break;
         case AccountConnectionStatus::InvalidCredentials:
         case AccountConnectionStatus::NotAuthenticated:
-            setStatusBarColor(ArrtStyle::s_disconnectedColor);
+            setStatus(SettingsBaseView::ERROR, statusDesc);
             break;
     }
-    m_status->setText(toString(status));
     m_retryButton->setEnabled(status == AccountConnectionStatus::InvalidCredentials);
 }
