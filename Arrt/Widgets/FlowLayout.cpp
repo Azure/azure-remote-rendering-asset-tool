@@ -115,7 +115,6 @@ void FlowLayout::setGeometry(const QRect& rect)
 QSize FlowLayout::sizeHint() const
 {
     QSize size;
-    int w = 2 * margin();
     int h = 0;
     for (auto iter = m_items.begin(); iter != m_items.end(); ++iter)
     {
@@ -124,7 +123,6 @@ QSize FlowLayout::sizeHint() const
         {
             continue;
         }
-        w += item->sizeHint().width();
         h = qMax(item->sizeHint().height(), h);
     }
     h += 2 * margin();
@@ -159,7 +157,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const
 
     QList<QLayoutItem*> visibleItems;
 
-    // for layouting we may only take the visible items into consideration
+    // for laying out we may only take the visible items into consideration
     // it becomes much easier to do this with a copy of the array, containing only the visible items
     for (auto iter = m_items.begin(); iter != m_items.end(); ++iter)
     {
@@ -206,12 +204,12 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const
                 QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
         }
 
-        int nextX = x + itemSize.width() + spaceX;
+		int nextX = x + itemSize.width() + spaceX;
         if (nextX - spaceX > effectiveRect.right() && lineHeight > 0)
         {
             if (!testOnly && (alignment() & Qt::AlignHCenter))
             {
-                int w = (x - spaceX) - (*firstOfRow)->geometry().left();
+                const int w = (x - spaceX) - (*firstOfRow)->geometry().left();
                 lastOffset = (effectiveRect.width() - w) / 2;
 
                 for (auto i = firstOfRow; i != iter; ++i)
@@ -242,7 +240,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const
     {
         if (lastOffset == -1)
         {
-            int w = visibleItems.last()->geometry().right() - visibleItems.first()->geometry().left();
+            const int w = visibleItems.last()->geometry().right() - visibleItems.first()->geometry().left();
             lastOffset = (effectiveRect.width() - w) / 2;
         }
 
@@ -252,7 +250,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const
         }
     }
 
-    int h = y + lineHeight - rect.y() + bottom;
+    const int h = y + lineHeight - rect.y() + bottom;
 
     m_cachedWidth = rect.width();
     m_cachedHeightForWidth = h;
