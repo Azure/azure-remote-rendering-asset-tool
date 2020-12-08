@@ -13,6 +13,7 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
     : QWidget(parent)
     , m_model(statsPageModel)
 {
+    setAccessibleName(tr("Statistics Panel"));
     setContentsMargins(QMargins());
 
     auto* mainLayout = new QVBoxLayout(this);
@@ -28,6 +29,7 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
     buttonsLayout->addWidget(autoCollectButton);
 
     auto* timeAxis = new QComboBox(this);
+    timeAxis->setAccessibleName(tr("Stats aggregation type"));
 
     buttonsLayout->addStretch(1);
     buttonsLayout->addWidget(timeAxis);
@@ -48,28 +50,25 @@ StatsPageView::StatsPageView(StatsPageModel* statsPageModel, QWidget* parent)
     {
         auto* l = statsPanel->getContentLayout();
 
-        ParametersWidget* widget = nullptr;
-        for (int i = 0; i < m_model->getParameterCount(); ++i)
+        for (int i = 0; i < m_model->getPlotGroupCount(); ++i)
         {
-            if (!widget)
-            {
-                const int idx = m_graphs.size();
-                widget = new ParametersWidget(m_model, statsPanel);
-                l->addWidget(widget);
-                m_graphs.push_back(widget);
+            const int idx = m_graphs.size();
 
-                connect(widget, &ParametersWidget::onFocus, [this, idx](bool focused) {
-                    if (focused)
-                    {
-                        setSelectedGraph(idx);
-                    }
-                });
-            }
+            auto& groupInfo = m_model->getPlotGroup(i);
+            ParametersWidget* widget = new ParametersWidget(m_model, groupInfo.m_name, statsPanel);
+            l->addWidget(widget);
+            m_graphs.push_back(widget);
 
-            widget->addParameter(i);
-            if (m_model->getPlotInfo(i).m_endGroup)
+            connect(widget, &ParametersWidget::onFocus, [this, idx](bool focused) {
+                if (focused)
+                {
+                    setSelectedGraph(idx);
+                }
+            });
+
+            for (auto& valueType : groupInfo.m_plots)
             {
-                widget = nullptr;
+                widget->addParameter(valueType);
             }
         }
 

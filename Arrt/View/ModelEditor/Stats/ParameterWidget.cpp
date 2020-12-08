@@ -14,6 +14,7 @@ namespace
     {
         auto* ret = new ReadOnlyText(text, parent);
         ret->setMinimumWidth(DpiUtils::size(100));
+        ret->setAccessibleName(text);
         ret->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
         return ret;
     }

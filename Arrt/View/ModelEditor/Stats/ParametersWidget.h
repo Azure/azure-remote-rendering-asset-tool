@@ -1,5 +1,6 @@
 #pragma once
 #include <QWidget>
+#include <ViewModel/ModelEditor/Stats/StatsPageModel.h>
 
 class StatsPageModel;
 class ParameterWidget;
@@ -13,8 +14,8 @@ class ParametersWidget : public QWidget
 {
     Q_OBJECT
 public:
-    ParametersWidget(StatsPageModel* model, QWidget* parent = {});
-    void addParameter(int index);
+    ParametersWidget(StatsPageModel* model, QString name, QWidget* parent = {});
+    void addParameter(StatsPageModel::ValueType type);
     void updateUi();
     void setGraphPerWindow(bool perWindow);
     void setSelected(bool selected);
@@ -29,7 +30,7 @@ protected:
 
 private:
     StatsPageModel* const m_model;
-    std::vector<int> m_indices;
+    std::vector<StatsPageModel::ValueType> m_valueTypes;
     std::vector<QLabel*> m_labels;
     std::vector<ParameterWidget*> m_parameters;
 
@@ -37,4 +38,6 @@ private:
     StatsGraph* m_graph;
     bool m_graphPerWindow = false;
     bool m_isSelected = false;
+
+    void setAccessibleName(QString name);
 };

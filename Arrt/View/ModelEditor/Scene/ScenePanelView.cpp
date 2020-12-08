@@ -7,6 +7,7 @@ ScenePanelView::ScenePanelView(ModelEditorModel* model, QWidget* parent /* = nul
     : QWidget(parent)
     , m_model(model)
 {
+    setAccessibleName(tr("Scene panel"));
     setContentsMargins({});
     auto* l = new QHBoxLayout(this);
     l->setContentsMargins({});

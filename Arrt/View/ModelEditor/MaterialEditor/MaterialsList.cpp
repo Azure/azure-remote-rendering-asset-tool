@@ -6,6 +6,7 @@
 MaterialListView::MaterialListView(ModelEditorModel* model, QWidget* parent /* = nullptr */)
     : QWidget(parent)
 {
+    setAccessibleName(tr("Material List"));
     setContentsMargins(0, 0, 0, 0);
     auto* l = new QHBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);

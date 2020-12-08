@@ -33,6 +33,5 @@ void VideoSettingsView::updateUi()
     const bool canApplyOrResetToCurrentSettings = m_model->canApplyOrResetToCurrentSettings();
     m_applyButton->setEnabled(canApplyOrResetToCurrentSettings);
     m_resetButton->setEnabled(canApplyOrResetToCurrentSettings);
-    m_status->setText(canApplyOrResetToCurrentSettings ? tr("Applying video settings will force reconnection to runtime.") : QString());
-    setStatusBarColor(m_model->isVideoFormatSupported() ? Qt::lightGray : Qt::red);
+    setStatus(m_model->isVideoFormatSupported() ? NEUTRAL : SettingsBaseView::ERROR, canApplyOrResetToCurrentSettings ? tr("Applying video settings will force reconnection to runtime.") : QString());
 }

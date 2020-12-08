@@ -1,5 +1,6 @@
 #include <QBoxLayout>
 #include <QIcon>
+#include <QResizeEvent>
 #include <QStylePainter>
 #include <View/ArrtStyle.h>
 #include <ViewUtils/DpiUtils.h>
@@ -136,9 +137,12 @@ public:
         {
             m_uncollapsedSize = sizes[widgetIdx];
             sizes[widgetIdx] = 0;
+            splitter()->widget(widgetIdx)->setEnabled(false);
         }
         else
         {
+            m_container->setVisible(true);
+
             if (m_uncollapsedSize == 0)
             {
                 QWidget* w = splitter()->widget(widgetIdx);
@@ -146,8 +150,10 @@ public:
                 m_uncollapsedSize = orientation() == Qt::Horizontal ? s.width() : s.height();
             }
             sizes[widgetIdx] = m_uncollapsedSize;
+            splitter()->widget(widgetIdx)->setEnabled(true);
         }
         splitter()->setSizes(sizes);
+
         checkCollapsed();
     }
 
@@ -292,30 +298,42 @@ CustomSplitter::CustomSplitter(Qt::Orientation orientation, QWidget* parent)
     });
 }
 
-void CustomSplitter::setCollapsedLabelForWidget(int widgetIndex, QString panelName, QIcon icon)
+bool CustomSplitter::makeWidgetCollapsible(WidgetPosition widgetPosition, QString panelName, QIcon icon)
 {
-    if (widgetIndex == 0)
+    if (count() < 2)
     {
-        CustomHandle* h = static_cast<CustomHandle*>(handle(1));
+        return false;
+    }
+    int index;
+    if (widgetPosition == FIRST)
+    {
+        index = 0;
+        CustomHandle* h = static_cast<CustomHandle*>(handle(index + 1));
         h->setCollapsedLabel(CustomHandle::WidgetLocation::BeforeHandle, panelName, icon);
     }
-    else if (widgetIndex == count() - 1)
+    else if (widgetPosition == LAST)
     {
-        CustomHandle* h = static_cast<CustomHandle*>(handle(widgetIndex));
+        index = count() - 1;
+        CustomHandle* h = static_cast<CustomHandle*>(handle(index));
         h->setCollapsedLabel(CustomHandle::WidgetLocation::AfterHandle, panelName, icon);
     }
+    else
+    {
+        return false;
+    }
     updateCollapsedWidgets();
+    return true;
 }
 
-void CustomSplitter::setCollapsed(int widgetIndex, bool collapsed)
+void CustomSplitter::setCollapsed(WidgetPosition widgetPosition, bool collapsed)
 {
-    if (widgetIndex == 0)
+    if (widgetPosition == WidgetPosition::FIRST)
     {
-        getHandle(widgetIndex + 1)->setCollapsed(collapsed);
+        getHandle(1)->setCollapsed(collapsed);
     }
-    else if (widgetIndex == count() - 1)
+    else if (widgetPosition == WidgetPosition::LAST)
     {
-        getHandle(widgetIndex)->setCollapsed(collapsed);
+        getHandle(count() - 1)->setCollapsed(collapsed);
     }
 }
 
@@ -334,6 +352,7 @@ void CustomSplitter::showEvent(QShowEvent* event)
     QSplitter::showEvent(event);
     m_showing = true;
     updateCollapsedWidgets();
+    QSplitter::showEvent(event);
 }
 
 void CustomSplitter::updateCollapsedWidgets()

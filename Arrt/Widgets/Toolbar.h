@@ -2,7 +2,7 @@
 #include <Widgets/FormControl.h>
 
 class ToolbarButton;
-class QHBoxLayout;
+class FlowLayout;
 
 // Group of ToolbarButtons in a horizontal layout
 
@@ -13,5 +13,5 @@ public:
     void addButton(ToolbarButton* button);
 
 private:
-    QHBoxLayout* m_layout;
+    FlowLayout* m_layout;
 };

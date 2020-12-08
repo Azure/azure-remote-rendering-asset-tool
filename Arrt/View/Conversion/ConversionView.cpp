@@ -27,6 +27,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
     : QWidget(parent)
     , m_model(conversionModel)
 {
+    setAccessibleName(tr("Selected conversion"));
     auto* l = new QVBoxLayout(this);
 
     auto* scrollArea = new VerticalScrollArea(this);

@@ -17,8 +17,6 @@ int WinMain(HINSTANCE, HINSTANCE, char*, int)
 
         QApplication::setStyle(new ArrtStyle()); // NOLINT
 
-        QAccessible::installFactory(ArrtAccesibility::factory); // NOLINT
-
         ApplicationModel model;
 
         ApplicationView w(&model);

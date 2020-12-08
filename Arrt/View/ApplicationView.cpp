@@ -2,6 +2,7 @@
 #include <QButtonGroup>
 #include <QMenu>
 #include <QMessageBox>
+#include <QScrollArea>
 #include <View/AboutView.h>
 #include <View/ApplicationView.h>
 #include <View/ArrtStyle.h>
@@ -27,6 +28,7 @@
 #include <ViewModel/Upload/UploadModel.h>
 #include <ViewUtils/DpiUtils.h>
 #include <Widgets/FlatButton.h>
+#include <Widgets/FlowLayout.h>
 #include <Widgets/Navigator.h>
 
 using namespace std::chrono_literals;
@@ -52,6 +54,8 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
     }
 
     auto settingsModel = m_model->getSettingsModel();
+
+    static int num = 0;
 
     // Setup of top level navigator
     NotificationButtonView* settingsButton;
@@ -101,6 +105,7 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
 
         settingsButton = new NotificationButtonView(tr("Settings"), settingsModel->getNotificationButtonModel());
         settingsButton->setToolTip(tr("Settings panel"), tr("Access the settings for connecting to the Azure Remote Rendering and Azure Storage and to configure video streaming and camera controls"));
+
         settingsButton->setIcon(ArrtStyle::s_settingsIcon);
         settingsButton->setIconSize(QSize(DpiUtils::size(30), DpiUtils::size(30)));
 
@@ -181,14 +186,13 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         // since the buttons are "autoExclusive", they should be grouped in the same widget to work properly.
         QWidget* buttonGroup = new QWidget();
         buttonGroup->setContentsMargins(0, 0, 0, 0);
-        auto* buttonGroupLayout = new QHBoxLayout(buttonGroup);
+        auto* buttonGroupLayout = new FlowLayout(buttonGroup);
         buttonGroupLayout->setContentsMargins(0, 0, 0, 0);
         buttonGroupLayout->addWidget(m_mainButtons[TOPLEVEL_UPLOAD]);
         buttonGroupLayout->addWidget(m_mainButtons[TOPLEVEL_CONVERSION]);
         buttonGroupLayout->addWidget(m_mainButtons[TOPLEVEL_RENDERING]);
 
-        tabBarLayout->addWidget(buttonGroup);
-        tabBarLayout->addStretch(1);
+        tabBarLayout->addWidget(buttonGroup, 1);
         tabBarLayout->addWidget(logButton);
         tabBarLayout->addWidget(extraActionsButton);
     }
@@ -206,7 +210,7 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         horizontalSplitter->addWidget(m_settingsView);
         horizontalSplitter->addWidget(m_topLevelNavigator);
 
-        m_settingsView->setMinimumWidth(DpiUtils::size(400));
+        m_settingsView->setMinimumWidth(DpiUtils::size(300));
         horizontalSplitter->setChildrenCollapsible(false);
         horizontalSplitter->setStretchFactor(0, 0);
         horizontalSplitter->setStretchFactor(1, 1);
@@ -215,7 +219,11 @@ ApplicationView::ApplicationView(ApplicationModel* model, QWidget* parent)
         topLevelSplitter->addWidget(horizontalSplitter);
         topLevelSplitter->addWidget(m_logView);
 
-        mainVLayout->addWidget(topLevelSplitter, 1);
+        QScrollArea* sa = new QScrollArea(this);
+        sa->setWidget(topLevelSplitter);
+        sa->setWidgetResizable(true);
+
+        mainVLayout->addWidget(sa, 1);
 
         setCentralWidget(topLevelWidget);
     }

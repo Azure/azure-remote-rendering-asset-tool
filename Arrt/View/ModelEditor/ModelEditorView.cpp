@@ -16,8 +16,10 @@
 #include <ViewUtils/DpiUtils.h>
 #include <Widgets/CustomSplitter.h>
 #include <Widgets/FlatButton.h>
+#include <Widgets/FlowLayout.h>
 #include <Widgets/FocusableContainer.h>
 #include <Widgets/ToolbarButton.h>
+#include <Widgets/VerticalScrollArea.h>
 
 // the viewport widget has to be wrapped by a non native widget with WA_DontCreateNativeAncestors set,
 // to make sure that the parent widgets won't be turned into native widgets. This is because this might break
@@ -67,7 +69,7 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
     QWidget* toolBar;
     {
         toolBar = new QWidget(this);
-        auto* toolbarLayout = new QHBoxLayout(toolBar);
+        auto* toolbarLayout = new FlowLayout(toolBar);
 
         {
             m_currentlyLoadedModel = new QLabel();
@@ -96,9 +98,6 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
 
             toolbarLayout->addWidget(autoRotationButton);
         }
-
-
-        toolbarLayout->addStretch(1);
     }
 
     l->addWidget(toolBar, 0);
@@ -124,12 +123,12 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
                 container->setViewport(viewportView);
 
                 auto* viewportLayout = new QHBoxLayout(viewportContainer);
-                viewportLayout->setContentsMargins(0, 0, 0, 0);
+                viewportLayout->setContentsMargins(1, 1, 1, 1);
                 viewportLayout->addWidget(container);
             }
 
             StatsPageView* statsPanel = new StatsPageView(m_model->getStatsPageModel(), viewportSplitter);
-            statsPanel->setMinimumHeight(DpiUtils::size(300));
+            statsPanel->setMinimumHeight(DpiUtils::size(200));
 
             viewportSplitter->addWidget(viewportContainer);
             viewportSplitter->addWidget(statsPanel);
@@ -140,8 +139,8 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
             viewportSplitter->setStretchFactor(1, 0);
             viewportSplitter->setSizes({(int)DpiUtils::size(800), (int)DpiUtils::size(400)});
 
-            viewportSplitter->setCollapsedLabelForWidget(1, tr("Statistics"), ArrtStyle::s_statsIcon);
-            viewportSplitter->setCollapsed(1, true);
+            viewportSplitter->makeWidgetCollapsible(CustomSplitter::LAST, tr("Statistics"), ArrtStyle::s_statsIcon);
+            viewportSplitter->setCollapsed(CustomSplitter::LAST, true);
 
             splitter->addWidget(viewportSplitter);
         }
@@ -168,13 +167,15 @@ ModelEditorView::ModelEditorView(ModelEditorModel* modelEditorModel)
 
         splitter->setCollapsible(1, false);
 
-        splitter->setCollapsedLabelForWidget(0, tr("Scene entities"), ArrtStyle::s_sceneIcon);
-        splitter->setCollapsedLabelForWidget(2, tr("Materials"), ArrtStyle::s_materialsIcon);
+        splitter->makeWidgetCollapsible(CustomSplitter::FIRST, tr("Scene entities"), ArrtStyle::s_sceneIcon);
+        splitter->makeWidgetCollapsible(CustomSplitter::LAST, tr("Materials"), ArrtStyle::s_materialsIcon);
         splitter->setSizes({(int)DpiUtils::size(300), (int)DpiUtils::size(800), (int)DpiUtils::size(300)});
-        splitter->setCollapsed(0, true);
+        splitter->setCollapsed(CustomSplitter::FIRST, true);
     }
 
     l->addWidget(splitter, 1);
+
+    setMinimumWidth(200);
 
     auto onEnabledChanged = [this]() {
         setEnabled(m_model->isEnabled());

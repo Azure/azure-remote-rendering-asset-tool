@@ -7,14 +7,23 @@ class QHBoxLayout;
 class ReadOnlyText;
 class QFrame;
 class SettingsBaseModel;
+class StatusIndicator;
 
 // Base view for settings model.
 
 class SettingsBaseView : public QWidget
 {
 public:
+    enum Status
+    {
+        NEUTRAL,
+        OK,
+        INPROGRESS,
+        ERROR
+    };
+
     SettingsBaseView(SettingsBaseModel* baseModel, QWidget* parent = nullptr);
-    void setStatusBarColor(const QColor& color);
+    void setStatus(Status status, QString description);
 
 protected:
     SettingsBaseModel* const m_baseModel;
@@ -26,7 +35,7 @@ protected:
     QHBoxLayout* m_statusLayout = {};
 
     ReadOnlyText* m_status = {};
-    QFrame* m_statusBar = {};
+    StatusIndicator* m_statusBar = {};
 
 private:
     void updateUi();

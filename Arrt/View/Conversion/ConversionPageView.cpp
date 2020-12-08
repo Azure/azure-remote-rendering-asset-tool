@@ -113,7 +113,9 @@ ConversionPageView::ConversionPageView(ConversionPageModel* model, QWidget* pare
 {
     {
         auto* listPanel = new QWidget(this);
+
         auto* conversionList = new QListView();
+        conversionList->setAccessibleName(tr("Conversion list"));
         conversionList->setItemDelegate(new ConversionListDelegate(m_model->getCurrentConversionsModel(), conversionList));
 
         auto* listLayout = new QVBoxLayout(listPanel);

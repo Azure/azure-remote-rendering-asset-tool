@@ -5,12 +5,15 @@
 #include <View/ModelEditor/Stats/StatsGraph.h>
 #include <ViewUtils/DpiUtils.h>
 
-ParametersWidget::ParametersWidget(StatsPageModel* model, QWidget* parent)
+ParametersWidget::ParametersWidget(StatsPageModel* model, QString name, QWidget* parent)
     : m_model(model)
     , QWidget(parent)
 {
     setFocusPolicy(Qt::StrongFocus);
-    setAccessibleName(tr("Stats group"));
+    if (!name.isEmpty())
+    {
+        setAccessibleName(name);
+    }
 
     setContentsMargins({});
     auto* l = new QVBoxLayout(this);
@@ -67,15 +70,20 @@ void ParametersWidget::setSelected(bool selected)
     }
 }
 
-void ParametersWidget::addParameter(int index)
+void ParametersWidget::addParameter(StatsPageModel::ValueType type)
 {
-    m_indices.push_back(index);
-    auto& info = m_model->getPlotInfo(index);
+    m_valueTypes.push_back(type);
+    auto& info = m_model->getPlotInfo(type);
     auto* parameter = new ParameterWidget(info.m_name, info.m_units, info.m_color, this);
     m_parameters.push_back(parameter);
     m_graph->addPlot(info);
 
     m_parametersLayout->addWidget(parameter);
+
+    if (accessibleName().isEmpty() && !info.m_name.isEmpty())
+    {
+        setAccessibleName(info.m_name);
+    }
     updateUi();
 }
 
@@ -91,20 +99,25 @@ void ParametersWidget::updateUi()
     MinValue<double> minValue;
     MaxValue<double> maxValue;
     AvgMinMaxValue<float> stats;
-    for (int i = 0; i < m_indices.size(); ++i)
+    for (int i = 0; i < m_valueTypes.size(); ++i)
     {
-        const int idx = m_indices[i];
+        auto valueType = m_valueTypes[i];
 
         std::vector<QPointF> plotData;
-        m_model->getGraphData(idx, m_graphPerWindow, plotData, stats);
+        m_model->getGraphData(valueType, m_graphPerWindow, plotData, stats);
         m_graph->setPlotData(i, std::move(plotData));
 
-        auto& info = m_model->getPlotInfo(idx);
+        auto& info = m_model->getPlotInfo(valueType);
         minValue.addValue(info.m_minValue.value_or(stats.m_min.m_value));
         maxValue.addValue(info.m_maxValue.value_or(stats.m_max.m_value));
 
-        float value = m_model->getParameter(idx);
+        float value = m_model->getParameter(valueType);
         m_parameters[i]->setValues(value, stats.m_min.hasValue() ? stats.m_min.m_value : 0, stats.m_max.hasValue() ? stats.m_max.m_value : 0, stats.getAverage());
     }
     m_graph->setMinMax(minValue.m_value, maxValue.m_value);
+}
+
+void ParametersWidget::setAccessibleName(QString name)
+{
+    QWidget::setAccessibleName(name + " " + tr("stats"));
 }
