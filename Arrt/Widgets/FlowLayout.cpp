@@ -204,7 +204,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const
                 QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
         }
 
-		int nextX = x + itemSize.width() + spaceX;
+        int nextX = x + itemSize.width() + spaceX;
         if (nextX - spaceX > effectiveRect.right() && lineHeight > 0)
         {
             if (!testOnly && (alignment() & Qt::AlignHCenter))
