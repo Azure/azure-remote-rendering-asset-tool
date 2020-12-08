@@ -1,7 +1,7 @@
+#include <QFocusFrame>
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPainter>
-#include <QFocusFrame>
 #include <Utils/ScopedBlockers.h>
 #include <View/ArrtStyle.h>
 #include <View/Parameters/BoundWidget.h>
