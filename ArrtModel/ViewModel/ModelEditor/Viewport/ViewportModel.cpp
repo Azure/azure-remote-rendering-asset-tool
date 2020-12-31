@@ -136,15 +136,15 @@ void ViewportModel::initializeClient()
     if (auto&& binding = getBinding())
     {
         const auto refreshRate = m_videoSettings->getRefreshRate();
-        auto result = binding->InitSimulation(m_device, m_proxyDepthTarget, m_proxyColorTarget, refreshRate, false, false);
+        auto result = binding->InitSimulation(m_device, m_proxyDepthTarget, m_proxyColorTarget, refreshRate, false, false, false);
         if (result != RR::Result::Success)
         {
             return;
         }
 
         ZeroMemory(&m_simUpdate, sizeof(m_simUpdate));
-        m_simUpdate.renderTargetWidth = m_proxyTextureWidth;
-        m_simUpdate.renderTargetHeight = m_proxyTextureHeight;
+        // m_simUpdate.renderTargetWidth = m_proxyTextureWidth;
+        // m_simUpdate.renderTargetHeight = m_proxyTextureHeight;
 
         updateProjection();
         m_refreshTimer->start(1000ms / refreshRate);
@@ -377,7 +377,7 @@ void ViewportModel::updateProjection()
     QMatrix4x4 m;
     m.perspective(m_cameraSettings->getFovAngle(), ratio, m_cameraSettings->getNearPlane(), m_cameraSettings->getFarPlane());
 
-    convertMatrix(m_simUpdate.projection, m);
+    // convertMatrix(m_simUpdate.projection, m);
     bool success = false;
 
     // the inverse projection used for picking needs -z
@@ -509,7 +509,8 @@ void ViewportModel::update()
 {
     if (auto&& binding = getBinding())
     {
-        RR::SimulationUpdate outputUpdate;
+        RR::SimulationUpdateResult outputUpdate;
+        RR::SimulationUpdateParameters updateParameters; // , out SimulationUpdateResult proxyFrameUpdateResult)
         m_simUpdate.frameId++;
 
         QMatrix4x4 m;
@@ -518,7 +519,7 @@ void ViewportModel::update()
         m.translate(-m_cameraPosition);
         QVector3D center = (m_modelBbMin + m_modelBbMax) / 2.0;
 
-        convertMatrix(m_simUpdate.viewTransform, m);
+        convertMatrix(updateParameters.viewTransform.left, m);
         bool success = false;
         m_viewMatrixInverse = m.inverted(&success);
         if (!success)
@@ -526,7 +527,7 @@ void ViewportModel::update()
             qWarning() << tr("View matrix not invertible");
         }
 
-        binding->Update(m_simUpdate, &outputUpdate);
+        binding->Update(updateParameters, &outputUpdate);
     }
 }
 

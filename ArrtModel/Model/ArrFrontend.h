@@ -22,7 +22,7 @@ public:
     // return the underlying RR::AzureFrontEnd instance
     RR::ApiHandle<RR::AzureFrontend>& getFrontend() { return m_rrFrontend; }
 
-    void connectAccount(const char* accountID, const char* accountKey, const char* region);
+    void connectAccount(const char* accountID, const char* accountKey, const char* accountDomain, const char* region);
     void reconnectAccount();
 
     AccountConnectionStatus getStatus() const { return m_status; }
@@ -34,6 +34,7 @@ private:
     std::string m_region;
     std::string m_accountId;
     std::string m_accountKey;
+    std::string m_accountDomain;
 
     RR::ApiHandle<RR::AzureFrontend> m_rrFrontend;
     RR::ApiHandle<RR::SessionPropertiesArrayAsync> m_sessionPropertiesAsync;

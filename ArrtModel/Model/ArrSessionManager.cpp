@@ -904,7 +904,7 @@ void ArrSessionManager::startInspector()
         qInfo(LoggingCategory::renderingSession)
             << tr("Requesting connection to ARR inspector.\n")
             << m_lastProperties;
-        if (const auto async = m_session->ConnectToArrInspectorAsync(m_lastProperties.Hostname.c_str()))
+        if (const auto async = m_session->ConnectToArrInspectorAsync())
         {
             m_connectToArrInspector = async.value();
             m_connectToArrInspector->Completed([thisPtr = QPointer(this)](const RR::ApiHandle<RR::ArrInspectorAsync>& async) {

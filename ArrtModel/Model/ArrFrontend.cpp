@@ -18,11 +18,12 @@ ArrFrontend::ArrFrontend(QObject* parent)
     RR::StartupRemoteRendering(ci);
 }
 
-void ArrFrontend::connectAccount(const char* accountID, const char* accountKey, const char* region)
+void ArrFrontend::connectAccount(const char* accountID, const char* accountKey, const char* accountDomain, const char* region)
 {
     if (m_region == region &&
         m_accountId == accountID &&
-        m_accountKey == accountKey)
+        m_accountKey == accountKey &&
+        m_accountDomain == accountDomain)
     {
         return;
     }
@@ -30,6 +31,7 @@ void ArrFrontend::connectAccount(const char* accountID, const char* accountKey, 
     m_region = region;
     m_accountId = accountID;
     m_accountKey = accountKey;
+    m_accountDomain = accountDomain;
 
     connect();
 }
@@ -49,7 +51,7 @@ void ArrFrontend::connect()
         m_rrFrontend = nullptr;
     }
 
-    if (!m_region.empty() && !m_accountId.empty() && !m_accountKey.empty())
+    if (!m_region.empty() && !m_accountId.empty() && !m_accountKey.empty() && !m_accountDomain.empty())
     {
         setStatus(AccountConnectionStatus::CheckingCredentials);
 
@@ -58,6 +60,7 @@ void ArrFrontend::connect()
         fi.AccountDomain = m_region;
         fi.AccountId = m_accountId;
         fi.AccountKey = m_accountKey;
+        fi.AccountAuthenticationDomain = m_accountDomain;
 
         auto frontend = RR::ApiHandle(RR::AzureFrontend(fi));
         frontend->MessageLogged(&qArrSdkMessage);

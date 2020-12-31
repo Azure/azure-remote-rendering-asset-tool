@@ -20,6 +20,7 @@ public:
 private:
     Q_PROPERTY(QString id MEMBER m_id NOTIFY changed);
     Q_PROPERTY(QString key READ getKey WRITE setKey);
+    Q_PROPERTY(QString accountDomain MEMBER m_accountDomain NOTIFY changed);
     Q_PROPERTY(QString region MEMBER m_region NOTIFY changed);
 
 public:
@@ -28,6 +29,7 @@ public:
     const QString& getId() const { return m_id; }
     QString getKey() const;
     bool setKey(const QString& key);
+    QString getAccountDomain() const { return m_accountDomain; }
     std::string getRegion() const { return m_region.toStdString(); }
 
     // return the list of available arr regions
@@ -42,6 +44,7 @@ Q_SIGNALS:
 private:
     QString m_id = {};
     QString m_key = {};
+    QString m_accountDomain = {};
     QString m_region = "westeurope.mixedreality.azure.com";
     std::vector<Region> m_availableRegions;
 };
