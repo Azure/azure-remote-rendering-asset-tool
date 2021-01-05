@@ -369,14 +369,14 @@ void ViewportModel::updateProjection()
         ratio = (float)m_width / (float)m_height;
     }
     // update projection when viewport size changes
-	QMatrix4x4 m;
-	m.perspective(m_cameraSettings->getFovAngle(), ratio, m_cameraSettings->getNearPlane(), m_cameraSettings->getFarPlane());
+    QMatrix4x4 m;
+    m.perspective(m_cameraSettings->getFovAngle(), ratio, m_cameraSettings->getNearPlane(), m_cameraSettings->getFarPlane());
 
     // Compute horizontal and vertical angles from the full vertical fov in the camera settings.
     // Alternatively, the same data can be extracted from the projection matrix 'm' using RR::FovFromProjectionMatrix
     const float halfFovX = qAtan(qTan(qDegreesToRadians(m_cameraSettings->getFovAngle()) * 0.5f) * ratio);
     m_simUpdate.fieldOfView.left.angleLeft = -halfFovX;
-	m_simUpdate.fieldOfView.left.angleRight = halfFovX;
+    m_simUpdate.fieldOfView.left.angleRight = halfFovX;
     const float halfFovY = qDegreesToRadians(m_cameraSettings->getFovAngle()) / 2;
     m_simUpdate.fieldOfView.left.angleUp = halfFovY;
     m_simUpdate.fieldOfView.left.angleDown = -halfFovY;
