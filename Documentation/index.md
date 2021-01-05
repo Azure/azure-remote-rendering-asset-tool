@@ -31,7 +31,7 @@ You'll have to set up two subscriptions:
 
 If you don't have a subscription, follow the steps in [Create an Azure Remote Rendering account](https://docs.microsoft.com/azure/remote-rendering/how-tos/create-an-account#create-an-account).
 
-Once you gain access to the subscription, you need to retrieve **domain**, **ID**, and **key** from your [account credentials](https://docs.microsoft.com/azure/remote-rendering/how-tos/create-an-account#retrieve-the-account-information) and enter them in the configuration panel.
+Once you gain access to the subscription, you need to retrieve **account domain**, **ID**, and **key** from your [account credentials](https://docs.microsoft.com/azure/remote-rendering/how-tos/create-an-account#retrieve-the-account-information) and enter them in the configuration panel.
 
 ### Azure Storage Account (for asset conversion)
 
