@@ -377,7 +377,7 @@ void ViewportModel::updateProjection()
     QMatrix4x4 m;
     m.perspective(m_cameraSettings->getFovAngle(), ratio, m_cameraSettings->getNearPlane(), m_cameraSettings->getFarPlane());
 
-    // convertMatrix(m_simUpdate.projection, m);
+    convertMatrix(m_simUpdate.viewTransform.left, m);
     bool success = false;
 
     // the inverse projection used for picking needs -z
@@ -510,7 +510,7 @@ void ViewportModel::update()
     if (auto&& binding = getBinding())
     {
         RR::SimulationUpdateResult outputUpdate;
-        RR::SimulationUpdateParameters updateParameters; // , out SimulationUpdateResult proxyFrameUpdateResult)
+        RR::SimulationUpdateParameters updateParameters;
         m_simUpdate.frameId++;
 
         QMatrix4x4 m;
