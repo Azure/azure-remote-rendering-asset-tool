@@ -136,15 +136,13 @@ void ViewportModel::initializeClient()
     if (auto&& binding = getBinding())
     {
         const auto refreshRate = m_videoSettings->getRefreshRate();
-        auto result = binding->InitSimulation(m_device, m_proxyDepthTarget, m_proxyColorTarget, refreshRate, false, false);
+        auto result = binding->InitSimulation(m_device, m_proxyDepthTarget, m_proxyColorTarget, refreshRate, false, false, false);
         if (result != RR::Result::Success)
         {
             return;
         }
 
         ZeroMemory(&m_simUpdate, sizeof(m_simUpdate));
-        m_simUpdate.renderTargetWidth = m_proxyTextureWidth;
-        m_simUpdate.renderTargetHeight = m_proxyTextureHeight;
 
         updateProjection();
         m_refreshTimer->start(1000ms / refreshRate);
@@ -363,9 +361,6 @@ void ViewportModel::moveCameraDirection(float dx, float dy)
 
 void ViewportModel::updateProjection()
 {
-    m_simUpdate.nearPlaneDistance = m_cameraSettings->getNearPlane();
-    m_simUpdate.farPlaneDistance = m_cameraSettings->getFarPlane();
-
     // even if the ratio is not valid, which might happen when the viewport is collapsed, or not shown yet, we still need
     // to provide a valid projection matrix, to avoid problems in har
     float ratio = 1.0;
@@ -377,7 +372,15 @@ void ViewportModel::updateProjection()
     QMatrix4x4 m;
     m.perspective(m_cameraSettings->getFovAngle(), ratio, m_cameraSettings->getNearPlane(), m_cameraSettings->getFarPlane());
 
-    convertMatrix(m_simUpdate.projection, m);
+    // Compute horizontal and vertical angles from the full vertical fov in the camera settings.
+    // Alternatively, the same data can be extracted from the projection matrix 'm' using RR::FovFromProjectionMatrix
+    const float halfFovX = qAtan(qTan(qDegreesToRadians(m_cameraSettings->getFovAngle()) * 0.5f) * ratio);
+    m_simUpdate.fieldOfView.left.angleLeft = -halfFovX;
+    m_simUpdate.fieldOfView.left.angleRight = halfFovX;
+    const float halfFovY = qDegreesToRadians(m_cameraSettings->getFovAngle()) / 2;
+    m_simUpdate.fieldOfView.left.angleUp = halfFovY;
+    m_simUpdate.fieldOfView.left.angleDown = -halfFovY;
+
     bool success = false;
 
     // the inverse projection used for picking needs -z
@@ -509,7 +512,6 @@ void ViewportModel::update()
 {
     if (auto&& binding = getBinding())
     {
-        RR::SimulationUpdate outputUpdate;
         m_simUpdate.frameId++;
 
         QMatrix4x4 m;
@@ -518,7 +520,7 @@ void ViewportModel::update()
         m.translate(-m_cameraPosition);
         QVector3D center = (m_modelBbMin + m_modelBbMax) / 2.0;
 
-        convertMatrix(m_simUpdate.viewTransform, m);
+        convertMatrix(m_simUpdate.viewTransform.left, m);
         bool success = false;
         m_viewMatrixInverse = m.inverted(&success);
         if (!success)
@@ -526,6 +528,10 @@ void ViewportModel::update()
             qWarning() << tr("View matrix not invertible");
         }
 
+        // ARRT is not doing any rendering of local content, so we can discard the outputUpdate
+        // which would normally be used to feed the renderer with the projection / transform data
+        // for the current frame to align local and remote content correctly in the proxy render target.
+        RR::SimulationUpdateResult outputUpdate;
         binding->Update(m_simUpdate, &outputUpdate);
     }
 }

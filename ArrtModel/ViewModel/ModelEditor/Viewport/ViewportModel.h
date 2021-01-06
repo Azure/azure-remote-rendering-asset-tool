@@ -137,7 +137,7 @@ private:
 
     QTimer* m_refreshTimer = nullptr;
 
-    RR::SimulationUpdate m_simUpdate;
+    RR::SimulationUpdateParameters m_simUpdate;
     bool m_desktopSimCreated = false;
 
     ID3D11Device* m_device = nullptr;               // can move

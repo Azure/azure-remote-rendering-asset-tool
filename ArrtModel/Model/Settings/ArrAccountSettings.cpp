@@ -27,6 +27,7 @@ void ArrAccountSettings::loadFromJson(const QJsonObject& arrAccountConfig)
 {
     m_id = arrAccountConfig[QLatin1String("id")].toString();
     m_key = arrAccountConfig[QLatin1String("key")].toString();
+    m_accountDomain = arrAccountConfig[QLatin1String("accountDomain")].toString();
 
     auto oldFormatRegion = arrAccountConfig[QLatin1String("region")].toString();
     if (!oldFormatRegion.isEmpty())
@@ -55,6 +56,7 @@ QJsonObject ArrAccountSettings::saveToJson() const
     QJsonObject arrAccountConfig;
     arrAccountConfig[QLatin1String("id")] = m_id;
     arrAccountConfig[QLatin1String("key")] = m_key;
+    arrAccountConfig[QLatin1String("accountDomain")] = m_accountDomain;
     arrAccountConfig[QLatin1String("regionurl")] = m_region;
 
     QJsonArray regionsArray;

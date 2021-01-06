@@ -16,6 +16,7 @@ To access the settings panel, click on the gear button on the top-right corner.
 The panel allows you to change the following settings for ARRT:
 
 * Remote Rendering account.
+* Remote Rendering region.
 * Blob storage account. For instruction on how to set up your ARR and Blob storage accounts, see [Setting up your accounts](index.md#setting-up-your-accounts)
 * Video streaming settings.
 * Camera settings. Camera field of view, camera speeds, near/far field, global scale.
