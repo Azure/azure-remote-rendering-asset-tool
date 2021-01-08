@@ -92,6 +92,26 @@ public:
         return result;
     }
 
+    // This function converts a number to a human readable string by appending a K or M suffix to numbers
+    // bigger than 1,000 and 1,000,000.
+    static QString toHumanReadableString(double value)
+    {
+        // Print large numbers in a humand-friendly way. We add a space
+        // at the end so numbers with units don't look weird, e.g. "1M ms"
+        QString suffix;
+        if (value > 1000000)
+        {
+            value /= 1000000;
+            suffix = "M ";
+        }
+        else if (value > 1000)
+        {
+            value /= 1000;
+            suffix = "K ";
+        }
+        return DoubleFormatter::toString(value, "%.2f", true) + suffix;
+    }
+
     QString textFromValue(double value) const
     {
         return toString(value, m_format.toUtf8().data(), m_removeTrailingZeros);
