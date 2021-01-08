@@ -55,7 +55,20 @@ namespace
 
     QString toString(double d)
     {
-        return DoubleFormatter::toString(d, "%.2f", true);
+        // Print large numbers in a humand-friendly way. We add a space
+        // at the end so numbers with units don't look weird, e.g. "1M ms"
+        QString suffix;
+        if (d > 1000000)
+        {
+            d /= 1000000;
+            suffix = "M ";
+        }
+        else if (d > 1000)
+        {
+            d /= 1000;
+            suffix = "K ";
+        }
+        return DoubleFormatter::toString(d, "%.2f", true) + suffix;
     }
 
 } // namespace
