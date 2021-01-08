@@ -82,10 +82,10 @@ void ParameterWidget::setLegendVisibility(bool visible)
 
 void ParameterWidget::setValues(float value, float minValue, float maxValue, float averageValue)
 {
-    m_valueLabel->setText(DoubleFormatter::toHumanReadableString(value) + m_unit);
-    m_minLabel->setText(DoubleFormatter::toHumanReadableString(minValue) + m_unit);
-    m_maxLabel->setText(DoubleFormatter::toHumanReadableString(maxValue) + m_unit);
-    m_averageLabel->setText(DoubleFormatter::toHumanReadableString(averageValue) + m_unit);
+    m_valueLabel->setText(DoubleFormatter::toCompactString(value, m_unit));
+    m_minLabel->setText(DoubleFormatter::toCompactString(minValue, m_unit));
+    m_maxLabel->setText(DoubleFormatter::toCompactString(maxValue, m_unit));
+    m_averageLabel->setText(DoubleFormatter::toCompactString(averageValue, m_unit));
 }
 
 
