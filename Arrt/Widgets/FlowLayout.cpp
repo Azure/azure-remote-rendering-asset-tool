@@ -188,7 +188,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const
                     itemSize.setHeight(item->heightForWidth(itemSize.width()));
                 }
             }
-            itemSize.boundedTo(item->minimumSize());
+            itemSize = itemSize.expandedTo(item->minimumSize());
         }
         QWidget* wid = item->widget();
         int spaceX = horizontalSpacing();

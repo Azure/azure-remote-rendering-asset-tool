@@ -57,7 +57,6 @@ namespace
     {
         return DoubleFormatter::toString(d, "%.2f", true);
     }
-
 } // namespace
 
 QRect StatsGraph::getGraphRect() const
@@ -163,7 +162,7 @@ void StatsGraph::paintEvent(QPaintEvent* e)
 
             p.setPen(scaleLinesPen);
             p.drawLine(graphRect.left(), pt.y(), graphRect.right(), pt.y());
-            QString toPrint = toString(y) + m_infos[0].m_units;
+            QString toPrint = DoubleFormatter::toCompactString(y, m_infos[0].m_units);
             int w = smallFontM.horizontalAdvance(toPrint);
 
             p.setPen(linePen);
@@ -390,7 +389,7 @@ void StatsGraph::setHighlightX(std::optional<float> x)
                             m_highlightedPoints.clear();
                             m_highlightedX = chosen.x();
                         }
-                        m_highlightedPoints.push_back({m_infos[valIdx].m_color, QString("%1: %2%3").arg(m_infos[valIdx].m_name).arg(toString(chosen.y())).arg(m_infos[valIdx].m_units), chosen});
+                        m_highlightedPoints.push_back({m_infos[valIdx].m_color, QString("%1: %2").arg(m_infos[valIdx].m_name).arg(DoubleFormatter::toCompactString(chosen.y(), m_infos[valIdx].m_units)), chosen});
                         break;
                     }
                     previousDistance = dist;
