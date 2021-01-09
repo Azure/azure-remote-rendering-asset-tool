@@ -58,7 +58,7 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::AzureSession> session)
             m_currentStats.m_memoryCPU.addValue(m_lastPerformanceAssessment.memoryCPU.aggregate, m_tick);
             m_currentStats.m_memoryGPU.addValue(m_lastPerformanceAssessment.memoryGPU.aggregate, m_tick);
             m_currentStats.m_networkLatency.addValue(m_lastPerformanceAssessment.networkLatency.aggregate, m_tick);
-            m_currentStats.m_polygonsRendered.addValue(m_lastPerformanceAssessment.networkLatency.aggregate, m_tick);
+            m_currentStats.m_polygonsRendered.addValue(m_lastPerformanceAssessment.polygonsRendered.aggregate, m_tick);
             m_runningPerformanceAssesment = {};
         }
         else

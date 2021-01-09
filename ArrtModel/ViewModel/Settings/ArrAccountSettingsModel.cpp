@@ -38,7 +38,7 @@ ArrAccountSettingsModel::ArrAccountSettingsModel(ArrAccountSettings* arrAccountS
         m_frontend->connectAccount(
             m_arrAccountSettings->getId().toStdString().c_str(),
             m_arrAccountSettings->getKey().toStdString().c_str(),
-            m_arrAccountSettings->getAccountDomain().toUtf8(),
+            m_arrAccountSettings->getAccountDomain().toStdString().c_str(),
             m_arrAccountSettings->getRegion().c_str());
     };
     QObject::connect(m_arrAccountSettings, &ArrAccountSettings::changed, this, connectAccount);
