@@ -22,7 +22,7 @@ ArrAccountSettings::ArrAccountSettings(QObject* parent)
         {"West Europe", "westeurope.mixedreality.azure.com"},
         {"West US", "westus2.mixedreality.azure.com"}};
 
-	// supported account domains
+    // supported account domains
     m_supportedAccountDomains = {
         {"Australia East", "australiaeast.mixedreality.azure.com"},
         {"East US", "eastus.mixedreality.azure.com"},
