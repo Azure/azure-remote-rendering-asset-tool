@@ -21,13 +21,26 @@ ArrAccountSettings::ArrAccountSettings(QObject* parent)
         {"UK South", "uksouth.mixedreality.azure.com"},
         {"West Europe", "westeurope.mixedreality.azure.com"},
         {"West US", "westus2.mixedreality.azure.com"}};
+
+	// supported account domains
+    m_supportedAccountDomains = {
+        {"Australia East", "australiaeast.mixedreality.azure.com"},
+        {"East US", "eastus.mixedreality.azure.com"},
+        {"East US 2", "mixedreality.azure.com"},
+        {"Japan East", "japaneast.mixedreality.azure.com"},
+        {"North Europe", "northeurope.mixedreality.azure.com"},
+        {"South Central US", "southcentralus.mixedreality.azure.com"},
+        {"Southeast Asia", "southeastasia.mixedreality.azure.com"},
+        {"UK South", "uksouth.mixedreality.azure.com"},
+        {"West Europe", "westeurope.mixedreality.azure.com"},
+        {"West US", "westus2.mixedreality.azure.com"}};
 }
 
 void ArrAccountSettings::loadFromJson(const QJsonObject& arrAccountConfig)
 {
     m_id = arrAccountConfig[QLatin1String("id")].toString();
     m_key = arrAccountConfig[QLatin1String("key")].toString();
-    m_accountDomain = arrAccountConfig[QLatin1String("accountDomain")].toString();
+    m_accountDomain = arrAccountConfig[QStringLiteral("accountDomain")].toString();
 
     auto oldFormatRegion = arrAccountConfig[QLatin1String("region")].toString();
     if (!oldFormatRegion.isEmpty())
@@ -49,6 +62,17 @@ void ArrAccountSettings::loadFromJson(const QJsonObject& arrAccountConfig)
             m_availableRegions.push_back({regionObj[QLatin1String("name")].toString(), regionObj[QLatin1String("url")].toString()});
         }
     }
+
+    QJsonArray supportedAccountDomainsArray = arrAccountConfig[QLatin1String("supportedaccountdomains")].toArray();
+    if (!supportedAccountDomainsArray.isEmpty())
+    {
+        m_supportedAccountDomains.clear();
+        for (auto accountDomain : supportedAccountDomainsArray)
+        {
+            QJsonObject accountDomainObj = accountDomain.toObject();
+            m_supportedAccountDomains.push_back({accountDomainObj[QLatin1String("name")].toString(), accountDomainObj[QLatin1String("url")].toString()});
+        }
+    }
 }
 
 QJsonObject ArrAccountSettings::saveToJson() const
@@ -68,6 +92,16 @@ QJsonObject ArrAccountSettings::saveToJson() const
         regionsArray.append(regionObj);
     }
     arrAccountConfig[QLatin1String("availableregions")] = regionsArray;
+
+    QJsonArray supportedAccountDomainsArray;
+    for (auto&& accountDomain : m_supportedAccountDomains)
+    {
+        QJsonObject accountDomainObj;
+        accountDomainObj[QLatin1String("name")] = accountDomain.m_label;
+        accountDomainObj[QLatin1String("accountDomain")] = accountDomain.m_accountDomain;
+        supportedAccountDomainsArray.append(accountDomainObj);
+    }
+    arrAccountConfig[QLatin1String("supportedAccountDomains")] = supportedAccountDomainsArray;
 
     return arrAccountConfig;
 }

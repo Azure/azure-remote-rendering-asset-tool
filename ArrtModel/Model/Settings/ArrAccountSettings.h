@@ -17,6 +17,13 @@ public:
         QString m_domainUrl;
     };
 
+    // Account Domain entry. m_label is visualized on the UI, and m_accountDomain is the account domain.
+    struct AccountDomain
+    {
+        QString m_label;
+        QString m_accountDomain;
+    };
+
 private:
     Q_PROPERTY(QString id MEMBER m_id NOTIFY changed);
     Q_PROPERTY(QString key READ getKey WRITE setKey);
@@ -35,6 +42,9 @@ public:
     // return the list of available arr regions
     const std::vector<Region>& getAvailableRegions() const { return m_availableRegions; }
 
+	// return the list of supported Remote Rendering account domains
+    const std::vector<AccountDomain>& getSupportedAccountDomains() const { return m_supportedAccountDomains; }
+
     void loadFromJson(const QJsonObject& arrAccountConfig);
     QJsonObject saveToJson() const;
 
@@ -47,4 +57,5 @@ private:
     QString m_accountDomain = {};
     QString m_region = "westeurope.mixedreality.azure.com";
     std::vector<Region> m_availableRegions;
+    std::vector<AccountDomain> m_supportedAccountDomains;
 };

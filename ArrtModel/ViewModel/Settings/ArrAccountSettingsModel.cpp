@@ -15,7 +15,14 @@ ArrAccountSettingsModel::ArrAccountSettingsModel(ArrAccountSettings* arrAccountS
     using namespace std::literals;
     m_controls.push_back(new TextModel(tr("ID"), m_arrAccountSettings, "id"sv, true));
     m_controls.push_back(new TextModel(tr("Key"), m_arrAccountSettings, "key"sv, true, true));
-    m_controls.push_back(new TextModel(tr("Account Domain"), m_arrAccountSettings, "accountDomain"sv, true));
+
+    auto* accountDomainModel = new ComboBoxModelFromMap(tr("Account Domain"), m_arrAccountSettings, "accountDomain"sv);
+    for (auto&& accountDomain : m_arrAccountSettings->getSupportedAccountDomains())
+    {
+        accountDomainModel->addEntry(accountDomain.m_label, QVariant::fromValue(accountDomain.m_accountDomain));
+    }
+    m_controls.push_back(accountDomainModel);
+
     auto* regionModel = new ComboBoxModelFromMap(tr("Region"), m_arrAccountSettings, "region"sv);
     for (auto&& region : m_arrAccountSettings->getAvailableRegions())
     {
@@ -31,7 +38,7 @@ ArrAccountSettingsModel::ArrAccountSettingsModel(ArrAccountSettings* arrAccountS
         m_frontend->connectAccount(
             m_arrAccountSettings->getId().toStdString().c_str(),
             m_arrAccountSettings->getKey().toStdString().c_str(),
-            m_arrAccountSettings->getAccountDomain().toStdString().c_str(),
+            m_arrAccountSettings->getAccountDomain().toUtf8(),
             m_arrAccountSettings->getRegion().c_str());
     };
     QObject::connect(m_arrAccountSettings, &ArrAccountSettings::changed, this, connectAccount);
