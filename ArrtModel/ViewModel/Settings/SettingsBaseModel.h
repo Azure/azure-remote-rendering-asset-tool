@@ -10,6 +10,7 @@ class SettingsBaseModel : public QObject
 
 public:
     SettingsBaseModel(QObject* parent);
+
     const QList<ParameterModel*>& getControls() const { return m_controls; }
 
     virtual bool isEnabled() const = 0;
@@ -17,6 +18,10 @@ public:
 Q_SIGNALS:
     void updateUi();
 
+
 protected:
+    void addControl(ParameterModel* model);
+
+private:
     QList<ParameterModel*> m_controls;
 };
