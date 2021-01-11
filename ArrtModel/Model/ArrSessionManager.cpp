@@ -815,8 +815,7 @@ RR::Result ArrSessionManager::loadModelAsync(const QString& modelName, const cha
 
         qInfo(LoggingCategory::renderingSession)
             << tr("Requesting loading of model %1 (SAS=%2)").arg(modelName).arg(assetSAS);
-        RR::LoadModelFromSASParams params;
-        memset(&params, 0, sizeof(RR::LoadModelFromSASParams));
+        RR::LoadModelFromSASParams params{};
         params.ModelUrl = assetSAS;
         if (auto loadModelAsync = api->LoadModelFromSASAsync(params))
         {
