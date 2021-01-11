@@ -6,8 +6,7 @@
 ArrFrontend::ArrFrontend(QObject* parent)
     : QObject(parent)
 {
-    RR::RemoteRenderingInitialization ci;
-    memset(&ci, 0, sizeof(RR::RemoteRenderingInitialization));
+    RR::RemoteRenderingInitialization ci{};
     ci.connectionType = RR::ConnectionType::General;
     ci.graphicsApi = RR::GraphicsApiType::SimD3D11;
     ci.right = RR::Axis::X;
@@ -55,8 +54,7 @@ void ArrFrontend::connect()
     {
         setStatus(AccountConnectionStatus::CheckingCredentials);
 
-        RR::AzureFrontendAccountInfo fi;
-        memset(&fi, 0, sizeof(RR::AzureFrontendAccountInfo));
+        RR::AzureFrontendAccountInfo fi{};
         fi.AccountDomain = m_region;
         fi.AccountId = m_accountId;
         fi.AccountKey = m_accountKey;
