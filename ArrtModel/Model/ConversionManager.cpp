@@ -211,8 +211,7 @@ ConversionManager::ConversionId ConversionManager::addNewConversion()
 {
     const ConversionId newConversionId = ++m_highestId;
 
-    arr_asset_conversion_input_sas_params info;
-    memset(&info, 0, sizeof(arr_asset_conversion_input_sas_params));
+    arr_asset_conversion_input_sas_params info{};
 
     auto* newConversion = new Conversion();
     newConversion->m_output_storage_account_name = QString::fromStdWString(m_storageManager->getAccountName()).toStdString();
@@ -266,8 +265,7 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
         });
     };
 
-    arr_asset_conversion_input_sas_params info;
-    memset(&info, 0, sizeof(arr_asset_conversion_input_sas_params));
+    arr_asset_conversion_input_sas_params info{};
 
     QString inputSasToken = QString::fromStdWString(storageManager->getSasToken(newConversion->m_inputContainer,
                                                                                 azure::storage::blob_shared_access_policy::read |
