@@ -14,9 +14,9 @@ VideoSettingsModel::VideoSettingsModel(VideoSettings* videoSettings, ArrSessionM
     m_pendingVideoSettings = new VideoSettings(this);
     *m_pendingVideoSettings = *m_videoSettings;
 
-    m_controls.push_back(new IntegerModel(tr("Horizontal resolution (pixels)"), m_pendingVideoSettings, "width"sv, VideoSettings::s_widthMin, VideoSettings::s_widthMax, VideoSettings::s_resolutionStep));
-    m_controls.push_back(new IntegerModel(tr("Vertical resolution (pixels)"), m_pendingVideoSettings, "height"sv, VideoSettings::s_heightMin, VideoSettings::s_heightMax, VideoSettings::s_resolutionStep));
-    m_controls.push_back(new IntegerModel(tr("Refresh rate (fps)"), m_pendingVideoSettings, "refreshRate"sv, VideoSettings::s_refreshRateMin, VideoSettings::s_refreshRateMax));
+    addControl(new IntegerModel(tr("Horizontal resolution (pixels)"), m_pendingVideoSettings, "width"sv, VideoSettings::s_widthMin, VideoSettings::s_widthMax, VideoSettings::s_resolutionStep));
+    addControl(new IntegerModel(tr("Vertical resolution (pixels)"), m_pendingVideoSettings, "height"sv, VideoSettings::s_heightMin, VideoSettings::s_heightMax, VideoSettings::s_resolutionStep));
+    addControl(new IntegerModel(tr("Refresh rate (fps)"), m_pendingVideoSettings, "refreshRate"sv, VideoSettings::s_refreshRateMin, VideoSettings::s_refreshRateMax));
 
     auto updateVideoSettings = [this]() {
         // Video settings can be configured only once before connecting to session runtime.

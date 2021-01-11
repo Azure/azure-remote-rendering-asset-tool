@@ -13,15 +13,15 @@ ArrAccountSettingsModel::ArrAccountSettingsModel(ArrAccountSettings* arrAccountS
     , m_frontend(frontend)
 {
     using namespace std::literals;
-    m_controls.push_back(new TextModel(tr("ID"), m_arrAccountSettings, "id"sv, true));
-    m_controls.push_back(new TextModel(tr("Key"), m_arrAccountSettings, "key"sv, true, true));
-    m_controls.push_back(new TextModel(tr("Account Domain"), m_arrAccountSettings, "accountDomain"sv, true));
+    addControl(new TextModel(tr("ID"), m_arrAccountSettings, "id"sv, true));
+    addControl(new TextModel(tr("Key"), m_arrAccountSettings, "key"sv, true, true));
+    addControl(new TextModel(tr("Account Domain"), m_arrAccountSettings, "accountDomain"sv, true));
     auto* regionModel = new ComboBoxModelFromMap(tr("Region"), m_arrAccountSettings, "region"sv);
     for (auto&& region : m_arrAccountSettings->getAvailableRegions())
     {
         regionModel->addEntry(region.m_label, QVariant::fromValue(region.m_domainUrl));
     }
-    m_controls.push_back(regionModel);
+    addControl(regionModel);
 
     connect(m_frontend, &ArrFrontend::onStatusChanged, this, [this]() {
         Q_EMIT updateUi();
