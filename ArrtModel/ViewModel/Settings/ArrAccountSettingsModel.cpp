@@ -13,12 +13,21 @@ ArrAccountSettingsModel::ArrAccountSettingsModel(ArrAccountSettings* arrAccountS
     , m_frontend(frontend)
 {
     using namespace std::literals;
+
     addControl(new TextModel(tr("ID"), m_arrAccountSettings, "id"sv, true));
     addControl(new TextModel(tr("Key"), m_arrAccountSettings, "key"sv, true, true));
-    addControl(new TextModel(tr("Account Domain"), m_arrAccountSettings, "accountDomain"sv, true));
+
+    auto* accountDomainModel = new ComboBoxModelFromMap(tr("Account Domain"), m_arrAccountSettings, "accountDomain"sv);
+    for (auto&& accountDomain : m_arrAccountSettings->getSupportedAccountDomains())
+    {
+        accountDomainModel->addEntry(accountDomain.m_label, QVariant::fromValue(accountDomain.m_accountDomain));
+    }
+    addControl(accountDomainModel);
+
     auto* regionModel = new ComboBoxModelFromMap(tr("Region"), m_arrAccountSettings, "region"sv);
     for (auto&& region : m_arrAccountSettings->getAvailableRegions())
     {
+        // TODO This does not have to be a vector....
         regionModel->addEntry(region.m_label, QVariant::fromValue(region.m_domainUrl));
     }
     addControl(regionModel);
