@@ -1,5 +1,5 @@
-#include <ViewModel/Settings/SettingsBaseModel.h>
 #include <ViewModel/Parameters/ParameterModel.h>
+#include <ViewModel/Settings/SettingsBaseModel.h>
 
 SettingsBaseModel::SettingsBaseModel(QObject* parent)
     : QObject(parent)

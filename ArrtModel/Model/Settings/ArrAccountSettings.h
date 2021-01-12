@@ -40,10 +40,10 @@ public:
     std::string getRegion() const { return m_region.toStdString(); }
 
     // return the list of available arr regions
-    const std::vector<Region>& getAvailableRegions() const { return m_availableRegions; }
+    const std::vector<Region> getAvailableRegions() const;
 
-	// return the list of supported Remote Rendering account domains
-    const std::vector<AccountDomain>& getSupportedAccountDomains() const { return m_supportedAccountDomains; }
+    // return the list of supported Remote Rendering account domains
+    const std::vector<AccountDomain> getSupportedAccountDomains() const;
 
     void loadFromJson(const QJsonObject& arrAccountConfig);
     QJsonObject saveToJson() const;
@@ -56,6 +56,6 @@ private:
     QString m_key = {};
     QString m_accountDomain = {};
     QString m_region = "westeurope.mixedreality.azure.com";
-    std::vector<Region> m_availableRegions;
-    std::vector<AccountDomain> m_supportedAccountDomains;
+    std::map<QString, Region> m_availableRegionsMap;
+    std::map<QString, AccountDomain> m_supportedAccountDomainsMap;
 };

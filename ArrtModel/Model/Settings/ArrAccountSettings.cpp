@@ -6,34 +6,38 @@
 #include <Utils/JsonUtils.h>
 #include <Utils/StringEncrypter.h>
 
+static const std::map<QString, ArrAccountSettings::Region> defaultAvailableRegionsMap = {
+    {"australiaeast.mixedreality.azure.com", {"Australia East", "australiaeast.mixedreality.azure.com"}},
+    {"eastus.mixedreality.azure.com", {"East US", "eastus.mixedreality.azure.com"}},
+    {"eastus2.mixedreality.azure.com", {"East US 2", "eastus2.mixedreality.azure.com"}},
+    {"japaneast.mixedreality.azure.com", {"Japan East", "japaneast.mixedreality.azure.com"}},
+    {"northeurope.mixedreality.azure.com", {"North Europe", "northeurope.mixedreality.azure.com"}},
+    {"southcentralus.mixedreality.azure.com", {"South Central US", "southcentralus.mixedreality.azure.com"}},
+    {"southeastasia.mixedreality.azure.com", {"Southeast Asia", "southeastasia.mixedreality.azure.com"}},
+    {"uksouth.mixedreality.azure.com", {"UK South", "uksouth.mixedreality.azure.com"}},
+    {"westeurope.mixedreality.azure.com", {"West Europe", "westeurope.mixedreality.azure.com"}},
+    {"westus2.mixedreality.azure.com", {"West US", "westus2.mixedreality.azure.com"}}};
+
+static const std::map<QString, ArrAccountSettings::AccountDomain> defaultSupportedAccountDomainsMap = {
+    {"australiaeast.mixedreality.azure.com", {"Australia East", "australiaeast.mixedreality.azure.com"}},
+    {"eastus.mixedreality.azure.com", {"East US", "eastus.mixedreality.azure.com"}},
+    {"mixedreality.azure.com", {"East US 2", "mixedreality.azure.com"}},
+    {"japaneast.mixedreality.azure.com", {"Japan East", "japaneast.mixedreality.azure.com"}},
+    {"northeurope.mixedreality.azure.com", {"North Europe", "northeurope.mixedreality.azure.com"}},
+    {"southcentralus.mixedreality.azure.com", {"South Central US", "southcentralus.mixedreality.azure.com"}},
+    {"southeastasia.mixedreality.azure.com", {"Southeast Asia", "southeastasia.mixedreality.azure.com"}},
+    {"uksouth.mixedreality.azure.com", {"UK South", "uksouth.mixedreality.azure.com"}},
+    {"westeurope.mixedreality.azure.com", {"West Europe", "westeurope.mixedreality.azure.com"}},
+    {"westus2.mixedreality.azure.com", {"West US", "westus2.mixedreality.azure.com"}}};
+
 ArrAccountSettings::ArrAccountSettings(QObject* parent)
     : QObject(parent)
 {
     // initialize the regions
-    m_availableRegions = {
-        {"Australia East", "australiaeast.mixedreality.azure.com"},
-        {"East US", "eastus.mixedreality.azure.com"},
-        {"East US 2", "eastus2.mixedreality.azure.com"},
-        {"Japan East", "japaneast.mixedreality.azure.com"},
-        {"North Europe", "northeurope.mixedreality.azure.com"},
-        {"South Central US", "southcentralus.mixedreality.azure.com"},
-        {"Southeast Asia", "southeastasia.mixedreality.azure.com"},
-        {"UK South", "uksouth.mixedreality.azure.com"},
-        {"West Europe", "westeurope.mixedreality.azure.com"},
-        {"West US", "westus2.mixedreality.azure.com"}};
+    m_availableRegionsMap = defaultAvailableRegionsMap;
 
     // supported account domains
-    m_supportedAccountDomains = {
-        {"Australia East", "australiaeast.mixedreality.azure.com"},
-        {"East US", "eastus.mixedreality.azure.com"},
-        {"East US 2", "mixedreality.azure.com"},
-        {"Japan East", "japaneast.mixedreality.azure.com"},
-        {"North Europe", "northeurope.mixedreality.azure.com"},
-        {"South Central US", "southcentralus.mixedreality.azure.com"},
-        {"Southeast Asia", "southeastasia.mixedreality.azure.com"},
-        {"UK South", "uksouth.mixedreality.azure.com"},
-        {"West Europe", "westeurope.mixedreality.azure.com"},
-        {"West US", "westus2.mixedreality.azure.com"}};
+    m_supportedAccountDomainsMap = defaultSupportedAccountDomainsMap;
 }
 
 void ArrAccountSettings::loadFromJson(const QJsonObject& arrAccountConfig)
@@ -52,28 +56,32 @@ void ArrAccountSettings::loadFromJson(const QJsonObject& arrAccountConfig)
         m_region = arrAccountConfig[QLatin1String("regionurl")].toString();
     }
 
+
+    // Load additional regions, if any, from the configuration file.
     QJsonArray regionsArray = arrAccountConfig[QLatin1String("availableregions")].toArray();
     if (!regionsArray.isEmpty())
     {
-        m_availableRegions.clear();
         for (auto e : regionsArray)
         {
             QJsonObject regionObj = e.toObject();
-            m_availableRegions.push_back({regionObj[QLatin1String("name")].toString(), regionObj[QLatin1String("url")].toString()});
+            ArrAccountSettings::Region region({regionObj[QLatin1String("name")].toString(), regionObj[QLatin1String("url")].toString()});
+            m_availableRegionsMap[region.m_domainUrl] = region;
         }
     }
 
-    QJsonArray supportedAccountDomainsArray = arrAccountConfig[QLatin1String("supportedaccountdomains")].toArray();
+    // Load additional supported account domains, if any, from the configuration file.
+    QJsonArray supportedAccountDomainsArray = arrAccountConfig[QLatin1String("supportedAccountDomains")].toArray();
     if (!supportedAccountDomainsArray.isEmpty())
     {
-        m_supportedAccountDomains.clear();
-        for (auto accountDomain : supportedAccountDomainsArray)
+        for (auto e : supportedAccountDomainsArray)
         {
-            QJsonObject accountDomainObj = accountDomain.toObject();
-            m_supportedAccountDomains.push_back({accountDomainObj[QLatin1String("name")].toString(), accountDomainObj[QLatin1String("url")].toString()});
+            QJsonObject accountDomainObj = e.toObject();
+            ArrAccountSettings::AccountDomain accountDomain({accountDomainObj[QLatin1String("name")].toString(), accountDomainObj[QLatin1String("url")].toString()});
+            m_supportedAccountDomainsMap[accountDomain.m_accountDomain] = accountDomain;
         }
     }
 }
+
 
 QJsonObject ArrAccountSettings::saveToJson() const
 {
@@ -83,23 +91,31 @@ QJsonObject ArrAccountSettings::saveToJson() const
     arrAccountConfig[QLatin1String("accountDomain")] = m_accountDomain;
     arrAccountConfig[QLatin1String("regionurl")] = m_region;
 
+    // Write additional regions, if any, to the configuration file.
     QJsonArray regionsArray;
-    for (auto&& region : m_availableRegions)
+    for (auto&& region : m_availableRegionsMap)
     {
-        QJsonObject regionObj;
-        regionObj[QLatin1String("name")] = region.m_label;
-        regionObj[QLatin1String("url")] = region.m_domainUrl;
-        regionsArray.append(regionObj);
+        if (defaultAvailableRegionsMap.find(region.first) == defaultAvailableRegionsMap.end())
+        {
+            QJsonObject regionObj;
+            regionObj[QLatin1String("name")] = region.second.m_label;
+            regionObj[QLatin1String("url")] = region.second.m_domainUrl;
+            regionsArray.append(regionObj);
+        }
     }
     arrAccountConfig[QLatin1String("availableregions")] = regionsArray;
 
+    // Write additional supported account domains, if any, to the configuration file.
     QJsonArray supportedAccountDomainsArray;
-    for (auto&& accountDomain : m_supportedAccountDomains)
+    for (auto&& accountDomain : m_supportedAccountDomainsMap)
     {
-        QJsonObject accountDomainObj;
-        accountDomainObj[QLatin1String("name")] = accountDomain.m_label;
-        accountDomainObj[QLatin1String("accountDomain")] = accountDomain.m_accountDomain;
-        supportedAccountDomainsArray.append(accountDomainObj);
+        if (defaultSupportedAccountDomainsMap.find(accountDomain.first) == defaultSupportedAccountDomainsMap.end())
+        {
+            QJsonObject accountDomainObj;
+            accountDomainObj[QLatin1String("name")] = accountDomain.second.m_label;
+            accountDomainObj[QLatin1String("accountDomain")] = accountDomain.second.m_accountDomain;
+            supportedAccountDomainsArray.append(accountDomainObj);
+        }
     }
     arrAccountConfig[QLatin1String("supportedAccountDomains")] = supportedAccountDomainsArray;
 
@@ -132,4 +148,24 @@ bool ArrAccountSettings::setKey(const QString& key)
         qWarning(LoggingCategory::configuration) << tr("Error encrypting ARR account key");
         return false;
     }
+}
+
+const std::vector<ArrAccountSettings::Region> ArrAccountSettings::getAvailableRegions() const
+{
+    std::vector<Region> regions(m_availableRegionsMap.size());
+    for (auto e : m_availableRegionsMap)
+    {
+        regions.push_back(e.second);
+    }
+    return regions;
+}
+
+const std::vector<ArrAccountSettings::AccountDomain> ArrAccountSettings::getSupportedAccountDomains() const
+{
+    std::vector<AccountDomain> accoundDomains(m_supportedAccountDomainsMap.size());
+    for (auto e : m_supportedAccountDomainsMap)
+    {
+        accoundDomains.push_back(e.second);
+    }
+    return accoundDomains;
 }

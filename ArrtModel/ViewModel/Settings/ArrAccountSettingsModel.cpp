@@ -27,6 +27,7 @@ ArrAccountSettingsModel::ArrAccountSettingsModel(ArrAccountSettings* arrAccountS
     auto* regionModel = new ComboBoxModelFromMap(tr("Region"), m_arrAccountSettings, "region"sv);
     for (auto&& region : m_arrAccountSettings->getAvailableRegions())
     {
+        // TODO This does not have to be a vector....
         regionModel->addEntry(region.m_label, QVariant::fromValue(region.m_domainUrl));
     }
     addControl(regionModel);
