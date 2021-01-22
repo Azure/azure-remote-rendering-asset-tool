@@ -40,10 +40,10 @@ public:
     std::string getRegion() const { return m_region.toStdString(); }
 
     // return the list of available arr regions
-    const std::vector<Region> getAvailableRegions() const;
+    std::vector<Region> getAvailableRegions() const;
 
     // return the list of supported Remote Rendering account domains
-    const std::vector<AccountDomain> getSupportedAccountDomains() const;
+    std::vector<AccountDomain> getSupportedAccountDomains() const;
 
     void loadFromJson(const QJsonObject& arrAccountConfig);
     QJsonObject saveToJson() const;

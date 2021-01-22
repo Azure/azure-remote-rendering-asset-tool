@@ -150,22 +150,24 @@ bool ArrAccountSettings::setKey(const QString& key)
     }
 }
 
-const std::vector<ArrAccountSettings::Region> ArrAccountSettings::getAvailableRegions() const
+std::vector<ArrAccountSettings::Region> ArrAccountSettings::getAvailableRegions() const
 {
-    std::vector<Region> regions(m_availableRegionsMap.size());
-    for (auto e : m_availableRegionsMap)
+    std::vector<Region> regions;
+    regions.reserve(m_availableRegionsMap.size());
+    for (const auto& e : m_availableRegionsMap)
     {
-        regions.push_back(e.second);
+        regions.emplace_back(e.second);
     }
     return regions;
 }
 
-const std::vector<ArrAccountSettings::AccountDomain> ArrAccountSettings::getSupportedAccountDomains() const
+std::vector<ArrAccountSettings::AccountDomain> ArrAccountSettings::getSupportedAccountDomains() const
 {
-    std::vector<AccountDomain> accoundDomains(m_supportedAccountDomainsMap.size());
+    std::vector<AccountDomain> accountDomains;
+    accountDomains.reserve(m_supportedAccountDomainsMap.size());
     for (auto e : m_supportedAccountDomainsMap)
     {
-        accoundDomains.push_back(e.second);
+        accountDomains.emplace_back(e.second);
     }
-    return accoundDomains;
+    return accountDomains;
 }
