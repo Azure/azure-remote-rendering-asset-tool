@@ -54,13 +54,13 @@ void ArrFrontend::connect()
     {
         setStatus(AccountConnectionStatus::CheckingCredentials);
 
-        RR::AzureFrontendAccountInfo fi{};
-        fi.AccountDomain = m_region;
+        RR::SessionConfiguration fi{};
+        fi.AccountDomain = m_accountDomain;
+        fi.RemoteRenderingDomain = m_region;
         fi.AccountId = m_accountId;
         fi.AccountKey = m_accountKey;
-        fi.AccountAuthenticationDomain = m_accountDomain;
 
-        auto frontend = RR::ApiHandle(RR::AzureFrontend(fi));
+        auto frontend = RR::ApiHandle(RR::RemoteRenderingClient(fi));
         frontend->MessageLogged(&qArrSdkMessage);
         frontend->SetLogLevel(RR::LogLevel::Debug);
         QPointer<ArrFrontend> thisPtr = this;

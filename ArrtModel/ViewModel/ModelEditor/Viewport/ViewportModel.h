@@ -83,7 +83,7 @@ public:
     ViewportModel(VideoSettings* videoSettings, CameraSettings* cameraSettings, ArrSessionManager* sessionManager, QObject* parent);
     virtual ~ViewportModel();
 
-    void setSession(RR::ApiHandle<RR::AzureSession> session);
+    void setSession(RR::ApiHandle<RR::RenderingSession> session);
 
     void setCameraSpeed(float lateral, float forward, float updown);
     void setCameraRotationSpeed(float x, float y);
@@ -148,8 +148,8 @@ private:
     ID3D11RenderTargetView* m_proxyColorView = nullptr;
     ID3D11DepthStencilView* m_proxyDepthView = nullptr;
 
-    RR::ApiHandle<RR::AzureSession> m_session = nullptr;
-    RR::ApiHandle<RR::RemoteManager> m_client = nullptr;
+    RR::ApiHandle<RR::RenderingSession> m_session = nullptr;
+    RR::ApiHandle<RR::RenderingConnection> m_client = nullptr;
     RR::ApiHandle<RR::GraphicsBindingSimD3d11> m_graphicsBinding = nullptr;
     float m_targetCameraLateralSpeed = 0.0f;
     float m_targetCameraForwardSpeed = 0.0f;

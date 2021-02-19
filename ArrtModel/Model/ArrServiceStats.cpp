@@ -8,12 +8,12 @@ ArrServiceStats::ArrServiceStats(QObject* parent)
 }
 
 
-void ArrServiceStats::update(RR::ApiHandle<RR::AzureSession> session)
+void ArrServiceStats::update(RR::ApiHandle<RR::RenderingSession> session)
 {
     updateStats(session);
 }
 
-void ArrServiceStats::updateStats(RR::ApiHandle<RR::AzureSession> session)
+void ArrServiceStats::updateStats(RR::ApiHandle<RR::RenderingSession> session)
 {
     if (!m_collecting || !session || !session->GetIsConnected())
     {
@@ -95,7 +95,7 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::AzureSession> session)
         // query the performance assessment (assuming the previous query is completed)
         if (!m_runningPerformanceAssesment)
         {
-            if (auto query = session->Actions()->QueryServerPerformanceAssessmentAsync())
+            if (auto query = session->Connection()->QueryServerPerformanceAssessmentAsync())
             {
                 m_runningPerformanceAssesment = *query;
             }

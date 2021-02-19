@@ -20,10 +20,10 @@ public:
     {
         auto c = ParameterModel::getValue().value<RR::Color4>();
         QColor qColor;
-        qColor.setRedF(c.r);
-        qColor.setGreenF(c.g);
-        qColor.setBlueF(c.b);
-        qColor.setAlphaF(c.a);
+        qColor.setRedF(c.R);
+        qColor.setGreenF(c.G);
+        qColor.setBlueF(c.B);
+        qColor.setAlphaF(c.A);
         return qColor;
     }
     void setValue(const QColor& qValue)

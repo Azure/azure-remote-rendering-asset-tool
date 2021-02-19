@@ -45,7 +45,7 @@ public:
     }
 
     /// Call every frame to collect statistics for given frame from the graphics binding.
-    void update(RR::ApiHandle<RR::AzureSession> session);
+    void update(RR::ApiHandle<RR::RenderingSession> session);
 
     /// Get current statistics
     const Stats& getStats()
@@ -61,11 +61,11 @@ private:
 
     Stats m_currentStats;
 
-    RR::ApiHandle<RR::PerformanceAssessmentAsync> m_runningPerformanceAssesment;
+    std::atomic_bool m_runningPerformanceAssesment;
     RR::PerformanceAssessment m_lastPerformanceAssessment;
     bool m_collecting = false;
     uint m_tick;
     uint m_secondsTick;
 
-    void updateStats(RR::ApiHandle<RR::AzureSession> session);
+    void updateStats(RR::ApiHandle<RR::RenderingSession> session);
 };

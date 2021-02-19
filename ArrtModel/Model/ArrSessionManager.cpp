@@ -18,11 +18,6 @@ using namespace std::chrono_literals;
 
 namespace
 {
-    int minutes(const RR::ARRTimeSpan& span)
-    {
-        return span.hour * 60 + span.minute;
-    }
-
     // interval to check the status (elapsed time, connection status etc)
     const std::chrono::milliseconds s_updateTime = 10s;
     // interval to check the status (elapsed time, connection status etc) when the session is connected
@@ -83,7 +78,7 @@ namespace
         return logger << toString(connectionStatus);
     }
 
-    inline QDebug& operator<<(QDebug& logger, const RR::RenderingSessionCreationParams& info)
+    inline QDebug& operator<<(QDebug& logger, const RR::RenderingSessionCreationOptions& info)
     {
         QJsonObject sessionInfo;
         sessionInfo[QLatin1String("max_lease")] = QString("%1:%2:%3").arg(info.MaxLease.hour).arg(info.MaxLease.minute).arg(info.MaxLease.second);
@@ -91,7 +86,7 @@ namespace
         return logger << QCoreApplication::tr("Create rendering session info:") << PrettyJson(sessionInfo);
     }
 
-    inline QDebug& operator<<(QDebug& logger, const RR::RenderingSessionUpdateParams& info)
+    inline QDebug& operator<<(QDebug& logger, const RR::RenderingSessionCreationOptions& info)
     {
         QJsonObject sessionInfo;
         sessionInfo[QLatin1String("max_lease")] = QString("%1:%2:%3").arg(info.MaxLease.hour).arg(info.MaxLease.minute).arg(info.MaxLease.second);
@@ -219,7 +214,7 @@ ArrSessionManager::~ArrSessionManager()
     }
 }
 
-bool ArrSessionManager::startSession(const RR::RenderingSessionCreationParams& info)
+bool ArrSessionManager::startSession(const RR::RenderingSessionCreationOptions& info)
 {
     // don't call again if the previous start request isn't completed or if the session is already running
     if (m_startRequested || getSessionStatus().isRunning())
@@ -240,7 +235,7 @@ bool ArrSessionManager::startSession(const RR::RenderingSessionCreationParams& i
         m_startRequested = async.value();
         m_startRequested->Completed([thisPtr](const RR::ApiHandle<RR::CreateSessionAsync>& completedAsync) {
             const auto status = completedAsync->GetStatus();
-            RR::ApiHandle<RR::AzureSession> session;
+            RR::ApiHandle<RR::RenderingSession> session;
 
             if (status == RR::Result::Success)
             {
@@ -555,7 +550,7 @@ void ArrSessionManager::connectToSessionRuntime()
                         {
                             case RR::Result::VideoFormatNotAvailable:
                                 thisPtr->m_waitForVideoFormatChange = true;
-                                thisPtr->m_viewportModel->setSession(RR::ApiHandle<RR::AzureSession>());
+                                thisPtr->m_viewportModel->setSession(RR::ApiHandle<RR::RenderingSession>());
                             default:
                                 break;
                         }
@@ -617,7 +612,7 @@ void ArrSessionManager::onStatusUpdated()
     {
         if (m_reconnecting)
         {
-            m_viewportModel->setSession(RR::ApiHandle<RR::AzureSession>());
+            m_viewportModel->setSession(RR::ApiHandle<RR::RenderingSession>());
             m_reconnecting = false;
         }
         connectToSessionRuntime();
@@ -766,7 +761,7 @@ std::string ArrSessionManager::getSessionUuid() const
     return sessionUuid;
 }
 
-RR::ApiHandle<RR::AzureSession> ArrSessionManager::getCurrentSession() const
+RR::ApiHandle<RR::RenderingSession> ArrSessionManager::getCurrentSession() const
 {
     return m_session;
 }
@@ -779,11 +774,11 @@ void ArrSessionManager::deinitializeSession()
         api->MessageLogged(m_messageLoggedToken);
     }
     m_session->DisconnectFromRuntime();
-    m_viewportModel->setSession(RR::ApiHandle<RR::AzureSession>());
+    m_viewportModel->setSession(RR::ApiHandle<RR::RenderingSession>());
     m_session->ConnectionStatusChanged(m_statusChangedToken);
 }
 
-void ArrSessionManager::setRunningSession(const RR::ApiHandle<RR::AzureSession>& session)
+void ArrSessionManager::setRunningSession(const RR::ApiHandle<RR::RenderingSession>& session)
 {
     if (m_session != session)
     {
@@ -798,7 +793,7 @@ void ArrSessionManager::setRunningSession(const RR::ApiHandle<RR::AzureSession>&
 
         if (m_session && m_session->GetValid())
         {
-            m_api = m_session->Actions();
+            m_api = m_session->Connection();
             initializeSession();
             m_configuration->setRunningSession(getSessionUuid());
         }
@@ -891,9 +886,9 @@ void ArrSessionManager::setLoadedModel(RR::ApiHandle<RR::LoadModelResult> loadRe
     Q_EMIT rootIdChanged();
 }
 
-RR::ApiHandle<RR::RemoteManager> ArrSessionManager::getClientApi()
+RR::ApiHandle<RR::RenderingConnection> ArrSessionManager::getClientApi()
 {
-    return (m_session && m_session->GetValid()) ? m_api : RR::ApiHandle<RR::RemoteManager>();
+    return (m_session && m_session->GetValid()) ? m_api : RR::ApiHandle<RR::RenderingConnection>();
 }
 
 void ArrSessionManager::startInspector()

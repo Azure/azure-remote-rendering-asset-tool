@@ -106,7 +106,7 @@ ViewportModel::~ViewportModel()
     deinitializeD3D();
 }
 
-void ViewportModel::setSession(RR::ApiHandle<RR::AzureSession> session)
+void ViewportModel::setSession(RR::ApiHandle<RR::RenderingSession> session)
 {
     if (m_session != session)
     {
@@ -131,7 +131,7 @@ void ViewportModel::setSession(RR::ApiHandle<RR::AzureSession> session)
 
 void ViewportModel::initializeClient()
 {
-    m_client = m_session->Actions();
+    m_client = m_session->Connection();
     m_graphicsBinding = m_session->GetGraphicsBinding().as<RR::GraphicsBindingSimD3d11>();
     if (auto&& binding = getBinding())
     {

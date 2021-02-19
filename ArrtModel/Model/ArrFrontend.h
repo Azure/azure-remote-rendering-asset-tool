@@ -7,7 +7,6 @@
 namespace Microsoft::Azure::RemoteRendering::Internal
 {
     class RemoteRenderingClient;
-    class AzureFrontend;
 }; // namespace Microsoft::Azure::RemoteRendering::Internal
 
 // wrapper on a RR::AzureFrontend, the class responsible for starting sessions and controlling conversion
@@ -20,7 +19,7 @@ public:
     ~ArrFrontend();
 
     // return the underlying RR::AzureFrontEnd instance
-    RR::ApiHandle<RR::AzureFrontend>& getFrontend() { return m_rrFrontend; }
+    RR::ApiHandle<RR::RemoteRenderingClient>& getFrontend() { return m_rrFrontend; }
 
     void connectAccount(const char* accountID, const char* accountKey, const char* accountDomain, const char* region);
     void reconnectAccount();
@@ -36,7 +35,7 @@ private:
     std::string m_accountKey;
     std::string m_accountDomain;
 
-    RR::ApiHandle<RR::AzureFrontend> m_rrFrontend;
+    RR::ApiHandle<RR::RemoteRenderingClient> m_rrFrontend;
     RR::ApiHandle<RR::SessionPropertiesArrayAsync> m_sessionPropertiesAsync;
 
     AccountConnectionStatus m_status = AccountConnectionStatus::NotAuthenticated;
