@@ -6,6 +6,15 @@
 
 // service statistics object, collecting and analyzing per-frame stats in an ARR session
 
+    template <typename T>
+    class ArrAsyncStatus
+    {
+    public:
+    private:
+        RR::Status m_status = RR::Status::InProgress;
+        T m_result = {};
+    };
+
 class ArrServiceStats : public QObject
 {
     Q_OBJECT

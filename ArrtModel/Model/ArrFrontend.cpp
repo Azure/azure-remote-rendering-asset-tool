@@ -7,13 +7,13 @@ ArrFrontend::ArrFrontend(QObject* parent)
     : QObject(parent)
 {
     RR::RemoteRenderingInitialization ci{};
-    ci.connectionType = RR::ConnectionType::General;
-    ci.graphicsApi = RR::GraphicsApiType::SimD3D11;
-    ci.right = RR::Axis::X;
-    ci.up = RR::Axis::Y;
-    ci.forward = RR::Axis::Z;
-    ci.unitsPerMeter = 1.0F;
-    ci.toolId = std::string("ARRT." ARRT_VERSION);
+    ci.ConnectionType = RR::ConnectionType::General;
+    ci.GraphicsApi = RR::GraphicsApiType::SimD3D11;
+    ci.Right = RR::Axis::X;
+    ci.Up = RR::Axis::Y;
+    ci.Forward = RR::Axis::Z;
+    ci.UnitsPerMeter = 1.0F;
+    ci.ToolId = std::string("ARRT." ARRT_VERSION);
     RR::StartupRemoteRendering(ci);
 }
 
@@ -42,7 +42,7 @@ void ArrFrontend::reconnectAccount()
 
 void ArrFrontend::connect()
 {
-    assert(m_reentryCnt.fetch_add(1) == 0 && m_sessionPropertiesAsync == nullptr);
+    assert(m_reentryCnt.fetch_add(1) == 0 && m_sessionPropertiesAsync == false);
 
     if (m_rrFrontend)
     {

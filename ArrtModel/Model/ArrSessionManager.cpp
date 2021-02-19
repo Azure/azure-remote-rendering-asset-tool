@@ -81,7 +81,7 @@ namespace
     inline QDebug& operator<<(QDebug& logger, const RR::RenderingSessionCreationOptions& info)
     {
         QJsonObject sessionInfo;
-        sessionInfo[QLatin1String("max_lease")] = QString("%1:%2:%3").arg(info.MaxLease.hour).arg(info.MaxLease.minute).arg(info.MaxLease.second);
+        sessionInfo[QLatin1String("max_lease")] = QString("%1:%2").arg(info.MaxLeaseInMinutes / 60).arg(info.MaxLeaseInMinutes);
         sessionInfo[QLatin1String("vm_size")] = toString(info.Size);
         return logger << QCoreApplication::tr("Create rendering session info:") << PrettyJson(sessionInfo);
     }
@@ -89,7 +89,7 @@ namespace
     inline QDebug& operator<<(QDebug& logger, const RR::RenderingSessionCreationOptions& info)
     {
         QJsonObject sessionInfo;
-        sessionInfo[QLatin1String("max_lease")] = QString("%1:%2:%3").arg(info.MaxLease.hour).arg(info.MaxLease.minute).arg(info.MaxLease.second);
+        sessionInfo[QLatin1String("max_lease")] = QString("%1:%2").arg(info.MaxLeaseInMinutes / 60).arg(info.MaxLeaseInMinutes);
         return logger << QCoreApplication::tr("Update rendering session info:") << PrettyJson(sessionInfo);
     }
 
@@ -102,8 +102,8 @@ namespace
         sessionProperties[QLatin1String("message")] = QString::fromStdString(properties.Message);
         sessionProperties[QLatin1String("size_string")] = QString::fromStdString(properties.SizeString);
         sessionProperties[QLatin1String("id")] = QString::fromStdString(properties.Id);
-        sessionProperties[QLatin1String("elapsed_time")] = QString("%1:%2:%3").arg(properties.ElapsedTime.hour).arg(properties.ElapsedTime.minute).arg(properties.ElapsedTime.second);
-        sessionProperties[QLatin1String("max_lease")] = QString("%1:%2:%3").arg(properties.MaxLease.hour).arg(properties.MaxLease.minute).arg(properties.MaxLease.second);
+        sessionProperties[QLatin1String("elapsed_time")] = QString("%1:%2").arg(properties.ElapsedTimeInMinutes / 60).arg(properties.ElapsedTimeInMinutes);
+        sessionProperties[QLatin1String("max_lease")] = QString("%1:%2").arg(properties.MaxLeaseInMinutes / 60).arg(properties.MaxLeaseInMinutes);
         return logger << QCoreApplication::tr("Session properties:") << PrettyJson(sessionProperties);
     }
 
@@ -182,7 +182,7 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
                         {
                             qInfo(LoggingCategory::renderingSession)
                                 << tr("Trying to connect to the saved running session:") << m_configuration->getRunningSession();
-                            auto session = m_frontend->getFrontend()->OpenRenderingSession(m_configuration->getRunningSession());
+                            auto session = m_frontend->getFrontend()->OpenRenderingSessionAsync(m_configuration->getRunningSession());
                             if (session)
                             {
                                 setRunningSession(session.value());
@@ -400,12 +400,11 @@ bool ArrSessionManager::extendMaxSessionTime()
     }
     else
     {
-        RR::ARRTimeSpan maxTime = getSessionDescriptor().m_maxLeaseTime;
-        int totalMinutes = maxTime.minute + maxTime.hour * 60;
+        int totalMinutes = getSessionDescriptor().m_maxLeaseTimeInMinutes;
         totalMinutes += m_extensionMinutes;
 
-        RR::RenderingSessionUpdateParams params;
-        params.MaxLease = {totalMinutes / 60, totalMinutes % 60, 0};
+        RR::RenderingSessionUpdateOptions params;
+        params.MaxLeaseInMinutes = totalMinutes;
 
         QPointer<ArrSessionManager> thisPtr = this;
 

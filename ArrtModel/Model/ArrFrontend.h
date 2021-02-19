@@ -36,8 +36,8 @@ private:
     std::string m_accountDomain;
 
     RR::ApiHandle<RR::RemoteRenderingClient> m_rrFrontend;
-    RR::ApiHandle<RR::SessionPropertiesArrayAsync> m_sessionPropertiesAsync;
-
+    std::atomic_bool m_sessionPropertiesAsync = false;
+ 
     AccountConnectionStatus m_status = AccountConnectionStatus::NotAuthenticated;
 
     std::condition_variable m_condVar;

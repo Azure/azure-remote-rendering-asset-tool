@@ -195,17 +195,15 @@ private:
 
     ArrServiceStats* m_serviceStats;
 
-    /* TODO, remove
     // Async holders
-    RR::ApiHandle<RR::SessionAsync> m_renewAsync = nullptr;
-    RR::ApiHandle<RR::SessionPropertiesAsync> m_getPropertiesAsync = nullptr;
-    RR::ApiHandle<RR::LoadModelAsync> m_loadModelAsync = nullptr;
-    RR::ApiHandle<RR::ArrInspectorAsync> m_connectToArrInspector = nullptr;
-    RR::ApiHandle<RR::CreateSessionAsync> m_startRequested = nullptr;
-    RR::ApiHandle<RR::SessionAsync> m_stopRequested = nullptr;
-    RR::ApiHandle<RR::ConnectToRuntimeAsync> m_connecting = nullptr;
-    */
-
+    std::atomic_bool m_renewAsync = false;
+    std::atomic_bool m_getPropertiesAsync = false;
+    std::atomic_bool m_loadModelAsync = false;
+    std::atomic_bool m_connectToArrInspector = false;
+    std::atomic_bool m_startRequested = false;
+    std::atomic_bool m_stopRequested = false;
+    std::atomic_bool m_connecting = false;
+ 
     // Registered callback tokens
     RR::event_token m_statusChangedToken;
     RR::event_token m_messageLoggedToken;

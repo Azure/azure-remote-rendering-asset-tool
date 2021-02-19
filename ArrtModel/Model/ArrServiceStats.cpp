@@ -27,19 +27,19 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::RenderingSession> session)
         return;
     }
 
-    m_currentStats.m_timeSinceLastPresent.addValue(frameStatistics.timeSinceLastPresent * 1000.0, m_tick);
-    m_currentStats.m_videoFramesSkipped.addValue(frameStatistics.videoFramesSkipped, m_tick);
-    m_currentStats.m_videoFramesReused.addValue(frameStatistics.videoFrameReusedCount, m_tick);
-    m_currentStats.m_videoFramesReceived.addValue(frameStatistics.videoFramesReceived, m_tick);
-    if (frameStatistics.videoFramesReceived)
+    m_currentStats.m_timeSinceLastPresent.addValue(frameStatistics.TimeSinceLastPresent * 1000.0, m_tick);
+    m_currentStats.m_videoFramesSkipped.addValue(frameStatistics.VideoFramesSkipped, m_tick);
+    m_currentStats.m_videoFramesReused.addValue(frameStatistics.VideoFrameReusedCount, m_tick);
+    m_currentStats.m_videoFramesReceived.addValue(frameStatistics.VideoFramesReceived, m_tick);
+    if (frameStatistics.VideoFramesReceived)
     {
-        m_currentStats.m_videoFrameMinDelta.addValue(frameStatistics.videoFrameMinDelta * 1000.0, m_tick);
-        m_currentStats.m_videoFrameMaxDelta.addValue(frameStatistics.videoFrameMaxDelta * 1000.0, m_tick);
+        m_currentStats.m_videoFrameMinDelta.addValue(frameStatistics.VideoFrameMinDelta * 1000.0, m_tick);
+        m_currentStats.m_videoFrameMaxDelta.addValue(frameStatistics.VideoFrameMaxDelta * 1000.0, m_tick);
     }
-    m_currentStats.m_latencyPoseToReceive.addValue(frameStatistics.latencyPoseToReceive * 1000.0, m_tick);
-    m_currentStats.m_latencyReceiveToPresent.addValue(frameStatistics.latencyReceiveToPresent * 1000.0, m_tick);
-    m_currentStats.m_latencyPresentToDisplay.addValue(frameStatistics.latencyPresentToDisplay * 1000.0, m_tick);
-    m_currentStats.m_videoFramesDiscarded.addValue(frameStatistics.videoFramesDiscarded, m_tick);
+    m_currentStats.m_latencyPoseToReceive.addValue(frameStatistics.LatencyPoseToReceive * 1000.0, m_tick);
+    m_currentStats.m_latencyReceiveToPresent.addValue(frameStatistics.LatencyReceiveToPresent * 1000.0, m_tick);
+    m_currentStats.m_latencyPresentToDisplay.addValue(frameStatistics.LatencyPresentToDisplay * 1000.0, m_tick);
+    m_currentStats.m_videoFramesDiscarded.addValue(frameStatistics.VideoFramesDiscarded, m_tick);
 
     if (m_runningPerformanceAssesment && m_runningPerformanceAssesment->GetIsCompleted())
     {
@@ -51,14 +51,14 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::RenderingSession> session)
         else if (m_runningPerformanceAssesment->GetStatus() == RR::Result::Success)
         {
             m_lastPerformanceAssessment = m_runningPerformanceAssesment->GetResult();
-            m_currentStats.m_timeCPU.addValue(m_lastPerformanceAssessment.timeCPU.aggregate, m_tick);
-            m_currentStats.m_timeGPU.addValue(m_lastPerformanceAssessment.timeGPU.aggregate, m_tick);
-            m_currentStats.m_utilizationCPU.addValue(m_lastPerformanceAssessment.utilizationCPU.aggregate, m_tick);
-            m_currentStats.m_utilizationGPU.addValue(m_lastPerformanceAssessment.utilizationGPU.aggregate, m_tick);
-            m_currentStats.m_memoryCPU.addValue(m_lastPerformanceAssessment.memoryCPU.aggregate, m_tick);
-            m_currentStats.m_memoryGPU.addValue(m_lastPerformanceAssessment.memoryGPU.aggregate, m_tick);
-            m_currentStats.m_networkLatency.addValue(m_lastPerformanceAssessment.networkLatency.aggregate, m_tick);
-            m_currentStats.m_polygonsRendered.addValue(m_lastPerformanceAssessment.polygonsRendered.aggregate, m_tick);
+            m_currentStats.m_timeCPU.addValue(m_lastPerformanceAssessment.TimeCpu.Aggregate, m_tick);
+            m_currentStats.m_timeGPU.addValue(m_lastPerformanceAssessment.TimeGpu.Aggregate, m_tick);
+            m_currentStats.m_utilizationCPU.addValue(m_lastPerformanceAssessment.UtilizationCpu.Aggregate, m_tick);
+            m_currentStats.m_utilizationGPU.addValue(m_lastPerformanceAssessment.UtilizationGpu.Aggregate, m_tick);
+            m_currentStats.m_memoryCPU.addValue(m_lastPerformanceAssessment.MemoryCpu.Aggregate, m_tick);
+            m_currentStats.m_memoryGPU.addValue(m_lastPerformanceAssessment.MemoryGpu.Aggregate, m_tick);
+            m_currentStats.m_networkLatency.addValue(m_lastPerformanceAssessment.NetworkLatency.Aggregate, m_tick);
+            m_currentStats.m_polygonsRendered.addValue(m_lastPerformanceAssessment.PolygonsRendered.Aggregate, m_tick);
             m_runningPerformanceAssesment = {};
         }
         else
