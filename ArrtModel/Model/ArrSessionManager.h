@@ -10,7 +10,7 @@ namespace Microsoft::Azure::RemoteRendering
 {
     class AzureSession;
     class RemoteRenderingClient;
-    using LoadResult = std::function<void(Result, ApiHandle<Entity>)>;
+    using LoadResult = std::function<void(Status, ApiHandle<Entity>)>;
     using LoadProgress = std::function<void(float)>;
 } // namespace Microsoft::Azure::RemoteRendering
 
@@ -121,7 +121,7 @@ public:
 
     void reconnectToSessionRuntime();
 
-    RR::Result getLastError() const { return m_lastError; }
+    RR::Status getLastError() const { return m_lastError; }
 
     // return the string of the current session uuid
     std::string getSessionUuid() const;
@@ -195,14 +195,12 @@ private:
 
     ArrServiceStats* m_serviceStats;
 
-    // Async holders
-    std::atomic_bool m_renewAsync = false;
-    std::atomic_bool m_getPropertiesAsync = false;
-    std::atomic_bool m_loadModelAsync = false;
-    std::atomic_bool m_connectToArrInspector = false;
-    std::atomic_bool m_startRequested = false;
-    std::atomic_bool m_stopRequested = false;
-    std::atomic_bool m_connecting = false;
+    // Async status
+    std::atomic_bool m_renewAsyncInProgress = false;
+    std::atomic_bool m_connectToArrInspectorInProgress = false;
+    std::atomic_bool m_createSessionInProgress = false;
+    std::atomic_bool m_stopRequestInProgress = false;
+    std::atomic_bool m_connectingInProgress = false;
  
     // Registered callback tokens
     RR::event_token m_statusChangedToken;
@@ -210,7 +208,7 @@ private:
 
     bool m_reconnecting = false;
     bool m_waitForVideoFormatChange = false;
-    RR::Result m_lastError = RR::Result::Success;
+    RR::Status m_lastError = RR::Status::OK;
 
     bool m_autoRotateRoot = false;
 };

@@ -41,16 +41,15 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::RenderingSession> session)
     m_currentStats.m_latencyPresentToDisplay.addValue(frameStatistics.LatencyPresentToDisplay * 1000.0, m_tick);
     m_currentStats.m_videoFramesDiscarded.addValue(frameStatistics.VideoFramesDiscarded, m_tick);
 
-    if (m_runningPerformanceAssesment && m_runningPerformanceAssesment->GetIsCompleted())
+    if (m_runningPerformanceAssessment.isCompleted())
     {
-        if (m_runningPerformanceAssesment->GetIsFaulted())
+        if (m_runningPerformanceAssessment.isFaulted())
         {
-            qWarning(LoggingCategory::renderingSession) << tr("Error retrieving the performance assessment. Failure reason: ") << m_runningPerformanceAssesment->GetStatus();
-            m_runningPerformanceAssesment = {};
+            qWarning(LoggingCategory::renderingSession) << tr("Error retrieving the performance assessment. Failure reason: ") << m_runningPerformanceAssessment.getStatus();
         }
-        else if (m_runningPerformanceAssesment->GetStatus() == RR::Result::Success)
+        else
         {
-            m_lastPerformanceAssessment = m_runningPerformanceAssesment->GetResult();
+            m_lastPerformanceAssessment = m_runningPerformanceAssessment.getResult();
             m_currentStats.m_timeCPU.addValue(m_lastPerformanceAssessment.TimeCpu.Aggregate, m_tick);
             m_currentStats.m_timeGPU.addValue(m_lastPerformanceAssessment.TimeGpu.Aggregate, m_tick);
             m_currentStats.m_utilizationCPU.addValue(m_lastPerformanceAssessment.UtilizationCpu.Aggregate, m_tick);
@@ -59,11 +58,6 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::RenderingSession> session)
             m_currentStats.m_memoryGPU.addValue(m_lastPerformanceAssessment.MemoryGpu.Aggregate, m_tick);
             m_currentStats.m_networkLatency.addValue(m_lastPerformanceAssessment.NetworkLatency.Aggregate, m_tick);
             m_currentStats.m_polygonsRendered.addValue(m_lastPerformanceAssessment.PolygonsRendered.Aggregate, m_tick);
-            m_runningPerformanceAssesment = {};
-        }
-        else
-        {
-            qWarning(LoggingCategory::renderingSession) << tr("what?");
         }
     }
 
@@ -93,12 +87,9 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::RenderingSession> session)
         m_currentStats.m_polygonsRendered.endWindow(m_secondsTick);
 
         // query the performance assessment (assuming the previous query is completed)
-        if (!m_runningPerformanceAssesment)
+        if (!m_runningPerformanceAssessment.isRunning())
         {
-            if (auto query = session->Connection()->QueryServerPerformanceAssessmentAsync())
-            {
-                m_runningPerformanceAssesment = *query;
-            }
+            m_runningPerformanceAssessment.queryServerPerformanceAssessmentAsync(session);
         }
 
         Q_EMIT updated();

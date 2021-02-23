@@ -42,7 +42,7 @@ void ArrFrontend::reconnectAccount()
 
 void ArrFrontend::connect()
 {
-    assert(m_reentryCnt.fetch_add(1) == 0 && m_sessionPropertiesAsync == false);
+    assert(m_reentryCnt.fetch_add(1) == 0 && m_sessionPropertiesAsync != RR::Status::InProgress);
 
     if (m_rrFrontend)
     {
@@ -64,38 +64,30 @@ void ArrFrontend::connect()
         frontend->MessageLogged(&qArrSdkMessage);
         frontend->SetLogLevel(RR::LogLevel::Debug);
         QPointer<ArrFrontend> thisPtr = this;
-        auto async = frontend->GetCurrentRenderingSessionsAsync();
-        if (async)
-        {
-            m_sessionPropertiesAsync = async.value();
-            m_sessionPropertiesAsync->Completed([thisPtr, frontend](const RR::ApiHandle<RR::SessionPropertiesArrayAsync>& /*async*/) {
-                {
-                    std::unique_lock<std::mutex> lk(thisPtr->m_mutex);
-                    thisPtr->m_condVar.notify_one();
-                }
-                QMetaObject::invokeMethod(QApplication::instance(),
-                                          [thisPtr, frontend]() {
-                                              if (thisPtr != nullptr)
+        m_sessionPropertiesAsync = RR::Status::InProgress;
+        frontend->GetCurrentRenderingSessionsAsync([thisPtr, frontend](RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesArrayResult> result) {
+            {
+                std::unique_lock<std::mutex> lk(thisPtr->m_mutex);
+                thisPtr->m_sessionPropertiesAsync = status;
+                thisPtr->m_condVar.notify_one();
+            }
+            QMetaObject::invokeMethod(QApplication::instance(),
+                                      [thisPtr, frontend, status, result]() {
+                                          if (thisPtr != nullptr)
+                                          {
+                                              if (status == RR::Status::OK && result->GetContext().Result == RR::Result::Success)
                                               {
-                                                  auto status = thisPtr->m_sessionPropertiesAsync->GetStatus();
-                                                  if (status == RR::Result::Success && thisPtr->m_sessionPropertiesAsync->GetContext().Result == RR::Result::Success)
-                                                  {
-                                                      thisPtr->m_rrFrontend = frontend;
-                                                      thisPtr->setStatus(AccountConnectionStatus::Authenticated);
-                                                  }
-                                                  else
-                                                  {
-                                                      thisPtr->setStatus(AccountConnectionStatus::InvalidCredentials);
-                                                  }
-                                                  thisPtr->m_sessionPropertiesAsync = nullptr;
+                                                  thisPtr->m_rrFrontend = frontend;
+                                                  thisPtr->setStatus(AccountConnectionStatus::Authenticated);
                                               }
-                                          });
-            });
-        }
-        else
-        {
-            qWarning(LoggingCategory::configuration) << tr("Failed to get rendering sessions. Possibly invalid account data.");
-        }
+                                              else
+                                              {
+                                                  thisPtr->setStatus(AccountConnectionStatus::InvalidCredentials);
+                                                  qWarning(LoggingCategory::configuration) << tr("Failed to get rendering sessions. Possibly invalid account data.");
+                                              }
+                                          }
+                                      });
+        });
     }
 
 #ifndef NDEBUG
@@ -107,13 +99,9 @@ ArrFrontend::~ArrFrontend()
 {
     // Wait for current rendering sessions query to complete.
     std::unique_lock<std::mutex> lk(m_mutex);
-    if (m_sessionPropertiesAsync)
+    if (m_sessionPropertiesAsync == RR::Status::InProgress)
     {
-        auto asyncStatus = m_sessionPropertiesAsync->GetStatus();
-        if (asyncStatus == RR::Result::InProgress)
-        {
-            m_condVar.wait(lk);
-        }
+        m_condVar.wait(lk);
     }
 
     m_rrFrontend = nullptr;

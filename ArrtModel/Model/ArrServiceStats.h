@@ -1,20 +1,12 @@
 #pragma once
 #include <Model/IncludesAzureRemoteRendering.h>
+#include <Model/ArrAsync.h>
 #include <QElapsedTimer>
 #include <QObject>
 #include <Utils/Accumulators.h>
 
+
 // service statistics object, collecting and analyzing per-frame stats in an ARR session
-
-    template <typename T>
-    class ArrAsyncStatus
-    {
-    public:
-    private:
-        RR::Status m_status = RR::Status::InProgress;
-        T m_result = {};
-    };
-
 class ArrServiceStats : public QObject
 {
     Q_OBJECT
@@ -70,7 +62,7 @@ private:
 
     Stats m_currentStats;
 
-    std::atomic_bool m_runningPerformanceAssesment;
+    ArrPerformanceAssessmentAsync m_runningPerformanceAssessment;
     RR::PerformanceAssessment m_lastPerformanceAssessment;
     bool m_collecting = false;
     uint m_tick;

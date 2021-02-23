@@ -60,5 +60,5 @@ void VideoSettingsModel::resetToCurrentSettings()
 
 bool VideoSettingsModel::isVideoFormatSupported() const
 {
-    return m_arrSessionManager->getLastError() != RR::Result::VideoFormatNotAvailable;
+    return m_arrSessionManager->getLastError() != RR::Status::VideoFormatNotAvailable;
 }
