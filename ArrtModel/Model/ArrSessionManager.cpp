@@ -86,7 +86,7 @@ namespace
         return logger << QCoreApplication::tr("Create rendering session info:") << PrettyJson(sessionInfo);
     }
 
-    inline QDebug& operator<<(QDebug& logger, const RR::RenderingSessionCreationOptions& info)
+    inline QDebug& operator<<(QDebug& logger, const RR::RenderingSessionUpdateOptions& info)
     {
         QJsonObject sessionInfo;
         sessionInfo[QLatin1String("max_lease")] = QString("%1:%2").arg(info.MaxLeaseInMinutes / 60).arg(info.MaxLeaseInMinutes);
@@ -182,15 +182,36 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
                         {
                             qInfo(LoggingCategory::renderingSession)
                                 << tr("Trying to connect to the saved running session:") << m_configuration->getRunningSession();
-                            auto session = m_frontend->getFrontend()->OpenRenderingSessionAsync(m_configuration->getRunningSession());
-                            if (session)
-                            {
-                                setRunningSession(session.value());
-                            }
-                            else
-                            {
-                                qWarning(LoggingCategory::renderingSession) << tr("Failed to connect to the saved running session:") << session.error();
-                            }
+
+                            QPointer<ArrSessionManager> thisPtr = this;
+                            m_frontend->getFrontend()->OpenRenderingSessionAsync(m_configuration->getRunningSession(), [thisPtr](RR::Status status, RR::ApiHandle<RR::CreateRenderingSessionResult> result) {
+                                RR::ApiHandle<RR::RenderingSession> session;
+                                std::string errorStr;
+                                if (status == RR::Status::OK)
+                                {
+                                    session = result->GetSession();
+                                    errorStr = result->GetContext().ErrorMessage;
+                                }
+                                else
+                                {
+                                    errorStr = "General failure";
+                                }
+
+                                QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, session, errorStr]() {
+                                    if (thisPtr)
+                                    {
+                                        if (session)
+                                        {
+                                            thisPtr->setRunningSession(session);
+                                        }
+                                        else
+                                        {
+                                            qWarning(LoggingCategory::renderingSession) << tr("Failed to connect to the saved running session:") << errorStr.c_str();
+                                        }
+                                    }
+                                });
+                            });
+
                         }
                     }
                     else
@@ -289,6 +310,8 @@ bool ArrSessionManager::stopSession()
             }
         });
     });
+
+    return true;
 }
 
 SessionStatus ArrSessionManager::getSessionStatus() const
@@ -499,7 +522,7 @@ void ArrSessionManager::connectToSessionRuntime()
             << tr("Requesting connection to session id:") << getSessionUuid();
         RR::RendererInitOptions options = {RR::ServiceRenderMode::DepthBasedComposition, false};
         m_connectingInProgress = true;
-        m_session->ConnectAsync(options, [thisPtr](RR::Status status, RR::ConnectionStatus connectionStatus) {
+        m_session->ConnectAsync(options, [thisPtr](RR::Status status, RR::ConnectionStatus) {
             if (status != RR::Status::OK)
             {
                 qWarning(LoggingCategory::renderingSession)
@@ -734,7 +757,7 @@ void ArrSessionManager::deinitializeSession()
     {
         api->MessageLogged(m_messageLoggedToken);
     }
-    m_session->DisconnectFromRuntime();
+    m_session->Disconnect();
     m_viewportModel->setSession(RR::ApiHandle<RR::RenderingSession>());
     m_session->ConnectionStatusChanged(m_statusChangedToken);
 }
@@ -810,7 +833,11 @@ RR::Result ArrSessionManager::loadModelAsync(const QString& modelName, const cha
                     progressCallback(progress);
                 }
             });
+
+        return RR::Result::Success;
     }
+
+    return RR::Result::ApiUnavailable;
 }
 
 void ArrSessionManager::setLoadedModel(RR::ApiHandle<RR::LoadModelResult> loadResult)

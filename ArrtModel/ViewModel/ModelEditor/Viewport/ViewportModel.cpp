@@ -308,37 +308,34 @@ void ViewportModel::pick(int x, int y, bool doubleClick)
     rc.MaxHits = 1;
     rc.CollisionMask = 0xffffffff;
     QPointer<ViewportModel> thisPtr = this;
-    if (auto async = m_client->RayCastQueryAsync(rc))
-    {
-        (*async)->Completed([thisPtr, doubleClick](const RR::ApiHandle<RR::RaycastQueryAsync>& finishedAsync) {
-            RR::ApiHandle<RR::Entity> hit = nullptr;
-            std::vector<RR::RayCastHit> rayCastHits;
-            if (finishedAsync->GetStatus() == RR::Result::Success)
+    m_client->RayCastQueryAsync(rc, [thisPtr, doubleClick](RR::Status status, RR::ApiHandle<RR::RayCastQueryResult> result) {
+        RR::ApiHandle<RR::Entity> hit = nullptr;
+        std::vector<RR::RayCastHit> rayCastHits;
+        if (status == RR::Status::OK)
+        {
+            result->GetHits(rayCastHits);
+            if (rayCastHits.size() > 0)
             {
-                finishedAsync->GetResult(rayCastHits);
-                if (rayCastHits.size() > 0)
-                {
-                    hit = rayCastHits[0].HitObject;
-                }
+                hit = rayCastHits[0].HitObject;
             }
+        }
 
-            if (thisPtr && thisPtr->m_selectionModel)
+        if (thisPtr && thisPtr->m_selectionModel)
+        {
+            if (hit == nullptr)
             {
-                if (hit == nullptr)
+                thisPtr->m_selectionModel->deselectAll();
+            }
+            else
+            {
+                thisPtr->m_selectionModel->select(hit);
+                if (doubleClick)
                 {
-                    thisPtr->m_selectionModel->deselectAll();
-                }
-                else
-                {
-                    thisPtr->m_selectionModel->select(hit);
-                    if (doubleClick)
-                    {
-                        thisPtr->m_selectionModel->focusEntity(hit);
-                    }
+                    thisPtr->m_selectionModel->focusEntity(hit);
                 }
             }
-        });
-    }
+        }
+    });
 }
 
 void ViewportModel::setCameraSpeed(float lateral, float forward, float updown)
@@ -375,11 +372,11 @@ void ViewportModel::updateProjection()
     // Compute horizontal and vertical angles from the full vertical fov in the camera settings.
     // Alternatively, the same data can be extracted from the projection matrix 'm' using RR::FovFromProjectionMatrix
     const float halfFovX = qAtan(qTan(qDegreesToRadians(m_cameraSettings->getFovAngle()) * 0.5f) * ratio);
-    m_simUpdate.fieldOfView.left.angleLeft = -halfFovX;
-    m_simUpdate.fieldOfView.left.angleRight = halfFovX;
+    m_simUpdate.FieldOfView.Left.AngleLeft = -halfFovX;
+    m_simUpdate.FieldOfView.Left.AngleRight = halfFovX;
     const float halfFovY = qDegreesToRadians(m_cameraSettings->getFovAngle()) / 2;
-    m_simUpdate.fieldOfView.left.angleUp = halfFovY;
-    m_simUpdate.fieldOfView.left.angleDown = -halfFovY;
+    m_simUpdate.FieldOfView.Left.AngleUp = halfFovY;
+    m_simUpdate.FieldOfView.Left.AngleDown = -halfFovY;
 
     bool success = false;
 
@@ -512,7 +509,7 @@ void ViewportModel::update()
 {
     if (auto&& binding = getBinding())
     {
-        m_simUpdate.frameId++;
+        m_simUpdate.FrameId++;
 
         QMatrix4x4 m;
 
@@ -520,7 +517,7 @@ void ViewportModel::update()
         m.translate(-m_cameraPosition);
         QVector3D center = (m_modelBbMin + m_modelBbMax) / 2.0;
 
-        convertMatrix(m_simUpdate.viewTransform.left, m);
+        convertMatrix(m_simUpdate.ViewTransform.Left, m);
         bool success = false;
         m_viewMatrixInverse = m.inverted(&success);
         if (!success)
@@ -588,18 +585,14 @@ void ViewportModel::setRotation(float yaw, float pitch)
 void ViewportModel::zoomOnEntity(RR::ApiHandle<RR::Entity> entity)
 {
     QPointer<ViewportModel> thisPtr = this;
-    if (auto async = entity->QueryWorldBoundsAsync())
-    {
-        (*async)->Completed([thisPtr](const RR::ApiHandle<RR::BoundsQueryAsync>& finishedAsync) {
-            if (thisPtr && finishedAsync->GetStatus() == RR::Result::Success)
-            {
-                const auto result = finishedAsync->GetResult();
-                auto minBB = result.min;
-                auto maxBB = result.max;
-                thisPtr->zoomOnBoundingBox(QVector3D(minBB.x, minBB.y, minBB.z), QVector3D(maxBB.x, maxBB.y, maxBB.z));
-            }
-        });
-    }
+    entity->QueryWorldBoundsAsync([thisPtr](RR::Status status, RR::Bounds bounds) {
+        if (thisPtr && status == RR::Status::OK)
+        {
+            auto minBB = bounds.Min;
+            auto maxBB = bounds.Max;
+            thisPtr->zoomOnBoundingBox(QVector3D(minBB.X, minBB.Y, minBB.Z), QVector3D(maxBB.X, maxBB.Y, maxBB.Z));
+        }
+    });
 }
 
 void ViewportModel::initAfterLoading()
@@ -608,21 +601,17 @@ void ViewportModel::initAfterLoading()
     if (root)
     {
         QPointer<ViewportModel> thisPtr = this;
-        if (auto async = root->QueryWorldBoundsAsync())
-        {
-            (*async)->Completed([thisPtr, root](const RR::ApiHandle<RR::BoundsQueryAsync>& finishedAsync) {
-                if (thisPtr && finishedAsync->GetStatus() == RR::Result::Success)
-                {
-                    const auto result = finishedAsync->GetResult();
-                    const auto minBB = result.min;
-                    const auto maxBB = result.max;
-                    const QVector3D vMin(minBB.x, minBB.y, minBB.z);
-                    const QVector3D vMax(maxBB.x, maxBB.y, maxBB.z);
+        root->QueryWorldBoundsAsync([thisPtr, root](RR::Status status, RR::Bounds bounds) {
+            if (thisPtr && status == RR::Status::OK)
+            {
+                const auto minBB = bounds.Min;
+                const auto maxBB = bounds.Max;
+                const QVector3D vMin(minBB.X, minBB.Y, minBB.Z);
+                const QVector3D vMax(maxBB.X, maxBB.Y, maxBB.Z);
 
-                    thisPtr->initAfterLoading(vMin, vMax);
-                }
-            });
-        }
+                thisPtr->initAfterLoading(vMin, vMax);
+            }
+        });
     }
 }
 
@@ -636,7 +625,7 @@ void ViewportModel::initAfterLoading(const QVector3D& minBB, const QVector3D& ma
     if (root)
     {
         RR::Float3 scale = root->GetScale();
-        m_modelScale = QVector3D(scale.x, scale.y, scale.z);
+        m_modelScale = QVector3D(scale.X, scale.Y, scale.Z);
         m_originalRotation = root->GetRotation();
     }
     m_oldScale = 1.0;

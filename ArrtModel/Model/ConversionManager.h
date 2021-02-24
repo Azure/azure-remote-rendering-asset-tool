@@ -120,9 +120,9 @@ struct Conversion
             return QCoreApplication::tr("Conversion %1").arg(id);
         }
     }
-
-    RR::ApiHandle<RR::ConversionStatusAsync> m_statusAsync = nullptr;
-    RR::ApiHandle<RR::StartAssetConversionAsync> m_conversionCall = nullptr;
+    std::atomic_bool m_statusQueryInProgress = false;
+    //RR::ApiHandle<RR::ConversionStatusAsync> m_statusAsync = nullptr;
+    //RR::ApiHandle<RR::StartAssetConversionAsync> m_conversionCall = nullptr;
 };
 
 // class used to control conversions in ARRT. It will keep track of the current conversions and the past ones, and allow the user to start new ones or

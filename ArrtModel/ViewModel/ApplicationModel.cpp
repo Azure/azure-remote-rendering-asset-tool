@@ -26,7 +26,7 @@
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wsign-compare"
 #pragma warning(push)
-#pragma warning(disable : 4100)
+#pragma warning(disable : 4100 4189)
 #include <AzureRemoteRendering.inl>
 #pragma warning(disable : 4996)
 #include <cpprest/http_client.h>

@@ -211,8 +211,6 @@ ConversionManager::ConversionId ConversionManager::addNewConversion()
 {
     const ConversionId newConversionId = ++m_highestId;
 
-    arr_asset_conversion_input_sas_params info{};
-
     auto* newConversion = new Conversion();
     newConversion->m_output_storage_account_name = QString::fromStdWString(m_storageManager->getAccountName()).toStdString();
 
@@ -235,21 +233,20 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
     newConversion->updateConversionStatus(Conversion::START_REQUESTED);
     QPointer<ConversionManager> thisPtr = this;
 
-    auto onConversionStartRequestFinished = [thisPtr, newConversionId](const RR::ApiHandle<RR::StartAssetConversionAsync>& finishedAsync) {
-        const auto status = finishedAsync->GetStatus();
+    auto onConversionStartRequestFinished = [thisPtr, newConversionId](RR::Status status, RR::ApiHandle<RR::AssetConversionResult> result) {
         std::string conversionUUID;
-
-        if (status == RR::Result::Success)
+        RR::Result errorCode = result->GetErrorCode();
+        if (status == RR::Status::OK && errorCode == RR::Result::Success)
         {
-            logContext(finishedAsync->GetContext());
-            finishedAsync->GetResult(conversionUUID);
+            logContext(result->GetContext());
+            result->GetConversionUuid(conversionUUID);
         }
-        QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, newConversionId, status, conversionUUID]() {
+        QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, newConversionId, errorCode, conversionUUID]() {
             if (thisPtr)
             {
                 if (Conversion* conversion = thisPtr->getConversion(newConversionId))
                 {
-                    if (status == RR::Result::Success)
+                    if (errorCode == RR::Result::Success)
                     {
                         conversion->m_conversionUUID = conversionUUID;
                         conversion->updateConversionStatus(Conversion::SYNCHRONIZING);
@@ -257,15 +254,13 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
                     else
                     {
                         conversion->m_endConversionTime.start();
-                        conversion->updateConversionStatus(Conversion::SYNCHRONIZATION_FAILED, tr("Failure reason: %1.").arg(RR::ResultToString(status)));
+                        conversion->updateConversionStatus(Conversion::SYNCHRONIZATION_FAILED, tr("Failure reason: %1.").arg(RR::ResultToString(errorCode)));
                     }
                 }
                 Q_EMIT thisPtr->conversionUpdated(newConversionId);
             }
         });
     };
-
-    arr_asset_conversion_input_sas_params info{};
 
     QString inputSasToken = QString::fromStdWString(storageManager->getSasToken(newConversion->m_inputContainer,
                                                                                 azure::storage::blob_shared_access_policy::read |
@@ -277,35 +272,28 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
                                                                                      azure::storage::blob_shared_access_policy::create,
                                                                                  60 * 24));
 
-    RR::AssetConversionInputSasParams input;
-    input.BlobContainerInformation.StorageAccountName = newConversion->m_input_storage_account_name;
-    input.BlobContainerInformation.BlobContainerName = newConversion->m_input_blob_container_name;
-    input.BlobContainerInformation.FolderPath = newConversion->m_input_folder;
-    input.InputAssetPath = newConversion->m_input_asset_relative_path;
-    input.ContainerReadListSas = inputSasToken.toStdString();
+    QString inputUri, outputUri;
+    inputUri.sprintf("https://%s.blob.core.windows.net/%s", newConversion->m_input_storage_account_name.c_str(), newConversion->m_input_blob_container_name.c_str());
+    outputUri.sprintf("https://%s.blob.core.windows.net/%s", newConversion->m_output_storage_account_name.c_str(), newConversion->m_output_blob_container_name.c_str());
 
-    RR::AssetConversionOutputSasParams output;
-    output.BlobContainerInformation.StorageAccountName = newConversion->m_output_storage_account_name;
-    output.BlobContainerInformation.BlobContainerName = newConversion->m_output_blob_container_name;
-    output.BlobContainerInformation.FolderPath = newConversion->m_output_folder;
-    output.ContainerWriteSas = outputSasToken.toStdString();
-    output.OutputAssetPath = newConversion->m_output_asset_relative_path;
+    RR::AssetConversionOptions options;
 
+    RR::AssetConversionInputOptions& input(options.InputOptions);
+    input.BlobPrefix = newConversion->m_input_folder;
+    input.RelativeInputAssetPath = newConversion->m_input_asset_relative_path;
+    input.StorageContainerReadListSas = inputSasToken.toStdString();
+    input.StorageContainerUri = inputUri.toStdString();
 
-    const auto async = m_frontend->getFrontend()->StartAssetConversionSasAsync(input, output);
-    if (async)
-    {
-        newConversion->m_conversionCall = async.value();
-        newConversion->m_conversionCall->Completed(std::move(onConversionStartRequestFinished));
+    RR::AssetConversionOutputOptions& output(options.OutputOptions);
+    output.BlobPrefix = newConversion->m_output_folder;
+    output.OutputAssetFilename = newConversion->m_output_asset_relative_path;
+    output.StorageContainerWriteSas = outputSasToken.toStdString();
+    output.StorageContainerUri = outputUri.toStdString();
 
-        newConversion->m_startConversionTime.start();
-        newConversion->m_endConversionTime = newConversion->m_startConversionTime;
-        thisPtr->changeConversionCount(1);
-    }
-    else
-    {
-        newConversion->updateConversionStatus(Conversion::FAILED_TO_START);
-    }
+    m_frontend->getFrontend()->StartAssetConversionAsync(options, onConversionStartRequestFinished);
+    newConversion->m_startConversionTime.start();
+    newConversion->m_endConversionTime = newConversion->m_startConversionTime;
+    thisPtr->changeConversionCount(1);
 }
 
 void ConversionManager::removeConversion(ConversionId id)
@@ -346,48 +334,40 @@ void ConversionManager::updateConversions(bool updateRemotely)
         ConversionId id = it.key();
 
         // if it's in "START_REQUESTED" state it means the server hasn't answered yet, so we can't query the state.
-        if (conversion->isActive() && conversion->m_status != Conversion::START_REQUESTED && conversion->m_statusAsync == nullptr)
+        if (conversion->isActive() && conversion->m_status != Conversion::START_REQUESTED && !conversion->m_statusQueryInProgress)
         {
             conversion->m_endConversionTime.start();
             Q_EMIT conversionUpdated(id);
             if (updateRemotely)
             {
                 //query conversion
+                conversion->m_statusQueryInProgress = true;
                 QPointer<ConversionManager> thisPtr = this;
-                const auto async = m_frontend->getFrontend()->GetAssetConversionStatusAsync(conversion->m_conversionUUID);
-                if (!async)
-                {
-                    return;
-                }
-                conversion->m_statusAsync = async.value();
-
-                conversion->m_statusAsync->Completed([id, thisPtr](const RR::ApiHandle<RR::ConversionStatusAsync>& async) {
-                    const auto status = async->GetStatus();
+                m_frontend->getFrontend()->GetAssetConversionStatusAsync(conversion->m_conversionUUID, [id, thisPtr](RR::Status status, RR::ApiHandle<RR::AssetConversionStatusResult> result) {
                     std::string message;
-                    RR::ConversionSessionStatus result;
-                    if (status == RR::Result::Success)
+                    RR::ConversionSessionStatus conversionResult;
+                    if (status == RR::Status::OK)
                     {
-                        logContext(async->GetContext());
-                        async->GetErrorMessage(message);
-                        result = async->GetResult();
+                        logContext(result->GetContext());
+                        result->GetErrorMessage(message);
+                        conversionResult = result->GetResult();
                     }
                     else
                     {
-                        result = RR::ConversionSessionStatus::Failure;
+                        conversionResult = RR::ConversionSessionStatus::Failure;
                         message = "Failure";
                     }
 
-                    QMetaObject::invokeMethod(QApplication::instance(), [id, thisPtr, message, status, result]() {
+                    QMetaObject::invokeMethod(QApplication::instance(), [id, thisPtr, message, status, conversionResult]() {
                         if (thisPtr)
                         {
                             if (Conversion* conversion = thisPtr->getConversion(id))
                             {
-                                conversion->m_statusAsync = nullptr;
-
-                                if (status == RR::Result::Success)
+                                conversion->m_statusQueryInProgress = false;
+                                if (status == RR::Status::OK)
                                 {
                                     Conversion::Status conversionStatus = Conversion::UNKNOWN;
-                                    switch (result)
+                                    switch (conversionResult)
                                     {
                                         case RR::ConversionSessionStatus::Created:
                                             conversionStatus = Conversion::STARTING;
