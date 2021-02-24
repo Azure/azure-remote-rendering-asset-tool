@@ -235,9 +235,10 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
 
     auto onConversionStartRequestFinished = [thisPtr, newConversionId](RR::Status status, RR::ApiHandle<RR::AssetConversionResult> result) {
         std::string conversionUUID;
-        RR::Result errorCode = result->GetErrorCode();
-        if (status == RR::Status::OK && errorCode == RR::Result::Success)
+        RR::Result errorCode = RR::StatusToResult(status);
+        if (status == RR::Status::OK)
         {
+            errorCode = result->GetErrorCode();
             logContext(result->GetContext());
             result->GetConversionUuid(conversionUUID);
         }

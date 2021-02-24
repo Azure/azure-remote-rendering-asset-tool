@@ -253,9 +253,10 @@ bool ArrSessionManager::startSession(const RR::RenderingSessionCreationOptions& 
     m_createSessionInProgress = true;
     m_frontend->getFrontend()->CreateNewRenderingSessionAsync(info, [thisPtr](RR::Status status, RR::ApiHandle<RR::CreateRenderingSessionResult> result) {
         RR::ApiHandle<RR::RenderingSession> session;
-        RR::Result resultCode = result->GetErrorCode();
-        if (status == RR::Status::Success && resultCode == RR::Result::Success)
+        RR::Result resultCode = RR::StatusToResult(status);
+        if (status == RR::Status::OK)
         {
+            resultCode = result->GetErrorCode();
             logContext(result->GetContext());
             session = result->GetSession();
         }
@@ -292,9 +293,10 @@ bool ArrSessionManager::stopSession()
 
     m_stopRequestInProgress = true;
     m_session->StopAsync([thisPtr](RR::Status status, RR::ApiHandle<RR::SessionContextResult> result) {
-        RR::Result errorCode = result->GetErrorCode();
-        if (status == RR::Status::OK && errorCode == RR::Result::Success)
+        RR::Result errorCode = RR::StatusToResult(status);
+        if (status == RR::Status::OK)
         {
+            errorCode = result->GetErrorCode();
             logContext(result->GetContext());
         }
         QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, errorCode]() {
@@ -415,14 +417,17 @@ bool ArrSessionManager::extendMaxSessionTime()
 
         m_renewAsyncInProgress = true;
         m_session->RenewAsync(params, [thisPtr](RR::Status status, RR::ApiHandle<RR::SessionContextResult> result) {
-            if (status == RR::Status::OK && result->GetErrorCode() == RR::Result::Success)
+            RR::Result errorCode = RR::StatusToResult(status);
+            if (status == RR::Status::OK)
             {
+                errorCode = result->GetErrorCode();
                 logContext(result->GetContext());
             }
-            else
+            
+            if (errorCode != RR::Result::Success)
             {
                 qWarning(LoggingCategory::renderingSession)
-                    << tr("Failed requesting extension of session time. Failure reason:") << result->GetErrorCode();
+                    << tr("Failed requesting extension of session time. Failure reason:") << errorCode;
             }
             QMetaObject::invokeMethod(QApplication::instance(), [thisPtr] {
                 if (thisPtr)
@@ -478,10 +483,14 @@ void ArrSessionManager::updateStatus()
             << tr("Requesting session properties. Session id:") << getSessionUuid();
 
         m_session->GetPropertiesAsync([thisPtr](RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesResult> result) {
-                if (status == RR::Status::OK && result->GetErrorCode()== RR::Result::Success)
+            RR::Result errorCode = RR::StatusToResult(status);
+            if (status == RR::Status::OK)
+            {
+                errorCode = result->GetErrorCode();
+                logContext(result->GetContext());
+
+                if (errorCode == RR::Result::Success)
                 {
-                    logContext(result->GetContext());
-                    
                     auto props = result->GetSessionProperties();
                     QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, props] {
                         if (thisPtr)
@@ -491,11 +500,13 @@ void ArrSessionManager::updateStatus()
                         }
                     });
                 }
-                else
-                {
-                    qWarning(LoggingCategory::renderingSession)
-                        << tr("Failed requesting extension of session time. Failure reason:") << result->GetErrorCode();
-                }
+            }
+
+            if (errorCode != RR::Result::Success)
+            {
+                qWarning(LoggingCategory::renderingSession)
+                    << tr("Failed requesting extension of session time. Failure reason:") << errorCode;
+            }
 
             });
     }
