@@ -291,7 +291,7 @@ void ConversionManager::startConversion(ConversionManager::ConversionId newConve
     output.StorageContainerWriteSas = outputSasToken.toStdString();
     output.StorageContainerUri = outputUri.toStdString();
 
-    m_frontend->getFrontend()->StartAssetConversionAsync(options, onConversionStartRequestFinished);
+    m_frontend->getClient()->StartAssetConversionAsync(options, onConversionStartRequestFinished);
     newConversion->m_startConversionTime.start();
     newConversion->m_endConversionTime = newConversion->m_startConversionTime;
     thisPtr->changeConversionCount(1);
@@ -344,7 +344,7 @@ void ConversionManager::updateConversions(bool updateRemotely)
                 //query conversion
                 conversion->m_statusQueryInProgress = true;
                 QPointer<ConversionManager> thisPtr = this;
-                m_frontend->getFrontend()->GetAssetConversionStatusAsync(conversion->m_conversionUUID, [id, thisPtr](RR::Status status, RR::ApiHandle<RR::AssetConversionStatusResult> result) {
+                m_frontend->getClient()->GetAssetConversionStatusAsync(conversion->m_conversionUUID, [id, thisPtr](RR::Status status, RR::ApiHandle<RR::AssetConversionStatusResult> result) {
                     std::string message;
                     RR::ConversionSessionStatus conversionResult;
                     if (status == RR::Status::OK)

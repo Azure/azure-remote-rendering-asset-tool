@@ -44,10 +44,10 @@ void ArrFrontend::connect()
 {
     assert(m_reentryCnt.fetch_add(1) == 0 && m_sessionPropertiesAsync != RR::Status::InProgress);
 
-    if (m_rrFrontend)
+    if (m_rrClient)
     {
         setStatus(AccountConnectionStatus::NotAuthenticated);
-        m_rrFrontend = nullptr;
+        m_rrClient = nullptr;
     }
 
     if (!m_region.empty() && !m_accountId.empty() && !m_accountKey.empty() && !m_accountDomain.empty())
@@ -60,24 +60,24 @@ void ArrFrontend::connect()
         fi.AccountId = m_accountId;
         fi.AccountKey = m_accountKey;
 
-        auto frontend = RR::ApiHandle(RR::RemoteRenderingClient(fi));
-        frontend->MessageLogged(&qArrSdkMessage);
-        frontend->SetLogLevel(RR::LogLevel::Debug);
+        auto client = RR::ApiHandle(RR::RemoteRenderingClient(fi));
+        client->MessageLogged(&qArrSdkMessage);
+        client->SetLogLevel(RR::LogLevel::Debug);
         QPointer<ArrFrontend> thisPtr = this;
         m_sessionPropertiesAsync = RR::Status::InProgress;
-        frontend->GetCurrentRenderingSessionsAsync([thisPtr, frontend](RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesArrayResult> result) {
+        client->GetCurrentRenderingSessionsAsync([thisPtr, client](RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesArrayResult> result) {
             {
                 std::unique_lock<std::mutex> lk(thisPtr->m_mutex);
                 thisPtr->m_sessionPropertiesAsync = status;
                 thisPtr->m_condVar.notify_one();
             }
             QMetaObject::invokeMethod(QApplication::instance(),
-                                      [thisPtr, frontend, status, result]() {
+                                      [thisPtr, client, status, result]() {
                                           if (thisPtr != nullptr)
                                           {
                                               if (status == RR::Status::OK && result->GetContext().Result == RR::Result::Success)
                                               {
-                                                  thisPtr->m_rrFrontend = frontend;
+                                                  thisPtr->m_rrClient = client;
                                                   thisPtr->setStatus(AccountConnectionStatus::Authenticated);
                                               }
                                               else
@@ -104,7 +104,7 @@ ArrFrontend::~ArrFrontend()
         m_condVar.wait(lk);
     }
 
-    m_rrFrontend = nullptr;
+    m_rrClient = nullptr;
     RR::ShutdownRemoteRendering();
 }
 

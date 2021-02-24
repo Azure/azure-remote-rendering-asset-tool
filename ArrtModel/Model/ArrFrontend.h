@@ -20,7 +20,7 @@ public:
     ~ArrFrontend();
 
     // return the underlying RR::AzureFrontEnd instance
-    RR::ApiHandle<RR::RemoteRenderingClient>& getFrontend() { return m_rrFrontend; }
+    RR::ApiHandle<RR::RemoteRenderingClient>& getClient() { return m_rrClient; }
 
     void connectAccount(const char* accountID, const char* accountKey, const char* accountDomain, const char* region);
     void reconnectAccount();
@@ -36,7 +36,7 @@ private:
     std::string m_accountKey;
     std::string m_accountDomain;
 
-    RR::ApiHandle<RR::RemoteRenderingClient> m_rrFrontend;
+    RR::ApiHandle<RR::RemoteRenderingClient> m_rrClient;
     RR::Status m_sessionPropertiesAsync = RR::Status::OK;
  
     AccountConnectionStatus m_status = AccountConnectionStatus::NotAuthenticated;

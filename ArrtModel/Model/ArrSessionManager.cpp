@@ -184,7 +184,7 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
                                 << tr("Trying to connect to the saved running session:") << m_configuration->getRunningSession();
 
                             QPointer<ArrSessionManager> thisPtr = this;
-                            m_frontend->getFrontend()->OpenRenderingSessionAsync(m_configuration->getRunningSession(), [thisPtr](RR::Status status, RR::ApiHandle<RR::CreateRenderingSessionResult> result) {
+                            m_frontend->getClient()->OpenRenderingSessionAsync(m_configuration->getRunningSession(), [thisPtr](RR::Status status, RR::ApiHandle<RR::CreateRenderingSessionResult> result) {
                                 RR::ApiHandle<RR::RenderingSession> session;
                                 std::string errorStr;
                                 if (status == RR::Status::OK)
@@ -251,7 +251,7 @@ bool ArrSessionManager::startSession(const RR::RenderingSessionCreationOptions& 
 
     QPointer<ArrSessionManager> thisPtr = this;
     m_createSessionInProgress = true;
-    m_frontend->getFrontend()->CreateNewRenderingSessionAsync(info, [thisPtr](RR::Status status, RR::ApiHandle<RR::CreateRenderingSessionResult> result) {
+    m_frontend->getClient()->CreateNewRenderingSessionAsync(info, [thisPtr](RR::Status status, RR::ApiHandle<RR::CreateRenderingSessionResult> result) {
         RR::ApiHandle<RR::RenderingSession> session;
         RR::Result resultCode = RR::StatusToResult(status);
         if (status == RR::Status::OK)
