@@ -45,9 +45,9 @@ float Float2Model::getValue(int index) const
     switch (index)
     {
         case 0:
-            return v.x;
+            return v.X;
         case 1:
-            return v.y;
+            return v.Y;
         default:
             throw "Bad index";
     }
@@ -59,10 +59,10 @@ void Float2Model::setValue(int index, float value)
     switch (index)
     {
         case 0:
-            v.x = value;
+            v.X = value;
             break;
         case 1:
-            v.y = value;
+            v.Y = value;
             break;
         default:
             throw "Bad index";
@@ -83,11 +83,11 @@ float Float3Model::getValue(int index) const
     switch (index)
     {
         case 0:
-            return v.x;
+            return v.X;
         case 1:
-            return v.y;
+            return v.Y;
         case 2:
-            return v.z;
+            return v.Z;
         default:
             throw "Bad index";
     }
@@ -99,13 +99,13 @@ void Float3Model::setValue(int index, float value)
     switch (index)
     {
         case 0:
-            v.x = value;
+            v.X = value;
             break;
         case 1:
-            v.y = value;
+            v.Y = value;
             break;
         case 2:
-            v.z = value;
+            v.Z = value;
             break;
         default:
             throw "Bad index";
@@ -126,13 +126,13 @@ float Float4Model::getValue(int index) const
     switch (index)
     {
         case 0:
-            return v.x;
+            return v.X;
         case 1:
-            return v.y;
+            return v.Y;
         case 2:
-            return v.z;
+            return v.Z;
         case 3:
-            return v.w;
+            return v.W;
         default:
             throw "Bad index";
     }
@@ -144,16 +144,16 @@ void Float4Model::setValue(int index, float value)
     switch (index)
     {
         case 0:
-            v.x = value;
+            v.X = value;
             break;
         case 1:
-            v.y = value;
+            v.Y = value;
             break;
         case 2:
-            v.z = value;
+            v.Z = value;
             break;
         case 3:
-            v.w = value;
+            v.W = value;
             break;
         default:
             throw "Bad index";

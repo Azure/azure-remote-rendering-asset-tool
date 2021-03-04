@@ -7,13 +7,13 @@ ArrFrontend::ArrFrontend(QObject* parent)
     : QObject(parent)
 {
     RR::RemoteRenderingInitialization ci{};
-    ci.connectionType = RR::ConnectionType::General;
-    ci.graphicsApi = RR::GraphicsApiType::SimD3D11;
-    ci.right = RR::Axis::X;
-    ci.up = RR::Axis::Y;
-    ci.forward = RR::Axis::Z;
-    ci.unitsPerMeter = 1.0F;
-    ci.toolId = std::string("ARRT." ARRT_VERSION);
+    ci.ConnectionType = RR::ConnectionType::General;
+    ci.GraphicsApi = RR::GraphicsApiType::SimD3D11;
+    ci.Right = RR::Axis::X;
+    ci.Up = RR::Axis::Y;
+    ci.Forward = RR::Axis::Z;
+    ci.UnitsPerMeter = 1.0F;
+    ci.ToolId = std::string("ARRT." ARRT_VERSION);
     RR::StartupRemoteRendering(ci);
 }
 
@@ -42,60 +42,52 @@ void ArrFrontend::reconnectAccount()
 
 void ArrFrontend::connect()
 {
-    assert(m_reentryCnt.fetch_add(1) == 0 && m_sessionPropertiesAsync == nullptr);
+    assert(m_reentryCnt.fetch_add(1) == 0 && m_sessionPropertiesAsyncStatus != RR::Status::InProgress);
 
-    if (m_rrFrontend)
+    if (m_rrClient)
     {
         setStatus(AccountConnectionStatus::NotAuthenticated);
-        m_rrFrontend = nullptr;
+        m_rrClient = nullptr;
     }
 
     if (!m_region.empty() && !m_accountId.empty() && !m_accountKey.empty() && !m_accountDomain.empty())
     {
         setStatus(AccountConnectionStatus::CheckingCredentials);
 
-        RR::AzureFrontendAccountInfo fi{};
-        fi.AccountDomain = m_region;
+        RR::SessionConfiguration fi{};
+        fi.AccountDomain = m_accountDomain;
+        fi.RemoteRenderingDomain = m_region;
         fi.AccountId = m_accountId;
         fi.AccountKey = m_accountKey;
-        fi.AccountAuthenticationDomain = m_accountDomain;
 
-        auto frontend = RR::ApiHandle(RR::AzureFrontend(fi));
-        frontend->MessageLogged(&qArrSdkMessage);
-        frontend->SetLogLevel(RR::LogLevel::Debug);
+        auto client = RR::ApiHandle(RR::RemoteRenderingClient(fi));
+        client->MessageLogged(&qArrSdkMessage);
+        client->SetLogLevel(RR::LogLevel::Debug);
         QPointer<ArrFrontend> thisPtr = this;
-        auto async = frontend->GetCurrentRenderingSessionsAsync();
-        if (async)
-        {
-            m_sessionPropertiesAsync = async.value();
-            m_sessionPropertiesAsync->Completed([thisPtr, frontend](const RR::ApiHandle<RR::SessionPropertiesArrayAsync>& /*async*/) {
-                {
-                    std::unique_lock<std::mutex> lk(thisPtr->m_mutex);
-                    thisPtr->m_condVar.notify_one();
-                }
-                QMetaObject::invokeMethod(QApplication::instance(),
-                                          [thisPtr, frontend]() {
-                                              if (thisPtr != nullptr)
+        m_sessionPropertiesAsyncStatus = RR::Status::InProgress;
+        client->GetCurrentRenderingSessionsAsync([thisPtr, client](RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesArrayResult> result) {
+            {
+                std::unique_lock<std::mutex> lk(thisPtr->m_mutex);
+                thisPtr->m_sessionPropertiesAsyncStatus = status;
+                thisPtr->m_condVar.notify_one();
+            }
+            QMetaObject::invokeMethod(QApplication::instance(),
+                                      [thisPtr, client, status, result]() {
+                                          if (thisPtr != nullptr)
+                                          {
+                                              if (status == RR::Status::OK && result->GetContext().Result == RR::Result::Success)
                                               {
-                                                  auto status = thisPtr->m_sessionPropertiesAsync->GetStatus();
-                                                  if (status == RR::Result::Success && thisPtr->m_sessionPropertiesAsync->GetContext().Result == RR::Result::Success)
-                                                  {
-                                                      thisPtr->m_rrFrontend = frontend;
-                                                      thisPtr->setStatus(AccountConnectionStatus::Authenticated);
-                                                  }
-                                                  else
-                                                  {
-                                                      thisPtr->setStatus(AccountConnectionStatus::InvalidCredentials);
-                                                  }
-                                                  thisPtr->m_sessionPropertiesAsync = nullptr;
+                                                  thisPtr->m_rrClient = client;
+                                                  thisPtr->setStatus(AccountConnectionStatus::Authenticated);
                                               }
-                                          });
-            });
-        }
-        else
-        {
-            qWarning(LoggingCategory::configuration) << tr("Failed to get rendering sessions. Possibly invalid account data.");
-        }
+                                              else
+                                              {
+                                                  thisPtr->setStatus(AccountConnectionStatus::InvalidCredentials);
+                                                  qWarning(LoggingCategory::configuration) << tr("Failed to get rendering sessions. Possibly invalid account data.");
+                                              }
+                                          }
+                                      });
+        });
     }
 
 #ifndef NDEBUG
@@ -107,16 +99,12 @@ ArrFrontend::~ArrFrontend()
 {
     // Wait for current rendering sessions query to complete.
     std::unique_lock<std::mutex> lk(m_mutex);
-    if (m_sessionPropertiesAsync)
+    if (m_sessionPropertiesAsyncStatus == RR::Status::InProgress)
     {
-        auto asyncStatus = m_sessionPropertiesAsync->GetStatus();
-        if (asyncStatus == RR::Result::InProgress)
-        {
-            m_condVar.wait(lk);
-        }
+        m_condVar.wait(lk);
     }
 
-    m_rrFrontend = nullptr;
+    m_rrClient = nullptr;
     RR::ShutdownRemoteRendering();
 }
 

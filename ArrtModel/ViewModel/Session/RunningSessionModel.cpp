@@ -4,14 +4,6 @@
 
 using namespace std::chrono_literals;
 
-namespace
-{
-    int minutes(const RR::ARRTimeSpan& span)
-    {
-        return span.hour * 60 + span.minute;
-    }
-} // namespace
-
 RunningSessionModel::RunningSessionModel(ArrSessionManager* sessionManager, Configuration* configuration, QObject* parent)
     : SessionModel(sessionManager, configuration, parent)
 {
@@ -38,7 +30,7 @@ RunningSessionModel::Time RunningSessionModel::getLeaseTime() const
 {
     if (isRunningImpl(true))
     {
-        return minutes(m_sessionManager->getSessionDescriptor().m_maxLeaseTime);
+        return m_sessionManager->getSessionDescriptor().m_maxLeaseTimeInMinutes;
     }
     else
     {

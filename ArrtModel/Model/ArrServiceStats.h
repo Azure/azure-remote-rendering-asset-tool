@@ -4,8 +4,8 @@
 #include <QObject>
 #include <Utils/Accumulators.h>
 
-// service statistics object, collecting and analyzing per-frame stats in an ARR session
 
+// service statistics object, collecting and analyzing per-frame stats in an ARR session
 class ArrServiceStats : public QObject
 {
     Q_OBJECT
@@ -45,7 +45,7 @@ public:
     }
 
     /// Call every frame to collect statistics for given frame from the graphics binding.
-    void update(RR::ApiHandle<RR::AzureSession> session);
+    void update(RR::ApiHandle<RR::RenderingSession> session);
 
     /// Get current statistics
     const Stats& getStats()
@@ -61,11 +61,14 @@ private:
 
     Stats m_currentStats;
 
-    RR::ApiHandle<RR::PerformanceAssessmentAsync> m_runningPerformanceAssesment;
-    RR::PerformanceAssessment m_lastPerformanceAssessment;
+    std::atomic_bool m_assessmentAsyncHasNewResult = false;
+    std::atomic_bool m_assessmentAsyncRunning = false;
+    RR::Status m_assessmentAsyncStatus = RR::Status::InProgress;
+    RR::PerformanceAssessment m_newPerformanceAssessmentResult;
+
     bool m_collecting = false;
     uint m_tick;
     uint m_secondsTick;
 
-    void updateStats(RR::ApiHandle<RR::AzureSession> session);
+    void updateStats(RR::ApiHandle<RR::RenderingSession> session);
 };

@@ -8,12 +8,12 @@ ArrServiceStats::ArrServiceStats(QObject* parent)
 }
 
 
-void ArrServiceStats::update(RR::ApiHandle<RR::AzureSession> session)
+void ArrServiceStats::update(RR::ApiHandle<RR::RenderingSession> session)
 {
     updateStats(session);
 }
 
-void ArrServiceStats::updateStats(RR::ApiHandle<RR::AzureSession> session)
+void ArrServiceStats::updateStats(RR::ApiHandle<RR::RenderingSession> session)
 {
     if (!m_collecting || !session || !session->GetIsConnected())
     {
@@ -27,43 +27,38 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::AzureSession> session)
         return;
     }
 
-    m_currentStats.m_timeSinceLastPresent.addValue(frameStatistics.timeSinceLastPresent * 1000.0, m_tick);
-    m_currentStats.m_videoFramesSkipped.addValue(frameStatistics.videoFramesSkipped, m_tick);
-    m_currentStats.m_videoFramesReused.addValue(frameStatistics.videoFrameReusedCount, m_tick);
-    m_currentStats.m_videoFramesReceived.addValue(frameStatistics.videoFramesReceived, m_tick);
-    if (frameStatistics.videoFramesReceived)
+    m_currentStats.m_timeSinceLastPresent.addValue(frameStatistics.TimeSinceLastPresent * 1000.0, m_tick);
+    m_currentStats.m_videoFramesSkipped.addValue(frameStatistics.VideoFramesSkipped, m_tick);
+    m_currentStats.m_videoFramesReused.addValue(frameStatistics.VideoFrameReusedCount, m_tick);
+    m_currentStats.m_videoFramesReceived.addValue(frameStatistics.VideoFramesReceived, m_tick);
+    if (frameStatistics.VideoFramesReceived)
     {
-        m_currentStats.m_videoFrameMinDelta.addValue(frameStatistics.videoFrameMinDelta * 1000.0, m_tick);
-        m_currentStats.m_videoFrameMaxDelta.addValue(frameStatistics.videoFrameMaxDelta * 1000.0, m_tick);
+        m_currentStats.m_videoFrameMinDelta.addValue(frameStatistics.VideoFrameMinDelta * 1000.0, m_tick);
+        m_currentStats.m_videoFrameMaxDelta.addValue(frameStatistics.VideoFrameMaxDelta * 1000.0, m_tick);
     }
-    m_currentStats.m_latencyPoseToReceive.addValue(frameStatistics.latencyPoseToReceive * 1000.0, m_tick);
-    m_currentStats.m_latencyReceiveToPresent.addValue(frameStatistics.latencyReceiveToPresent * 1000.0, m_tick);
-    m_currentStats.m_latencyPresentToDisplay.addValue(frameStatistics.latencyPresentToDisplay * 1000.0, m_tick);
-    m_currentStats.m_videoFramesDiscarded.addValue(frameStatistics.videoFramesDiscarded, m_tick);
+    m_currentStats.m_latencyPoseToReceive.addValue(frameStatistics.LatencyPoseToReceive * 1000.0, m_tick);
+    m_currentStats.m_latencyReceiveToPresent.addValue(frameStatistics.LatencyReceiveToPresent * 1000.0, m_tick);
+    m_currentStats.m_latencyPresentToDisplay.addValue(frameStatistics.LatencyPresentToDisplay * 1000.0, m_tick);
+    m_currentStats.m_videoFramesDiscarded.addValue(frameStatistics.VideoFramesDiscarded, m_tick);
 
-    if (m_runningPerformanceAssesment && m_runningPerformanceAssesment->GetIsCompleted())
+    if (m_assessmentAsyncHasNewResult && !m_assessmentAsyncRunning)
     {
-        if (m_runningPerformanceAssesment->GetIsFaulted())
+        m_assessmentAsyncHasNewResult = false;
+
+        if (m_assessmentAsyncStatus != RR::Status::OK)
         {
-            qWarning(LoggingCategory::renderingSession) << tr("Error retrieving the performance assessment. Failure reason: ") << m_runningPerformanceAssesment->GetStatus();
-            m_runningPerformanceAssesment = {};
-        }
-        else if (m_runningPerformanceAssesment->GetStatus() == RR::Result::Success)
-        {
-            m_lastPerformanceAssessment = m_runningPerformanceAssesment->GetResult();
-            m_currentStats.m_timeCPU.addValue(m_lastPerformanceAssessment.timeCPU.aggregate, m_tick);
-            m_currentStats.m_timeGPU.addValue(m_lastPerformanceAssessment.timeGPU.aggregate, m_tick);
-            m_currentStats.m_utilizationCPU.addValue(m_lastPerformanceAssessment.utilizationCPU.aggregate, m_tick);
-            m_currentStats.m_utilizationGPU.addValue(m_lastPerformanceAssessment.utilizationGPU.aggregate, m_tick);
-            m_currentStats.m_memoryCPU.addValue(m_lastPerformanceAssessment.memoryCPU.aggregate, m_tick);
-            m_currentStats.m_memoryGPU.addValue(m_lastPerformanceAssessment.memoryGPU.aggregate, m_tick);
-            m_currentStats.m_networkLatency.addValue(m_lastPerformanceAssessment.networkLatency.aggregate, m_tick);
-            m_currentStats.m_polygonsRendered.addValue(m_lastPerformanceAssessment.polygonsRendered.aggregate, m_tick);
-            m_runningPerformanceAssesment = {};
+            qWarning(LoggingCategory::renderingSession) << tr("Error retrieving the performance assessment. Failure reason: ") << m_assessmentAsyncStatus;
         }
         else
         {
-            qWarning(LoggingCategory::renderingSession) << tr("what?");
+            m_currentStats.m_timeCPU.addValue(m_newPerformanceAssessmentResult.TimeCpu.Aggregate, m_tick);
+            m_currentStats.m_timeGPU.addValue(m_newPerformanceAssessmentResult.TimeGpu.Aggregate, m_tick);
+            m_currentStats.m_utilizationCPU.addValue(m_newPerformanceAssessmentResult.UtilizationCpu.Aggregate, m_tick);
+            m_currentStats.m_utilizationGPU.addValue(m_newPerformanceAssessmentResult.UtilizationGpu.Aggregate, m_tick);
+            m_currentStats.m_memoryCPU.addValue(m_newPerformanceAssessmentResult.MemoryCpu.Aggregate, m_tick);
+            m_currentStats.m_memoryGPU.addValue(m_newPerformanceAssessmentResult.MemoryGpu.Aggregate, m_tick);
+            m_currentStats.m_networkLatency.addValue(m_newPerformanceAssessmentResult.NetworkLatency.Aggregate, m_tick);
+            m_currentStats.m_polygonsRendered.addValue(m_newPerformanceAssessmentResult.PolygonsRendered.Aggregate, m_tick);
         }
     }
 
@@ -93,12 +88,21 @@ void ArrServiceStats::updateStats(RR::ApiHandle<RR::AzureSession> session)
         m_currentStats.m_polygonsRendered.endWindow(m_secondsTick);
 
         // query the performance assessment (assuming the previous query is completed)
-        if (!m_runningPerformanceAssesment)
+        if (!m_assessmentAsyncRunning)
         {
-            if (auto query = session->Actions()->QueryServerPerformanceAssessmentAsync())
-            {
-                m_runningPerformanceAssesment = *query;
-            }
+            m_assessmentAsyncRunning = true;
+            m_assessmentAsyncHasNewResult = false;
+            m_assessmentAsyncStatus = RR::Status::InProgress;
+
+            session->Connection()->QueryServerPerformanceAssessmentAsync([this](RR::Status status, RR::PerformanceAssessment result) {
+                m_assessmentAsyncStatus = status;
+                if (status == RR::Status::OK)
+                {
+                    m_newPerformanceAssessmentResult = result;
+                }
+                m_assessmentAsyncRunning = false;
+                m_assessmentAsyncHasNewResult = true;
+            });
         }
 
         Q_EMIT updated();

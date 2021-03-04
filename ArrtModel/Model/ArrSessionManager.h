@@ -10,7 +10,7 @@ namespace Microsoft::Azure::RemoteRendering
 {
     class AzureSession;
     class RemoteRenderingClient;
-    using LoadResult = std::function<void(Result, ApiHandle<Entity>)>;
+    using LoadResult = std::function<void(Status, ApiHandle<Entity>)>;
     using LoadProgress = std::function<void(float)>;
 } // namespace Microsoft::Azure::RemoteRendering
 
@@ -22,10 +22,10 @@ class ArrServiceStats;
 
 struct SessionDescriptor
 {
-    // these parameters are retrieved from RR::AzureSession
+    // these parameters are retrieved from RR::RenderingSession
     std::string m_hostName;
     RR::RenderingSessionVmSize m_size = RR::RenderingSessionVmSize::Standard;
-    RR::ARRTimeSpan m_maxLeaseTime = {};
+    int m_maxLeaseTimeInMinutes = 0;
 };
 
 // struct holding the status of the session, which needs to be polled regularly
@@ -57,9 +57,9 @@ struct SessionStatus
 
     Status m_status = Status::NotActive;
 
-    // these parameters are retrieved from RR::AzureSession
+    // these parameters are retrieved from RR::RenderingSession
 
-    RR::ARRTimeSpan m_elapsedTime = {};
+    int m_elapsedTimeInMinutes = 0;
     std::string m_sessionMessage;
 };
 
@@ -76,7 +76,7 @@ public:
     ~ArrSessionManager();
 
     // start a session. It only works if no session is currently running
-    bool startSession(const RR::RenderingSessionCreationParams& info);
+    bool startSession(const RR::RenderingSessionCreationOptions& info);
     // stop a session. It only works if the session is running, or it's starting
     bool stopSession();
 
@@ -112,7 +112,7 @@ public:
     // return the object used to retrieve remote rendering statistics on the current session
     ArrServiceStats* getServiceStats() const { return m_serviceStats; }
 
-    RR::ApiHandle<RR::RemoteManager> getClientApi();
+    RR::ApiHandle<RR::RenderingConnection> getClientApi();
 
     // start the arrInspector on the running session
     void startInspector();
@@ -121,13 +121,13 @@ public:
 
     void reconnectToSessionRuntime();
 
-    RR::Result getLastError() const { return m_lastError; }
+    RR::Status getLastError() const { return m_lastError; }
 
     // return the string of the current session uuid
     std::string getSessionUuid() const;
 
     // return the current session
-    RR::ApiHandle<RR::AzureSession> getCurrentSession() const;
+    RR::ApiHandle<RR::RenderingSession> getCurrentSession() const;
 
     bool getAutoRotateRoot() const;
     void setAutoRotateRoot(bool autoRotateRoot);
@@ -155,7 +155,7 @@ private:
     void onStatusUpdated();
 
     // set the current running session, which is also persisted in the configuration
-    void setRunningSession(const RR::ApiHandle<RR::AzureSession>& session);
+    void setRunningSession(const RR::ApiHandle<RR::RenderingSession>& session);
 
     // update the status asynchronously and execute the callback when the status is updated
     // It has to be called from the main thread
@@ -174,12 +174,12 @@ private:
 
     ArrFrontend* const m_frontend;
     Configuration* const m_configuration;
-    RR::ApiHandle<RR::RemoteManager> m_api = nullptr;
-    RR::ApiHandle<RR::AzureSession> m_session = nullptr;
+    RR::ApiHandle<RR::RenderingConnection> m_api = nullptr;
+    RR::ApiHandle<RR::RenderingSession> m_session = nullptr;
 
     QElapsedTimer m_connectingElapsedTime;
 
-    // cached properties coming from RR::AzureSession::GetRenderingSessionPropertiesAsync
+    // cached properties coming from RR::RenderingSession::GetRenderingSessionPropertiesAsync
     RR::RenderingSessionProperties m_lastProperties = {};
 
     int m_extensionMinutes;
@@ -195,14 +195,12 @@ private:
 
     ArrServiceStats* m_serviceStats;
 
-    // Async holders
-    RR::ApiHandle<RR::SessionAsync> m_renewAsync = nullptr;
-    RR::ApiHandle<RR::SessionPropertiesAsync> m_getPropertiesAsync = nullptr;
-    RR::ApiHandle<RR::LoadModelAsync> m_loadModelAsync = nullptr;
-    RR::ApiHandle<RR::ArrInspectorAsync> m_connectToArrInspector = nullptr;
-    RR::ApiHandle<RR::CreateSessionAsync> m_startRequested = nullptr;
-    RR::ApiHandle<RR::SessionAsync> m_stopRequested = nullptr;
-    RR::ApiHandle<RR::ConnectToRuntimeAsync> m_connecting = nullptr;
+    // Async status
+    std::atomic_bool m_renewAsyncInProgress = false;
+    std::atomic_bool m_connectToArrInspectorInProgress = false;
+    std::atomic_bool m_createSessionInProgress = false;
+    std::atomic_bool m_stopRequestInProgress = false;
+    std::atomic_bool m_connectingInProgress = false;
 
     // Registered callback tokens
     RR::event_token m_statusChangedToken;
@@ -210,7 +208,7 @@ private:
 
     bool m_reconnecting = false;
     bool m_waitForVideoFormatChange = false;
-    RR::Result m_lastError = RR::Result::Success;
+    RR::Status m_lastError = RR::Status::OK;
 
     bool m_autoRotateRoot = false;
 };

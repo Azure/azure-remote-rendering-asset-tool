@@ -50,7 +50,7 @@ void MaterialFilteredListModel::filterBasedOnEntities(const QList<RR::ApiHandle<
     {
         if (!entity->GetValid())
         {
-            qCritical() << tr("Invalid entity ") << entity->Handle();
+            qCritical() << tr("Invalid entity ") << entity->GetHandle();
         }
         else
         {

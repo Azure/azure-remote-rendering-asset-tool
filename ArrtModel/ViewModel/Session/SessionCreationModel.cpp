@@ -68,9 +68,9 @@ bool SessionCreationModel::start()
 {
     if (!isRunning())
     {
-        RR::RenderingSessionCreationParams param;
+        RR::RenderingSessionCreationOptions param;
         param.Size = RR::RenderingSessionVmSize(m_size);
-        param.MaxLease = {(int)m_leaseTime.getHours(), (int)m_leaseTime.getMinutes(), 0};
+        param.MaxLeaseInMinutes = (int)(m_leaseTime.getHours() * 60 + m_leaseTime.getMinutes());
 
         //set also the automatic extension
         m_sessionManager->setExtensionTime(m_extensionMinutes, m_extendAutomatically);
