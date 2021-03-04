@@ -31,7 +31,7 @@ static_analysis_options:
 version:
   name: 'ARRT'
   major: 1
-  minor: 5
+  minor: 6
   system: 'patch'
 
 restore:
