@@ -1,6 +1,5 @@
 #pragma once
 #include <Model/IncludesAzureRemoteRendering.h>
-#include <Model/ArrAsync.h>
 #include <Model/Settings/AccountConnectionStatus.h>
 #include <QObject>
 #include <condition_variable>
@@ -37,8 +36,8 @@ private:
     std::string m_accountDomain;
 
     RR::ApiHandle<RR::RemoteRenderingClient> m_rrClient;
-    RR::Status m_sessionPropertiesAsync = RR::Status::OK;
- 
+    RR::Status m_sessionPropertiesAsyncStatus = RR::Status::OK;
+
     AccountConnectionStatus m_status = AccountConnectionStatus::NotAuthenticated;
 
     std::condition_variable m_condVar;

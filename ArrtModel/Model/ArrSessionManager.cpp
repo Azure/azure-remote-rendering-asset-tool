@@ -81,7 +81,7 @@ namespace
     inline QDebug& operator<<(QDebug& logger, const RR::RenderingSessionCreationOptions& info)
     {
         QJsonObject sessionInfo;
-        sessionInfo[QLatin1String("max_lease")] = QString("%1:%2").arg(info.MaxLeaseInMinutes / 60).arg(info.MaxLeaseInMinutes);
+        sessionInfo[QLatin1String("max_lease")] = QString("%1:%2").arg(info.MaxLeaseInMinutes / 60).arg(info.MaxLeaseInMinutes % 60);
         sessionInfo[QLatin1String("vm_size")] = toString(info.Size);
         return logger << QCoreApplication::tr("Create rendering session info:") << PrettyJson(sessionInfo);
     }
@@ -89,7 +89,7 @@ namespace
     inline QDebug& operator<<(QDebug& logger, const RR::RenderingSessionUpdateOptions& info)
     {
         QJsonObject sessionInfo;
-        sessionInfo[QLatin1String("max_lease")] = QString("%1:%2").arg(info.MaxLeaseInMinutes / 60).arg(info.MaxLeaseInMinutes);
+        sessionInfo[QLatin1String("max_lease")] = QString("%1:%2").arg(info.MaxLeaseInMinutes / 60).arg(info.MaxLeaseInMinutes % 60);
         return logger << QCoreApplication::tr("Update rendering session info:") << PrettyJson(sessionInfo);
     }
 
@@ -102,8 +102,8 @@ namespace
         sessionProperties[QLatin1String("message")] = QString::fromStdString(properties.Message);
         sessionProperties[QLatin1String("size_string")] = QString::fromStdString(properties.SizeString);
         sessionProperties[QLatin1String("id")] = QString::fromStdString(properties.Id);
-        sessionProperties[QLatin1String("elapsed_time")] = QString("%1:%2").arg(properties.ElapsedTimeInMinutes / 60).arg(properties.ElapsedTimeInMinutes);
-        sessionProperties[QLatin1String("max_lease")] = QString("%1:%2").arg(properties.MaxLeaseInMinutes / 60).arg(properties.MaxLeaseInMinutes);
+        sessionProperties[QLatin1String("elapsed_time")] = QString("%1:%2").arg(properties.ElapsedTimeInMinutes / 60).arg(properties.ElapsedTimeInMinutes % 60);
+        sessionProperties[QLatin1String("max_lease")] = QString("%1:%2").arg(properties.MaxLeaseInMinutes / 60).arg(properties.MaxLeaseInMinutes % 60);
         return logger << QCoreApplication::tr("Session properties:") << PrettyJson(sessionProperties);
     }
 
@@ -194,7 +194,7 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
                                 }
                                 else
                                 {
-                                    errorStr = "General failure";
+                                    errorStr = tr("General failure").toStdString();
                                 }
 
                                 QMetaObject::invokeMethod(QApplication::instance(), [thisPtr, session, errorStr]() {
@@ -211,7 +211,6 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
                                     }
                                 });
                             });
-
                         }
                     }
                     else
@@ -423,7 +422,7 @@ bool ArrSessionManager::extendMaxSessionTime()
                 errorCode = result->GetErrorCode();
                 logContext(result->GetContext());
             }
-            
+
             if (errorCode != RR::Result::Success)
             {
                 qWarning(LoggingCategory::renderingSession)
@@ -507,8 +506,7 @@ void ArrSessionManager::updateStatus()
                 qWarning(LoggingCategory::renderingSession)
                     << tr("Failed requesting extension of session time. Failure reason:") << errorCode;
             }
-
-            });
+        });
     }
     else
     {

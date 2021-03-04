@@ -201,7 +201,7 @@ private:
     std::atomic_bool m_createSessionInProgress = false;
     std::atomic_bool m_stopRequestInProgress = false;
     std::atomic_bool m_connectingInProgress = false;
- 
+
     // Registered callback tokens
     RR::event_token m_statusChangedToken;
     RR::event_token m_messageLoggedToken;

@@ -1,6 +1,5 @@
 #pragma once
 #include <Model/IncludesAzureRemoteRendering.h>
-#include <Model/ArrAsync.h>
 #include <QElapsedTimer>
 #include <QObject>
 #include <Utils/Accumulators.h>
@@ -62,8 +61,11 @@ private:
 
     Stats m_currentStats;
 
-    ArrPerformanceAssessmentAsync m_runningPerformanceAssessment;
-    RR::PerformanceAssessment m_lastPerformanceAssessment;
+    std::atomic_bool m_assessmentAsyncHasNewResult = false;
+    std::atomic_bool m_assessmentAsyncRunning = false;
+    RR::Status m_assessmentAsyncStatus = RR::Status::InProgress;
+    RR::PerformanceAssessment m_newPerformanceAssessmentResult;
+
     bool m_collecting = false;
     uint m_tick;
     uint m_secondsTick;
