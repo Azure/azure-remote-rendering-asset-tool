@@ -15,7 +15,7 @@ resources:
     type: git
     name: "Mixed Reality Services/arr.arrt.dependencies"
     endpoint: ArrtCiConnection
-
+    ref: main
     
 steps:
 - checkout: ArrtDependencies
