@@ -16,7 +16,7 @@ static const std::map<QString, ArrAccountSettings::Region> defaultAvailableRegio
     {"southeastasia.mixedreality.azure.com", {"Southeast Asia", "southeastasia.mixedreality.azure.com"}},
     {"uksouth.mixedreality.azure.com", {"UK South", "uksouth.mixedreality.azure.com"}},
     {"westeurope.mixedreality.azure.com", {"West Europe", "westeurope.mixedreality.azure.com"}},
-    {"westus2.mixedreality.azure.com", {"West US", "westus2.mixedreality.azure.com"}}};
+    {"westus2.mixedreality.azure.com", {"West US 2", "westus2.mixedreality.azure.com"}}};
 
 static const std::map<QString, ArrAccountSettings::AccountDomain> defaultSupportedAccountDomainsMap = {
     {"australiaeast.mixedreality.azure.com", {"Australia East", "australiaeast.mixedreality.azure.com"}},
@@ -28,7 +28,7 @@ static const std::map<QString, ArrAccountSettings::AccountDomain> defaultSupport
     {"southeastasia.mixedreality.azure.com", {"Southeast Asia", "southeastasia.mixedreality.azure.com"}},
     {"uksouth.mixedreality.azure.com", {"UK South", "uksouth.mixedreality.azure.com"}},
     {"westeurope.mixedreality.azure.com", {"West Europe", "westeurope.mixedreality.azure.com"}},
-    {"westus2.mixedreality.azure.com", {"West US", "westus2.mixedreality.azure.com"}}};
+    {"westus2.mixedreality.azure.com", {"West US 2", "westus2.mixedreality.azure.com"}}};
 
 ArrAccountSettings::ArrAccountSettings(QObject* parent)
     : QObject(parent)
