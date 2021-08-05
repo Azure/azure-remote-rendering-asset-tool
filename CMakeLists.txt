@@ -36,7 +36,6 @@ function(addQtDeployment _TARGET)
             ${LIB_REST_NAME}.dll
             ${LIB_BLOB_NAME}.dll
             ${LIB_ARR_BIN}/RemoteRenderingClient.dll
-            ${LIB_ARR_BIN}/PerceptionDevice.dll
             ${LIB_ARR_BIN}/Microsoft.Holographic.HybridRemoting.dll
             $<TARGET_FILE_DIR:${_TARGET}>
     )
@@ -58,7 +57,7 @@ if ("$ENV{LIB_ARR_USE_LOCAL}" STREQUAL "true")
     set(LIB_ARR_LIB $<IF:$<CONFIG:Debug>,$ENV{LIB_ARR_LIB_DEBUG},$ENV{LIB_ARR_LIB_RELEASE}>)
     set(LIB_ARR_INCLUDE $ENV{LIB_ARR_INCLUDE})
 else()
-    set(LIB_ARR_ROOT "${CMAKE_BINARY_DIR}/packages/Microsoft.Azure.RemoteRendering.Cpp.1.0.0")
+    set(LIB_ARR_ROOT "${CMAKE_BINARY_DIR}/packages/Microsoft.Azure.RemoteRendering.Cpp.1.0.19")
     set(LIB_ARR_BIN "${LIB_ARR_ROOT}/bin/win_x64/release")
     set(LIB_ARR_LIB "${LIB_ARR_ROOT}/lib/win_x64/release")
     set(LIB_ARR_INCLUDE "${LIB_ARR_ROOT}/include")
