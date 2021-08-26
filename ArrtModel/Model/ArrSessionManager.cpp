@@ -189,8 +189,14 @@ ArrSessionManager::ArrSessionManager(ArrFrontend* frontEnd, Configuration* confi
                                 std::string errorStr;
                                 if (status == RR::Status::OK)
                                 {
-                                    session = result->GetSession();
-                                    errorStr = result->GetContext().ErrorMessage;
+                                    if (result->GetErrorCode() == RR::Result::Success)
+                                    {
+                                        session = result->GetSession();
+                                    }
+                                    else
+                                    {
+                                        errorStr = result->GetContext().ErrorMessage;
+                                    }
                                 }
                                 else
                                 {
