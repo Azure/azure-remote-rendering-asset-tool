@@ -76,7 +76,7 @@ void ArrAccountSettings::loadFromJson(const QJsonObject& arrAccountConfig)
         for (auto e : supportedAccountDomainsArray)
         {
             QJsonObject accountDomainObj = e.toObject();
-            ArrAccountSettings::AccountDomain accountDomain({accountDomainObj[QLatin1String("name")].toString(), accountDomainObj[QLatin1String("url")].toString()});
+            ArrAccountSettings::AccountDomain accountDomain({accountDomainObj[QLatin1String("name")].toString(), accountDomainObj[QLatin1String("accountDomain")].toString()});
             m_supportedAccountDomainsMap[accountDomain.m_accountDomain] = accountDomain;
         }
     }
