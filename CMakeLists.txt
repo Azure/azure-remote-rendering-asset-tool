@@ -110,7 +110,11 @@ project(Arrt)
 
 # Global options, for all of the projects
 if(MSVC)
-    add_compile_options( /W4 /WX /wd4505 /wd4068 /MP /bigobj)
+    add_compile_options( /W4 /WX /wd4505 /wd4068 /MP /bigobj /Zi)
+    # Enable pdb generation in release builds.
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+    set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
 else()
     add_compile_options(-Wall -Wextra -pedantic -Werror -Wno-extra-semi -Wno-unused-function -Wno-language-extension-token -Wno-delete-non-abstract-non-virtual-dtor)
 endif()

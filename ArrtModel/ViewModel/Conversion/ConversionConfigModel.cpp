@@ -70,7 +70,7 @@ namespace
 
 bool ArrtConversion::Config::operator==(const Config& c) const
 {
-    return m_scaling == c.m_scaling && m_recenterToOrigin == c.m_recenterToOrigin && m_opaqueMaterialDefaultSidedness == c.m_opaqueMaterialDefaultSidedness && m_material_override == c.m_material_override && m_gammaToLinearMaterial == c.m_gammaToLinearMaterial && m_gammaToLinearVertex == c.m_gammaToLinearVertex && m_sceneGraphMode == c.m_sceneGraphMode && m_generateCollisionMesh == c.m_generateCollisionMesh && m_unlitMaterials == c.m_unlitMaterials && m_fbxAssumeMetallic == c.m_fbxAssumeMetallic && m_axis1 == c.m_axis1 && m_axis2 == c.m_axis2 && m_axis3 == c.m_axis3 && m_vertexPosition == c.m_vertexPosition && m_vertexColor0 == c.m_vertexColor0 && m_vertexColor1 == c.m_vertexColor1 && m_vertexNormal == c.m_vertexNormal && m_vertexTangent == c.m_vertexTangent && m_vertexBinormal == c.m_vertexBinormal && m_vertexTexCoord0 == c.m_vertexTexCoord0 && m_vertexTexCoord1 == c.m_vertexTexCoord1;
+    return m_scaling == c.m_scaling && m_recenterToOrigin == c.m_recenterToOrigin && m_opaqueMaterialDefaultSidedness == c.m_opaqueMaterialDefaultSidedness && m_material_override == c.m_material_override && m_gammaToLinearMaterial == c.m_gammaToLinearMaterial && m_gammaToLinearVertex == c.m_gammaToLinearVertex && m_sceneGraphMode == c.m_sceneGraphMode && m_generateCollisionMesh == c.m_generateCollisionMesh && m_unlitMaterials == c.m_unlitMaterials && m_fbxAssumeMetallic == c.m_fbxAssumeMetallic && m_deduplicateMaterials == c.m_deduplicateMaterials && m_axis1 == c.m_axis1 && m_axis2 == c.m_axis2 && m_axis3 == c.m_axis3 && m_vertexPosition == c.m_vertexPosition && m_vertexColor0 == c.m_vertexColor0 && m_vertexColor1 == c.m_vertexColor1 && m_vertexNormal == c.m_vertexNormal && m_vertexTangent == c.m_vertexTangent && m_vertexBinormal == c.m_vertexBinormal && m_vertexTexCoord0 == c.m_vertexTexCoord0 && m_vertexTexCoord1 == c.m_vertexTexCoord1;
 }
 
 bool ConversionConfigModel::isDefault() const
@@ -165,6 +165,7 @@ ConversionConfigModel::ConversionConfigModel(AzureStorageManager* storageManager
     m_controls.push_back(new CheckBoxModel(tr("Generate Collision Mesh"), this, "generateCollisionMesh"sv));
     m_controls.push_back(new CheckBoxModel(tr("Unlit Materials"), this, "unlitMaterials"sv));
     m_controls.push_back(new CheckBoxModel(tr("FBX Assume Metallic"), this, "fbxAssumeMetallic"sv));
+    m_controls.push_back(new CheckBoxModel(tr("De-duplicate Materials"), this, "deduplicateMaterials"sv));
     m_controls.push_back(new ComboBoxModelFromEnum(tr("Axis [0]"), this, "axis1"sv));
     m_controls.push_back(new ComboBoxModelFromEnum(tr("Axis [1]"), this, "axis2"sv));
     m_controls.push_back(new ComboBoxModelFromEnum(tr("Axis [2]"), this, "axis3"sv));
@@ -197,6 +198,7 @@ ArrtConversion::Config ConversionConfigModel::initFromJson(const QJsonDocument& 
         cfg.m_generateCollisionMesh = fromJson(root, QLatin1String("generateCollisionMesh"), cfg.m_generateCollisionMesh);
         cfg.m_unlitMaterials = fromJson(root, QLatin1String("unlitMaterials"), cfg.m_unlitMaterials);
         cfg.m_fbxAssumeMetallic = fromJson(root, QLatin1String("fbxAssumeMetallic"), cfg.m_fbxAssumeMetallic);
+        cfg.m_deduplicateMaterials = fromJson(root, QLatin1String("deduplicateMaterials"), cfg.m_deduplicateMaterials);
         auto axes = root[QLatin1String("axis")].toArray();
         cfg.m_axis1 = fromJson(axes, 0, cfg.m_axis1);
         cfg.m_axis2 = fromJson(axes, 1, cfg.m_axis2);
@@ -229,6 +231,7 @@ QJsonDocument ConversionConfigModel::createJson(const ArrtConversion::Config& co
         toJson(root, QLatin1String("generateCollisionMesh"), config.m_generateCollisionMesh, def.m_generateCollisionMesh);
         toJson(root, QLatin1String("unlitMaterials"), config.m_unlitMaterials, def.m_unlitMaterials);
         toJson(root, QLatin1String("fbxAssumeMetallic"), config.m_fbxAssumeMetallic, def.m_fbxAssumeMetallic);
+        toJson(root, QLatin1String("deduplicateMaterials"), config.m_deduplicateMaterials, def.m_deduplicateMaterials);
         QJsonArray axes;
         {
             bool hasValues = false;
