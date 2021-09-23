@@ -85,6 +85,7 @@ namespace ArrtConversion
         bool m_generateCollisionMesh = true;
         bool m_unlitMaterials = false;
         bool m_fbxAssumeMetallic = true;
+        bool m_deduplicateMaterials = true;
         Axis m_axis1 = Axis::PosX;
         Axis m_axis2 = Axis::PosY;
         Axis m_axis3 = Axis::PosZ;
@@ -95,7 +96,7 @@ namespace ArrtConversion
         VertexVector m_vertexTangent = VertexVector::ByteSx4N;
         VertexVector m_vertexBinormal = VertexVector::ByteSx4N;
         VertexTextureCoord m_vertexTexCoord0 = VertexTextureCoord::Float32x2;
-        VertexTextureCoord m_vertexTexCoord1 = VertexTextureCoord::None;
+        VertexTextureCoord m_vertexTexCoord1 = VertexTextureCoord::Float32x2;
     };
 } // namespace ArrtConversion
 
@@ -120,6 +121,7 @@ class ConversionConfigModel : public QObject, protected ArrtConversion::Config
     Q_PROPERTY(bool generateCollisionMesh MEMBER m_generateCollisionMesh);
     Q_PROPERTY(bool unlitMaterials MEMBER m_unlitMaterials);
     Q_PROPERTY(bool fbxAssumeMetallic MEMBER m_fbxAssumeMetallic);
+    Q_PROPERTY(bool deduplicateMaterials MEMBER m_deduplicateMaterials);
     Q_PROPERTY(ArrtConversion::Axis axis1 MEMBER m_axis1);
     Q_PROPERTY(ArrtConversion::Axis axis2 MEMBER m_axis2);
     Q_PROPERTY(ArrtConversion::Axis axis3 MEMBER m_axis3);

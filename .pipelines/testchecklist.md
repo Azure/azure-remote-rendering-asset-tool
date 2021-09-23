@@ -3,7 +3,7 @@
 Test workflows to be done before any release.
 
 - Start application -> No crash.
-- Enter ARR and Storage account credentials -> The status changes to "connected"
+- Enter ARR and Storage account credentials -> The status changes to "Authenticated"
 
 ## Upload panel
 
@@ -112,7 +112,7 @@ Test workflows to be done before any release.
 - Open the Azure Storage Explorer and inspect the input blob container
 - Navigate to the input directory
 - Verify that a file "conversionSettings.json" is created besides the model file (also when the input root directory is set to a parent directory)
-- Verify that the file contains all of the values that were set in ARRT
+- Verify that the file contains all of the non-default values that were set in ARRT
   
 ## Rendering panel
 
@@ -120,7 +120,7 @@ Test workflows to be done before any release.
 
 - Click on the button "Render".
 - Verify that the controls are editable.
-- Select Max Time "00:10" and Automatic Extension as "00:10" (Auto make sure "Auto Extend" is pressed).
+- Select Max Time "00:10" and Automatic Extension as "00:10" (Also make sure "Auto Extend" is pressed).
 - Start session.
 - Verify that the Max Time and Extension Time are the ones you specified.
 - Check that the button now shows "Stop Session".
@@ -188,7 +188,7 @@ Test workflows to be done before any release.
   - The material list shows the union of the the materials in the selected entities. 
 - Select an entity from the viewport.
 - Select one of the materials from the material list.
-- Select the root node from the scene tree -> The selected material show stay selected, in the larger material list.
+- If you select a child entity and a material from it and then select the parent -> The selected material show stay selected, in the larger material list.
 - Modify the values from the material property editor on the right (for example the albedo color) -> observe the changes in the viewport immediately.
 
 ## Logs
