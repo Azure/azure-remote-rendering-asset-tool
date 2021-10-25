@@ -56,7 +56,7 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
         QHBoxLayout* toolButtonsLayout = new QHBoxLayout();
         toolButtonsLayout->addStretch(1);
         auto* okButton = new FlatButton(tr("Select Input"));
-        okButton->setToolTip(tr("Select Output"), tr("Select the input model to be converted"));
+        okButton->setToolTip(tr("Select Input"), tr("Select the input model to be converted"));
         okButton->setIcon(ArrtStyle::s_okIcon, true);
         QObject::connect(okButton, &FlatButton::clicked, this, [this]() {
             m_model->submit();

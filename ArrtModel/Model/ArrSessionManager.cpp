@@ -383,7 +383,7 @@ void ArrSessionManager::setExtensionTime(uint minutesToAdd, bool extendAutomatic
 {
     m_extensionMinutes = minutesToAdd;
     m_extendAutomatically = extendAutomatically;
-    changed();
+    Q_EMIT changed();
 }
 
 void ArrSessionManager::getExtensionTime(uint& outMinutesToAdd, bool& outExtendAutomatically) const

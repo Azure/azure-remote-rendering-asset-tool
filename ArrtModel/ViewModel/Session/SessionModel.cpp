@@ -57,7 +57,7 @@ bool SessionModel::stop()
     if (isRunning())
     {
         const bool succeeded = m_sessionManager->stopSession();
-        changed();
+        Q_EMIT changed();
         if (!succeeded)
         {
             qWarning() << tr("Session didn't successfully stop");

@@ -35,7 +35,7 @@ ConversionModel::ConversionModel(ConversionManager* conversionManager, AzureStor
                      [this](int id) {
                          if (m_conversionId == id)
                          {
-                             changed();
+                             Q_EMIT changed();
                          }
                      });
 }
@@ -51,7 +51,7 @@ void ConversionModel::setConversion(int conversionId)
 
     loadConfigFileForConversion(getConversion());
     updateRootDirectoryModel();
-    changed();
+    Q_EMIT changed();
 }
 
 QString ConversionModel::getDefaultName() const
@@ -222,7 +222,9 @@ InputSelectionModel* ConversionModel::createtInputSelectionModel()
 
             loadConfigFileForConversion(conversion);
             updateRootDirectoryModel();
-            changed();
+
+            // this event is needed to properly update the UI state
+            Q_EMIT m_conversionManager->conversionUpdated(conversionId);
         }
     });
     return model;
@@ -260,7 +262,7 @@ OutputSelectionModel* ConversionModel::createOutputSelectionModel()
             info.m_output_folder = destDirectory.toStdString();
             info.m_output_asset_relative_path = "";
             info.m_outputContainer = m_storageManager->getContainerUriFromName(destContainer);
-            changed();
+            Q_EMIT changed();
         }
     });
 
@@ -335,7 +337,7 @@ bool ConversionModel::isConfigurationDefault() const
 void ConversionModel::resetToDefault()
 {
     m_conversionConfigModel->restoreToDefault();
-    changed();
+    Q_EMIT changed();
 }
 
 const QList<ParameterModel*>& ConversionModel::getConfigurationControls() const
