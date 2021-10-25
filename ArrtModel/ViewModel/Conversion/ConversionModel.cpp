@@ -222,9 +222,7 @@ InputSelectionModel* ConversionModel::createtInputSelectionModel()
 
             loadConfigFileForConversion(conversion);
             updateRootDirectoryModel();
-
-            // this event is needed to properly update the UI state
-            Q_EMIT m_conversionManager->conversionUpdated(conversionId);
+            changed();
         }
     });
     return model;
