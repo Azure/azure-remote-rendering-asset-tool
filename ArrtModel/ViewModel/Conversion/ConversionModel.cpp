@@ -160,7 +160,13 @@ QString ConversionModel::getOutput() const
     {
         if (!conversion->m_outputContainer.primary_uri().is_empty())
         {
-            return QString::fromStdWString(conversion->m_outputContainer.primary_uri().to_string()) + "/" + QString::fromUtf8(conversion->m_output_folder.c_str()) + conversion->getModelName() + ".arrAsset";
+            QString name = conversion->m_name;
+            if (name.isEmpty())
+            {
+                name = conversion->getDefaultName(m_conversionId);
+            }
+
+            return QString::fromStdWString(conversion->m_outputContainer.primary_uri().to_string()) + "/" + QString::fromUtf8(conversion->m_output_folder.c_str()) + name + ".arrAsset";
         }
         else
         {
@@ -222,7 +228,9 @@ InputSelectionModel* ConversionModel::createtInputSelectionModel()
 
             loadConfigFileForConversion(conversion);
             updateRootDirectoryModel();
-            changed();
+
+            // this event is needed to properly update the UI state
+            Q_EMIT m_conversionManager->conversionUpdated(conversionId);
         }
     });
     return model;
