@@ -169,6 +169,7 @@ void ViewportModel::initializeD3D()
     iCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
+retry:
     D3D_FEATURE_LEVEL featureLevel;
     D3D_FEATURE_LEVEL featureLevels[] = {
         D3D_FEATURE_LEVEL_11_0,
@@ -189,6 +190,14 @@ void ViewportModel::initializeD3D()
 
     if (res != S_OK)
     {
+        if (iCreateFlags & D3D11_CREATE_DEVICE_DEBUG)
+        {
+            // it is common that D3D devices can't be created with the debug device flag
+            // so if this fails, remove the debug device flag and try again
+            iCreateFlags &= ~D3D11_CREATE_DEVICE_DEBUG;
+            goto retry;
+        }
+
         throw 0;
     }
 
