@@ -121,6 +121,7 @@ public:
     static QIcon s_sceneIcon;
     static QIcon s_materialsIcon;
     static QIcon s_statsIcon;
+    static QIcon s_okIcon;
 
 
     virtual void polish(QPalette& pal) override;

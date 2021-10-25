@@ -51,13 +51,17 @@ OutputSelectionView::OutputSelectionView(OutputSelectionModel* model)
     }
 
     {
-        auto* okButton = new ToolbarButton(tr("Select Output"));
+        QHBoxLayout* toolButtonsLayout = new QHBoxLayout();
+        toolButtonsLayout->addStretch(1);
+        auto* okButton = new FlatButton(tr("Select Output"));
         okButton->setToolTip(tr("Select Output"), tr("Select the output location for the conversion"));
-        connect(okButton, &ToolbarButton::clicked, this, [this]() { m_model->submit(); });
+        okButton->setIcon(ArrtStyle::s_okIcon, true);
+        QObject::connect(okButton, &FlatButton::clicked, this, [this]() {
+            m_model->submit();
+        });
+        toolButtonsLayout->addWidget(okButton);
 
-        auto* toolbar = new Toolbar(this);
-        toolbar->addButton(okButton);
-        l->addWidget(toolbar);
+        l->addLayout(toolButtonsLayout);
     }
 
     connect(m_model, &OutputSelectionModel::submitted, this, [this]() { goBack(); });

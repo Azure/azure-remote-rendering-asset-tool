@@ -176,6 +176,7 @@ QIcon ArrtStyle::s_arrowRightIcon;
 QIcon ArrtStyle::s_sceneIcon;
 QIcon ArrtStyle::s_materialsIcon;
 QIcon ArrtStyle::s_statsIcon;
+QIcon ArrtStyle::s_okIcon;
 
 ArrtStyle::ArrtStyle()
     : QProxyStyle("Fusion")
@@ -327,6 +328,7 @@ void ArrtStyle::polish(QApplication* app)
     s_sceneIcon = QIcon(":/ArrtApplication/Icons/scene.svg");
     s_materialsIcon = QIcon(":/ArrtApplication/Icons/materials.svg");
     s_statsIcon = QIcon(":/ArrtApplication/Icons/stats.svg");
+    s_okIcon = QIcon(":/ArrtApplication/Icons/conversion_succeeded.svg");
 
     FocusableContainer::installFocusListener(app);
 }

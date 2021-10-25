@@ -53,13 +53,17 @@ InputSelectionView::InputSelectionView(InputSelectionModel* model)
     }
 
     {
-        auto* okButton = new ToolbarButton(tr("Select Input"));
-        okButton->setToolTip(tr("Select Input"), tr("Select the input model to be converted"));
-        connect(okButton, &ToolbarButton::clicked, this, [this]() { m_model->submit(); });
+        QHBoxLayout* toolButtonsLayout = new QHBoxLayout();
+        toolButtonsLayout->addStretch(1);
+        auto* okButton = new FlatButton(tr("Select Input"));
+        okButton->setToolTip(tr("Select Output"), tr("Select the input model to be converted"));
+        okButton->setIcon(ArrtStyle::s_okIcon, true);
+        QObject::connect(okButton, &FlatButton::clicked, this, [this]() {
+            m_model->submit();
+        });
+        toolButtonsLayout->addWidget(okButton);
 
-        auto* toolbar = new Toolbar(this);
-        toolbar->addButton(okButton);
-        l->addWidget(toolbar);
+        l->addLayout(toolButtonsLayout);
 
         auto updateCanSubmit = [this, okButton]() {
             okButton->setEnabled(m_model->canSubmit());
