@@ -64,7 +64,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
     {
         m_inputLabel = new ReadOnlyText();
         m_inputLabel->setPlaceholderText(tr("[Select input model]"));
-        m_inputLabel->setAccessibleName(tr("Input model"));
+        m_inputLabel->setAccessibleName(tr("Input 3D model"));
 
         m_inputButton = new FlatButton(tr("Select"), this);
         m_inputButton->setToolTip(tr("Select input model"), tr("Open a blob explorer to find and select an input 3D model for conversion"));
@@ -177,7 +177,7 @@ ConversionView::ConversionView(ConversionModel* conversionModel, QWidget* parent
         m_outputLabel = new ReadOnlyText();
         m_outputLabel->setReadOnly(true);
         m_outputLabel->setPlaceholderText(tr("[Select output directory]"));
-        m_outputLabel->setAccessibleName(tr("Input model"));
+        m_outputLabel->setAccessibleName(tr("Output model"));
 
         m_outputButton = new FlatButton(tr("Select"), this);
         m_outputButton->setToolTip(tr("Select output directory"), tr("Open a blob explorer to select the directory where the conversion will write the converted 3D model"));
