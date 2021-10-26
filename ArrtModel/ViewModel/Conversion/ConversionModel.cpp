@@ -51,7 +51,7 @@ void ConversionModel::setConversion(int conversionId)
 
     loadConfigFileForConversion(getConversion());
     updateRootDirectoryModel();
-    Q_EMIT changed();
+    m_conversionManager->NotifyChange(conversionId);
 }
 
 QString ConversionModel::getDefaultName() const
@@ -148,7 +148,7 @@ void ConversionModel::setCurrentInputRootDirectory(const QString& currentRootDir
         {
             if (conversion->changeRootDirectory(currentRootDirectory.toStdString()))
             {
-                Q_EMIT changed();
+                m_conversionManager->NotifyChange(m_conversionId);
             }
         }
     }
@@ -229,8 +229,7 @@ InputSelectionModel* ConversionModel::createtInputSelectionModel()
             loadConfigFileForConversion(conversion);
             updateRootDirectoryModel();
 
-            // this event is needed to properly update the UI state
-            Q_EMIT m_conversionManager->conversionUpdated(conversionId);
+            m_conversionManager->NotifyChange(conversionId);
         }
     });
     return model;
@@ -268,7 +267,8 @@ OutputSelectionModel* ConversionModel::createOutputSelectionModel()
             info.m_output_folder = destDirectory.toStdString();
             info.m_output_asset_relative_path = "";
             info.m_outputContainer = m_storageManager->getContainerUriFromName(destContainer);
-            Q_EMIT changed();
+
+            m_conversionManager->NotifyChange(conversionId);
         }
     });
 

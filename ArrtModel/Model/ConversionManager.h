@@ -141,6 +141,8 @@ public:
     const Conversion* getConversion(ConversionId id) const;
     Conversion* getConversion(ConversionId id);
 
+    void NotifyChange(ConversionId id);
+
     ConversionId addNewConversion();
 
     // the blob provider is used to generate the Sas tokens

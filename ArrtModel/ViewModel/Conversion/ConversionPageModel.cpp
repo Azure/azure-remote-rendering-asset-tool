@@ -63,7 +63,7 @@ void ConversionPageModel::addNewConversion()
 
 bool ConversionPageModel::canRemoveCurrentConversion() const
 {
-    if (Conversion* conversion = m_conversionManager->getConversion(getCurrentConversionId()))
+    if (const Conversion* conversion = m_conversionManager->getConversion(getCurrentConversionId()))
     {
         return !conversion->isActive();
     }
