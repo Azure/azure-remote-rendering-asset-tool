@@ -51,7 +51,7 @@ void ConversionModel::setConversion(int conversionId)
 
     loadConfigFileForConversion(getConversion());
     updateRootDirectoryModel();
-    Q_EMIT changed();
+    m_conversionManager->NotifyChange(conversionId);
 }
 
 QString ConversionModel::getDefaultName() const
@@ -148,7 +148,7 @@ void ConversionModel::setCurrentInputRootDirectory(const QString& currentRootDir
         {
             if (conversion->changeRootDirectory(currentRootDirectory.toStdString()))
             {
-                Q_EMIT changed();
+                m_conversionManager->NotifyChange(m_conversionId);
             }
         }
     }
@@ -160,7 +160,13 @@ QString ConversionModel::getOutput() const
     {
         if (!conversion->m_outputContainer.primary_uri().is_empty())
         {
-            return QString::fromStdWString(conversion->m_outputContainer.primary_uri().to_string()) + "/" + QString::fromUtf8(conversion->m_output_folder.c_str()) + conversion->getModelName() + ".arrAsset";
+            QString name = conversion->m_name;
+            if (name.isEmpty())
+            {
+                name = conversion->getDefaultName(m_conversionId);
+            }
+
+            return QString::fromStdWString(conversion->m_outputContainer.primary_uri().to_string()) + "/" + QString::fromUtf8(conversion->m_output_folder.c_str()) + name + ".arrAsset";
         }
         else
         {
@@ -222,7 +228,8 @@ InputSelectionModel* ConversionModel::createtInputSelectionModel()
 
             loadConfigFileForConversion(conversion);
             updateRootDirectoryModel();
-            changed();
+
+            m_conversionManager->NotifyChange(conversionId);
         }
     });
     return model;
@@ -260,7 +267,8 @@ OutputSelectionModel* ConversionModel::createOutputSelectionModel()
             info.m_output_folder = destDirectory.toStdString();
             info.m_output_asset_relative_path = "";
             info.m_outputContainer = m_storageManager->getContainerUriFromName(destContainer);
-            Q_EMIT changed();
+
+            m_conversionManager->NotifyChange(conversionId);
         }
     });
 

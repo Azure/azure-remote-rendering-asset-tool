@@ -207,6 +207,11 @@ const Conversion* ConversionManager::getConversion(ConversionId id) const
     return *conversionIt;
 }
 
+void ConversionManager::NotifyChange(ConversionId id)
+{
+    Q_EMIT conversionUpdated(id);
+}
+
 ConversionManager::ConversionId ConversionManager::addNewConversion()
 {
     const ConversionId newConversionId = ++m_highestId;
