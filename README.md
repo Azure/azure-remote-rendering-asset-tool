@@ -38,7 +38,7 @@ You need to be familiar with the following key concepts:
 * Unzip to a directory of your choice.
 * Run.
 
-> <b>Important</b>
+> **Important:**
 >
 > If running ARRT fails for a missing dll (VCRUNTIME140_1.dll), please install the latest Visual C++ redistributable (vs2019 x64) from [the Visual Studio download page](https://visualstudio.microsoft.com/downloads/) or using [this direct link](https://aka.ms/vs/16/release/VC_redist.x64.exe)
 
@@ -46,7 +46,7 @@ You need to be familiar with the following key concepts:
 
 ### Prerequisites
 
-* Visual studio 2017 or 2019
+* Visual studio 2019
 * Qt 5.13.1 or newer. Find the installation on the [website](https://www.qt.io/download-qt-installer). Use the default installation options. If you want to debug the Qt code, select the source code. Make sure the Qt5_DIR environment variable is set (e.g. C:\5.13.1\msvc2017_64).
 * CMake version 3.16. Find the installation [here](https://cmake.org/download/). Make sure CMake is in the PATH environment variable.
 * Command-line NuGet from [here](https://www.nuget.org/downloads). Make sure Nuget.exe is in the PATH environment variable
@@ -55,8 +55,8 @@ You need to be familiar with the following key concepts:
 ### Building
 
 * Clone the GitHub Repository [Azure Remote Rendering Asset Tool](https://github.com/Azure/azure-remote-rendering-asset-tool).
-* From the root directory, run the script *GenerateSolution.bat \<OutputDirectory\> -vs2017 (or -vs2019)*. The script will run CMake and generate a Visual Studio solution in *OutputDirectory*.
-* Open it with Visual Studio 2017 or Visual Studio 2019.
+* From the root directory, run the script *GenerateSolution.bat \<OutputDirectory\> -vs2019*. The script will run CMake and generate a Visual Studio solution in *OutputDirectory*.
+* Open it with Visual Studio 2019.
 * Compile (Debug or Release).
 * Run.
 
@@ -74,12 +74,11 @@ If Clang and Ninja are installed locally, you have access a few useful dev tools
 
 You can download Clang from the [LLVM Download Page](https://releases.llvm.org/download.html). And Ninja-build from the [Ninja-build GitHub repo](https://github.com/ninja-build/ninja/releases).
 
-
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+the rights to use your contribution. For details, visit <https://cla.opensource.microsoft.com>.
 
 When you submit a pull request, a CLA bot will automatically determine whether you need to provide
 a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
