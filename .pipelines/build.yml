@@ -1,7 +1,7 @@
-# pipeline triggered on PR to master, to build ARRT and check for errors
+# pipeline triggered on PR to main, to build ARRT and check for errors
 
 pr:
-- master
+- main
 
 pool:
   vmImage: 'vs2017-win2016'

@@ -68,7 +68,7 @@ void ApplicationModel::openFeedback() const
 
 void ApplicationModel::openDocumentation() const
 {
-    QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/blob/master/Documentation/index.md"));
+    QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/blob/main/Documentation/index.md"));
 }
 
 void ApplicationModel::openPrivacyStatement() const

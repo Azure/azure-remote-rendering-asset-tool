@@ -23,8 +23,8 @@ param (
 
 if ([string]::IsNullOrWhiteSpace($BranchName))
 {
-    Write-Host "Defaulting to checking out master branch"
-    $BranchName = "master"
+    Write-Host "Defaulting to checking out main branch"
+    $BranchName = "main"
 }
 
 if ([string]::IsNullOrWhiteSpace($RepoFolder))
