@@ -1,5 +1,5 @@
 $formatPath = $args[0] + "clang-format"
-$changedFiles = git diff --name-only master
+$changedFiles = git diff --name-only main
 $validExtensions = "cpp", "h", "inl"
 $exitCode = 0
 
