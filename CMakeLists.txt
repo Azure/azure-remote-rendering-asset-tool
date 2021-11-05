@@ -99,6 +99,8 @@ message("Version = ${ARRT_VERSION}")
 set(CMAKE_SUPPRESS_REGENERATION true)
 
 set( CMAKE_CONFIGURATION_TYPES Debug;Release )
+set (PLATFORM_SUBDIR "/x64_vs2017_win10/$<IF:$<CONFIG:Debug>,Debug,Dev>")
+
 
 #################
 # ARRT SOLUTION

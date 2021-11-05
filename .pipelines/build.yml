@@ -6,6 +6,9 @@ pr:
 pool:
   vmImage: 'windows-2019'
 
+variables:
+  VCINSTALLDIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC'
+
 resources:
   repositories:
   - repository: ArrtDependencies
