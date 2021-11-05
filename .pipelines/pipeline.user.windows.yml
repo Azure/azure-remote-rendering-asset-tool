@@ -2,7 +2,7 @@ environment:
   host:
     os: 'windows'
     flavor: 'server'
-    version: '2016'
+    version: '2019'
   runtime:
     provider: 'appcontainer'
     image: 'cdpxwin1809.azurecr.io/global/vse2019:latest'

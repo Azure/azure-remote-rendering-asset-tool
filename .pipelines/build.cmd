@@ -13,7 +13,7 @@ SET NUGET_RESTORE=false
 SET ARRT_VERSION=v%CDP_PACKAGE_VERSION_SEMANTIC%
 
 cmake --version
-cmake -G "Visual Studio 15 2019" -A x64
+cmake -G "Visual Studio 16 2019" -A x64
 if %errorlevel% neq 0 (
     echo Failed to generate solution %errorlevel%
     goto errorExit
