@@ -4,10 +4,11 @@ pr:
 - main
 
 pool:
-  vmImage: 'vs2017-win2016'
+  vmImage: 'windows-2019'
 
-variables:
-  VCINSTALLDIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC'
+# Unclear whether this is needed
+#variables:
+  #VCINSTALLDIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC'
 
 resources:
   repositories:
@@ -24,17 +25,17 @@ steps:
   submodules: true
 
 - task: BatchScript@1
-  displayName: 'Generate solution for vs2017' 
+  displayName: 'Generate solution for vs2019' 
   inputs:
     filename: '$(Build.SourcesDirectory)\arr.arrt.dependencies\GenerateSolution.bat'
-    arguments: '-vs2017'
+    arguments: '-vs2019'
     workingFolder: 'arr.arrt.dependencies'
 
 - task: PowerShell@2
   displayName: 'Check Clang-format'
   inputs:
     filePath: '$(Build.SourcesDirectory)\azure-remote-rendering-asset-tool\.pipelines\CheckFormatCompliant.ps1'
-    arguments: '"C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\vcpackages\"'
+    arguments: '"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\VC\vcpackages\"'
 
 - task: ea576cd4-c61f-48f8-97e7-a3cb07b90a6f@2
   displayName: 'CredScan'
