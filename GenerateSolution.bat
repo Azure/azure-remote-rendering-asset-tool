@@ -10,6 +10,9 @@ IF [%1] EQU [] (
 ) ELSE IF /I "%~2"=="-vs2019" (
     IF EXIST %cachefile% DEL %cachefile%
     CALL :GENERATE -G "Visual Studio 16 2019" -A x64
+) ELSE IF /I "%~2"=="-vs2022" (
+    IF EXIST %cachefile% DEL %cachefile%
+    CALL :GENERATE -G "Visual Studio 17 2022" -A x64
 ) ELSE CALL :USAGE
 EXIT /b 0
 
@@ -22,5 +25,5 @@ if %errorlevel% neq 0 (
 EXIT /b 0
 
 :USAGE
-ECHO Usage: GenerateSolution.bat Output [-vs2019]
+ECHO Usage: GenerateSolution.bat Output [-vs2019] [-vs2022]
 EXIT /b 1
