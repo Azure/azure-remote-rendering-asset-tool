@@ -65,17 +65,17 @@ package:
   commands:
 test:
   commands:
-    - !!testcommand
-      name: 'Test'
-      command: '.pipelines\test.cmd'
-      testresults:
-        - from: 'bin\tests\Debug\output'
-          title: 'All Tests'
-          configuration: 'Debug'
-          platform: 'x64'
-          type: 'JUnit'
-          include:
-            - '**/*.xml'
+    #- !!testcommand
+    #  name: 'Test'
+    #  command: '.pipelines\test.cmd'
+    #  testresults:
+    #    - from: 'bin\tests\Debug\output'
+    #      title: 'All Tests'
+    #      configuration: 'Debug'
+    #      platform: 'x64'
+    #      type: 'JUnit'
+    #      include:
+    #        - '**/*.xml'
 
 publish:
   commands:
