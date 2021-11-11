@@ -151,10 +151,6 @@ target_include_directories(${TARGET} PUBLIC "${LIB_REST_ROOT}/build/native/inclu
 target_link_libraries(${TARGET} PUBLIC "${LIB_ARR_LIB}/RemoteRenderingClient.lib")
 target_include_directories(${TARGET} PUBLIC ${LIB_ARR_INCLUDE})
 
-if(DEFINED ENV{EXTRA_ARR_ZONE})
-    add_definitions( -DEXTRA_ARR_ZONE=$ENV{EXTRA_ARR_ZONE} )
-endif()
-
 target_link_libraries(${TARGET} PUBLIC crypt32.lib)
 
 unset(SOURCE_LIST)
