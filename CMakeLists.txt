@@ -1,23 +1,6 @@
 cmake_minimum_required (VERSION 3.12)
 
-# submodule update
-find_package(Git QUIET)
-if(GIT_FOUND)
-    message(STATUS "Googletest submodule update")
-    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                    RESULT_VARIABLE GIT_SUBMOD_RESULT)
-    if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-        message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}")
-    endif()
-endif()
-
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/googletest/CMakeLists.txt")
-    message(FATAL_ERROR "Submodules update failed. Please run git submodule update --init")
-endif()
-
-
-# common setup for exe targets (Arrt and Tests)
+# common setup for exe targets
 function(addQtDeployment _TARGET)
     get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
     get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
@@ -168,10 +151,6 @@ target_include_directories(${TARGET} PUBLIC "${LIB_REST_ROOT}/build/native/inclu
 target_link_libraries(${TARGET} PUBLIC "${LIB_ARR_LIB}/RemoteRenderingClient.lib")
 target_include_directories(${TARGET} PUBLIC ${LIB_ARR_INCLUDE})
 
-if(DEFINED ENV{EXTRA_ARR_ZONE})
-    add_definitions( -DEXTRA_ARR_ZONE=$ENV{EXTRA_ARR_ZONE} )
-endif()
-
 target_link_libraries(${TARGET} PUBLIC crypt32.lib)
 
 unset(SOURCE_LIST)
@@ -219,48 +198,4 @@ target_link_libraries(${TARGET} PUBLIC ArrtModel)
 target_link_libraries(${TARGET} PUBLIC d3d11.lib DXGI.lib)
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Arrt)
-
-#########
-# Tests
-#
-set( gtest_force_shared_crt ON CACHE BOOL "Use dynamically linked crt" )
-add_subdirectory(googletest)
-set_target_properties(gmock gmock_main gtest gtest_main PROPERTIES FOLDER "GTest")
-set_target_properties(gmock gmock_main gtest gtest_main PROPERTIES COMPILE_PDB_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/tests)
-enable_testing()
-
-# find all of the *.cpp files in ./Tests and create a test exe for each one of them
-
-#file(GLOB_RECURSE TEST_LIST Tests/Model/*.cpp)
-#foreach(case_file ${TEST_LIST})
-#    get_filename_component( case_name ${case_file} NAME_WE )
-#    set (case_name test_${case_name})
-#    add_executable(${case_name} ${case_file})
-#    addQtDeployment(${case_name})
-#    target_include_directories(${case_name} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ArrtModel")
-#    target_link_libraries(${case_name} PUBLIC ArrtModel)
-#    target_link_libraries(${case_name} PRIVATE gtest_main)
-#    target_include_directories(${case_name} PRIVATE ${gtest_SOURCE_DIR} ${gtest_SOURCE_DIR}/include)
-#    set_target_properties(${case_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/tests)
-# 
-#    add_test(NAME ${case_name} COMMAND ${case_name} WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
-#endforeach()
-
-
-file(GLOB_RECURSE TEST_LIST Tests/Standalone/*.cpp)
-foreach(case_file ${TEST_LIST})
-    get_filename_component( case_name ${case_file} NAME_WE )
-    set (case_name test_${case_name})
-    add_executable(${case_name} ${case_file})
-    
-    addQtDeployment(${case_name})
-    target_link_libraries(${case_name} PUBLIC Qt5::Core Qt5::Widgets Qt5::Gui)
-    target_link_libraries(${case_name} PUBLIC d3d11.lib DXGI.lib)
-
-    target_link_libraries(${case_name} PRIVATE gtest_main)
-    target_include_directories(${case_name} PRIVATE ${gtest_SOURCE_DIR} ${gtest_SOURCE_DIR}/include)
-    set_target_properties(${case_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/tests)
-
-    add_test(NAME ${case_name} COMMAND ${case_name} WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
-endforeach()
 

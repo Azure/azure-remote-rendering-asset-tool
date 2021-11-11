@@ -6,7 +6,6 @@ pushd %~dp0
 
 call :scanRecursive Arrt
 call :scanRecursive ArrtModel
-call :scanRecursive Tests
 
 echo Done.
 
