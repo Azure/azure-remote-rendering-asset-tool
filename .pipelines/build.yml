@@ -6,10 +6,6 @@ pr:
 pool:
   vmImage: 'windows-2019'
 
-# Unclear whether this is needed
-#variables:
-  #VCINSTALLDIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC'
-
 resources:
   repositories:
   - repository: ArrtDependencies
@@ -44,7 +40,3 @@ steps:
     platform: 'x64'
     configuration: 'Release'
     msbuildArchitecture: 'x64'
-
-
-
-
