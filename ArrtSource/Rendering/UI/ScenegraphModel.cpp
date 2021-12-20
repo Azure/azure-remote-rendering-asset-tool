@@ -44,7 +44,7 @@ QModelIndex ScenegraphModel::index(int row, int column, const QModelIndex& paren
 
     if (!parent.isValid())
     {
-        if (row > m_modelRoots.size())
+        if (row >= m_modelRoots.size())
             return {};
 
         entryPtr = &m_modelRoots[row];
