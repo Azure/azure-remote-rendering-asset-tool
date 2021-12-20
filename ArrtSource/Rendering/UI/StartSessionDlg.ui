@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StartSessionDlg</class>
+ <widget class="QDialog" name="StartSessionDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>482</width>
+    <height>323</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Rendering Session</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="9" column="1">
+      <widget class="QLineEdit" name="SessionID">
+       <property name="accessibleName">
+        <string>Current session ID</string>
+       </property>
+       <property name="readOnly">
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>&lt;no session running&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="VmSize">
+       <property name="accessibleName">
+        <string>VM size</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Extend By (H:MM):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QCheckBox" name="AutoExtend">
+       <property name="text">
+        <string>Auto Extend</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/autoextendtime.svg</normaloff>:/ArrtApplication/Icons/autoextendtime.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Max Time (H:MM):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>SessionID:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Size:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLineEdit" name="AutoExtendBy">
+         <property name="accessibleName">
+          <string>Extend session time by this amount</string>
+         </property>
+         <property name="placeholderText">
+          <string>example: 0:15</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="ExtendNow">
+         <property name="text">
+          <string>Extend Now</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../../Resources/ArrtApplication.qrc">
+           <normaloff>:/ArrtApplication/Icons/extendtime.svg</normaloff>:/ArrtApplication/Icons/extendtime.svg</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="RemainingTime">
+       <property name="accessibleName">
+        <string>Currently remaining time</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="MaxTime">
+       <property name="accessibleName">
+        <string>Max VM allocation time</string>
+       </property>
+       <property name="placeholderText">
+        <string>example: 0:15</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="ResolutionYLabel">
+       <property name="text">
+        <string>Resolution Y:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Remaining Time (H:MM):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="ResolutionXLabel">
+       <property name="text">
+        <string>Resolution X:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="RefreshRateLabel">
+       <property name="text">
+        <string>Refresh Rate:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QSpinBox" name="ResolutionX">
+       <property name="accessibleName">
+        <string>Resolution X</string>
+       </property>
+       <property name="correctionMode">
+        <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+       </property>
+       <property name="minimum">
+        <number>256</number>
+       </property>
+       <property name="maximum">
+        <number>4096</number>
+       </property>
+       <property name="singleStep">
+        <number>8</number>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QSpinBox" name="ResolutionY">
+       <property name="accessibleName">
+        <string>Resolution Y</string>
+       </property>
+       <property name="correctionMode">
+        <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+       </property>
+       <property name="minimum">
+        <number>256</number>
+       </property>
+       <property name="maximum">
+        <number>4096</number>
+       </property>
+       <property name="singleStep">
+        <number>8</number>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QSpinBox" name="RefreshRate">
+       <property name="accessibleName">
+        <string>Resolution Y</string>
+       </property>
+       <property name="correctionMode">
+        <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+       </property>
+       <property name="minimum">
+        <number>15</number>
+       </property>
+       <property name="maximum">
+        <number>60</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="StartSession">
+       <property name="text">
+        <string>Start</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/start.svg</normaloff>:/ArrtApplication/Icons/start.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="StopSession">
+       <property name="text">
+        <string>Stop</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/stop.svg</normaloff>:/ArrtApplication/Icons/stop.svg</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>VmSize</tabstop>
+  <tabstop>MaxTime</tabstop>
+  <tabstop>AutoExtendBy</tabstop>
+  <tabstop>ExtendNow</tabstop>
+  <tabstop>AutoExtend</tabstop>
+  <tabstop>SessionID</tabstop>
+  <tabstop>StartSession</tabstop>
+  <tabstop>StopSession</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../../Resources/ArrtApplication.qrc"/>
+ </resources>
+ <connections/>
+</ui>

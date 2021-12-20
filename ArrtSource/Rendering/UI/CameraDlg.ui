@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CameraDlg</class>
+ <widget class="QDialog" name="CameraDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>442</width>
+    <height>317</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Camera Settings</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Camera Move Speed:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSlider" name="FieldOfViewSlider">
+       <property name="accessibleName">
+        <string>Field of view</string>
+       </property>
+       <property name="minimum">
+        <number>15</number>
+       </property>
+       <property name="maximum">
+        <number>160</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSlider" name="NearPlaneSlider">
+       <property name="accessibleName">
+        <string>Near plane distance</string>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>1000</number>
+       </property>
+       <property name="value">
+        <number>1</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="FovLabel">
+       <property name="text">
+        <string>FOV Label</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QLabel" name="FarPlaneLabel">
+       <property name="text">
+        <string>FarPlane Label</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Near Plane:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSlider" name="CamMoveSpeedSlider">
+       <property name="accessibleName">
+        <string>Camera move speed</string>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+       <property name="value">
+        <number>1000</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="NearPlaneLabel">
+       <property name="text">
+        <string>NearPlane Label</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QSlider" name="FarPlaneSlider">
+       <property name="accessibleName">
+        <string>Far plane distance</string>
+       </property>
+       <property name="minimum">
+        <number>10</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+       <property name="value">
+        <number>1000</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Field of View:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QLabel" name="CamSpeedLabel">
+       <property name="text">
+        <string>CamSpeed Label</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Far Plane:</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>59</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Control scheme:&lt;/p&gt;&lt;p&gt;1. To rotate the camera: &lt;span style=&quot; font-weight:600;&quot;&gt;Right-click&lt;/span&gt; into viewport and&lt;span style=&quot; font-weight:600;&quot;&gt; drag the mouse&lt;/span&gt;&lt;/p&gt;&lt;p&gt;2. To move the camera: &lt;span style=&quot; font-weight:600;&quot;&gt;Hold WASD&lt;/span&gt; or the arrow keys&lt;/p&gt;&lt;p&gt;3. To move camera up/down: &lt;span style=&quot; font-weight:600;&quot;&gt;Hold Q/E&lt;/span&gt;&lt;/p&gt;&lt;p&gt;4. To select an object: &lt;span style=&quot; font-weight:600;&quot;&gt;Left-click&lt;/span&gt; onto object in viewport&lt;/p&gt;&lt;p&gt;5. To focus the camera on the selected object: &lt;span style=&quot; font-weight:600;&quot;&gt;Press F&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::RichText</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="Buttons">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Close</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>FieldOfViewSlider</tabstop>
+  <tabstop>NearPlaneSlider</tabstop>
+  <tabstop>FarPlaneSlider</tabstop>
+  <tabstop>CamMoveSpeedSlider</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../../Resources/ArrtApplication.qrc"/>
+ </resources>
+ <connections/>
+</ui>

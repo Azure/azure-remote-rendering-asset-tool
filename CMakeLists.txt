@@ -61,26 +61,6 @@ if (NOT "$ENV{NUGET_RESTORE}" STREQUAL "false")
     endif()
 endif()
 
-# retrieve version
-
-if(DEFINED ENV{ARRT_VERSION})
-    set(ARRT_VERSION $ENV{ARRT_VERSION})
-else()
-    message(STATUS "Retrieving version from last git tag")
-    find_package (Git)
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} 
-        OUTPUT_VARIABLE ARRT_VERSION
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-endif()
-if (NOT DEFINED ARRT_VERSION)
-    set (ARRT_VERSION 0)
-endif()
-message("Version = ${ARRT_VERSION}")
-
-set(CMAKE_SUPPRESS_REGENERATION true)
-
 set( CMAKE_CONFIGURATION_TYPES Debug;Release )
 
 #################
@@ -91,55 +71,69 @@ project(Arrt)
 # Global options, for all of the projects
 if(MSVC)
     add_compile_options( /W4 /wd4505 /wd4068 /MP /bigobj /Zi)
-    # Enable pdb generation in release builds.
+ 
+	# Enable pdb generation in release builds.
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
     set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
 else()
     add_compile_options(-Wall -Wextra -pedantic -Werror -Wno-extra-semi -Wno-unused-function -Wno-language-extension-token -Wno-delete-non-abstract-non-virtual-dtor)
 endif()
-set( CMAKE_CXX_STANDARD 17 )
-set( CMAKE_CXX_EXTENSIONS OFF )
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 add_definitions(-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING -D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 # No Windows.h min and max
 add_definitions(-DNOMINMAX)
-add_definitions(-DARRT_VERSION="${ARRT_VERSION}")
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-#####################
-# ArrtModel library 
+find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
+
+###################
+# ARRT Executable
 #
-set (TARGET "ArrtModel")
+set (TARGET "Arrt")
 
-set (SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/ArrtModel")
+set (SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/ArrtSource")
+file(GLOB SOURCE_LIST LIST_DIRECTORIES false "${SOURCE_ROOT}/*.cpp" "${SOURCE_ROOT}/*.h" "${SOURCE_ROOT}/Resources/*.qrc" "${SOURCE_ROOT}/Resources/*.ico")
 
-set(DIRS
-    "Model"
-    "ViewModel"
-    "Utils"
+# add the resource file only if it's visual c++, just as a temporary workaround to avoid LLVM errors with the VERSIONINFO parsing
+if(MSVC)
+    file( GLOB NEW_FILES "${SOURCE_ROOT}/Resources/*.rc" )
+    set(SOURCE_LIST ${SOURCE_LIST} ${NEW_FILES})
+endif()
+    
+set(SRC_DIRS
+	App
+	Conversion
+	Rendering
+	Storage
+	Utils
 )
 
-foreach(DIR IN LISTS DIRS)
-	file(
-     GLOB_RECURSE NEW_FILES
-     "${SOURCE_ROOT}/${DIR}/*.cpp" "${SOURCE_ROOT}/${DIR}/*.h"
-    )
+foreach(DIR IN LISTS SRC_DIRS)
+	file(GLOB_RECURSE NEW_FILES "${SOURCE_ROOT}/${DIR}/*.cpp" "${SOURCE_ROOT}/${DIR}/*.h" "${SOURCE_ROOT}/${DIR}/*.ui")
     set(SOURCE_LIST ${SOURCE_LIST} ${NEW_FILES})
 endforeach()
 
 source_group(TREE "${SOURCE_ROOT}" FILES ${SOURCE_LIST})
 
-add_library(${TARGET} ${SOURCE_LIST})
+add_executable(${TARGET} WIN32 ${SOURCE_LIST})
+addQtDeployment(${TARGET})
 
-target_include_directories(${TARGET} PUBLIC "${SOURCE_ROOT}")
+target_include_directories(${TARGET} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ArrtSource")
+target_link_libraries(${TARGET} PUBLIC d3d11.lib DXGI.lib)
 
-find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
 target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Widgets Qt5::Gui)
 
 target_link_libraries(${TARGET} PUBLIC "${LIB_BLOB_NAME}.lib")
@@ -153,49 +147,5 @@ target_include_directories(${TARGET} PUBLIC ${LIB_ARR_INCLUDE})
 
 target_link_libraries(${TARGET} PUBLIC crypt32.lib)
 
-unset(SOURCE_LIST)
-
-###################
-# ARRT executable
-#
-set (TARGET "Arrt")
-
-set (SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/Arrt")
-file(
-     GLOB SOURCE_LIST 
-	 LIST_DIRECTORIES false
-     "${SOURCE_ROOT}/*.cpp" "${SOURCE_ROOT}/*.h" "${SOURCE_ROOT}/Resources/*.qrc" "${SOURCE_ROOT}/Resources/*.ico"
-    )
-
-# add the resource file only if it's visual c++, just as a temporary workaround to avoid LLVM errors with the VERSIONINFO parsing
-if(MSVC)
-    file( GLOB NEW_FILES "${SOURCE_ROOT}/Resources/*.rc" )
-    set(SOURCE_LIST ${SOURCE_LIST} ${NEW_FILES})
-endif()
-    
-set(DIRS
-    "View"
-    "ViewUtils"
-    "Widgets"
-)
-
-foreach(DIR IN LISTS DIRS)
-	file(
-     GLOB_RECURSE NEW_FILES
-     "${SOURCE_ROOT}/${DIR}/*.cpp" "${SOURCE_ROOT}/${DIR}/*.h"
-    )
-    set(SOURCE_LIST ${SOURCE_LIST} ${NEW_FILES})
-endforeach()
-
-source_group(TREE "${SOURCE_ROOT}" FILES ${SOURCE_LIST})
-
-add_executable(${TARGET} WIN32 ${SOURCE_LIST})
-addQtDeployment(${TARGET})
-
-target_include_directories(${TARGET} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET}")
-target_include_directories(${TARGET} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ArrtModel")
-target_link_libraries(${TARGET} PUBLIC ArrtModel)
-target_link_libraries(${TARGET} PUBLIC d3d11.lib DXGI.lib)
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Arrt)
-

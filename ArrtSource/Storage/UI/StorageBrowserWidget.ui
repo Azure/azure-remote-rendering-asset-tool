@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StorageBrowserWidget</class>
+ <widget class="QWidget" name="StorageBrowserWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>675</width>
+    <height>558</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Storage Container:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="StorageContainer">
+       <property name="minimumSize">
+        <size>
+         <width>150</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="accessibleName">
+        <string>Storage container</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="AddContainerButton">
+       <property name="accessibleName">
+        <string>Add storage container</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/new.svg</normaloff>:/ArrtApplication/Icons/new.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="DeleteContainerButton">
+       <property name="accessibleName">
+        <string>Delete storage container</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/remove.svg</normaloff>:/ArrtApplication/Icons/remove.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="RefreshButton">
+       <property name="accessibleName">
+        <string>Refresh storage container</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/refresh.svg</normaloff>:/ArrtApplication/Icons/refresh.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QToolButton" name="AddFolderButton">
+       <property name="accessibleName">
+        <string>Create folder in selected folder</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/newfolder.svg</normaloff>:/ArrtApplication/Icons/newfolder.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="DeleteItemButton">
+       <property name="accessibleName">
+        <string>Delete selected item</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/session_error.svg</normaloff>:/ArrtApplication/Icons/session_error.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="UploadFileButton">
+       <property name="text">
+        <string>Upload File...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/upload.svg</normaloff>:/ArrtApplication/Icons/upload.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="UploadFolderButton">
+       <property name="text">
+        <string>Upload Folder...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/directory.svg</normaloff>:/ArrtApplication/Icons/directory.svg</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTreeView" name="FileTree">
+     <attribute name="headerVisible">
+      <bool>false</bool>
+     </attribute>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="ContentEditGroup" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>StorageContainer</tabstop>
+  <tabstop>AddContainerButton</tabstop>
+  <tabstop>DeleteContainerButton</tabstop>
+  <tabstop>RefreshButton</tabstop>
+  <tabstop>AddFolderButton</tabstop>
+  <tabstop>DeleteItemButton</tabstop>
+  <tabstop>UploadFileButton</tabstop>
+  <tabstop>UploadFolderButton</tabstop>
+  <tabstop>FileTree</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../../Resources/ArrtApplication.qrc"/>
+ </resources>
+ <connections/>
+</ui>
