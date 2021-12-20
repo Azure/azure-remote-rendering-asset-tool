@@ -72,10 +72,11 @@ int WinMain(HINSTANCE, HINSTANCE, char*, int)
     QCoreApplication::setOrganizationName(VER_COMPANY);
     QCoreApplication::setOrganizationDomain("https://github.com/Azure/azure-remote-rendering-asset-tool");
     QCoreApplication::setApplicationVersion(ARRT_VERSION);
-    SetStyleSheet();
 
     int argc = 0;
     QApplication app(argc, 0);
+
+    SetStyleSheet();
 
     ArrtAppWindow* appWindow = new ArrtAppWindow();
     appWindow->show();
