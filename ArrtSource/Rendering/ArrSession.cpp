@@ -405,6 +405,15 @@ void ArrSession::DisconnectFromSessionRuntime()
     }
 
     m_arrSession->Disconnect();
+
+    // cleanup of loaded models
+    {
+        m_loadingProgress.clear();
+        m_loadedModels.clear();
+        m_selectedEntities.clear();
+
+        Q_EMIT ModelLoadProgressChanged();
+    }
 }
 
 void ArrSession::OnSceneRefresh()
@@ -463,6 +472,70 @@ void ArrSession::ConfigureSessionPropertiesUpdateTimer()
                 break;
         }
     }
+}
+
+void ArrSession::CheckEntityBounds(RR::ApiHandle<RR::Entity> entity)
+{
+    entity->QueryWorldBoundsAsync([this](RR::Status status, RR::Bounds bounds)
+                                  {
+                                      if (status == RR::Status::OK && bounds.IsValid())
+                                      {
+                                          // pass the information to the main thread, because we want to interact with the GUI
+                                          QMetaObject::invokeMethod(QApplication::instance(), [this, bounds]()
+                                                                    { CheckEntityBoundsResult(bounds); });
+                                      }
+                                  });
+}
+
+void ArrSession::CheckEntityBoundsResult(RR::Bounds bounds)
+{
+    const float maxX = (float)bounds.Max.X;
+    const float minX = (float)bounds.Min.X;
+    const float maxY = (float)bounds.Max.Y;
+    const float minY = (float)bounds.Min.Y;
+    const float maxZ = (float)bounds.Max.Z;
+    const float minZ = (float)bounds.Min.Z;
+
+    const float width = maxX - minX;
+    const float height = maxY - minY;
+    const float depth = maxZ - minZ;
+
+    const float smallSize = 0.1f;
+    const float largeSize = 10.0f;
+    const float largeOffset = 10.0f;
+
+    const bool isLarge = (width > largeSize || height > largeSize || depth > largeSize);
+    const bool isSmall = (width < smallSize || height < smallSize || depth < smallSize);
+    const bool isFarAway = minX > largeOffset || minY > largeOffset || minZ > largeOffset ||
+                           maxX < -largeOffset || maxY < -largeOffset || maxZ < -largeOffset;
+
+    if (!isLarge && !isFarAway && !isSmall)
+        return;
+
+    QString msg = QString("Note: The loaded model's size is %1m x %2m x %3m\n\n").arg(width).arg(height).arg(depth);
+
+    if (isLarge)
+    {
+        msg.append("* It is very large along at least one axis\n");
+    }
+
+    if (isSmall)
+    {
+        msg.append("* It is very small along at least one axis\n");
+    }
+
+    if (isFarAway)
+    {
+        msg.append("* It is far away from the origin\n");
+    }
+
+    msg.append("\nThese properties can make it difficult to see the model or navigate around it. Here are a few tips:\n\n");
+    msg.append("* Use the 'Model Scale' option from the toolbar to adjust its size\n");
+    msg.append("* Use the tree view on the left to select the entire model or parts of it\n");
+    msg.append("* Press the 'F' key to focus the camera on the selected part\n");
+    msg.append("* Adjust the camera movement speed.\n");
+
+    QMessageBox::information(nullptr, "Model Information", msg, QMessageBox::Ok, QMessageBox::Ok);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -633,7 +706,7 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
 
     QPointer<ArrSession> thisPtr = this;
     int loadIdx = (int)m_loadingProgress.size();
-    m_loadingProgress.push_back(0);
+    m_loadingProgress.push_back(0.01f);
 
     // the callback is called from the GUI thread
     auto onModelLoaded = [thisPtr, modelName, loadIdx](RR::Status status, RR::ApiHandle<RR::LoadModelResult> loadResult)
@@ -660,6 +733,8 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
                 res.m_LoadResult = std::move(loadResult);
 
                 Q_EMIT thisPtr->ModelLoaded();
+
+                thisPtr->CheckEntityBounds(root);
             }
             else
             {
@@ -673,7 +748,7 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
 
     auto onModelLoadingProgress = [thisPtr, loadIdx](float progress)
     {
-        thisPtr->m_loadingProgress[loadIdx] = progress;
+        thisPtr->m_loadingProgress[loadIdx] = std::max(thisPtr->m_loadingProgress[loadIdx], progress);
 
         Q_EMIT thisPtr->ModelLoadProgressChanged();
     };

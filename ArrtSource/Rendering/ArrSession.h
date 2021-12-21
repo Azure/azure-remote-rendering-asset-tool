@@ -104,6 +104,8 @@ private:
     void UpdatePerformanceStatistics();
     // start/stop internal timers based on the session state
     void ConfigureSessionPropertiesUpdateTimer();
+    void CheckEntityBounds(RR::ApiHandle<RR::Entity> entity);
+    void CheckEntityBoundsResult(RR::Bounds bounds);
 
     RR::ApiHandle<RR::RenderingConnection> GetRenderingConnection();
 
