@@ -2,6 +2,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QShortcut>
 #include <Storage/StorageAccount.h>
 #include <Storage/UI/StorageBrowserWidget.h>
 
@@ -9,6 +10,9 @@ StorageBrowserWidget::StorageBrowserWidget(QWidget* parent /*= {}*/)
     : QWidget(parent)
 {
     setupUi(this);
+
+    QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_Delete), FileTree);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(on_DeleteItemButton_clicked()));
 }
 
 StorageBrowserWidget::~StorageBrowserWidget()
@@ -323,3 +327,4 @@ void StorageBrowserWidget::on_RefreshButton_clicked()
 {
     m_storageModel.RefreshModel(false);
 }
+
