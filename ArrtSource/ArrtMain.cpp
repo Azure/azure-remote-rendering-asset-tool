@@ -1,8 +1,8 @@
 #include <App/AppWindow.h>
+#include <ArrtVersion.h>
 #include <QApplication>
 #include <QStyleFactory>
 #include <windows.h>
-#include <ArrtVersion.h>
 
 static bool IsHighContrastOn()
 {

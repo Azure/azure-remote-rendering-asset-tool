@@ -327,4 +327,3 @@ void StorageBrowserWidget::on_RefreshButton_clicked()
 {
     m_storageModel.RefreshModel(false);
 }
-

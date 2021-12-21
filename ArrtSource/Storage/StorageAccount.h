@@ -1,8 +1,8 @@
 #pragma once
 
+#include <QObject>
 #include <Storage/FileUploader.h>
 #include <Storage/IncludeAzureStorage.h>
-#include <QObject>
 #include <Utils/ConnectionStatus.h>
 
 class StorageAccount : public QObject

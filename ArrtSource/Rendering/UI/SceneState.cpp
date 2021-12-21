@@ -307,6 +307,15 @@ void SceneState::MoveCamera(float lateral, float forward, float updown)
     m_cameraMoveTargetDirection += yAxis * updown;
 }
 
+void SceneState::LerpCamera(float lateral, float forward, float updown)
+{
+    QVector3D xAxis, yAxis, zAxis;
+    m_cameraRotation.getAxes(&xAxis, &yAxis, &zAxis);
+    m_lerpCameraPosition += xAxis * lateral;
+    m_lerpCameraPosition += zAxis * forward;
+    m_lerpCameraPosition += yAxis * updown;
+}
+
 void SceneState::RotateCamera(float dx, float dy)
 {
     m_cameraYaw += dx;

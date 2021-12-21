@@ -1,8 +1,8 @@
 #include "SettingsDlg.h"
-#include <Storage/StorageAccount.h>
 #include <QCoreApplication>
 #include <QMessageBox>
 #include <Rendering/ArrAccount.h>
+#include <Storage/StorageAccount.h>
 
 SettingsDlg::SettingsDlg(StorageAccount* storage, ArrAccount* arrClient, QWidget* parent)
     : QDialog(parent)
