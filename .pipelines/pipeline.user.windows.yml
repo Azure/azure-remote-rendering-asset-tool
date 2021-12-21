@@ -33,7 +33,8 @@ version:
 #  major: 2
 #  minor: 0
 #  system: 'patch'
-#  exclude_commit: true
+  system: 'revisioncounter'
+  exclude_commit: true
 
 restore:
   commands:
