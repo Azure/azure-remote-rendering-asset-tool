@@ -123,9 +123,14 @@ void StartSessionDlg::on_StartSession_clicked()
 
 void StartSessionDlg::on_StopSession_clicked()
 {
+    auto res = QMessageBox::question(this, "Stop Session?", "After disconnecting from the session, should it also be stopped?\n\nIf the session keeps running, you can reconnect to it quickly, using its session ID. However, if you don't intend to connect to it again, it should be stopped to not incur further costs.", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
+
+    if (res == QMessageBox::Cancel)
+        return;
+
     StopSession->setEnabled(false);
 
-    if (QMessageBox::question(this, "Stop Session?", "After disconnecting from the session, should it also be stopped?\n\nIf the session keeps running, you can reconnect to it quickly, using its session ID. However, if you don't intend to connect to it again, it should be stopped to not incur further costs.", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+    if (res == QMessageBox::Yes)
     {
         m_arrSession->CloseSession(false);
     }

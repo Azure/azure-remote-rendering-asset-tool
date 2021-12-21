@@ -74,6 +74,8 @@ private Q_SLOTS:
 private:
     void LoadSettings();
     void SaveSettings();
+    void CheckForNewVersion();
+    void OnCheckForNewVersionResult(QString latestVersion);
 
     void FileUploadStatusCallback(int numFiles, bool hadErrors);
     void UpdateConversionsList();

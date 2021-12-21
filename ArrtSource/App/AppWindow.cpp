@@ -196,6 +196,11 @@ ArrtAppWindow::ArrtAppWindow()
                                dlg.exec();
                            });
     }
+
+#ifdef NDEBUG
+    QTimer::singleShot(500, this, [this]()
+                       { CheckForNewVersion(); });
+#endif
 }
 
 ArrtAppWindow::~ArrtAppWindow()
@@ -365,4 +370,49 @@ void ArrtAppWindow::closeEvent(QCloseEvent* e)
     m_storageAccount->DisconnectFromStorageAccount();
 
     QMainWindow::closeEvent(e);
+}
+
+void ArrtAppWindow::CheckForNewVersion()
+{
+    QPointer<ArrtAppWindow> thisPtr = this;
+
+    using namespace web::http;
+    client::http_client client(L"https://api.github.com/repos/Azure/azure-remote-rendering-asset-tool/releases/latest");
+    client.request(methods::GET).then([thisPtr, this](const pplx::task<http_response>& previousTask)
+                                      {
+                                          try
+                                          {
+                                              auto response = previousTask.get();
+                                              if (response.status_code() == status_codes::OK && thisPtr)
+                                              {
+                                                  auto json = response.extract_json().get();
+                                                  QString latestVersion = QString::fromStdWString(json.at(L"tag_name").as_string());
+
+                                                  QMetaObject::invokeMethod(QApplication::instance(), [this, latestVersion]()
+                                                                            { OnCheckForNewVersionResult(latestVersion); });
+                                              }
+                                          }
+                                          catch (...)
+                                          {
+                                              // in case of any exception, don't show the dialog
+                                          }
+                                      });
+}
+
+void ArrtAppWindow::OnCheckForNewVersionResult(QString latestVersion)
+{
+    const QString currentVersion(ARRT_VERSION);
+
+    if (latestVersion.startsWith('v', Qt::CaseInsensitive))
+    {
+        latestVersion = latestVersion.mid(1);
+    }
+
+    if (currentVersion != latestVersion)
+    {
+        if (QMessageBox::question(this, "New Version Available", QString("ARRT version %1 is now available.\n\nDo you want to open the GitHub release page?").arg(latestVersion), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+        {
+            QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/releases"));
+        }
+    }
 }
