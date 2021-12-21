@@ -61,12 +61,6 @@ ArrtAppWindow::ArrtAppWindow()
                                                        dlg.exec();
                                                    });
             act->setIcon(QIcon(":/ArrtApplication/Icons/settings.svg"));
-
-            //settingsMenu->addAction(tr("Camera Settings"), [this]()
-            //                        {
-            //                            CameraDlg dlg(m_model->getConfiguration(), this);
-            //                            dlg.exec();
-            //                        });
         }
 
         // help menu
@@ -74,7 +68,7 @@ ArrtAppWindow::ArrtAppWindow()
             QMenu* helpMenu = menuBar->addMenu("Help");
 
             helpMenu->addAction(tr("Send Feedback"), [this]()
-                                { QDesktopServices::openUrl(QUrl("https://feedback.azure.com/forums/928696-azure-remote-rendering")); });
+                                { QDesktopServices::openUrl(QUrl("https://feedback.azure.com/d365community/forum/46aa4cc0-fd24-ec11-b6e6-000d3a4f07b8")); });
             helpMenu->addAction(tr("File an Issue"), [this]()
                                 { QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/issues/new")); });
             helpMenu->addAction(tr("Open Releases"), [this]()
@@ -165,10 +159,6 @@ ArrtAppWindow::ArrtAppWindow()
                     ScenegraphView->selectionModel()->clearSelection();
                     m_scenegraphModel->RefreshModel();
                 }
-                //else if (m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected)
-                //{
-                //    QApplication::alert(QApplication::topLevelWidgets()[0], 2000);
-                //}
             });
 
     // when the selected conversion changes, the conversion pane (showing the details) has to be updated
