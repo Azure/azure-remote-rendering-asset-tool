@@ -31,6 +31,9 @@
          <height>0</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string/>
+       </property>
        <property name="accessibleName">
         <string>Storage container</string>
        </property>
@@ -38,6 +41,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="AddContainerButton">
+       <property name="toolTip">
+        <string>Create new storage container</string>
+       </property>
        <property name="accessibleName">
         <string>Add storage container</string>
        </property>
@@ -52,6 +58,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="DeleteContainerButton">
+       <property name="toolTip">
+        <string>Delete active storage container</string>
+       </property>
        <property name="accessibleName">
         <string>Delete storage container</string>
        </property>
@@ -66,6 +75,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="RefreshButton">
+       <property name="toolTip">
+        <string>Refresh display of storage container contents</string>
+       </property>
        <property name="accessibleName">
         <string>Refresh storage container</string>
        </property>
@@ -93,6 +105,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="AddFolderButton">
+       <property name="toolTip">
+        <string>Create new folder in currently selected folder.</string>
+       </property>
        <property name="accessibleName">
         <string>Create folder in selected folder</string>
        </property>
@@ -107,6 +122,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="DeleteItemButton">
+       <property name="toolTip">
+        <string>Delete currently selected file or folder.</string>
+       </property>
        <property name="accessibleName">
         <string>Delete selected item</string>
        </property>
@@ -121,6 +139,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="UploadFileButton">
+       <property name="toolTip">
+        <string>Upload one or multiple files into the currently selected folder.</string>
+       </property>
        <property name="text">
         <string>Upload File...</string>
        </property>
@@ -132,6 +153,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="UploadFolderButton">
+       <property name="toolTip">
+        <string>Upload a folder with all its contents into the currently selected folder.</string>
+       </property>
        <property name="text">
         <string>Upload Folder...</string>
        </property>

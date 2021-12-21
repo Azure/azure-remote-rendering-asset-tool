@@ -44,6 +44,7 @@ private Q_SLOTS:
     void on_LoadModelSasButton_clicked();
     void on_CameraOptionsButton_clicked();
     void on_ClearLogButton_clicked();
+    void on_ModelScaleSpinner_valueChanged(double d);
 
     // Material UI
     void on_AlbedoColorPicker_ColorChanged(const QColor& newColor);
@@ -74,6 +75,8 @@ private Q_SLOTS:
 private:
     void LoadSettings();
     void SaveSettings();
+    void CheckForNewVersion();
+    void OnCheckForNewVersionResult(QString latestVersion);
 
     void FileUploadStatusCallback(int numFiles, bool hadErrors);
     void UpdateConversionsList();

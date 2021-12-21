@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Storage/IncludeAzureStorage.h>
 #include <QAbstractItemModel>
+#include <Storage/IncludeAzureStorage.h>
 #include <vector>
 
 class StorageAccount;

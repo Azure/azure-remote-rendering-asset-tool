@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>442</width>
-    <height>317</height>
+    <width>457</width>
+    <height>342</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -163,7 +163,7 @@
    <item>
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Control scheme:&lt;/p&gt;&lt;p&gt;1. To rotate the camera: &lt;span style=&quot; font-weight:600;&quot;&gt;Right-click&lt;/span&gt; into viewport and&lt;span style=&quot; font-weight:600;&quot;&gt; drag the mouse&lt;/span&gt;&lt;/p&gt;&lt;p&gt;2. To move the camera: &lt;span style=&quot; font-weight:600;&quot;&gt;Hold WASD&lt;/span&gt; or the arrow keys&lt;/p&gt;&lt;p&gt;3. To move camera up/down: &lt;span style=&quot; font-weight:600;&quot;&gt;Hold Q/E&lt;/span&gt;&lt;/p&gt;&lt;p&gt;4. To select an object: &lt;span style=&quot; font-weight:600;&quot;&gt;Left-click&lt;/span&gt; onto object in viewport&lt;/p&gt;&lt;p&gt;5. To focus the camera on the selected object: &lt;span style=&quot; font-weight:600;&quot;&gt;Press F&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Control scheme:&lt;/p&gt;&lt;p&gt;1. To rotate the camera: &lt;span style=&quot; font-weight:600;&quot;&gt;Right-click&lt;/span&gt; into viewport and&lt;span style=&quot; font-weight:600;&quot;&gt; drag the mouse&lt;/span&gt;&lt;/p&gt;&lt;p&gt;2. To move the camera: &lt;span style=&quot; font-weight:600;&quot;&gt;Hold WASD&lt;/span&gt; or the arrow keys&lt;/p&gt;&lt;p&gt;3. To move camera up/down: &lt;span style=&quot; font-weight:600;&quot;&gt;Hold Q/E&lt;/span&gt;&lt;/p&gt;&lt;p&gt;4. &lt;span style=&quot; font-weight:600;&quot;&gt;Hold SHIFT&lt;/span&gt; to speed up camera movement by 10x&lt;/p&gt;&lt;p&gt;5. To select an object: &lt;span style=&quot; font-weight:600;&quot;&gt;Left-click&lt;/span&gt; onto object in viewport&lt;/p&gt;&lt;p&gt;6. To focus the camera on the selected object: &lt;span style=&quot; font-weight:600;&quot;&gt;Press F&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>

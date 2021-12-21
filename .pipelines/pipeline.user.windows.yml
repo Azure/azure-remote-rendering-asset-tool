@@ -30,9 +30,10 @@ static_analysis_options:
 # see https://dev.azure.com/onebranch/OneBranch/_wiki/wikis/OneBranch.wiki/4779/Pipeline-YAML-Configuration?anchor=annotated-example
 version:
   name: 'ARRT'
-  major: 2
-  minor: 0
-  system: 'patch'
+#  major: 2
+#  minor: 0
+#  system: 'patch'
+  system: 'revisioncounter'
   exclude_commit: true
 
 restore:

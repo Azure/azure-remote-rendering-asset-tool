@@ -83,6 +83,7 @@ public:
     void RemoveModel(size_t idx);
     float GetModelLoadingProgress() const;
     const std::deque<LoadedModel>& GetLoadedModels() const { return m_loadedModels; }
+    void SetModelScale(float scale);
 
     void EnableSelectionOutline(const RR::ApiHandle<RR::Entity>& entity, bool enable);
     void GetSelectedEntities(std::vector<RR::ApiHandle<RR::Entity>>& selected) const;
@@ -103,6 +104,8 @@ private:
     void UpdatePerformanceStatistics();
     // start/stop internal timers based on the session state
     void ConfigureSessionPropertiesUpdateTimer();
+    void CheckEntityBounds(RR::ApiHandle<RR::Entity> entity);
+    void CheckEntityBoundsResult(RR::Bounds bounds);
 
     RR::ApiHandle<RR::RenderingConnection> GetRenderingConnection();
 
@@ -127,6 +130,7 @@ private:
     RR::event_token m_statusChangedToken;
     RR::event_token m_messageLoggedToken;
 
+    float m_modelScale = 1.0f;
     std::vector<float> m_loadingProgress;
     std::deque<LoadedModel> m_loadedModels;
     std::map<unsigned long long, RR::ApiHandle<RR::Entity>> m_selectedEntities;

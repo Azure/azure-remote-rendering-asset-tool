@@ -62,12 +62,12 @@ if (NOT "$ENV{NUGET_RESTORE}" STREQUAL "false")
 endif()
 
 # forward version from build pipeline
-if(DEFINED ENV{ARRT_VERSION})
-    set(ARRT_VERSION $ENV{ARRT_VERSION})
-    message("ARRT Version = ${ARRT_VERSION}")
-    add_definitions(-DARRT_VERSION="${ARRT_VERSION}")
-    set(CMAKE_SUPPRESS_REGENERATION true)
-endif()
+#if(DEFINED ENV{ARRT_VERSION})
+#    set(ARRT_VERSION $ENV{ARRT_VERSION})
+#    message("ARRT Version = ${ARRT_VERSION}")
+#    add_definitions(-DARRT_VERSION="${ARRT_VERSION}")
+#    set(CMAKE_SUPPRESS_REGENERATION true)
+#endif()
 
 set( CMAKE_CONFIGURATION_TYPES Debug;Release )
 

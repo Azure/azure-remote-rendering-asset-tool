@@ -61,12 +61,6 @@ ArrtAppWindow::ArrtAppWindow()
                                                        dlg.exec();
                                                    });
             act->setIcon(QIcon(":/ArrtApplication/Icons/settings.svg"));
-
-            //settingsMenu->addAction(tr("Camera Settings"), [this]()
-            //                        {
-            //                            CameraDlg dlg(m_model->getConfiguration(), this);
-            //                            dlg.exec();
-            //                        });
         }
 
         // help menu
@@ -74,7 +68,7 @@ ArrtAppWindow::ArrtAppWindow()
             QMenu* helpMenu = menuBar->addMenu("Help");
 
             helpMenu->addAction(tr("Send Feedback"), [this]()
-                                { QDesktopServices::openUrl(QUrl("https://feedback.azure.com/forums/928696-azure-remote-rendering")); });
+                                { QDesktopServices::openUrl(QUrl("https://feedback.azure.com/d365community/forum/46aa4cc0-fd24-ec11-b6e6-000d3a4f07b8")); });
             helpMenu->addAction(tr("File an Issue"), [this]()
                                 { QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/issues/new")); });
             helpMenu->addAction(tr("Open Releases"), [this]()
@@ -165,10 +159,6 @@ ArrtAppWindow::ArrtAppWindow()
                     ScenegraphView->selectionModel()->clearSelection();
                     m_scenegraphModel->RefreshModel();
                 }
-                //else if (m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected)
-                //{
-                //    QApplication::alert(QApplication::topLevelWidgets()[0], 2000);
-                //}
             });
 
     // when the selected conversion changes, the conversion pane (showing the details) has to be updated
@@ -206,6 +196,11 @@ ArrtAppWindow::ArrtAppWindow()
                                dlg.exec();
                            });
     }
+
+#ifdef NDEBUG
+    QTimer::singleShot(500, this, [this]()
+                       { CheckForNewVersion(); });
+#endif
 }
 
 ArrtAppWindow::~ArrtAppWindow()
@@ -312,17 +307,16 @@ void ArrtAppWindow::onUpdateStatusBar()
     ChangeModelButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     LoadModelSasButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     CameraOptionsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    InspectorButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     ClearModelsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
 
     if (m_arrSession->GetSessionStatus().IsRunning())
     {
         EditSessionButton->setIcon(QIcon(":/ArrtApplication/Icons/stop.svg"));
-        InspectorButton->setEnabled(true);
     }
     else
     {
         EditSessionButton->setIcon(QIcon(":/ArrtApplication/Icons/start.svg"));
-        InspectorButton->setEnabled(false);
     }
 
     float fModelLoad = m_arrSession->GetModelLoadingProgress();
@@ -375,4 +369,49 @@ void ArrtAppWindow::closeEvent(QCloseEvent* e)
     m_storageAccount->DisconnectFromStorageAccount();
 
     QMainWindow::closeEvent(e);
+}
+
+void ArrtAppWindow::CheckForNewVersion()
+{
+    QPointer<ArrtAppWindow> thisPtr = this;
+
+    using namespace web::http;
+    client::http_client client(L"https://api.github.com/repos/Azure/azure-remote-rendering-asset-tool/releases/latest");
+    client.request(methods::GET).then([thisPtr, this](const pplx::task<http_response>& previousTask)
+                                      {
+                                          try
+                                          {
+                                              auto response = previousTask.get();
+                                              if (response.status_code() == status_codes::OK && thisPtr)
+                                              {
+                                                  auto json = response.extract_json().get();
+                                                  QString latestVersion = QString::fromStdWString(json.at(L"tag_name").as_string());
+
+                                                  QMetaObject::invokeMethod(QApplication::instance(), [this, latestVersion]()
+                                                                            { OnCheckForNewVersionResult(latestVersion); });
+                                              }
+                                          }
+                                          catch (...)
+                                          {
+                                              // in case of any exception, don't show the dialog
+                                          }
+                                      });
+}
+
+void ArrtAppWindow::OnCheckForNewVersionResult(QString latestVersion)
+{
+    const QString currentVersion(ARRT_VERSION);
+
+    if (latestVersion.startsWith('v', Qt::CaseInsensitive))
+    {
+        latestVersion = latestVersion.mid(1);
+    }
+
+    if (currentVersion != latestVersion)
+    {
+        if (QMessageBox::question(this, "New Version Available", QString("ARRT version %1 is now available.\n\nDo you want to open the GitHub release page?").arg(latestVersion), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+        {
+            QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/releases"));
+        }
+    }
 }

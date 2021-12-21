@@ -134,6 +134,22 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
+void ViewportWidget::wheelEvent(QWheelEvent* event)
+{
+    const float cameraSpeed = m_sceneState->GetArrOptions()->GetCameraSpeedMetersPerSecond() * 0.3f;
+    const float boost = (m_pressedKeys.contains(Qt::Key_Shift) ? 10.0f : 1.0f);
+    const float factor = boost * cameraSpeed;
+
+    if (event->angleDelta().y() > 0)
+    {
+        m_sceneState->LerpCamera(0, factor, 0);
+    }
+    else if (event->angleDelta().y() < 0)
+    {
+        m_sceneState->LerpCamera(0, -factor, 0);
+    }
+}
+
 void ViewportWidget::UpdateInput()
 {
     if (m_sceneState == nullptr)
@@ -164,12 +180,12 @@ void ViewportWidget::UpdateInput()
         camMoveSideways += 1.0f;
     }
 
-    if (m_pressedKeys.contains(Qt::Key_Q))
+    if (m_pressedKeys.contains(Qt::Key_Q) || m_pressedKeys.contains(Qt::Key_PageUp))
     {
         camMoveUp += 1.0f;
     }
 
-    if (m_pressedKeys.contains(Qt::Key_E))
+    if (m_pressedKeys.contains(Qt::Key_E) || m_pressedKeys.contains(Qt::Key_PageDown))
     {
         camMoveUp -= 1.0f;
     }
@@ -180,7 +196,6 @@ void ViewportWidget::UpdateInput()
     }
 
     const float cameraSpeed = m_sceneState->GetArrOptions()->GetCameraSpeedMetersPerSecond();
-
     const float boost = (m_pressedKeys.contains(Qt::Key_Shift) ? 10.0f : 1.0f);
     const float factor = boost * cameraSpeed;
 

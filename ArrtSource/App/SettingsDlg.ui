@@ -195,7 +195,7 @@
          <item row="2" column="1">
           <widget class="QLineEdit" name="StorageEndpoint">
            <property name="toolTip">
-            <string>The endpoint URL for the storage account.</string>
+            <string>The endpoint URL for the storage account. For example: https://&lt;name&gt;.blob.core.windows.net</string>
            </property>
            <property name="accessibleName">
             <string>Storage Blob Endpoint</string>

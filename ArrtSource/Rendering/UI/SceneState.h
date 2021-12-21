@@ -72,6 +72,7 @@ public:
     void SetSession(RR::ApiHandle<RR::RenderingSession> session, ArrSession* arrSession);
 
     void MoveCamera(float lateral, float forward, float updown);
+    void LerpCamera(float lateral, float forward, float updown);
     void RotateCamera(float dx, float dy);
     void FocusOnSelectedEntity();
     void FocusOnEntity(RR::ApiHandle<RR::Entity> entity);

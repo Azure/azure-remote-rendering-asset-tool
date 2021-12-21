@@ -889,6 +889,19 @@
            </widget>
           </item>
           <item>
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
            <widget class="QPushButton" name="ChangeModelButton">
             <property name="text">
              <string>Load Model from Storage...</string>
@@ -918,6 +931,29 @@
             <property name="icon">
              <iconset resource="../Resources/ArrtApplication.qrc">
               <normaloff>:/ArrtApplication/Icons/remove.svg</normaloff>:/ArrtApplication/Icons/remove.svg</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_28">
+            <property name="text">
+             <string>Model Scale:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="ModelScaleSpinner">
+            <property name="decimals">
+             <number>3</number>
+            </property>
+            <property name="maximum">
+             <double>999.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -1719,10 +1755,11 @@
   <tabstop>ConversionNameInput</tabstop>
   <tabstop>SourceAssetLine</tabstop>
   <tabstop>SelectSourceButton</tabstop>
-  <tabstop>OutputFolderLine</tabstop>
   <tabstop>SelectOutputFolderButton</tabstop>
+  <tabstop>OutputFolderLine</tabstop>
   <tabstop>ConversionOptionsCheckbox</tabstop>
   <tabstop>OptionsArea</tabstop>
+  <tabstop>ResetAdvancedButton</tabstop>
   <tabstop>ScalingSpinbox</tabstop>
   <tabstop>RecenterToOriginCheckbox</tabstop>
   <tabstop>DefaultSidednessCombo</tabstop>
@@ -1744,11 +1781,48 @@
   <tabstop>VertexTangentCombo</tabstop>
   <tabstop>VertexBitangentCombo</tabstop>
   <tabstop>TexCoord0Combo</tabstop>
-  <tabstop>TexCoord1Combo</tabstop>
   <tabstop>StartConversionButton</tabstop>
   <tabstop>EditSessionButton</tabstop>
   <tabstop>ChangeModelButton</tabstop>
+  <tabstop>LoadModelSasButton</tabstop>
+  <tabstop>ClearModelsButton</tabstop>
+  <tabstop>ModelScaleSpinner</tabstop>
+  <tabstop>CameraOptionsButton</tabstop>
   <tabstop>InspectorButton</tabstop>
+  <tabstop>ScenegraphView</tabstop>
+  <tabstop>MaterialsList</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>TransparentCheck</tabstop>
+  <tabstop>WriteDepthCheck</tabstop>
+  <tabstop>TransparencyModeCombo</tabstop>
+  <tabstop>AlphaClipCheck</tabstop>
+  <tabstop>AlphaThresholdSpinner</tabstop>
+  <tabstop>DoubleSidedCheck</tabstop>
+  <tabstop>SpecularCheck</tabstop>
+  <tabstop>AlbedoColorPicker</tabstop>
+  <tabstop>AlbedoTexture</tabstop>
+  <tabstop>VertexColorCheck</tabstop>
+  <tabstop>VertexMixSpinner</tabstop>
+  <tabstop>VertexAlphaModeCombo</tabstop>
+  <tabstop>LogList</tabstop>
+  <tabstop>RoughnessSpinner</tabstop>
+  <tabstop>RoughnessMap</tabstop>
+  <tabstop>MetalnessSpinner</tabstop>
+  <tabstop>MetalnessMap</tabstop>
+  <tabstop>AoScaleSpinner</tabstop>
+  <tabstop>AoMap</tabstop>
+  <tabstop>TextureScaleX</tabstop>
+  <tabstop>TextureScaleY</tabstop>
+  <tabstop>TextureOffsetX</tabstop>
+  <tabstop>TextureOffsetY</tabstop>
+  <tabstop>FadeCheck</tabstop>
+  <tabstop>FadeOutSpinner</tabstop>
+  <tabstop>FresnelCheck</tabstop>
+  <tabstop>FresnelColorPicker</tabstop>
+  <tabstop>FresnelExponentSpinner</tabstop>
+  <tabstop>TexCoord1Combo</tabstop>
+  <tabstop>NormalMap</tabstop>
+  <tabstop>ClearLogButton</tabstop>
  </tabstops>
  <resources>
   <include location="../Resources/ArrtApplication.qrc"/>
