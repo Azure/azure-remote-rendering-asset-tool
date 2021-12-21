@@ -307,17 +307,16 @@ void ArrtAppWindow::onUpdateStatusBar()
     ChangeModelButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     LoadModelSasButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     CameraOptionsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    InspectorButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     ClearModelsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
 
     if (m_arrSession->GetSessionStatus().IsRunning())
     {
         EditSessionButton->setIcon(QIcon(":/ArrtApplication/Icons/stop.svg"));
-        InspectorButton->setEnabled(true);
     }
     else
     {
         EditSessionButton->setIcon(QIcon(":/ArrtApplication/Icons/start.svg"));
-        InspectorButton->setEnabled(false);
     }
 
     float fModelLoad = m_arrSession->GetModelLoadingProgress();

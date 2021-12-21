@@ -649,7 +649,10 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
         {
             if (loadResult.valid())
             {
-                const auto root = loadResult->GetRoot();
+                auto root = loadResult->GetRoot();
+
+                const float scale = thisPtr->m_modelScale;
+                root->SetScale(RR::Float3{scale, scale, scale});
 
                 thisPtr->m_loadedModels.push_back({});
                 auto& res = thisPtr->m_loadedModels.back();
@@ -711,6 +714,16 @@ float ArrSession::GetModelLoadingProgress() const
     }
 
     return totalProgress;
+}
+
+void ArrSession::SetModelScale(float scale)
+{
+    m_modelScale = scale;
+
+    for (auto& model : m_loadedModels)
+    {
+        model.m_LoadResult->GetRoot()->SetScale(RR::Float3{m_modelScale, m_modelScale, m_modelScale});
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////

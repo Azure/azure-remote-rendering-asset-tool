@@ -118,3 +118,11 @@ void ArrtAppWindow::onEntityDoubleClicked(const QModelIndex& index)
         m_sceneState->FocusOnEntity(m_scenegraphModel->GetEntityHandle(index));
     }
 }
+
+void ArrtAppWindow::on_ModelScaleSpinner_valueChanged(double d)
+{
+    if (m_arrSession)
+    {
+        m_arrSession->SetModelScale((float)d);
+    }
+}
