@@ -20,7 +20,7 @@
 #include <Rendering/UI/ViewportWidget.h>
 #include <Storage/FileUploader.h>
 #include <Storage/StorageAccount.h>
-#include <Utils/LogHelpers.h>
+#include <Utils/Logging.h>
 #include <qevent.h>
 
 ArrtAppWindow* ArrtAppWindow::s_instance = nullptr;
@@ -219,7 +219,7 @@ void ArrtAppWindow::onUpdateStatusBar()
 
     switch (m_storageAccount->GetConnectionStatus())
     {
-        case AccountConnectionStatus::Authenticated:
+        case StorageConnectionStatus::Authenticated:
             if (m_numFileUploads > 0)
             {
                 m_statusStorageAccount->setText(QString("<html><head/><body><p>Storage Account: <span style=\"color:#ffaa00;\">Uploading %1 files</span></p></body></html>").arg(m_numFileUploads));
@@ -229,13 +229,13 @@ void ArrtAppWindow::onUpdateStatusBar()
                 m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#00aa00;\">Connected</span></p></body></html>");
             }
             break;
-        case AccountConnectionStatus::CheckingCredentials:
+        case StorageConnectionStatus::CheckingCredentials:
             m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#ffaa00;\">Checking...</span></p></body></html>");
             break;
-        case AccountConnectionStatus::InvalidCredentials:
+        case StorageConnectionStatus::InvalidCredentials:
             m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#aa0000;\">Invalid Credentials</span></p></body></html>");
             break;
-        case AccountConnectionStatus::NotAuthenticated:
+        case StorageConnectionStatus::NotAuthenticated:
             m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#7e7e7e;\">Not Connected</span></p></body></html>");
             break;
         default:
@@ -245,7 +245,7 @@ void ArrtAppWindow::onUpdateStatusBar()
 
     switch (m_arrAclient->GetConnectionStatus())
     {
-        case AccountConnectionStatus::Authenticated:
+        case ArrConnectionStatus::Authenticated:
         {
             const uint32_t activeConversions = m_conversionManager->GetNumActiveConversions();
 
@@ -260,13 +260,13 @@ void ArrtAppWindow::onUpdateStatusBar()
             break;
         }
 
-        case AccountConnectionStatus::CheckingCredentials:
+        case ArrConnectionStatus::CheckingCredentials:
             m_statusArrAccount->setText("<html><head/><body><p>ARR Account: <span style=\"color:#ffaa00;\">Checking...</span></p></body></html>");
             break;
-        case AccountConnectionStatus::InvalidCredentials:
+        case ArrConnectionStatus::InvalidCredentials:
             m_statusArrAccount->setText("<html><head/><body><p>ARR Account: <span style=\"color:#aa0000;\">Invalid Credentials</span></p></body></html>");
             break;
-        case AccountConnectionStatus::NotAuthenticated:
+        case ArrConnectionStatus::NotAuthenticated:
             m_statusArrAccount->setText("<html><head/><body><p>ARR: <span style=\"color:#7e7e7e;\">Not Connected</span></p></body></html>");
             break;
     }
@@ -302,7 +302,7 @@ void ArrtAppWindow::onUpdateStatusBar()
             break;
     }
 
-    EditSessionButton->setEnabled(m_arrAclient->GetConnectionStatus() == AccountConnectionStatus::Authenticated);
+    EditSessionButton->setEnabled(m_arrAclient->GetConnectionStatus() == ArrConnectionStatus::Authenticated);
 
     ChangeModelButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     LoadModelSasButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);

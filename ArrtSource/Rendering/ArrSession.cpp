@@ -8,7 +8,7 @@
 #include <Rendering/ArrSession.h>
 #include <Rendering/ArrSettings.h>
 #include <Rendering/UI/SceneState.h>
-#include <Utils/LogHelpers.h>
+#include <Utils/Logging.h>
 #include <windows.h>
 
 using namespace std::chrono_literals;
@@ -380,7 +380,7 @@ void ArrSession::ConnectToSessionRuntimeResult(RR::Status status, RR::Connection
     else
     {
         m_arrSession->Connection()->SetLogLevel(RR::LogLevel::Information);
-        m_messageLoggedToken = m_arrSession->Connection()->MessageLogged(&qArrSdkMessage).value();
+        m_messageLoggedToken = m_arrSession->Connection()->MessageLogged(&ForwardArrLogMsgToQt).value();
     }
 
     m_connectingInProgress = false;

@@ -8,7 +8,7 @@
 #include <QSettings>
 #include <QStandardPaths>
 #include <Rendering/ArrAccount.h>
-#include <Utils/LogHelpers.h>
+#include <Utils/Logging.h>
 
 ArrAccount::ArrAccount()
 {
@@ -145,7 +145,7 @@ void ArrAccount::SetSettings(const QString& accountId, const QString& accountKey
 
 void ArrAccount::ConnectToArrAccount()
 {
-    if (m_connectionStatus == AccountConnectionStatus::Authenticated)
+    if (m_connectionStatus == ArrConnectionStatus::Authenticated)
         return;
 
     DisconnectFromArrAccount();
@@ -153,7 +153,7 @@ void ArrAccount::ConnectToArrAccount()
     if (m_region.isEmpty() || m_accountId.isEmpty() || m_accountKey.isEmpty() || m_accountDomain.isEmpty())
         return;
 
-    SetConnectionStatus(AccountConnectionStatus::CheckingCredentials);
+    SetConnectionStatus(ArrConnectionStatus::CheckingCredentials);
 
     RR::SessionConfiguration fi{};
     fi.AccountDomain = m_accountDomain.toStdString();
@@ -162,7 +162,7 @@ void ArrAccount::ConnectToArrAccount()
     fi.AccountKey = m_accountKey.toStdString();
 
     auto client = RR::ApiHandle(RR::RemoteRenderingClient(fi));
-    m_messageLoggedToken = client->MessageLogged(&qArrSdkMessage).value();
+    m_messageLoggedToken = client->MessageLogged(&ForwardArrLogMsgToQt).value();
     client->SetLogLevel(RR::LogLevel::Debug);
 
     m_querySessionsStatus = RR::Status::InProgress;
@@ -198,11 +198,11 @@ void ArrAccount::GetCurrentRenderingSessionsResult(RR::ApiHandle<RR::RemoteRende
         std::vector<Microsoft::Azure::RemoteRendering::RenderingSessionProperties> sessions;
         result->GetSessionProperties(sessions);
 
-        SetConnectionStatus(AccountConnectionStatus::Authenticated);
+        SetConnectionStatus(ArrConnectionStatus::Authenticated);
     }
     else
     {
-        SetConnectionStatus(AccountConnectionStatus::InvalidCredentials);
+        SetConnectionStatus(ArrConnectionStatus::InvalidCredentials);
 
         qCritical(LoggingCategory::RenderingSession) << "Failed to get rendering sessions, account credentials might be incorrect: " << errorCode;
     }
@@ -234,7 +234,7 @@ void ArrAccount::DisconnectFromArrAccount()
         m_messageLoggedToken.invalidate();
     }
 
-    SetConnectionStatus(AccountConnectionStatus::NotAuthenticated);
+    SetConnectionStatus(ArrConnectionStatus::NotAuthenticated);
     m_rrClient = nullptr;
 }
 
@@ -285,7 +285,7 @@ void ArrAccount::GetAvailableAccountDomains(std::vector<ArrAccountDomainInfo>& d
               { return lhs.m_name < rhs.m_name; });
 }
 
-void ArrAccount::SetConnectionStatus(AccountConnectionStatus newStatus)
+void ArrAccount::SetConnectionStatus(ArrConnectionStatus newStatus)
 {
     if (m_connectionStatus != newStatus)
     {

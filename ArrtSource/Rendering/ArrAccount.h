@@ -2,7 +2,6 @@
 
 #include <QObject>
 #include <Rendering/IncludeAzureRemoteRendering.h>
-#include <Utils/ConnectionStatus.h>
 #include <condition_variable>
 
 namespace RR = Microsoft::Azure::RemoteRendering;
@@ -22,6 +21,14 @@ struct ArrAccountDomainInfo
 {
     QString m_name;
     QString m_url;
+};
+
+enum class ArrConnectionStatus
+{
+    Authenticated,
+    NotAuthenticated,
+    CheckingCredentials,
+    InvalidCredentials
 };
 
 class ArrAccount : public QObject
@@ -47,14 +54,14 @@ public:
     QString GetAccountDomain() const { return m_accountDomain; }
     QString GetRegion() const { return m_region; }
 
-    AccountConnectionStatus GetConnectionStatus() const { return m_connectionStatus; }
+    ArrConnectionStatus GetConnectionStatus() const { return m_connectionStatus; }
     RR::ApiHandle<RR::RemoteRenderingClient>& GetClient() { return m_rrClient; }
 
     void GetAvailableRegions(std::vector<ArrRegionInfo>& regions);
     void GetAvailableAccountDomains(std::vector<ArrAccountDomainInfo>& domains);
 
 private:
-    void SetConnectionStatus(AccountConnectionStatus newStatus);
+    void SetConnectionStatus(ArrConnectionStatus newStatus);
     void GetCurrentRenderingSessionsResult(RR::ApiHandle<RR::RemoteRenderingClient> client, RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesArrayResult> result);
 
     QString m_region;
@@ -65,7 +72,7 @@ private:
     RR::ApiHandle<RR::RemoteRenderingClient> m_rrClient;
     RR::Status m_querySessionsStatus = RR::Status::OK;
 
-    AccountConnectionStatus m_connectionStatus = AccountConnectionStatus::NotAuthenticated;
+    ArrConnectionStatus m_connectionStatus = ArrConnectionStatus::NotAuthenticated;
 
     std::condition_variable m_condVar;
     std::mutex m_mutex;

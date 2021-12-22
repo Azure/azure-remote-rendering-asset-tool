@@ -3,7 +3,7 @@
 #include <QPointer>
 #include <QSettings>
 #include <Storage/StorageAccount.h>
-#include <Utils/LogHelpers.h>
+#include <Utils/Logging.h>
 #include <cpprest/rawptrstream.h>
 
 using namespace azure::storage;
@@ -55,7 +55,7 @@ void StorageAccount::SetSettings(const QString& accountName, const QString& acco
 
 void StorageAccount::ConnectToStorageAccount()
 {
-    if (m_connectionStatus == AccountConnectionStatus::Authenticated)
+    if (m_connectionStatus == StorageConnectionStatus::Authenticated)
         return;
 
     try
@@ -65,7 +65,7 @@ void StorageAccount::ConnectToStorageAccount()
     catch (std::exception& /*e*/)
     {
         m_blobClient.reset();
-        SetConnectionStatus(AccountConnectionStatus::InvalidCredentials);
+        SetConnectionStatus(StorageConnectionStatus::InvalidCredentials);
         return;
     }
 
@@ -77,7 +77,7 @@ void StorageAccount::DisconnectFromStorageAccount()
     if (m_blobClient == nullptr)
         return;
 
-    SetConnectionStatus(AccountConnectionStatus::NotAuthenticated);
+    SetConnectionStatus(StorageConnectionStatus::NotAuthenticated);
     m_blobClient = nullptr;
 }
 
@@ -248,7 +248,7 @@ void StorageAccount::Reconnect()
         return;
     }
 
-    SetConnectionStatus(AccountConnectionStatus::InvalidCredentials);
+    SetConnectionStatus(StorageConnectionStatus::InvalidCredentials);
 
     std::thread([this, storageUrl = m_endpointUrl, storageCredentials = m_storageCredentials]()
                 {
@@ -270,13 +270,13 @@ void StorageAccount::Reconnect()
                     QMetaObject::invokeMethod(QApplication::instance(), [this, storageIsValid, client = std::move(client)]() mutable
                                               {
                                                   m_blobClient = std::move(client);
-                                                  SetConnectionStatus(storageIsValid ? AccountConnectionStatus::Authenticated : AccountConnectionStatus::InvalidCredentials);
+                                                  SetConnectionStatus(storageIsValid ? StorageConnectionStatus::Authenticated : StorageConnectionStatus::InvalidCredentials);
                                               });
                 })
         .detach();
 }
 
-void StorageAccount::SetConnectionStatus(AccountConnectionStatus newStatus)
+void StorageAccount::SetConnectionStatus(StorageConnectionStatus newStatus)
 {
     if (m_connectionStatus != newStatus)
     {

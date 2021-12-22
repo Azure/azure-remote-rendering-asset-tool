@@ -3,7 +3,7 @@
 #include <QStringList>
 #include <Storage/FileUploader.h>
 #include <Storage/IncludeAzureStorage.h>
-#include <Utils/LogHelpers.h>
+#include <Utils/Logging.h>
 
 FileUploader::FileUploader(UpdateCallback callback)
     : m_remainingFilesCallback(std::move(callback))

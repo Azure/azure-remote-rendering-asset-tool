@@ -3,7 +3,14 @@
 #include <QObject>
 #include <Storage/FileUploader.h>
 #include <Storage/IncludeAzureStorage.h>
-#include <Utils/ConnectionStatus.h>
+
+enum class StorageConnectionStatus
+{
+    Authenticated,
+    NotAuthenticated,
+    CheckingCredentials,
+    InvalidCredentials
+};
 
 class StorageAccount : public QObject
 {
@@ -38,7 +45,7 @@ public:
     QString GetAccountKey() const { return m_accountKey; }
     QString GetEndpointUrl() const { return m_endpointUrl; }
 
-    AccountConnectionStatus GetConnectionStatus() const { return m_connectionStatus; }
+    StorageConnectionStatus GetConnectionStatus() const { return m_connectionStatus; }
 
     QString GetSasToken(const azure::storage::storage_uri& uri, int accessTypeMask = azure::storage::blob_shared_access_policy::permissions::read, unsigned int minutes = 60 * 24) const;
     QString GetSasUrl(const azure::storage::storage_uri& uri, int accessTypeMask = azure::storage::blob_shared_access_policy::permissions::read, unsigned int minutes = 60 * 24) const;
@@ -55,10 +62,10 @@ public:
     azure::storage::cloud_blob_container GetContainerFromName(const QString& containerName) const;
 
 private:
-    void SetConnectionStatus(AccountConnectionStatus newStatus);
+    void SetConnectionStatus(StorageConnectionStatus newStatus);
     void Reconnect();
 
-    AccountConnectionStatus m_connectionStatus = AccountConnectionStatus::NotAuthenticated;
+    StorageConnectionStatus m_connectionStatus = StorageConnectionStatus::NotAuthenticated;
 
     QString m_accountName;
     QString m_accountKey;

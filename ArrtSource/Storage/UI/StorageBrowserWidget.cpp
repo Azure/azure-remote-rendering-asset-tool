@@ -147,7 +147,7 @@ void StorageBrowserWidget::on_DeleteContainerButton_clicked()
 
 void StorageBrowserWidget::UpdateUI()
 {
-    if (m_storageAccount == nullptr || m_storageAccount->GetConnectionStatus() != AccountConnectionStatus::Authenticated)
+    if (m_storageAccount == nullptr || m_storageAccount->GetConnectionStatus() != StorageConnectionStatus::Authenticated)
     {
         setEnabled(false);
         return;

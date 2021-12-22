@@ -68,9 +68,9 @@ int WinMain(HINSTANCE, HINSTANCE, char*, int)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, false);
     QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
 
-    QCoreApplication::setApplicationName("ARRT");
+    QCoreApplication::setApplicationName(VER_PRODUCTNAME);
     QCoreApplication::setOrganizationName(VER_COMPANY);
-    QCoreApplication::setOrganizationDomain("https://github.com/Azure/azure-remote-rendering-asset-tool");
+    QCoreApplication::setOrganizationDomain("https://github.com/azure/azure-remote-rendering-asset-tool");
     QCoreApplication::setApplicationVersion(ARRT_VERSION);
 
     int argc = 0;
@@ -81,8 +81,5 @@ int WinMain(HINSTANCE, HINSTANCE, char*, int)
     ArrtAppWindow* appWindow = new ArrtAppWindow();
     appWindow->show();
 
-    int ret = app.exec();
-
-
-    return ret;
+    return app.exec();
 }
