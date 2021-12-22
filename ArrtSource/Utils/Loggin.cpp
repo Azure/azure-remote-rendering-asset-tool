@@ -133,7 +133,7 @@ QString toString(const RR::Status& arrStatus)
             case RR::Status::KeyNotFound:
                 return "KeyNotFound";
             default:
-                return (int)arrStatus;
+                return QString("ARR::Status=%1").arg((int)arrStatus);
         }
     }
 }
@@ -143,13 +143,13 @@ QString toString(const RR::ConnectionStatus& connectionStatus)
     switch (connectionStatus)
     {
         case RR::ConnectionStatus::Disconnected:
-            return QCoreApplication::tr("Disconnected");
+            return "Disconnected";
         case RR::ConnectionStatus::Connecting:
-            return QCoreApplication::tr("Connecting");
+            return "Connecting";
         case RR::ConnectionStatus::Connected:
-            return QCoreApplication::tr("Connected");
+            return "Connected";
     }
-    return QCoreApplication::tr("ConnectionStatus:Unknown");
+    return "ConnectionStatus:Unknown";
 }
 
 QString toString(const RR::RenderingSessionStatus& sessionStatus)
@@ -157,19 +157,19 @@ QString toString(const RR::RenderingSessionStatus& sessionStatus)
     switch (sessionStatus)
     {
         case RR::RenderingSessionStatus::Unknown:
-            return QCoreApplication::tr("Unknown");
+            return "Unknown";
         case RR::RenderingSessionStatus::Starting:
-            return QCoreApplication::tr("Starting");
+            return "Starting";
         case RR::RenderingSessionStatus::Ready:
-            return QCoreApplication::tr("Ready");
+            return "Ready";
         case RR::RenderingSessionStatus::Stopped:
-            return QCoreApplication::tr("Stopped");
+            return "Stopped";
         case RR::RenderingSessionStatus::Expired:
-            return QCoreApplication::tr("Expired");
+            return "Expired";
         case RR::RenderingSessionStatus::Error:
-            return QCoreApplication::tr("Error");
+            return "Error";
     }
-    return QCoreApplication::tr("SessionStatus:Unknown");
+    return "SessionStatus:Unknown";
 }
 
 // Wrapper around QJsonObject to prettify output to QDebug.
