@@ -1,13 +1,13 @@
 ---
-title: Azure Remote Rendering asset tool user documentation
-description: Azure Remote Rendering Asset Tool Documentation for the user
-author: mafranc
-ms.author: mafranc
-ms.date: 03/23/2020
+title: Azure Remote Rendering Toolkit User Documentation
+description: User documentation for the Azure Remote Rendering Toolkit
+author: jakras
+ms.author: jakras
+ms.date: 12/23/2021
 ms.topic: article
 ---
 
-# Azure Remote Rendering asset tool (ARRT) user documentation
+# Azure Remote Rendering Toolkit (ARRT) User Documentation
 
 ![ARRT material editing view](media/ARRT.png)
 
