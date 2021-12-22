@@ -114,10 +114,10 @@ ArrtAppWindow::ArrtAppWindow()
         m_statusBar->addWidget(m_statusLoadProgress);
     }
 
-    connect(m_storageAccount.get(), &StorageAccount::ConnectionStatusChanged, this, &ArrtAppWindow::onUpdateStatusBar);
-    connect(m_arrAclient.get(), &ArrAccount::ConnectionStatusChanged, this, &ArrtAppWindow::onUpdateStatusBar);
-    connect(m_arrSession.get(), &ArrSession::SessionStatusChanged, this, &ArrtAppWindow::onUpdateStatusBar);
-    connect(m_arrSession.get(), &ArrSession::ModelLoadProgressChanged, this, &ArrtAppWindow::onUpdateStatusBar);
+    connect(m_storageAccount.get(), &StorageAccount::ConnectionStatusChanged, this, &ArrtAppWindow::OnUpdateStatusBar);
+    connect(m_arrAclient.get(), &ArrAccount::ConnectionStatusChanged, this, &ArrtAppWindow::OnUpdateStatusBar);
+    connect(m_arrSession.get(), &ArrSession::SessionStatusChanged, this, &ArrtAppWindow::OnUpdateStatusBar);
+    connect(m_arrSession.get(), &ArrSession::ModelLoadProgressChanged, this, &ArrtAppWindow::OnUpdateStatusBar);
 
     if (!m_arrAclient->LoadSettings() || !m_storageAccount->LoadSettings())
     {
@@ -134,10 +134,10 @@ ArrtAppWindow::ArrtAppWindow()
     m_scenegraphModel = std::make_unique<ScenegraphModel>(m_arrSession.get());
     ScenegraphView->setModel(m_scenegraphModel.get());
 
-    connect(ScenegraphView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ArrtAppWindow::onEntitySelectionChanged);
-    connect(ScenegraphView, &QTreeView::doubleClicked, this, &ArrtAppWindow::onEntityDoubleClicked);
+    connect(ScenegraphView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ArrtAppWindow::OnEntitySelectionChanged);
+    connect(ScenegraphView, &QTreeView::doubleClicked, this, &ArrtAppWindow::OnEntityDoubleClicked);
 
-    connect(m_sceneState.get(), &SceneState::PickedEntity, this, &ArrtAppWindow::onEntityPicked);
+    connect(m_sceneState.get(), &SceneState::PickedEntity, this, &ArrtAppWindow::OnEntityPicked);
 
     // when a model gets loaded, the scenegraph model needs to be refreshed
     connect(m_arrSession.get(), &ArrSession::ModelLoaded, this, [this]()
@@ -169,7 +169,7 @@ ArrtAppWindow::ArrtAppWindow()
     connect(m_conversionManager.get(), &ConversionManager::ListChanged, this, [this]()
             {
                 UpdateConversionsList();
-                onUpdateStatusBar();
+                OnUpdateStatusBar();
             });
 
     connect(m_arrSession.get(), &ArrSession::FrameStatisticsChanged, this, [this]()
@@ -186,7 +186,7 @@ ArrtAppWindow::ArrtAppWindow()
     // based on https://stackoverflow.com/questions/43831474/how-to-equally-distribute-the-width-of-qsplitter/43835396
     ((QSplitter*)RenderSplitter)->setSizes(QList<int>({800, 2000, 800}));
 
-    onUpdateStatusBar();
+    OnUpdateStatusBar();
 
     if (displaySettingsDialog)
     {
@@ -212,7 +212,7 @@ ArrtAppWindow::~ArrtAppWindow()
     m_storageAccount = nullptr;
 }
 
-void ArrtAppWindow::onUpdateStatusBar()
+void ArrtAppWindow::OnUpdateStatusBar()
 {
     if (m_arrSession == nullptr)
         return;

@@ -3,7 +3,7 @@
 void ArrtAppWindow::FileUploadStatusCallback(int numFiles)
 {
     m_numFileUploads = numFiles;
-    onUpdateStatusBar();
+    OnUpdateStatusBar();
 
     if (numFiles == 0)
     {

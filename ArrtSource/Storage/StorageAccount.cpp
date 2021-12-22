@@ -83,6 +83,8 @@ void StorageAccount::ConnectToStorageAccount()
         return;
     }
 
+    SetConnectionStatus(StorageConnectionStatus::CheckingCredentials);
+
     // create a helper thread that connects to Azure Storage in the background
     std::thread([this, storageUrl = m_endpointUrl, storageCredentials = m_storageCredentials]()
                 { ConnectToStorageAccountThread(storageUrl, storageCredentials); })

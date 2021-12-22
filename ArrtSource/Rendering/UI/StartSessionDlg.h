@@ -7,6 +7,7 @@
 class ArrSession;
 class ArrSettings;
 
+/// The modal dialog that lets you start/stop and extend rendering sessions.
 class StartSessionDlg : public QDialog, Ui_StartSessionDlg
 {
     Q_OBJECT

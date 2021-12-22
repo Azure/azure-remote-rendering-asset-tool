@@ -30,18 +30,13 @@ namespace Microsoft::Azure::RemoteRendering::Internal
 
 #include <Winerror.h>
 
-inline std::string hrToString(HRESULT hr)
-{
-    char s_str[64] = {};
-    sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<unsigned int>(hr));
-    return std::string(s_str);
-}
+std::string HResultToString(HRESULT hr);
 
 class HrException : public std::runtime_error
 {
 public:
     HrException(HRESULT hr)
-        : std::runtime_error(hrToString(hr))
+        : std::runtime_error(HResultToString(hr))
         , m_hr(hr)
     {
     }
@@ -51,42 +46,52 @@ private:
     const HRESULT m_hr;
 };
 
-inline void throwIfFailed(HRESULT hr)
-{
-    if (FAILED(hr))
-    {
-        throw HrException(hr);
-    }
-}
+void ThrowIfFailed(HRESULT hr);
 
+
+/// Takes care of the scene state (mostly camera movement) and interactions with the D3D device.
 class SceneState : public QObject
 {
     Q_OBJECT
 
 public:
     SceneState(ArrSettings* arrOptions);
-    virtual ~SceneState();
+    ~SceneState();
 
-    ArrSettings* GetArrOptions() const { return m_arrOptions; }
+    ArrSettings* GetArrSettings() const { return m_arrOptions; }
 
     void SetSession(RR::ApiHandle<RR::RenderingSession> session, ArrSession* arrSession);
 
+    /// Moves the camera by the exact amount this frame.
     void MoveCamera(float lateral, float forward, float updown);
+
+    /// Adds to the target lerp position, moving the camera smoothly over the next frames.
     void LerpCamera(float lateral, float forward, float updown);
+
+    /// Rotates the camera by the given amount.
     void RotateCamera(float dx, float dy);
+
+    /// Moves the camera to focus on the selected entity.
     void FocusOnSelectedEntity();
+
+    /// Moves the camera to focus on the specified entity.
     void FocusOnEntity(RR::ApiHandle<RR::Entity> entity);
+
+    /// Moves the camera to focus on the given bounding box.
     void FocusOnBounds(const RR::Bounds& bounds);
 
     void ResizeViewport(int width, int height);
 
+    /// Checks which entity is visible at the given screen pixel coordinate.
     void PickEntity(int x, int y);
+
+    /// Returns the entity that was picked recently (if any).
     RR::ApiHandle<RR::Entity> GetLastPickedEntity() const { return m_pickedEntity; }
 
     ID3D11Device* GetDxDevice() const { return m_device; }
 
-    int getWidth() const { return m_proxyTextureWidth; }
-    int getHeight() const { return m_proxyTextureHeight; }
+    int GetScreenWidth() const { return m_proxyTextureWidth; }
+    int GetScreenHeight() const { return m_proxyTextureHeight; }
 
     void RenderTo(ID3D11RenderTargetView* renderTarget);
 
@@ -97,10 +102,13 @@ Q_SIGNALS:
 
 private:
     void UpdateProjectionMatrix();
-
     void SceneRefresh();
+    void InitializeClient();
+    void DeinitializeClient();
+    void InitializeD3D();
+    void DeinitializeD3D();
+    void UpdateProxyTextures();
 
-private:
     int m_proxyTextureWidth = 0;
     int m_proxyTextureHeight = 0;
 
@@ -139,12 +147,4 @@ private:
     int m_refreshRate = 60;
 
     RR::ApiHandle<RR::Entity> m_pickedEntity;
-
-    void InitializeClient();
-    void DeinitializeClient();
-
-    void InitializeD3D();
-    void DeinitializeD3D();
-
-    void UpdateProxyTextures();
 };

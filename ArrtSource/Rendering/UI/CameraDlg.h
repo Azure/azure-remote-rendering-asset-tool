@@ -6,6 +6,7 @@
 
 class ArrSettings;
 
+/// The modal dialog where you can change the camera settings (move speed, FOV, near/far planes).
 class CameraDlg : public QDialog, Ui_CameraDlg
 {
     Q_OBJECT

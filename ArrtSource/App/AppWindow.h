@@ -25,7 +25,7 @@ public:
     ~ArrtAppWindow();
 
 private Q_SLOTS:
-    void onUpdateStatusBar();
+    void OnUpdateStatusBar();
 
     // Conversion Tab UI
     void on_ResetAdvancedButton_clicked();
@@ -46,9 +46,9 @@ private Q_SLOTS:
     void on_ClearModelsButton_clicked();
     void on_CameraOptionsButton_clicked();
     void on_ModelScaleSpinner_valueChanged(double d);
-    void onEntityPicked();
-    void onEntityDoubleClicked(const QModelIndex& index);
-    void onEntitySelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    void OnEntityPicked();
+    void OnEntityDoubleClicked(const QModelIndex& index);
+    void OnEntitySelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
     // Material UI
     void on_MaterialsList_itemSelectionChanged();

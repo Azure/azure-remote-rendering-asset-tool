@@ -6,6 +6,9 @@
 
 class SceneState;
 
+/// The central 3D widget where the remote content is presented
+///
+/// Also takes care of checking the keyboard/mouse input and forwarding that to the SceneState.
 class ViewportWidget : public QWidget
 {
 public:
@@ -13,7 +16,6 @@ public:
     ~ViewportWidget();
 
     void SetSceneState(SceneState* state);
-
 
 protected:
     virtual QPaintEngine* paintEngine() const override;
@@ -27,6 +29,8 @@ protected:
     virtual void focusOutEvent(QFocusEvent* event) override;
 
 private:
+    void UpdateInput();
+
     SceneState* m_sceneState = nullptr;
 
     IDXGIFactory* m_dxgiFactory = nullptr;
@@ -36,6 +40,4 @@ private:
     HWND m_hWnd;
     QPointF m_dragStartPoint;
     QSet<int> m_pressedKeys;
-
-    void UpdateInput();
 };

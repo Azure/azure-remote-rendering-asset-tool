@@ -2,13 +2,13 @@
 
 #include <QAbstractItemModel>
 #include <Rendering/IncludeAzureRemoteRendering.h>
+#include <map>
 #include <vector>
 
 class ArrSession;
 
 struct SceneEntry
 {
-    //QString m_fullPath;
     QString m_name;
     int m_rowIndex = -1;
     SceneEntry* m_parent = nullptr;
@@ -16,6 +16,7 @@ struct SceneEntry
     RR::ApiHandle<RR::Entity> m_arrEntity;
 };
 
+/// The QAbstractItemModel for the scene-graph tree view.
 class ScenegraphModel : public QAbstractItemModel
 {
     Q_OBJECT
@@ -27,13 +28,9 @@ public:
     void RefreshModel();
 
     virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
-
     virtual QModelIndex parent(const QModelIndex& child) const override;
-
     virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-
     virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override;
-
     virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
     RR::ApiHandle<RR::Entity> GetEntityHandle(const QModelIndex& index) const;

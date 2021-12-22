@@ -31,6 +31,9 @@ enum class ArrConnectionStatus
     InvalidCredentials
 };
 
+/// Manages general interactions with the ARR account
+///
+/// Does not handle session creation etc, that's done by ArrSession.
 class ArrAccount : public QObject
 {
     Q_OBJECT
@@ -42,20 +45,21 @@ public:
     ArrAccount();
     ~ArrAccount();
 
+    RR::ApiHandle<RR::RemoteRenderingClient>& GetClient() { return m_rrClient; }
+
     bool LoadSettings();
     void SaveSettings() const;
     void SetSettings(const QString& accountId, const QString& accountKey, const QString& accountDomain, const QString& region);
-
-    void ConnectToArrAccount();
-    void DisconnectFromArrAccount();
 
     QString GetAccountId() const { return m_accountId; }
     QString GetAccountKey() const { return m_accountKey; }
     QString GetAccountDomain() const { return m_accountDomain; }
     QString GetRegion() const { return m_region; }
 
+    void ConnectToArrAccount();
+    void DisconnectFromArrAccount();
+
     ArrConnectionStatus GetConnectionStatus() const { return m_connectionStatus; }
-    RR::ApiHandle<RR::RemoteRenderingClient>& GetClient() { return m_rrClient; }
 
     void GetAvailableRegions(std::vector<ArrRegionInfo>& regions);
     void GetAvailableAccountDomains(std::vector<ArrAccountDomainInfo>& domains);

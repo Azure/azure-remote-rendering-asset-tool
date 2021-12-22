@@ -42,6 +42,9 @@ struct ArrSessionStatus
     int m_leaseTimeInMinutes = 0;
 };
 
+/// Manages all aspects of a Remote Rendering session
+///
+/// This includes session startup / shutdown, connect / disconnect and model loading.
 class ArrSession : public QObject
 {
     Q_OBJECT
@@ -56,14 +59,21 @@ public:
     ArrSession(ArrAccount* arrClient, SceneState* sceneState);
     ~ArrSession();
 
+    /// Creates a new session with the provided options.
     void CreateSession(const RR::RenderingSessionCreationOptions& info);
+
+    /// Attempts to open an already existing session with the given session ID.
     void OpenSession(const QString& sessionID);
+
+    /// Disconnects from the current session and optionally stops the session as well.
     void CloseSession(bool keepRunning);
 
     ArrSessionStatus GetSessionStatus() const;
 
-    QString GetSessionUuid() const;
+    /// Returns the session ID of the currently running session.
+    QString GetSessionID() const;
 
+    /// Starts ARR Inspector in a browser.
     void StartArrInspector();
 
     /// Updates the session lease time to the given duration.
@@ -71,6 +81,7 @@ public:
     /// This may be shorter or longer than the original lease time.
     void ChangeSessionLeaseTime(int totalLeaseMinutes);
 
+    /// Sets the auto-extension time in minutes. Whenever a session has less remaining time than this, it gets extended.
     void SetAutoExtensionMinutes(int extendByMinutes);
 
     struct LoadedModel
@@ -79,13 +90,25 @@ public:
         RR::ApiHandle<RR::LoadModelResult> m_LoadResult;
     };
 
+    /// Loads the model from the provided SAS URL.
     bool LoadModel(const QString& modelName, const char* assetSAS);
+
+    /// Removes the previously loaded model with the given index.
     void RemoveModel(size_t idx);
+
+    /// Returns the 'total' loading progress of all currently loading models.
     float GetModelLoadingProgress() const;
+
+    /// Returns all currently loaded models.
     const std::deque<LoadedModel>& GetLoadedModels() const { return m_loadedModels; }
+
+    /// Changes the scale of all loaded models.
     void SetModelScale(float scale);
 
-    void EnableSelectionOutline(const RR::ApiHandle<RR::Entity>& entity, bool enable);
+    /// Enables or removes the selection outline on the given entity.
+    void SetEntitySelected(const RR::ApiHandle<RR::Entity>& entity, bool enable);
+
+    /// Returns all entities that are currently 'selected'.
     void GetSelectedEntities(std::vector<RR::ApiHandle<RR::Entity>>& selected) const;
 
     const RR::FrameStatistics& GetFrameStatistics() const { return m_frameStats; }
@@ -102,11 +125,9 @@ private:
     void OnSceneRefresh();
     void UpdateSessionProperties();
     void UpdatePerformanceStatistics();
-    // start/stop internal timers based on the session state
     void ConfigureSessionPropertiesUpdateTimer();
     void CheckEntityBounds(RR::ApiHandle<RR::Entity> entity);
     void CheckEntityBoundsResult(RR::Bounds bounds);
-
     RR::ApiHandle<RR::RenderingConnection> GetRenderingConnection();
 
     ArrAccount* m_arrClient = nullptr;
@@ -124,9 +145,7 @@ private:
     std::atomic_bool m_connectToArrInspectorInProgress = false;
     std::atomic_bool m_renewAsyncInProgress = false;
 
-    // cached properties coming from RR::RenderingSession::GetRenderingSessionPropertiesAsync
     RR::RenderingSessionProperties m_lastProperties = {};
-
     RR::event_token m_statusChangedToken;
     RR::event_token m_messageLoggedToken;
 

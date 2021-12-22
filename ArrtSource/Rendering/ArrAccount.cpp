@@ -143,6 +143,15 @@ void ArrAccount::SetSettings(const QString& accountId, const QString& accountKey
     DisconnectFromArrAccount();
 }
 
+void ArrAccount::SetConnectionStatus(ArrConnectionStatus newStatus)
+{
+    if (m_connectionStatus != newStatus)
+    {
+        m_connectionStatus = newStatus;
+        Q_EMIT ConnectionStatusChanged();
+    }
+}
+
 void ArrAccount::ConnectToArrAccount()
 {
     if (m_connectionStatus == ArrConnectionStatus::Authenticated)
@@ -163,7 +172,7 @@ void ArrAccount::ConnectToArrAccount()
 
     auto client = RR::ApiHandle(RR::RemoteRenderingClient(fi));
     m_messageLoggedToken = client->MessageLogged(&ForwardArrLogMsgToQt).value();
-    client->SetLogLevel(RR::LogLevel::Debug);
+    client->SetLogLevel(RR::LogLevel::Information);
 
     m_querySessionsStatus = RR::Status::InProgress;
 
@@ -283,13 +292,4 @@ void ArrAccount::GetAvailableAccountDomains(std::vector<ArrAccountDomainInfo>& d
 
     std::sort(domains.begin(), domains.end(), [](const ArrAccountDomainInfo& lhs, const ArrAccountDomainInfo& rhs)
               { return lhs.m_name < rhs.m_name; });
-}
-
-void ArrAccount::SetConnectionStatus(ArrConnectionStatus newStatus)
-{
-    if (m_connectionStatus != newStatus)
-    {
-        m_connectionStatus = newStatus;
-        Q_EMIT ConnectionStatusChanged();
-    }
 }

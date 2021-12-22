@@ -31,7 +31,7 @@ void ViewportWidget::SetSceneState(SceneState* state)
 {
     m_sceneState = state;
 
-    throwIfFailed(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&m_dxgiFactory)));
+    ThrowIfFailed(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&m_dxgiFactory)));
 
     auto* dxDevice = m_sceneState->GetDxDevice();
 
@@ -49,13 +49,13 @@ void ViewportWidget::SetSceneState(SceneState* state)
     sd.SampleDesc.Quality = 0;
     sd.Windowed = TRUE;
     sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-    throwIfFailed(m_dxgiFactory->CreateSwapChain(dxDevice, &sd, &m_swapChain));
+    ThrowIfFailed(m_dxgiFactory->CreateSwapChain(dxDevice, &sd, &m_swapChain));
 
     // back buffer always maximum size
     ID3D11Texture2D* pBackBuffer;
-    throwIfFailed(m_swapChain->ResizeBuffers(0, m_sceneState->getWidth(), m_sceneState->getHeight(), DXGI_FORMAT_UNKNOWN, 0));
-    throwIfFailed(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer)));
-    throwIfFailed(dxDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_RTView));
+    ThrowIfFailed(m_swapChain->ResizeBuffers(0, m_sceneState->GetScreenWidth(), m_sceneState->GetScreenHeight(), DXGI_FORMAT_UNKNOWN, 0));
+    ThrowIfFailed(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer)));
+    ThrowIfFailed(dxDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_RTView));
     ReleaseObject(pBackBuffer);
 
     QObject::connect(m_sceneState, &SceneState::SceneRefreshed, this, [this]()
@@ -71,9 +71,9 @@ void ViewportWidget::SetSceneState(SceneState* state)
                          auto* dxDevice = m_sceneState->GetDxDevice();
                          ID3D11Texture2D* pBackBuffer;
                          // back buffer always maximum size
-                         throwIfFailed(m_swapChain->ResizeBuffers(0, m_sceneState->getWidth(), m_sceneState->getHeight(), DXGI_FORMAT_UNKNOWN, 0));
-                         throwIfFailed(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer)));
-                         throwIfFailed(dxDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_RTView));
+                         ThrowIfFailed(m_swapChain->ResizeBuffers(0, m_sceneState->GetScreenWidth(), m_sceneState->GetScreenHeight(), DXGI_FORMAT_UNKNOWN, 0));
+                         ThrowIfFailed(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer)));
+                         ThrowIfFailed(dxDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_RTView));
                          ReleaseObject(pBackBuffer);
                      });
 }
@@ -136,7 +136,7 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent* event)
 
 void ViewportWidget::wheelEvent(QWheelEvent* event)
 {
-    const float cameraSpeed = m_sceneState->GetArrOptions()->GetCameraSpeedMetersPerSecond() * 0.3f;
+    const float cameraSpeed = m_sceneState->GetArrSettings()->GetCameraSpeedMetersPerSecond() * 0.3f;
     const float boost = (m_pressedKeys.contains(Qt::Key_Shift) ? 10.0f : 1.0f);
     const float factor = boost * cameraSpeed;
 
@@ -195,7 +195,7 @@ void ViewportWidget::UpdateInput()
         focusOnSelected = true;
     }
 
-    const float cameraSpeed = m_sceneState->GetArrOptions()->GetCameraSpeedMetersPerSecond();
+    const float cameraSpeed = m_sceneState->GetArrSettings()->GetCameraSpeedMetersPerSecond();
     const float boost = (m_pressedKeys.contains(Qt::Key_Shift) ? 10.0f : 1.0f);
     const float factor = boost * cameraSpeed;
 
