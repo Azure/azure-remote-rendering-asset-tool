@@ -23,7 +23,7 @@ void ArrtAppWindow::on_ChangeModelButton_clicked()
 
     if (!uri.primary_uri().is_empty())
     {
-        QString blobUri = m_storageAccount->GetSasUrl(uri);
+        QString blobUri = m_storageAccount->CreateSasURL(uri);
 
         m_arrSession->LoadModel(dlg.GetSelectedItem(), blobUri.toStdString().c_str());
     }
@@ -58,22 +58,22 @@ void ArrtAppWindow::on_InspectorButton_clicked()
     m_arrSession->StartArrInspector();
 }
 
-void ArrtAppWindow::onEntitySelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+void ArrtAppWindow::OnEntitySelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
     for (const QModelIndex& index : selected.indexes())
     {
-        m_arrSession->EnableSelectionOutline(m_scenegraphModel->GetEntityHandle(index), true);
+        m_arrSession->SetEntitySelected(m_scenegraphModel->GetEntityHandle(index), true);
     }
 
     for (const QModelIndex& index : deselected.indexes())
     {
-        m_arrSession->EnableSelectionOutline(m_scenegraphModel->GetEntityHandle(index), false);
+        m_arrSession->SetEntitySelected(m_scenegraphModel->GetEntityHandle(index), false);
     }
 
     UpdateMaterialsList();
 }
 
-void ArrtAppWindow::onEntityPicked()
+void ArrtAppWindow::OnEntityPicked()
 {
     auto entity = m_sceneState->GetLastPickedEntity();
 
@@ -111,7 +111,7 @@ void ArrtAppWindow::UpdateFrameStatisticsUI()
     VideoFrameMaxDeltaLabel->setText(QString("Video Frame Max Delta: %1ms").arg((int)(stats.VideoFrameMaxDelta * 1000)));
 }
 
-void ArrtAppWindow::onEntityDoubleClicked(const QModelIndex& index)
+void ArrtAppWindow::OnEntityDoubleClicked(const QModelIndex& index)
 {
     if (index.isValid())
     {

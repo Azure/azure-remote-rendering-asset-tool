@@ -91,19 +91,19 @@ void SettingsDlg::on_TestArr_clicked()
 
         switch (m_arrClient->GetConnectionStatus())
         {
-            case AccountConnectionStatus::Authenticated:
+            case ArrConnectionStatus::Authenticated:
                 QMessageBox::information(this, "Test ARR account connect", "Connection to ARR account succeeded.", QMessageBox::Ok);
                 return;
 
-            case AccountConnectionStatus::NotAuthenticated:
+            case ArrConnectionStatus::NotAuthenticated:
                 QMessageBox::warning(this, "Test ARR account connect", "User authentication failed.", QMessageBox::Ok);
                 return;
 
-            case AccountConnectionStatus::InvalidCredentials:
+            case ArrConnectionStatus::InvalidCredentials:
                 QMessageBox::warning(this, "Test ARR account connect", "The provided credentials are invalid.", QMessageBox::Ok);
                 return;
 
-            case AccountConnectionStatus::CheckingCredentials:
+            case ArrConnectionStatus::CheckingCredentials:
                 break;
         }
     }
@@ -122,19 +122,19 @@ void SettingsDlg::on_TestStorage_clicked()
 
         switch (m_storageAccount->GetConnectionStatus())
         {
-            case AccountConnectionStatus::Authenticated:
+            case StorageConnectionStatus::Authenticated:
                 QMessageBox::information(this, "Test storage account connection", "Connection to storage account succeeded.", QMessageBox::Ok);
                 return;
 
-            case AccountConnectionStatus::NotAuthenticated:
+            case StorageConnectionStatus::NotAuthenticated:
                 QMessageBox::warning(this, "Test storage account connection", "User authentication failed.", QMessageBox::Ok);
                 return;
 
-            case AccountConnectionStatus::InvalidCredentials:
+            case StorageConnectionStatus::InvalidCredentials:
                 QMessageBox::warning(this, "Test storage account connection", "The provided credentials are invalid.", QMessageBox::Ok);
                 return;
 
-            case AccountConnectionStatus::CheckingCredentials:
+            case StorageConnectionStatus::CheckingCredentials:
                 break;
         }
     }
@@ -145,7 +145,6 @@ void SettingsDlg::on_TestStorage_clicked()
 void SettingsDlg::ApplyArr()
 {
     m_arrClient->SetSettings(ArrAccountID->text(), ArrAccountKey->text(), ArrAccountDomain->currentData().toString(), ArrRegion->currentData().toString());
-
     m_arrClient->ConnectToArrAccount();
 }
 

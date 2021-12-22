@@ -1,9 +1,9 @@
 #include <App/AppWindow.h>
 
-void ArrtAppWindow::FileUploadStatusCallback(int numFiles, bool /*hadErrors*/)
+void ArrtAppWindow::FileUploadStatusCallback(int numFiles)
 {
     m_numFileUploads = numFiles;
-    onUpdateStatusBar();
+    OnUpdateStatusBar();
 
     if (numFiles == 0)
     {

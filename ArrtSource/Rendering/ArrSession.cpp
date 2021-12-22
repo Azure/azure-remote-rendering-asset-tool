@@ -8,7 +8,7 @@
 #include <Rendering/ArrSession.h>
 #include <Rendering/ArrSettings.h>
 #include <Rendering/UI/SceneState.h>
-#include <Utils/LogHelpers.h>
+#include <Utils/Logging.h>
 #include <windows.h>
 
 using namespace std::chrono_literals;
@@ -59,7 +59,7 @@ RR::ApiHandle<RR::RenderingConnection> ArrSession::GetRenderingConnection()
     return (m_arrSession && m_arrSession->GetValid()) ? m_arrSession->Connection() : RR::ApiHandle<RR::RenderingConnection>();
 }
 
-QString ArrSession::GetSessionUuid() const
+QString ArrSession::GetSessionID() const
 {
     if (!m_arrSession && !m_arrSession->GetValid())
     {
@@ -130,7 +130,6 @@ ArrSessionStatus ArrSession::GetSessionStatus() const
 
 void ArrSession::CreateSession(const RR::RenderingSessionCreationOptions& info)
 {
-    // TODO assert
     if (m_createSessionInProgress)
         return;
 
@@ -148,7 +147,6 @@ void ArrSession::CreateSession(const RR::RenderingSessionCreationOptions& info)
 
 void ArrSession::OpenSession(const QString& sessionID)
 {
-    // TODO assert
     if (m_createSessionInProgress)
         return;
 
@@ -227,7 +225,6 @@ void ArrSession::OnConnectionStatusChanged(RR::ConnectionStatus status, RR::Resu
 
 void ArrSession::CloseSession(bool keepRunning)
 {
-    // TODO assert
     if (!m_arrSession)
         return;
 
@@ -316,7 +313,7 @@ void ArrSession::OnSessionPropertiesUpdated()
     // the code below will then attempt another try to connect
     if (m_connectingInProgress && m_connectingElapsedTime.elapsed() > s_connectionTimeout.count())
     {
-        qCritical(LoggingCategory::RenderingSession) << "Connection reached timeout (10 sec). Session ID: " << GetSessionUuid();
+        qCritical(LoggingCategory::RenderingSession) << "Connection reached timeout (10 sec). Session ID: " << GetSessionID();
 
         DisconnectFromSessionRuntime();
     }
@@ -333,7 +330,6 @@ void ArrSession::OnSessionPropertiesUpdated()
     }
     else
     {
-        // TODO move this somewhere else
         m_loadedModels.clear();
     }
 
@@ -342,7 +338,6 @@ void ArrSession::OnSessionPropertiesUpdated()
 
 void ArrSession::ConnectToSessionRuntime()
 {
-    // TODO assert
     if (m_connectingInProgress)
         return;
 
@@ -374,13 +369,13 @@ void ArrSession::ConnectToSessionRuntimeResult(RR::Status status, RR::Connection
         qCritical(LoggingCategory::RenderingSession)
             << "Connection failed: " << status;
 
-        // TODO show details
+        // TODO: show details in message box
         QMessageBox::warning(nullptr, "Connection Failed", "Connecting to the rendering session failed.\n\nSee the log for details.", QMessageBox::Ok, QMessageBox::Ok);
     }
     else
     {
         m_arrSession->Connection()->SetLogLevel(RR::LogLevel::Information);
-        m_messageLoggedToken = m_arrSession->Connection()->MessageLogged(&qArrSdkMessage).value();
+        m_messageLoggedToken = m_arrSession->Connection()->MessageLogged(&ForwardArrLogMsgToQt).value();
     }
 
     m_connectingInProgress = false;
@@ -809,7 +804,7 @@ void ArrSession::SetModelScale(float scale)
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-void ArrSession::EnableSelectionOutline(const RR::ApiHandle<RR::Entity>& entity, bool enable)
+void ArrSession::SetEntitySelected(const RR::ApiHandle<RR::Entity>& entity, bool enable)
 {
     if (!entity->GetValid())
         return;

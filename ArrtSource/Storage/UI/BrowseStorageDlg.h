@@ -7,6 +7,9 @@
 
 class StorageAccount;
 
+/// The modal dialog presented when picking a file or folder in Azure Storage
+///
+/// Most functionality is already provided by StorageBrowserWidget.
 class BrowseStorageDlg : public QDialog, Ui_BrowseStorageDlg
 {
     Q_OBJECT
@@ -14,8 +17,13 @@ public:
     BrowseStorageDlg(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, QWidget* parent = {});
     ~BrowseStorageDlg();
 
+    /// Returns the name of the selected storage container.
     const QString& GetSelectedContainer() const { return m_currentContainer; }
+
+    /// Returns the relative path of the selected item.
     const QString& GetSelectedItem() const { return m_currentItem; }
+
+    /// Returns the storage_uri of the selected item.
     const azure::storage::storage_uri& GetSelectedUri() const { return m_currentUri; }
 
 private Q_SLOTS:

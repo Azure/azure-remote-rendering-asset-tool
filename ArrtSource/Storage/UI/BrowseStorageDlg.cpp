@@ -7,7 +7,7 @@ BrowseStorageDlg::BrowseStorageDlg(StorageAccount* account, StorageEntry::Type s
 {
     setupUi(this);
 
-    connect(StorageBrowser, &StorageBrowserWidget::itemSelected, this, &BrowseStorageDlg::ItemSelected);
+    connect(StorageBrowser, &StorageBrowserWidget::ItemSelected, this, &BrowseStorageDlg::ItemSelected);
 
     StorageBrowser->SetStorageAccount(account, showTypes, startContainer);
 }

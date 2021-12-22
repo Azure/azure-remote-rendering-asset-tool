@@ -1,8 +1,8 @@
 #pragma once
+
 #include <QValidator>
 
-// implementation of QValidator used for time in the format HH:MM. Used by HoursMinutesControl
-
+/// implementation of QValidator used for time in the format HH:MM.
 class TimeValidator : public QValidator
 {
 public:

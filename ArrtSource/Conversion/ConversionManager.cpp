@@ -7,6 +7,7 @@
 #include <Rendering/ArrAccount.h>
 #include <Rendering/IncludeAzureRemoteRendering.h>
 #include <Storage/StorageAccount.h>
+#include <Storage/UI/StorageBrowserModel.h>
 
 ConversionManager::ConversionManager(StorageAccount* storageAccount, ArrAccount* arrClient)
 {
@@ -15,7 +16,7 @@ ConversionManager::ConversionManager(StorageAccount* storageAccount, ArrAccount*
     m_conversions.resize(1);
 
     m_checkConversionStateTimer.setInterval(10000);
-    connect(&m_checkConversionStateTimer, &QTimer::timeout, this, &ConversionManager::onCheckConversions);
+    connect(&m_checkConversionStateTimer, &QTimer::timeout, this, &ConversionManager::OnCheckConversions);
 
     m_updateConversionListTimer.setInterval(1000);
     connect(&m_updateConversionListTimer, &QTimer::timeout, this, [this]()
@@ -139,7 +140,7 @@ void ConversionManager::SetConversionAdvancedOptions(const ConversionOptions& op
     Q_EMIT SelectedChanged();
 }
 
-void ConversionManager::onCheckConversions()
+void ConversionManager::OnCheckConversions()
 {
     bool anyRunning = false;
 
@@ -185,15 +186,13 @@ bool ConversionManager::StartConversionInternal()
             srcFolder = srcFolder.left(lastSlash + 1);
         }
 
-        std::vector<StorageAccount::BlobInfo> dirs, files;
+        std::vector<StorageBlobInfo> dirs, files;
         m_storageAccount->ListBlobDirectory(conv.m_sourceAssetContainer, srcFolder, dirs, files);
 
         int srcAssets = 0;
         for (const auto& file : files)
         {
-            if (file.m_path.endsWith(".fbx", Qt::CaseInsensitive) ||
-                file.m_path.endsWith(".glb", Qt::CaseInsensitive) ||
-                file.m_path.endsWith(".gltf", Qt::CaseInsensitive))
+            if (StorageBrowserModel::IsSrcAsset(file.m_path))
             {
                 srcAssets++;
             }
@@ -226,9 +225,9 @@ bool ConversionManager::StartConversionInternal()
     const auto inputContainerUri = m_storageAccount->GetContainerUriFromName(conv.m_sourceAssetContainer);
     const auto outputContainerUri = m_storageAccount->GetContainerUriFromName(conv.m_outputFolderContainer);
 
-    const QString inputSasToken = m_storageAccount->GetSasToken(inputContainerUri, azure::storage::blob_shared_access_policy::read | azure::storage::blob_shared_access_policy::list, 60 * 24);
+    const QString inputSasToken = m_storageAccount->CreateSasToken(inputContainerUri, azure::storage::blob_shared_access_policy::read | azure::storage::blob_shared_access_policy::list);
 
-    const QString outputSasToken = m_storageAccount->GetSasToken(outputContainerUri, azure::storage::blob_shared_access_policy::write | azure::storage::blob_shared_access_policy::list | azure::storage::blob_shared_access_policy::create, 60 * 24);
+    const QString outputSasToken = m_storageAccount->CreateSasToken(outputContainerUri, azure::storage::blob_shared_access_policy::write | azure::storage::blob_shared_access_policy::list | azure::storage::blob_shared_access_policy::create);
 
     const QString inputUri = QString("https://%1.blob.core.windows.net/%2").arg(m_storageAccount->GetAccountName()).arg(conv.m_sourceAssetContainer);
     const QString outputUri = QString("https://%1.blob.core.windows.net/%2").arg(m_storageAccount->GetAccountName()).arg(conv.m_outputFolderContainer);

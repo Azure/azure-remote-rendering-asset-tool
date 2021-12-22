@@ -20,7 +20,7 @@
 #include <Rendering/UI/ViewportWidget.h>
 #include <Storage/FileUploader.h>
 #include <Storage/StorageAccount.h>
-#include <Utils/LogHelpers.h>
+#include <Utils/Logging.h>
 #include <qevent.h>
 
 ArrtAppWindow* ArrtAppWindow::s_instance = nullptr;
@@ -36,8 +36,8 @@ ArrtAppWindow::ArrtAppWindow()
 
     LoadSettings();
 
-    m_storageAccount = std::make_unique<StorageAccount>([this](int numFiles, bool errors)
-                                                        { FileUploadStatusCallback(numFiles, errors); });
+    m_storageAccount = std::make_unique<StorageAccount>([this](int numFiles)
+                                                        { FileUploadStatusCallback(numFiles); });
     m_arrSettings = std::make_unique<ArrSettings>();
     m_arrSettings->LoadSettings();
 
@@ -114,10 +114,10 @@ ArrtAppWindow::ArrtAppWindow()
         m_statusBar->addWidget(m_statusLoadProgress);
     }
 
-    connect(m_storageAccount.get(), &StorageAccount::ConnectionStatusChanged, this, &ArrtAppWindow::onUpdateStatusBar);
-    connect(m_arrAclient.get(), &ArrAccount::ConnectionStatusChanged, this, &ArrtAppWindow::onUpdateStatusBar);
-    connect(m_arrSession.get(), &ArrSession::SessionStatusChanged, this, &ArrtAppWindow::onUpdateStatusBar);
-    connect(m_arrSession.get(), &ArrSession::ModelLoadProgressChanged, this, &ArrtAppWindow::onUpdateStatusBar);
+    connect(m_storageAccount.get(), &StorageAccount::ConnectionStatusChanged, this, &ArrtAppWindow::OnUpdateStatusBar);
+    connect(m_arrAclient.get(), &ArrAccount::ConnectionStatusChanged, this, &ArrtAppWindow::OnUpdateStatusBar);
+    connect(m_arrSession.get(), &ArrSession::SessionStatusChanged, this, &ArrtAppWindow::OnUpdateStatusBar);
+    connect(m_arrSession.get(), &ArrSession::ModelLoadProgressChanged, this, &ArrtAppWindow::OnUpdateStatusBar);
 
     if (!m_arrAclient->LoadSettings() || !m_storageAccount->LoadSettings())
     {
@@ -134,10 +134,10 @@ ArrtAppWindow::ArrtAppWindow()
     m_scenegraphModel = std::make_unique<ScenegraphModel>(m_arrSession.get());
     ScenegraphView->setModel(m_scenegraphModel.get());
 
-    connect(ScenegraphView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ArrtAppWindow::onEntitySelectionChanged);
-    connect(ScenegraphView, &QTreeView::doubleClicked, this, &ArrtAppWindow::onEntityDoubleClicked);
+    connect(ScenegraphView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ArrtAppWindow::OnEntitySelectionChanged);
+    connect(ScenegraphView, &QTreeView::doubleClicked, this, &ArrtAppWindow::OnEntityDoubleClicked);
 
-    connect(m_sceneState.get(), &SceneState::PickedEntity, this, &ArrtAppWindow::onEntityPicked);
+    connect(m_sceneState.get(), &SceneState::PickedEntity, this, &ArrtAppWindow::OnEntityPicked);
 
     // when a model gets loaded, the scenegraph model needs to be refreshed
     connect(m_arrSession.get(), &ArrSession::ModelLoaded, this, [this]()
@@ -169,7 +169,7 @@ ArrtAppWindow::ArrtAppWindow()
     connect(m_conversionManager.get(), &ConversionManager::ListChanged, this, [this]()
             {
                 UpdateConversionsList();
-                onUpdateStatusBar();
+                OnUpdateStatusBar();
             });
 
     connect(m_arrSession.get(), &ArrSession::FrameStatisticsChanged, this, [this]()
@@ -186,7 +186,7 @@ ArrtAppWindow::ArrtAppWindow()
     // based on https://stackoverflow.com/questions/43831474/how-to-equally-distribute-the-width-of-qsplitter/43835396
     ((QSplitter*)RenderSplitter)->setSizes(QList<int>({800, 2000, 800}));
 
-    onUpdateStatusBar();
+    OnUpdateStatusBar();
 
     if (displaySettingsDialog)
     {
@@ -212,14 +212,14 @@ ArrtAppWindow::~ArrtAppWindow()
     m_storageAccount = nullptr;
 }
 
-void ArrtAppWindow::onUpdateStatusBar()
+void ArrtAppWindow::OnUpdateStatusBar()
 {
     if (m_arrSession == nullptr)
         return;
 
     switch (m_storageAccount->GetConnectionStatus())
     {
-        case AccountConnectionStatus::Authenticated:
+        case StorageConnectionStatus::Authenticated:
             if (m_numFileUploads > 0)
             {
                 m_statusStorageAccount->setText(QString("<html><head/><body><p>Storage Account: <span style=\"color:#ffaa00;\">Uploading %1 files</span></p></body></html>").arg(m_numFileUploads));
@@ -229,13 +229,13 @@ void ArrtAppWindow::onUpdateStatusBar()
                 m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#00aa00;\">Connected</span></p></body></html>");
             }
             break;
-        case AccountConnectionStatus::CheckingCredentials:
+        case StorageConnectionStatus::CheckingCredentials:
             m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#ffaa00;\">Checking...</span></p></body></html>");
             break;
-        case AccountConnectionStatus::InvalidCredentials:
+        case StorageConnectionStatus::InvalidCredentials:
             m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#aa0000;\">Invalid Credentials</span></p></body></html>");
             break;
-        case AccountConnectionStatus::NotAuthenticated:
+        case StorageConnectionStatus::NotAuthenticated:
             m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#7e7e7e;\">Not Connected</span></p></body></html>");
             break;
         default:
@@ -245,7 +245,7 @@ void ArrtAppWindow::onUpdateStatusBar()
 
     switch (m_arrAclient->GetConnectionStatus())
     {
-        case AccountConnectionStatus::Authenticated:
+        case ArrConnectionStatus::Authenticated:
         {
             const uint32_t activeConversions = m_conversionManager->GetNumActiveConversions();
 
@@ -260,13 +260,13 @@ void ArrtAppWindow::onUpdateStatusBar()
             break;
         }
 
-        case AccountConnectionStatus::CheckingCredentials:
+        case ArrConnectionStatus::CheckingCredentials:
             m_statusArrAccount->setText("<html><head/><body><p>ARR Account: <span style=\"color:#ffaa00;\">Checking...</span></p></body></html>");
             break;
-        case AccountConnectionStatus::InvalidCredentials:
+        case ArrConnectionStatus::InvalidCredentials:
             m_statusArrAccount->setText("<html><head/><body><p>ARR Account: <span style=\"color:#aa0000;\">Invalid Credentials</span></p></body></html>");
             break;
-        case AccountConnectionStatus::NotAuthenticated:
+        case ArrConnectionStatus::NotAuthenticated:
             m_statusArrAccount->setText("<html><head/><body><p>ARR: <span style=\"color:#7e7e7e;\">Not Connected</span></p></body></html>");
             break;
     }
@@ -302,8 +302,7 @@ void ArrtAppWindow::onUpdateStatusBar()
             break;
     }
 
-    EditSessionButton->setEnabled(m_arrAclient->GetConnectionStatus() == AccountConnectionStatus::Authenticated);
-
+    EditSessionButton->setEnabled(m_arrAclient->GetConnectionStatus() == ArrConnectionStatus::Authenticated);
     ChangeModelButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     LoadModelSasButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     CameraOptionsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);

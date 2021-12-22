@@ -209,7 +209,7 @@ void StartSessionDlg::UpdateUi()
 
     if (running)
     {
-        SessionID->setText(m_arrSession->GetSessionUuid());
+        SessionID->setText(m_arrSession->GetSessionID());
 
         auto status = m_arrSession->GetSessionStatus();
         MaxTime->setText(TimeValidator::minutesToString(status.m_leaseTimeInMinutes));

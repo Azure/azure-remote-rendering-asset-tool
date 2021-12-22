@@ -6,17 +6,16 @@
 #include <memory>
 
 class QStatusBar;
-class QToolBar;
 class QLabel;
 class ArrSession;
 class SceneState;
 class ArrAccount;
 class StorageAccount;
-class FileUploader;
 class ScenegraphModel;
 class QProgressBar;
 class ArrSettings;
 
+/// The applications main window
 class ArrtAppWindow : public QMainWindow, Ui_AppWindow
 {
     Q_OBJECT
@@ -26,27 +25,34 @@ public:
     ~ArrtAppWindow();
 
 private Q_SLOTS:
-    void onUpdateStatusBar();
-    void on_ChangeModelButton_clicked();
-    void on_EditSessionButton_clicked();
+    void OnUpdateStatusBar();
+
+    // Conversion Tab UI
+    void on_ResetAdvancedButton_clicked();
+    void on_ConversionOptionsCheckbox_stateChanged(int);
+    void on_StartConversionButton_clicked();
+    void on_ConversionList_currentRowChanged(int row);
     void on_SelectSourceButton_clicked();
     void on_SelectOutputFolderButton_clicked();
-    void on_ConversionList_currentRowChanged(int row);
-    void on_StartConversionButton_clicked();
-    void on_ConversionOptionsCheckbox_stateChanged(int);
-    void on_ResetAdvancedButton_clicked();
-    void on_InspectorButton_clicked();
-    void onEntitySelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    void onEntityDoubleClicked(const QModelIndex& index);
-    void onEntityPicked();
-    void on_MaterialsList_itemSelectionChanged();
-    void on_ClearModelsButton_clicked();
-    void on_LoadModelSasButton_clicked();
-    void on_CameraOptionsButton_clicked();
+
+    // Log Tab UI
     void on_ClearLogButton_clicked();
+
+    // Rendering Tab UI
+    void on_EditSessionButton_clicked();
+    void on_InspectorButton_clicked();
+    void on_ChangeModelButton_clicked();
+    void on_LoadModelSasButton_clicked();
+    void on_ClearModelsButton_clicked();
+    void on_CameraOptionsButton_clicked();
     void on_ModelScaleSpinner_valueChanged(double d);
+    void OnEntityPicked();
+    void OnEntityDoubleClicked(const QModelIndex& index);
+    void OnEntitySelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
     // Material UI
+    void on_MaterialsList_itemSelectionChanged();
+
     void on_AlbedoColorPicker_ColorChanged(const QColor& newColor);
     void on_TransparentCheck_stateChanged(int state);
     void on_WriteDepthCheck_stateChanged(int state);
@@ -73,18 +79,23 @@ private Q_SLOTS:
 
 
 private:
+    virtual void closeEvent(QCloseEvent* event) override;
+
     void LoadSettings();
     void SaveSettings();
     void CheckForNewVersion();
     void OnCheckForNewVersionResult(QString latestVersion);
-
-    void FileUploadStatusCallback(int numFiles, bool hadErrors);
+    void FileUploadStatusCallback(int numFiles);
     void UpdateConversionsList();
     void UpdateConversionPane();
     void UpdateConversionStartButton();
     void RetrieveConversionOptions();
     void UpdateMaterialsList();
     void UpdateFrameStatisticsUI();
+    void SetMaterialUI();
+    void ShowMaterialUI();
+    static void LogMessageHandlerStatic(QtMsgType type, const QMessageLogContext& context, const QString& msg);
+    void LogMessageHandler(QtMsgType type, const QString& category, const QString& msg);
 
     QStatusBar* m_statusBar = nullptr;
     QLabel* m_statusStorageAccount = nullptr;
@@ -111,13 +122,5 @@ private:
     std::vector<RR::ApiHandle<RR::Material>> m_materialsList;
     std::map<unsigned long long, RR::ApiHandle<RR::Material>> m_allMaterialsPreviously;
 
-    void SetMaterialUI();
-    void ShowMaterialUI();
-
-protected:
-    virtual void closeEvent(QCloseEvent* event) override;
-
     static ArrtAppWindow* s_instance;
-    static void LogMessageHandlerStatic(QtMsgType type, const QMessageLogContext& context, const QString& msg);
-    void LogMessageHandler(QtMsgType type, const QString& category, const QString& msg);
 };

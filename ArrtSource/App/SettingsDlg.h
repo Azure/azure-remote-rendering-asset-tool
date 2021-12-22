@@ -7,6 +7,7 @@
 class StorageAccount;
 class ArrAccount;
 
+/// The modal dialog where users input their account credentials
 class SettingsDlg : public QDialog, Ui_SettingsDlg
 {
     Q_OBJECT

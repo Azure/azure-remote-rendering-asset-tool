@@ -2,6 +2,7 @@
 
 #include <QObject>
 
+/// Some general settings (camera speed and such) that are persisted between sessions.
 class ArrSettings : public QObject
 {
     Q_OBJECT

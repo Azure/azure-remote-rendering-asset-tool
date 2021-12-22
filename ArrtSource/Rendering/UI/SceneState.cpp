@@ -12,12 +12,12 @@ using namespace std::chrono_literals;
 
 namespace
 {
-    RR::Double3 toDouble3(const QVector4D& v)
+    RR::Double3 ToDouble3(const QVector4D& v)
     {
         return {v.x(), v.y(), v.z()};
     }
 
-    RR::Double3 toDouble3(const QVector3D& v)
+    RR::Double3 ToDouble3(const QVector3D& v)
     {
         return {v.x(), v.y(), v.z()};
     }
@@ -33,6 +33,21 @@ namespace
     }
 
 } // namespace
+
+std::string HResultToString(HRESULT hr)
+{
+    char s_str[64] = {};
+    sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<unsigned int>(hr));
+    return std::string(s_str);
+}
+
+void ThrowIfFailed(HRESULT hr)
+{
+    if (FAILED(hr))
+    {
+        throw HrException(hr);
+    }
+}
 
 SceneState::SceneState(ArrSettings* arrOptions)
     : QObject(nullptr)
@@ -185,14 +200,14 @@ void SceneState::UpdateProxyTextures()
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 
     // color texture
-    throwIfFailed(m_device->CreateTexture2D(&bufferDesc, 0, &m_proxyColorTarget));
-    throwIfFailed(m_device->CreateRenderTargetView(m_proxyColorTarget, NULL, &m_proxyColorView));
+    ThrowIfFailed(m_device->CreateTexture2D(&bufferDesc, 0, &m_proxyColorTarget));
+    ThrowIfFailed(m_device->CreateRenderTargetView(m_proxyColorTarget, NULL, &m_proxyColorView));
 
     // depth stencil
     bufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     bufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-    throwIfFailed(m_device->CreateTexture2D(&bufferDesc, 0, &m_proxyDepthTarget));
-    throwIfFailed(m_device->CreateDepthStencilView(m_proxyDepthTarget, NULL, &m_proxyDepthView));
+    ThrowIfFailed(m_device->CreateTexture2D(&bufferDesc, 0, &m_proxyDepthTarget));
+    ThrowIfFailed(m_device->CreateDepthStencilView(m_proxyDepthTarget, NULL, &m_proxyDepthView));
 }
 
 void SceneState::DeinitializeD3D()
@@ -240,8 +255,8 @@ void SceneState::PickEntity(int x, int y)
 
     const QVector4D dir = (p2 - p1).normalized();
 
-    rc.StartPos = toDouble3(m_cameraPosition);
-    rc.EndPos = toDouble3(p2);
+    rc.StartPos = ToDouble3(m_cameraPosition);
+    rc.EndPos = ToDouble3(p2);
 
     rc.HitCollection = RR::HitCollectionPolicy::ClosestHit;
     rc.MaxHits = 1;
@@ -272,7 +287,7 @@ void SceneState::RenderTo(ID3D11RenderTargetView* renderTarget)
 {
     if (m_client)
     {
-        auto opt = GetArrOptions();
+        auto opt = GetArrSettings();
         m_client->GetCameraSettings()->SetNearAndFarPlane(opt->GetNearPlaneCM() / 100.0f, opt->GetFarPlaneCM() / 100.0f);
     }
 

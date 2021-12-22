@@ -3,7 +3,7 @@
 #include <QStringList>
 #include <Storage/FileUploader.h>
 #include <Storage/IncludeAzureStorage.h>
-#include <Utils/LogHelpers.h>
+#include <Utils/Logging.h>
 
 FileUploader::FileUploader(UpdateCallback callback)
     : m_remainingFilesCallback(std::move(callback))
@@ -16,12 +16,10 @@ void FileUploader::UploadFilesAsync(const QDir& sourceRootDirectory, const QStri
     if (sourceFilePaths.isEmpty())
         return;
 
-    m_hadErrors = false;
-
     const int toUpload = sourceFilePaths.size();
     const int remainingFiles = m_remainingFiles.fetch_add(toUpload) + toUpload;
     QMetaObject::invokeMethod(QApplication::instance(), [remainingFiles, this]()
-                              { m_remainingFilesCallback(remainingFiles, false); });
+                              { m_remainingFilesCallback(remainingFiles); });
 
     auto asyncCallback = [sourceRootDirectory, sourceFilePaths, container, destDirectory, this](int from, int to)
     {
@@ -80,8 +78,6 @@ void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const
     }
     catch (...)
     {
-        m_hadErrors = true;
-
         qCritical(LoggingCategory::AzureStorage)
             << "File upload failed."
             << "\n  Src: " << sourceFilePath
@@ -90,5 +86,5 @@ void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const
 
     const int remainingFiles = m_remainingFiles.fetch_sub(1) - 1;
     QMetaObject::invokeMethod(QApplication::instance(), [remainingFiles, this]()
-                              { m_remainingFilesCallback(remainingFiles, m_hadErrors); });
+                              { m_remainingFilesCallback(remainingFiles); });
 }

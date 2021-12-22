@@ -10,10 +10,10 @@ struct StorageEntry
 {
     enum class Type
     {
-        Other,
-        Folder,
-        ArrAsset,
-        SrcAsset,
+        Other,    ///< All other file types
+        Folder,   ///< A folder
+        ArrAsset, ///< A file with '.arrAsset' file extension
+        SrcAsset, ///< A file with '.fbx', '.gltf' or '.glb' file extension
     };
 
     QString m_fullPath;
@@ -29,6 +29,10 @@ struct StorageEntry
     bool IsDifferent(const StorageEntry& rhs) const;
 };
 
+/// The QAbstractItemModel representing the file structure in the storage account
+///
+/// The model queries the Azure Storage only as much as needed to show the file structure.
+/// Collapsed folders are not queried, only when the user expands them.
 class StorageBrowserModel : public QAbstractItemModel
 {
     Q_OBJECT
@@ -37,17 +41,19 @@ public:
     void SetShowTypes(StorageEntry::Type types);
     bool SetAccountAndContainer(StorageAccount* account, const QString& containerName);
 
+    /// Checks whether there are any changes in the storage account (files added or removed) and updates the respective local data.
+    ///
+    /// If fullReset is true, all data is discarded and built new.
     void RefreshModel(bool fullReset);
 
     virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
-
     virtual QModelIndex parent(const QModelIndex& child) const override;
-
     virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-
     virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override;
-
     virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+
+    static bool IsArrAsset(const QString& file);
+    static bool IsSrcAsset(const QString& file);
 
 private:
     void FillChildEntries(StorageEntry* entry, const QString& entryPath, std::vector<StorageEntry>& output) const;

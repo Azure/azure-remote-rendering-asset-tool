@@ -122,7 +122,7 @@ QString ConversionOptions::ToJSON() const
         root["generateCollisionMesh"] = m_generateCollisionMesh;
         root["unlitMaterials"] = m_unlitMaterials;
         root["deduplicateMaterials"] = m_deduplicateMaterials;
-        root["material-override"] = m_material_override;
+        root["material-override"] = m_materialOverride;
         root["sceneGraphMode"] = ToString(m_sceneGraphMode);
         root["opaqueMaterialDefaultSidedness"] = ToString(m_opaqueMaterialDefaultSidedness);
 
@@ -134,6 +134,7 @@ QString ConversionOptions::ToJSON() const
 
             root[QLatin1String("axis")] = axes;
         }
+
         QJsonObject vertex;
         {
             vertex["position"] = ToString(m_vertexPosition);

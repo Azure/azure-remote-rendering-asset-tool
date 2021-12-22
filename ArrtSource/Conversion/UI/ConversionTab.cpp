@@ -9,7 +9,7 @@ void ArrtAppWindow::on_ConversionList_currentRowChanged(int row)
     UpdateConversionPane();
 }
 
-QString SecToString(uint32_t sec)
+static QString SecToString(uint32_t sec)
 {
     uint32_t hours = (sec / (60 * 60));
     sec -= hours * 60 * 60;
@@ -193,7 +193,7 @@ void ArrtAppWindow::UpdateConversionPane()
         ScalingSpinbox->setValue(opt.m_scaling);
         RecenterToOriginCheckbox->setChecked(opt.m_recenterToOrigin);
         DefaultSidednessCombo->setCurrentIndex((int)opt.m_opaqueMaterialDefaultSidedness);
-        MaterialOverrideEdit->setText(opt.m_material_override);
+        MaterialOverrideEdit->setText(opt.m_materialOverride);
         GammaToLinearMaterialCheckbox->setChecked(opt.m_gammaToLinearMaterial);
         GammaToLinearVertexCheckbox->setChecked(opt.m_gammaToLinearVertex);
         ScenegraphModeCombo->setCurrentIndex((int)opt.m_sceneGraphMode);
@@ -226,7 +226,7 @@ void ArrtAppWindow::RetrieveConversionOptions()
     opt.m_scaling = (float)ScalingSpinbox->value();
     opt.m_recenterToOrigin = RecenterToOriginCheckbox->isChecked();
     opt.m_opaqueMaterialDefaultSidedness = (Sideness)DefaultSidednessCombo->currentIndex();
-    opt.m_material_override = MaterialOverrideEdit->text();
+    opt.m_materialOverride = MaterialOverrideEdit->text();
     opt.m_gammaToLinearMaterial = GammaToLinearMaterialCheckbox->isChecked();
     opt.m_gammaToLinearVertex = GammaToLinearVertexCheckbox->isChecked();
     opt.m_sceneGraphMode = (SceneGraphMode)ScenegraphModeCombo->currentIndex();
