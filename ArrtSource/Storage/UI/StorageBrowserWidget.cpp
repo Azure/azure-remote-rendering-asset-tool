@@ -96,7 +96,7 @@ void StorageBrowserWidget::EmitItemSelected(bool dblClick)
         AddFolderButton->setEnabled(false);
     }
 
-    Q_EMIT itemSelected(StorageContainer->currentText(), m_selectedItem, uri, dblClick);
+    Q_EMIT ItemSelected(StorageContainer->currentText(), m_selectedItem, uri, dblClick);
 }
 
 void StorageBrowserWidget::on_AddContainerButton_clicked()

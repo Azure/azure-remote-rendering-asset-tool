@@ -303,7 +303,6 @@ void ArrtAppWindow::onUpdateStatusBar()
     }
 
     EditSessionButton->setEnabled(m_arrAclient->GetConnectionStatus() == ArrConnectionStatus::Authenticated);
-
     ChangeModelButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     LoadModelSasButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     CameraOptionsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);

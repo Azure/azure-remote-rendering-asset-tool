@@ -9,6 +9,7 @@
 class StorageAccount;
 class ArrAccount;
 
+/// Manages interactions with the model conversion service
 class ConversionManager : public QObject
 {
     Q_OBJECT
@@ -17,13 +18,22 @@ public:
     ConversionManager(StorageAccount* storageAccount, ArrAccount* arrClient);
     ~ConversionManager();
 
+    /// Returns all recent conversions, both running and finished ones.
     const std::deque<Conversion>& GetConversions() const { return m_conversions; }
+
+    /// Returns the conversion that is currently selected by the user.
     const Conversion& GetSelectedConversion() const { return m_conversions[m_selectedConversion]; }
 
+    /// How many conversions are currently running (ie not finished)
     uint32_t GetNumActiveConversions() const;
 
+    /// Changes the currently selected conversion.
     void SetSelectedConversion(int selected);
+
+    /// Whether the selected conversion is editable, e.g. a not yet started one.
     bool IsEditableSelected() const;
+
+    /// Starts the next conversion with the currently set options.
     bool StartConversion();
 
     void SetConversionName(const QString& name);
@@ -37,7 +47,7 @@ Q_SIGNALS:
     void ListChanged();
 
 private Q_SLOTS:
-    void onCheckConversions();
+    void OnCheckConversions();
 
 private:
     bool StartConversionInternal();

@@ -7,6 +7,12 @@
 
 class StorageAccount;
 
+/// A QWidget for interacting with the contents of the storage account
+///
+/// Lists files inside storage containers, allows to add and delete files and folders
+/// and keeps track of the selected items.
+///
+/// Used both in the main UI and in modal file pickers (see BrowseStorageDlg).
 class StorageBrowserWidget : public QWidget, Ui_StorageBrowserWidget
 {
     Q_OBJECT
@@ -14,13 +20,16 @@ public:
     StorageBrowserWidget(QWidget* parent = {});
     ~StorageBrowserWidget();
 
+    /// Refreshes the underlying model
     void RefreshModel();
 
     void SetStorageAccount(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer);
+
+    /// Returns the currently selected storage container.
     const QString& GetSelectedContainer() const { return m_selectedContainer; }
 
 Q_SIGNALS:
-    void itemSelected(QString container, QString path, azure::storage::storage_uri uri, bool dblClick);
+    void ItemSelected(QString container, QString path, azure::storage::storage_uri uri, bool dblClick);
 
 private Q_SLOTS:
     void on_StorageContainer_currentIndexChanged(int index);

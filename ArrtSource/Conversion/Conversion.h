@@ -61,12 +61,13 @@ enum class VertexTextureCoord
     Float16x2
 };
 
+/// All options describing a conversion
 struct ConversionOptions
 {
     float m_scaling = 1.0f;
     bool m_recenterToOrigin = false;
     Sideness m_opaqueMaterialDefaultSidedness = Sideness::DoubleSided;
-    QString m_material_override;
+    QString m_materialOverride;
     bool m_gammaToLinearMaterial = false;
     bool m_gammaToLinearVertex = false;
     SceneGraphMode m_sceneGraphMode = SceneGraphMode::Dynamic;
@@ -89,6 +90,7 @@ struct ConversionOptions
     QString ToJSON() const;
 };
 
+/// A single conversion that either ran previously or is currently running
 struct Conversion
 {
     ConversionStatus m_status = ConversionStatus::New;

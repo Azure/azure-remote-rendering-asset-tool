@@ -145,7 +145,6 @@ void SettingsDlg::on_TestStorage_clicked()
 void SettingsDlg::ApplyArr()
 {
     m_arrClient->SetSettings(ArrAccountID->text(), ArrAccountKey->text(), ArrAccountDomain->currentData().toString(), ArrRegion->currentData().toString());
-
     m_arrClient->ConnectToArrAccount();
 }
 

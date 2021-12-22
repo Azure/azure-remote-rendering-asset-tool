@@ -7,6 +7,7 @@
 #include <Rendering/ArrAccount.h>
 #include <Rendering/IncludeAzureRemoteRendering.h>
 #include <Storage/StorageAccount.h>
+#include <Storage/UI/StorageBrowserModel.h>
 
 ConversionManager::ConversionManager(StorageAccount* storageAccount, ArrAccount* arrClient)
 {
@@ -15,7 +16,7 @@ ConversionManager::ConversionManager(StorageAccount* storageAccount, ArrAccount*
     m_conversions.resize(1);
 
     m_checkConversionStateTimer.setInterval(10000);
-    connect(&m_checkConversionStateTimer, &QTimer::timeout, this, &ConversionManager::onCheckConversions);
+    connect(&m_checkConversionStateTimer, &QTimer::timeout, this, &ConversionManager::OnCheckConversions);
 
     m_updateConversionListTimer.setInterval(1000);
     connect(&m_updateConversionListTimer, &QTimer::timeout, this, [this]()
@@ -139,7 +140,7 @@ void ConversionManager::SetConversionAdvancedOptions(const ConversionOptions& op
     Q_EMIT SelectedChanged();
 }
 
-void ConversionManager::onCheckConversions()
+void ConversionManager::OnCheckConversions()
 {
     bool anyRunning = false;
 
@@ -191,9 +192,7 @@ bool ConversionManager::StartConversionInternal()
         int srcAssets = 0;
         for (const auto& file : files)
         {
-            if (file.m_path.endsWith(".fbx", Qt::CaseInsensitive) ||
-                file.m_path.endsWith(".glb", Qt::CaseInsensitive) ||
-                file.m_path.endsWith(".gltf", Qt::CaseInsensitive))
+            if (StorageBrowserModel::IsSrcAsset(file.m_path))
             {
                 srcAssets++;
             }
