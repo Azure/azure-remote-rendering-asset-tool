@@ -185,7 +185,7 @@ bool ConversionManager::StartConversionInternal()
             srcFolder = srcFolder.left(lastSlash + 1);
         }
 
-        std::vector<StorageAccount::BlobInfo> dirs, files;
+        std::vector<StorageBlobInfo> dirs, files;
         m_storageAccount->ListBlobDirectory(conv.m_sourceAssetContainer, srcFolder, dirs, files);
 
         int srcAssets = 0;
@@ -226,9 +226,9 @@ bool ConversionManager::StartConversionInternal()
     const auto inputContainerUri = m_storageAccount->GetContainerUriFromName(conv.m_sourceAssetContainer);
     const auto outputContainerUri = m_storageAccount->GetContainerUriFromName(conv.m_outputFolderContainer);
 
-    const QString inputSasToken = m_storageAccount->GetSasToken(inputContainerUri, azure::storage::blob_shared_access_policy::read | azure::storage::blob_shared_access_policy::list, 60 * 24);
+    const QString inputSasToken = m_storageAccount->CreateSasToken(inputContainerUri, azure::storage::blob_shared_access_policy::read | azure::storage::blob_shared_access_policy::list);
 
-    const QString outputSasToken = m_storageAccount->GetSasToken(outputContainerUri, azure::storage::blob_shared_access_policy::write | azure::storage::blob_shared_access_policy::list | azure::storage::blob_shared_access_policy::create, 60 * 24);
+    const QString outputSasToken = m_storageAccount->CreateSasToken(outputContainerUri, azure::storage::blob_shared_access_policy::write | azure::storage::blob_shared_access_policy::list | azure::storage::blob_shared_access_policy::create);
 
     const QString inputUri = QString("https://%1.blob.core.windows.net/%2").arg(m_storageAccount->GetAccountName()).arg(conv.m_sourceAssetContainer);
     const QString outputUri = QString("https://%1.blob.core.windows.net/%2").arg(m_storageAccount->GetAccountName()).arg(conv.m_outputFolderContainer);

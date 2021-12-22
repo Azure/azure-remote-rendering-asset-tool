@@ -157,13 +157,13 @@ void StorageBrowserModel::FillChildEntries(StorageEntry* entry, const QString& e
     if (m_storageAccount == nullptr)
         return;
 
-    std::vector<StorageAccount::BlobInfo> directories, files;
+    std::vector<StorageBlobInfo> directories, files;
     m_storageAccount->ListBlobDirectory(m_containerName, entryPath, directories, files);
 
     output.reserve(directories.size() + files.size());
     int rowIdx = 0;
 
-    for (const StorageAccount::BlobInfo& dir : directories)
+    for (const StorageBlobInfo& dir : directories)
     {
         StorageEntry e;
         e.m_parent = entry;
@@ -175,7 +175,7 @@ void StorageBrowserModel::FillChildEntries(StorageEntry* entry, const QString& e
         output.push_back(e);
     }
 
-    for (const StorageAccount::BlobInfo& file : files)
+    for (const StorageBlobInfo& file : files)
     {
         StorageEntry e;
         e.m_parent = entry;

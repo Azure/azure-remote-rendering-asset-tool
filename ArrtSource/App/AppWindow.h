@@ -78,7 +78,7 @@ private:
     void CheckForNewVersion();
     void OnCheckForNewVersionResult(QString latestVersion);
 
-    void FileUploadStatusCallback(int numFiles, bool hadErrors);
+    void FileUploadStatusCallback(int numFiles);
     void UpdateConversionsList();
     void UpdateConversionPane();
     void UpdateConversionStartButton();

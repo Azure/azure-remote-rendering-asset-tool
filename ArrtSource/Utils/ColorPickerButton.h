@@ -2,6 +2,9 @@
 
 #include <QPushButton>
 
+/// A QPushButton that opens a color picker. Displays the current color on top of itself.
+///
+/// Used by the material editing UI.
 class ColorPickerButton : public QPushButton
 {
     Q_OBJECT

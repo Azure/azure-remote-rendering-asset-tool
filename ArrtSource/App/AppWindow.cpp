@@ -36,8 +36,8 @@ ArrtAppWindow::ArrtAppWindow()
 
     LoadSettings();
 
-    m_storageAccount = std::make_unique<StorageAccount>([this](int numFiles, bool errors)
-                                                        { FileUploadStatusCallback(numFiles, errors); });
+    m_storageAccount = std::make_unique<StorageAccount>([this](int numFiles)
+                                                        { FileUploadStatusCallback(numFiles); });
     m_arrSettings = std::make_unique<ArrSettings>();
     m_arrSettings->LoadSettings();
 

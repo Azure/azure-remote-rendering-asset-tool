@@ -23,7 +23,7 @@ void ArrtAppWindow::on_ChangeModelButton_clicked()
 
     if (!uri.primary_uri().is_empty())
     {
-        QString blobUri = m_storageAccount->GetSasUrl(uri);
+        QString blobUri = m_storageAccount->CreateSasURL(uri);
 
         m_arrSession->LoadModel(dlg.GetSelectedItem(), blobUri.toStdString().c_str());
     }

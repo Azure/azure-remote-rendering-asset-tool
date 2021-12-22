@@ -11,4 +11,7 @@
 #pragma warning(pop)
 
 #include <QObject>
+
+// this is needed to be able to store a storage_uri in a QVariant
+// this is used by the StorageBrowserModel to return the uri of an element
 Q_DECLARE_METATYPE(azure::storage::storage_uri);
