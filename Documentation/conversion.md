@@ -7,11 +7,11 @@ ms.date: 12/23/2021
 ms.topic: article
 ---
 
-# Converting Models with ARRT
+# Converting models with ARRT
 
 Under the *Conversion* tab you can convert a model from a source asset format to the internal `.arrAsset` format needed by Azure Remote Rendering. ARRT simply gathers the information and forwards it to the ARR model conversion service. Thus all conversions run in the background in the cloud. Details on supported file formats, pricing and so on, [can be found here](https://docs.microsoft.com/azure/remote-rendering/how-tos/conversion/model-conversion).
 
-## Starting a Conversion
+## Starting a conversion
 
 ![Conversion panel](media/conversion.png)
 
@@ -24,7 +24,7 @@ The output file will be called *[name].arrAsset* with *name* being taken from th
 
 Usually this is already sufficient, and you can click **Start Conversion**. Once started, the conversion shows up as its own entry in the list on the left. Both the list and the statusbar indicate how many conversions are currently running.
 
-## Advanced Conversion Options
+## Advanced conversion options
 
 Click *Show advanced options* to see additional conversion options.
 
@@ -32,7 +32,7 @@ The effect of the various options is [documented here](https://docs.microsoft.co
 
 The configuration is written to a file named "[source-asset].ConversionSettings.json" next to the source asset file.
 
-## Conversion Result
+## Conversion result
 
 If a conversion fails, any error message is displayed under the conversion settings:
 

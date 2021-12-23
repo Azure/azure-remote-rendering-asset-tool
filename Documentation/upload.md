@@ -7,7 +7,7 @@ ms.date: 12/23/2021
 ms.topic: article
 ---
 
-# Uploading Files with ARRT
+# Uploading files with ARRT
 
 The [conversion](conversion.md) service needs all data to be located in an Azure Storage container to read from. Therefore, you have to upload your assets into Azure Storage to convert them.
 
@@ -19,4 +19,4 @@ At the top you can switch between different storage containers. The tree view di
 
 The statusbar displays how many files are still left to upload.
 
-Be aware that when [converting](conversion.md) a model, the conversion service will download an entire folder, with all files in it, not just the source asset file. Therefore it is very much advised to create a dedicated folder for each asset and its dependent input files, otherwise the conversion service may need to download much more data than necessary, which can waste a lot of time.
+Be aware that when [converting](conversion.md) a model, the conversion service will download an entire folder, with all files in it, not just the source asset file. Therefore it is very much advised to create a dedicated folder for each asset and its dependent input files, otherwise the conversion service may need to download much more data than necessary, which can waste a lot of time or even fail.

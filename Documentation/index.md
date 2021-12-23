@@ -7,44 +7,44 @@ ms.date: 12/23/2021
 ms.topic: article
 ---
 
-# Azure Remote Rendering Toolkit (ARRT) User Documentation
+# Azure Remote Rendering Toolkit (ARRT) user documentation
 
 ![ARRT material editing view](media/ARRT.png)
 
 Azure Remote Rendering Toolkit (ARRT) demonstrates the functionality of [Azure Remote Rendering (ARR)](https://docs.microsoft.com/azure/remote-rendering). ARRT functions as a sample application as reference for how to integrate remote rendering into your own product. However, it can also be a useful tool to get basic tasks done, like uploading a source asset into Azure Storage or converting a model for remote rendering. As such it makes it much easier to get started with remote rendering.
 
-## List of Features
+## List of features
 
 These features are currently available in ARRT:
 
-1. [Upload files](upload.md) into an Azure Storage account.
-1. [Convert 3D models](conversion.md) (`.fbx`, `.glft`, `.glb`) to the ARR format (`.arrAsset`).
-1. Start a new ARR session or connect to an existing one.
-1. Control session duration (manual or automatic extension).
-1. [Render converted 3D models](rendering.md) using ARR.
-1. Select and highlight object parts through raycasting.
-1. Edit material properties of selected parts.
-1. Launch [ArrInspector](https://docs.microsoft.com/azure/remote-rendering/resources/tools/arr-inspector) for a running session.
-1. See [log](log-panel.md) messages.
-1. See basic performance numbers.
+* [Upload files](upload.md) into an Azure Storage account.
+* [Convert 3D models](conversion.md) (`.fbx`, `.glft`, `.glb`) to the ARR format (`.arrAsset`).
+* Start a new ARR session or connect to an existing one.
+* Control session duration (manual or automatic extension).
+* [Render converted 3D models](rendering.md) using ARR.
+* Select and highlight object parts through raycasting.
+* Edit material properties of selected parts.
+* Launch [ArrInspector](https://docs.microsoft.com/azure/remote-rendering/resources/tools/arr-inspector) for a running session.
+* See [log](log-panel.md) messages.
+* See basic performance numbers.
 
 ## Getting ARRT
 
 To get ARRT, either download [a prebuilt package](https://github.com/Azure/azure-remote-rendering-asset-tool/releases), or [built it yourself](../README.md#building-arrt).
 
-## Getting Started
+## Getting started
 
 To try out Azure Remote Rendering in general, you first need to have an Azure account and a Remote Rendering subscription. If you want to try it with your own 3D models, you also need to have Azure Storage.
 
-### Azure Remote Rendering Account
+### Azure Remote Rendering account
 
 If you don't have an ARR subscription yet, [follow the steps](https://docs.microsoft.com/azure/remote-rendering/how-tos/create-an-account).
 
-### Azure Storage Account
+### Azure Storage account
 
 To set up an Azure Storage account [follow these instructions](https://docs.microsoft.com/azure/storage/common/storage-account-create?tabs=azure-portal). Also see [this page](https://docs.microsoft.com/azure/remote-rendering/how-tos/conversion/blob-storage) for how to give your ARR subscription access to it.
 
-An alternative way to configure your storage account is to use the [Microsoft Azure Storage Explorer](https://azure.microsoft.com/features/storage-explorer/).
+An alternative way to configure your storage account is to use the [Microsoft Azure Storage Explorer](https://azure.microsoft.com/features/storage-explorer).
 
 ### Configuring ARRT
 

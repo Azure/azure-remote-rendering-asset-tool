@@ -7,7 +7,7 @@ ms.date: 12/23/2021
 ms.topic: article
 ---
 
-# Log Panel
+# Log panel
 
 Many operations that interact with Azure services are asynchronous, which means that you don't get the result right away, but instead they are running in the background for a while. Although ARRT tries to present as much information as possible right away, some information will only arrive later.
 

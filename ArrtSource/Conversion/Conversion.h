@@ -98,6 +98,7 @@ struct Conversion
     QString m_name;
     QString m_sourceAssetContainer;
     QString m_sourceAsset;
+    QString m_inputFolder;
     QString m_outputFolderContainer;
     QString m_outputFolder;
     bool m_showAdvancedOptions = false;
@@ -108,4 +109,5 @@ struct Conversion
     ConversionOptions m_options;
 
     QString GetPlaceholderName() const;
+    QString GetPlaceholderInputFolder() const;
 };

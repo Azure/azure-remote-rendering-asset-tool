@@ -22,7 +22,7 @@ Azure Remote Rendering Toolkit (ARRT) is a desktop application developed in C++/
 
 ARRT is meant as a sample application for how to integrate Azure Remote Rendering into C++ applications. However, regardless of how you intend to use remote rendering, ARRT can always be used to get basic file upload, conversion and preview tasks done.
 
-## General Prerequisites
+## General prerequisites
 
 To use ARRT, you need a working remote rendering account. [Create an ARR account](https://docs.microsoft.com/azure/remote-rendering/how-tos/create-an-account) if you don't have one yet.
 
@@ -32,7 +32,7 @@ You should be familiar with the following ARR concepts:
 * [Models](https://docs.microsoft.com/azure/remote-rendering/concepts/models)
 * [Model conversion](https://docs.microsoft.com/azure/remote-rendering/how-tos/conversion/model-conversion)
 
-## Prebuilt Binaries
+## Prebuilt binaries
 
 Prebuilt ARRT binaries [can be found here](https://github.com/Azure/azure-remote-rendering-asset-tool/releases).
 
