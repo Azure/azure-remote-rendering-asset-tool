@@ -1,9 +1,9 @@
 ---
-title: Upload models in Azure Remote Rendering asset tool
-description: Workflow to upload models for conversion in ARRT
-author: mafranc
-ms.author: mafranc
-ms.date: 03/23/2020
+title: Uploading data with ARRT
+description: Describes how to upload 3D models to Azure Storage with the Azure Remote Rendering Toolkit
+author: jakras
+ms.author: jakras
+ms.date: 12/23/2021
 ms.topic: article
 ---
 

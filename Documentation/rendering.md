@@ -1,9 +1,9 @@
 ---
-title: Rendering in Azure Remote Rendering Asset Tool
-description: Workflow to load, rendered a model, and modify materials in ARRT
-author: mafranc
-ms.author: mafranc
-ms.date: 03/23/2020
+title: Rendering 3D models with ARRT
+description: Describes how to render a 3D model with the Azure Remote Rendering Toolkit
+author: jakras
+ms.author: jakras
+ms.date: 12/23/2021
 ms.topic: article
 ---
 
