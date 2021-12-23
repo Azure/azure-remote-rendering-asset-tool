@@ -9,7 +9,7 @@ ms.topic: article
 
 # Azure Remote Rendering Toolkit (ARRT)
 
-![ARRT material editing view](Documentation/media/ARRT.png)
+![ARRT main image](Documentation/media/ARRT.png)
 
 Azure Remote Rendering Toolkit (ARRT) is a desktop application developed in C++/Qt that demonstrates how to use [Azure Remote Rendering](https://docs.microsoft.com/azure/remote-rendering) (ARR). It can be used to:
 
