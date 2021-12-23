@@ -64,6 +64,10 @@ SettingsDlg::SettingsDlg(StorageAccount* storage, ArrAccount* arrClient, QWidget
             ArrRegion->setCurrentIndex(idx);
         }
     }
+
+    QPushButton* closeButton = Buttons->button(QDialogButtonBox::Close);
+    closeButton->setAutoDefault(false);
+    closeButton->setDefault(false);
 }
 
 SettingsDlg::~SettingsDlg() = default;

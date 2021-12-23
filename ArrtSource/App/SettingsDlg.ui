@@ -122,6 +122,12 @@
            <property name="text">
             <string>Test Connection</string>
            </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+           <property name="default">
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
         </layout>
@@ -229,6 +235,12 @@
            </property>
            <property name="text">
             <string>Test Connection</string>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+           <property name="default">
+            <bool>false</bool>
            </property>
           </widget>
          </item>

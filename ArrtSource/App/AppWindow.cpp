@@ -55,7 +55,7 @@ ArrtAppWindow::ArrtAppWindow()
         {
             QMenu* settingsMenu = menuBar->addMenu("Settings");
 
-            QAction* act = settingsMenu->addAction(tr("Account Settings"), [this]()
+            QAction* act = settingsMenu->addAction(tr("Account Settings..."), [this]()
                                                    {
                                                        SettingsDlg dlg(m_storageAccount.get(), m_arrAclient.get(), this);
                                                        dlg.exec();
@@ -303,7 +303,7 @@ void ArrtAppWindow::OnUpdateStatusBar()
     }
 
     EditSessionButton->setEnabled(m_arrAclient->GetConnectionStatus() == ArrConnectionStatus::Authenticated);
-    ChangeModelButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    ChangeModelButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_storageAccount->GetConnectionStatus() == StorageConnectionStatus::Authenticated);
     LoadModelSasButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     CameraOptionsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     InspectorButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
