@@ -229,8 +229,9 @@ bool ConversionManager::StartConversionInternal()
 
     const QString outputSasToken = m_storageAccount->CreateSasToken(outputContainerUri, azure::storage::blob_shared_access_policy::write | azure::storage::blob_shared_access_policy::list | azure::storage::blob_shared_access_policy::create);
 
-    const QString inputUri = QString("https://%1.blob.core.windows.net/%2").arg(m_storageAccount->GetAccountName()).arg(conv.m_sourceAssetContainer);
-    const QString outputUri = QString("https://%1.blob.core.windows.net/%2").arg(m_storageAccount->GetAccountName()).arg(conv.m_outputFolderContainer);
+    
+    const QString inputUri = QString("%1/%2").arg(m_storageAccount->GetEndpointUrl()).arg(conv.m_sourceAssetContainer);
+    const QString outputUri = QString("%1/%2").arg(m_storageAccount->GetEndpointUrl()).arg(conv.m_outputFolderContainer);
 
     const QString relInputPath = QFileInfo(conv.m_sourceAsset).dir().path();
     const QString relInputFile = QFileInfo(conv.m_sourceAsset).fileName();
