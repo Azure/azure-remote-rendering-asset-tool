@@ -1,61 +1,41 @@
 ---
-title: Conversion in Azure Remote Rendering asset tool
-description: Workflow to convert a model in ARRT
-author: mafranc
-ms.author: mafranc
-ms.date: 03/23/2020
+title: Converting Models with ARRT
+description: Describes how to convert a 3D model with the Azure Remote Rendering Toolkit
+author: jakras
+ms.author: jakras
+ms.date: 12/23/2021
 ms.topic: article
 ---
 
-# Conversion in Azure Remote Rendering asset tool
+# Converting models with ARRT
+
+Under the *Conversion* tab you can convert a model from a source asset format to the internal `.arrAsset` format needed by Azure Remote Rendering. ARRT simply gathers the information and forwards it to the ARR model conversion service. Thus all conversions run in the background in the cloud. Details on supported file formats, pricing and so on, [can be found here](https://docs.microsoft.com/azure/remote-rendering/how-tos/conversion/model-conversion).
+
+## Starting a conversion
 
 ![Conversion panel](media/conversion.png)
-To access the conversion environment, click on the button on the top toolbar.
-To convert a file, click on "New". Now the view is split between a conversion list on the left side, and the conversion configuration panel on the right side. Follow these steps to configure your new conversion:
 
-## Input model selection
+Click the entry **new conversion** on the left hand side. On the right, you have to select two paths:
 
-If you click on the button "Select" on the right of the input field, a panel will show the content of your blob storage. To choose the model to convert, first choose the blob container, then select an input model.
+1. The *source asset*, which is the file that you want to convert.
+1. The *output folder*, which is where the converted model shall be stored.
 
-The blob list visualization has two modes:
+The output file will be called *[name].arrAsset* with *name* being taken from the *Name* text box. If you don't provide a custom name, the filename of the source asset is used by default.
 
-* When **show all models** button is selected, all of the models will be shown in a flat list. If a directory is selected, then the list will be filtered with only the models in that directory or subdirectories. The list shows just the valid 3d file input formats (FBX, GLFT, GLB).
-![Show all models](media/standardbloblist.png)
-* When **show all models** is not selected then the list will show only the content of the selected directory, with all of its blobs and subdirectories. You can double-click on the folders to navigate into them, like a file explorer, and find your model.
-![Show only directory](media/directorybloblist.png)
+Usually this is already sufficient, and you can click **Start Conversion**. Once started, the conversion shows up as its own entry in the list on the left. Both the list and the statusbar indicate how many conversions are currently running.
 
-You can select an input model from the list by double-clicking the row, or selecting it and pressing "Select input".
+## Advanced conversion options
 
-To refresh the blob list, press the "Refresh" button on the top.
+Click *Show advanced options* to see additional conversion options.
 
-## Input root directory selection
+The effect of the various options is [documented here](https://docs.microsoft.com/azure/remote-rendering/how-tos/conversion/configure-model-conversion).
 
-The root directory is the one under which the input model and any file referenced by it (for example textures files) will be located.
-Before starting the conversion, all of the files in the chosen root and its subdirectories will be transferred to the conversion service.
+The configuration is written to a file named "[source-asset].ConversionSettings.json" next to the source asset file.
 
- By default this directory is set to the model directory. Make sure to select a higher-level root if you know that some referenced resource is outside of the model directory.
+## Conversion result
 
-## Conversion configuration parameters
+If a conversion fails, any error message is displayed under the conversion settings:
 
-If the input model has been selected, you can visualize and edit all of the parameters for your conversion. See the page [Configure the model conversion](https://docs.microsoft.com/azure/remote-rendering/how-tos/conversion/configure-model-conversion) for more information on each parameter.
+![Conversion result message](media/conversion-status.png)
 
-The configuration is written to a blob named "ConversionSettings.json" and stored on the input directory.
-
-## Output directory selection
-
-At the bottom of the conversion panel you can select the output directory (click on "Select" on the right side of the output field).
-
-The panel is similar to the input panel, but it will show you just the sub-directories in the current directory, or, if you click on "Show all" button, it will show also all of the other blobs.
-
-To select a directory you can navigate to it and press "Select Output", or you can select a sub-directory and press "Select Output".
-
-Like for the upload panel, you can also select a new container by clicking on the "+" icon on the right of the container selector, or navigate to a new directory by clicking on the "Add Sub-Directory" button.
-
-![Directory selection](media/newdiroutput.png)
-
-## Start conversion
-
-Once everything is set up correctly, you can press the button "Start Conversion" in the bottom-right corner. The status of the conversion will change to "Converting" and, if successful, to "Completed".
-When the conversion is started, its ID will be displayed in the panel.
-
-You can create multiple conversions and run them at the same time. You can also rename them by editing the "Name" field, or delete them from the list when not running.
+Also, the conversion service always writes a `[name].info.json` and a `[name].result.json` file into the output folder. These files contain additional information about errors or potential problems. It is a good idea to inspect these files.

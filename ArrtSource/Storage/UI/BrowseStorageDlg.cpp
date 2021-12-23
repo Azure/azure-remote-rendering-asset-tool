@@ -1,5 +1,7 @@
 #include <QPushButton>
+#include <Storage/StorageAccount.h>
 #include <Storage/UI/BrowseStorageDlg.h>
+#include <QMessageBox>
 
 BrowseStorageDlg::BrowseStorageDlg(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, QWidget* parent /*= {}*/)
     : QDialog(parent)
@@ -10,6 +12,11 @@ BrowseStorageDlg::BrowseStorageDlg(StorageAccount* account, StorageEntry::Type s
     connect(StorageBrowser, &StorageBrowserWidget::ItemSelected, this, &BrowseStorageDlg::ItemSelected);
 
     StorageBrowser->SetStorageAccount(account, showTypes, startContainer);
+
+    if (account->GetConnectionStatus() != StorageConnectionStatus::Authenticated)
+    {
+        QMessageBox::warning(this, "Storage account not set up", "You need to be connected to an Azure Storage account.", QMessageBox::Ok, QMessageBox::Ok);
+    }
 }
 
 BrowseStorageDlg::~BrowseStorageDlg() = default;

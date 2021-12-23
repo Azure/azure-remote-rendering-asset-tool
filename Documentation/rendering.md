@@ -1,107 +1,74 @@
 ---
-title: Rendering in Azure Remote Rendering Asset Tool
-description: Workflow to load, rendered a model, and modify materials in ARRT
-author: mafranc
-ms.author: mafranc
-ms.date: 03/23/2020
+title: Rendering 3D models with ARRT
+description: Describes how to render a 3D model with the Azure Remote Rendering Toolkit
+author: jakras
+ms.author: jakras
+ms.date: 12/23/2021
 ms.topic: article
 ---
 
 # Rendering
 
-If you already converted an arrAsset model and you would like to visualize it, click on the "Rendering" button on the main toolbar.
+In the *Rendering* tab you can start a rendering [session](https://docs.microsoft.com/azure/remote-rendering/concepts/sessions), load models and edit their materials.
 
-You can also do that while conversions are running, as the two environments (Conversion/Rendering) run independently from each other.
+To load custom models, you first need to [convert them](conversion.md). However, if you have no converted model at hand yet, you can also just load the ARR sample model through a URL (see below).
 
-The workflow to visualize and edit a model is made of three steps:
+## Controlling sessions
 
-## 1. Start new session
+The **Sessions...** button in the top left corner opens this dialog:
 
-![Start New Session](media/startsession.png)
-To render a model, we need to start the ARR service, by creating a remote rendering session. If the session isn't running yet, clicking on "Rendering" will show the "session panel" on the right. From this panel you can select the parameters for a new session, like the VM size, the maximum lease time, and select an automatic lease extension. The lease time can be extended while the session is running.
+![Start session dialog](media/startsession.png)
 
-The automatic extension option will make sure the session is automatically extended by the specified amount of minutes, if you get close to the expiration time while using ARRT. For more information on the session types, see [Create Session](https://docs.microsoft.com/azure/remote-rendering/how-tos/session-rest-api#create-a-session).
+Click **Start** to create a new session. If you already have a session running, you can also enter its *Session ID* here first, then *Start* will connect to the existing session.
 
-If you press the button "Start", a session will be created and automatically connected. This operation will require some time. Once the connection is established, this panel will collapse and the load model panel will become accessible.
+Afterwards the dialog will close. You can reopen the dialog at any time with the *Sessions...* button. While a session is running you can manually extend the session time, or change the auto-extension options.
 
-### Visualize the session status
+You can also stop the session at any time. If you just close ARRT, it will automatically stop the session for you. If you click **Stop** yourself, you get the option to keep the session running, which allows you to reconnect to it again (though you need to note the session ID somewhere first).
 
-If the session is running, you can monitor its status by expanding the session panel anytime you need.
-![Session Info](media/statuspanel.png)
-From the panel you can:
+Once you start a session, it can take some time for it to become fully available. The status is displayed in the statusbar at the very bottom. Once the green **Connected** state is shown, the UI allows to load models.
 
-* see the session ID. This ID could be used as a reference to get support.
-* visualize the status and configuration of the session
-* extend the lease time by entering an amount of time, and pressing "Extend"
-* set up an automatic time extension by clicking on "Auto Extend"
+## Loading a model from a URL
 
-Whenever the session will be near expiration time, if "Auto Extend" is active the lease time will be extended by the amount of time entered in the text field.
+Press the button **Load Model with URL...**. In the following dialog you can enter any [SAS URL](https://docs.microsoft.com/azure/storage/common/storage-sas-overview) to a converted asset in Azure Storage. You can generate such a URL with [Microsoft Azure Storage Explorer](https://azure.microsoft.com/features/storage-explorer).
 
-> Note:
-> the lease time cannot be reduced. Be careful when using the extend time function.
+However, you can also just keep the special URL **builtin://Engine** to load the standard sample model. This is the easiest way to see anything in ARRT, since you don't need to convert a model yourself to get started.
 
-To have more details on the running session, you can click on "Inspect Session". This action will open the ArrInspector tool in a default browser. For more information about the ArrInspector, see the [ArrInspector tool documentation](https://docs.microsoft.com/azure/remote-rendering/resources/tools/arr-inspector).
+## Loading a model from Azure Storage
 
-The session can be stopped with the "Stop Session" button.
+Press the button **Load Model from Storage...** and select a [converted](conversion.md) `.arrAsset` file from your connected storage account.
 
-## 2. Load a model
+## Model rendering
 
-![Loading model](media/loading.png)
-Once the session is running, you have access to a panel to load a model. By using the combo box "Input mode" on the top of the page, you can select one of the two ways to load a model:
+Once a model is loaded, you will see it in the viewport:
 
-* From **storage container**. This option uses a blob explorer similar to the one used in the conversion configuration. You can locate a model and double-click it.
-* From **SAS Url**. In this panel you can simply paste a SAS URL of your model. For more information about SAS URLs, go to [Grant limited access to Azure Storage resources using shared access signatures (SAS)](https://docs.microsoft.com/azure/storage/common/storage-sas-overview).
+![ARRT main image](media/ARRT.png)
 
-While the model is loading, you can see the status and the progress bar on the bottom.
+## Camera controls
 
-To refresh the blob list, for example after a model is converted, press the "Refresh" button on the top.
+Press the **Camera...** button to open a dialog where you can configure the field-of-view, near and far plane, and camera movement speed. The dialog also displays how to control the camera.
 
-## 3. Visualize the model
+## Scene tree
 
-![Rendering View](media/renderingview.png)
-If the model is loaded correctly, the model will be shown in a new view. On the top you can see from left to right:
+The scene tree on the left displays the structure of the loaded models. You can load multiple models simultaneously. Use the **Remove Models...** button at the top to clear the entire scene. This is especially necessary, if the loaded models exceed the [limits of the rendering VM](https://docs.microsoft.com/azure/remote-rendering/reference/limits#overall-number-of-polygons). In that case you will only see a **checkerboard pattern**.
 
-* The name of the loaded model.
-* "Unload model" button to unload the model and return to the loading page.
-* "Auto-rotate" button to toggle the automatic rotation of the model.
+Select an item either through the tree or by clicking on it in the viewport. If you **double click** an item in the scene tree, the camera will focus on it. The same can be achieved by pressing the **F key** while the viewport has input focus.
 
-The view has a viewport in the center, and three panels around it.
+## Model scale
 
-### Viewport
+Some models are very large, others are very small and yet others are very far away from the origin. ARRT attempts to detect extreme cases and notify you about it. In any case, you can always use the **Model Scale** option from the toolbar to adjust the size of the loaded models. Also change the camera movement speed as necessary and make sure the near and far plane are configured accordingly.
 
-The viewport shows the rendered model, streaming it from the ARR service. The camera controls are:
+## Material editing
 
-* WASD keys or arrow keys to move the camera on the horizontal plane
-* QE keys, +- keys, or Page Up and Page Down keys to move the camera vertically
-* Right mouse button, 4682 keys, Insert Home Delete End keys, or ZXFC keys to rotate the camera
-* SHIFT modifier to increase the camera movement speed by a factor of 10
+When an object is selected, the list on the right hand side shows all available the materials. You can edit any material and see the effect live in the viewport. More information on materials is available [in the ARR documentation](https://docs.microsoft.com/azure/remote-rendering/concepts/materials). Note that there are two types of materials: [PBR materials](https://docs.microsoft.com/azure/remote-rendering/overview/features/pbr-materials) and [color materials](https://docs.microsoft.com/azure/remote-rendering/overview/features/color-materials), which is why you will see different options in the UI depending on the selected material type.
 
-Entities can be selected by clicking on them on the viewport. When you select an entity from the viewport, the corresponding entity gets selected and highlighted in the scene tree, and the other way around.
-Double-clicking on an entity will move the camera to frame the entity in the viewport.
+> **Note:**
+>
+> Material changes are not saved. Any change you do to a material will be lost once you stop the session (or even unload a model) and will not propagate to other sessions.
 
-### Scene tree panel
+## ArrInspector
 
-This panel shows a tree view with the hierarchy of all the entities in the loaded model. You can expand every node, and select them.
+You can launch [ArrInspector](https://docs.microsoft.com/azure/remote-rendering/resources/tools/arr-inspector) for your session with the button in the toolbar. ArrInspector is a great tool to live inspect performance stats and capture traces for debugging for any of your sessions.
 
-### Material panel
+## Performance statistics
 
-This panel shows on the top a list of the materials in the selected entities, or, if there's no selected entity, the full list of materials. Materials can be selected with mouse click.
-
-When a material is selected, the lower area shows all of its editable properties. You can change properties (colors, parameters, flags) and see the results immediately reflected in the rendered model. There is no support for editing the material textures. For more information on the supported ARR materials, see [Materials](https://docs.microsoft.com/azure/remote-rendering/concepts/materials)
-
-### Statistics panel
-
-![Statistics panel](media/statspanel.png)
-
-At the bottom of the windows you have access to the statistics panel. Here you can start and stop the statistics collection and visualize the data of the current collection.
-
-Each statistic has 4 values displayed in the table:
-
-* Value. This is the summary of the values in the last second. The type of summarization depends on the source value (sum for the frame usage stats, min/max for the delta, average for all of the others)
-* Minimum/Maximum/Average. This is the minimum/maximum/average of the summarized per-second value, computed since the collection started.
-
-The statistics are organized in groups. If you click on any statistic, its group is expanded and a graph will show the live progress over time. On the X axis you can have either the raw data received each frame, or the summarized data per second. Switch between the two modes using the combobox at the top right corner.
-
-Hover with the mouse to inspect the values on the graph at a specific time.
-
-To have an automatic benchmark of the performance, you can click on "Start auto-collecting". This function runs a collection for a fixed amount of time, while rotating the model, to emulate client usage.
+In the bottom left corner ARRT displays some performance stats that are available through the ARR API. These values are also available in ArrInspector, where you can plot them on a graph.

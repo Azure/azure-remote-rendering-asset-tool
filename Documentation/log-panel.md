@@ -1,18 +1,16 @@
 ---
-title: Log panel in Azure Remote Rendering Asset Tool
-description: Panel to visualize the logs in ARRT
-author: mafranc
-ms.author: mafranc
-ms.date: 03/23/2020
+title: ARRT Log Panel
+description: Panel that displays Azure Remote Rendering logs
+author: jakras
+ms.author: jakras
+ms.date: 12/23/2021
 ms.topic: article
 ---
 
 # Log panel
 
+Many operations that interact with Azure services are asynchronous, which means that you don't get the result right away, but instead they are running in the background for a while. Although ARRT tries to present as much information as possible right away, some information will only arrive later.
+
+ARRT displays such information and error messages in the log panel.
+
 ![Log panel](media/logpanel.png)
-
-Any operation might produce an output that is displayed in the log panel. To open the panel, click on the "Log" button on the main toolbar. That button will also show the number of new log entries, when the panel isn't visualized.
-
-Each log entry in the log list has a message type (Debug, Info, Warning, Error) which can be filtered with the buttons in the log toolbar.
-
-On the right side of that toolbar, you can switch between "Simple" and "Detailed" view. The detailed view shows timestamp and code location.
