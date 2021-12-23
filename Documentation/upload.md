@@ -1,5 +1,5 @@
 ---
-title: Uploading data with ARRT
+title: Uploading Files with ARRT
 description: Describes how to upload 3D models to Azure Storage with the Azure Remote Rendering Toolkit
 author: jakras
 ms.author: jakras
@@ -7,28 +7,16 @@ ms.date: 12/23/2021
 ms.topic: article
 ---
 
-# Upload models in Azure Remote Rendering asset tool
+# Uploading Files with ARRT
 
-![Upload panel](media/upload.png)
-To convert a 3D model, first it has to be uploaded to one the containers in your Azure Storage account. To do so, click on the "Upload" button on the main toolbar.
+The [conversion](conversion.md) service needs all data to be located in an Azure Storage container to read from. Therefore, you have to upload your assets into Azure Storage to convert them.
 
-## Selection a container
+The *Storage* tab displays the content of your storage account:
 
-Select the container where you want to upload the model using the combo-box on the top.
-If you want to upload your files to a new container, you can press the "+" icon on the right side of the container combo-box. You can then type the name of the new container and press enter. If the container you typed exists, it will be selected, if it doesn't exist, it will be created as soon as you'll upload a file into it.
+![Azure Storage account file listing](media/storage.png)
 
-## Selection of the destination directory
+At the top you can switch between different storage containers. The tree view displays the file structure within that container. The right-most buttons allow you to create new folders, delete files or folders and upload files or entire folders. These actions all operate on the file or folder that is currently selected in the tree view.
 
-To select a destination directory, you can navigate to it by double clicking on it in the blob list. Alternatively, you can click on the right arrow on one of the directory buttons, to navigate to one of its sub-directories.
+The statusbar displays how many files are still left to upload.
 
-To select a new directory, click on the "Add Sub-Directory" button, with a folder and a plus sign, enter the name of a new directory and press enter.
-
-## Upload
-
-To upload files from your local hard drive into the current root directory, you can:
-
-* drag and drop the files directly into the list
-* click on the "Upload files" on the top. You can multi-select all of the files that you want to upload to the current blob container.
-* click on "Upload directory". You can select a whole folder to upload to the current blob container.
-
-To refresh the blob list, press the "Refresh" button on the top.
+Be aware that when [converting](conversion.md) a model, the conversion service will download an entire folder, with all files in it, not just the source asset file. Therefore it is very much advised to create a dedicated folder for each asset and its dependent input files, otherwise the conversion service may need to download much more data than necessary, which can waste a lot of time.
