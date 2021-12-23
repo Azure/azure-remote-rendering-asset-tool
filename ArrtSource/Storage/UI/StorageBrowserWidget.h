@@ -23,7 +23,7 @@ public:
     /// Refreshes the underlying model
     void RefreshModel();
 
-    void SetStorageAccount(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer);
+    void SetStorageAccount(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, const QString& parentFilter);
 
     /// Returns the currently selected storage container.
     const QString& GetSelectedContainer() const { return m_selectedContainer; }

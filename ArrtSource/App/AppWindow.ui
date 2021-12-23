@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="Tabs">
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="Upload">
        <attribute name="title">
@@ -129,12 +129,46 @@
                   <widget class="QPushButton" name="SelectSourceButton">
                    <property name="minimumSize">
                     <size>
-                     <width>100</width>
+                     <width>130</width>
                      <height>0</height>
                     </size>
                    </property>
                    <property name="text">
-                    <string>Select Input...</string>
+                    <string>Select Asset...</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_29">
+                 <property name="text">
+                  <string>Input folder:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_12">
+                 <item>
+                  <widget class="QLineEdit" name="InputFolderLine">
+                   <property name="accessibleName">
+                    <string>Input asset</string>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="SelectInputFolderButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>130</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Select Input Folder...</string>
                    </property>
                   </widget>
                  </item>
@@ -163,12 +197,12 @@
                   <widget class="QPushButton" name="SelectOutputFolderButton">
                    <property name="minimumSize">
                     <size>
-                     <width>100</width>
+                     <width>130</width>
                      <height>0</height>
                     </size>
                    </property>
                    <property name="text">
-                    <string>Select Output...</string>
+                    <string>Select Output Folder...</string>
                    </property>
                   </widget>
                  </item>

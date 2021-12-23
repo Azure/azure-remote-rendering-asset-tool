@@ -24,12 +24,13 @@ void StorageBrowserWidget::RefreshModel()
     m_storageModel.RefreshModel(false);
 }
 
-void StorageBrowserWidget::SetStorageAccount(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer)
+void StorageBrowserWidget::SetStorageAccount(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, const QString& parentFilter)
 {
     if (m_storageAccount == account)
         return;
 
-    const bool allowEdits = (showTypes == StorageEntry::Type::Other);
+    const bool parentOnly = !parentFilter.isEmpty();
+    const bool allowEdits = (showTypes == StorageEntry::Type::Other) && !parentOnly;
 
     // disallow editing containers when selecting a file or folder
     AddContainerButton->setVisible(allowEdits);
@@ -37,10 +38,13 @@ void StorageBrowserWidget::SetStorageAccount(StorageAccount* account, StorageEnt
     DeleteItemButton->setVisible(allowEdits);
     UploadFileButton->setVisible(allowEdits);
     UploadFolderButton->setVisible(allowEdits);
+    
+    StorageContainer->setEnabled(!parentOnly);
+    AddFolderButton->setEnabled(!parentOnly);
 
     m_selectedContainer = startContainer;
     m_storageAccount = account;
-    m_storageModel.SetShowTypes(showTypes);
+    m_storageModel.SetFilter(showTypes, parentFilter);
 
     UpdateUI();
 

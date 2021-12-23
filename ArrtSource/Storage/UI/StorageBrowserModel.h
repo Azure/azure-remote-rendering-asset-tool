@@ -38,7 +38,7 @@ class StorageBrowserModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    void SetShowTypes(StorageEntry::Type types);
+    void SetFilter(StorageEntry::Type showTypes, const QString& parentPathFilter);
     bool SetAccountAndContainer(StorageAccount* account, const QString& containerName);
 
     /// Checks whether there are any changes in the storage account (files added or removed) and updates the respective local data.
@@ -62,6 +62,7 @@ private:
     StorageAccount* m_storageAccount = nullptr;
     QString m_containerName;
     StorageEntry::Type m_showTypes = StorageEntry::Type::Other;
+    QString m_parentPathFilter;
 
     mutable StorageEntry m_rootEntry;
 };

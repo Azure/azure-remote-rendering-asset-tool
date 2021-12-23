@@ -38,6 +38,7 @@ public:
 
     void SetConversionName(const QString& name);
     void SetConversionSourceAsset(const QString& container, const QString& path);
+    void SetConversionInputFolder(const QString& path);
     void SetConversionOutputFolder(const QString& container, const QString& path);
     void SetConversionAdvanced(bool advanced);
     void SetConversionAdvancedOptions(const ConversionOptions& options);

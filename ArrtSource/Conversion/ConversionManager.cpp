@@ -69,6 +69,11 @@ bool ConversionManager::StartConversion()
         conv.m_name = conv.GetPlaceholderName();
     }
 
+    if (conv.m_inputFolder.isEmpty())
+    {
+        conv.m_inputFolder = conv.GetPlaceholderInputFolder();
+    }
+
     if (!StartConversionInternal())
     {
         conv.m_status = ConversionStatus::New;
@@ -103,6 +108,19 @@ void ConversionManager::SetConversionSourceAsset(const QString& container, const
     {
         conv.m_sourceAssetContainer = container;
         conv.m_sourceAsset = path;
+        conv.m_inputFolder.clear(); // reset the input folder
+
+        Q_EMIT SelectedChanged();
+    }
+}
+
+void ConversionManager::SetConversionInputFolder(const QString& path)
+{
+    auto& conv = m_conversions[m_selectedConversion];
+
+    if (conv.m_inputFolder != path)
+    {
+        conv.m_inputFolder = path;
 
         Q_EMIT SelectedChanged();
     }
@@ -179,13 +197,14 @@ bool ConversionManager::StartConversionInternal()
     auto& conv = m_conversions[m_selectedConversion];
 
     {
-        QString srcFolder = conv.m_sourceAsset;
-        int lastSlash = srcFolder.lastIndexOf("/");
-        if (lastSlash >= 0)
-        {
-            srcFolder = srcFolder.left(lastSlash + 1);
-        }
+        QString srcFolder = conv.m_inputFolder;
+        //int lastSlash = srcFolder.lastIndexOf("/");
+        //if (lastSlash >= 0)
+        //{
+        //    srcFolder = srcFolder.left(lastSlash + 1);
+        //}
 
+        // TODO: list recursively
         std::vector<StorageBlobInfo> dirs, files;
         m_storageAccount->ListBlobDirectory(conv.m_sourceAssetContainer, srcFolder, dirs, files);
 
@@ -229,12 +248,26 @@ bool ConversionManager::StartConversionInternal()
 
     const QString outputSasToken = m_storageAccount->CreateSasToken(outputContainerUri, azure::storage::blob_shared_access_policy::write | azure::storage::blob_shared_access_policy::list | azure::storage::blob_shared_access_policy::create);
 
-    
+
     const QString inputUri = QString("%1/%2").arg(m_storageAccount->GetEndpointUrl()).arg(conv.m_sourceAssetContainer);
     const QString outputUri = QString("%1/%2").arg(m_storageAccount->GetEndpointUrl()).arg(conv.m_outputFolderContainer);
 
-    const QString relInputPath = QFileInfo(conv.m_sourceAsset).dir().path();
-    const QString relInputFile = QFileInfo(conv.m_sourceAsset).fileName();
+    QString inputFolder = conv.m_inputFolder;
+
+    QString relInputFile = conv.m_sourceAsset;
+
+    if (relInputFile.startsWith(inputFolder))
+    {
+        relInputFile = relInputFile.mid(inputFolder.length());
+    }
+    
+
+    if (inputFolder.endsWith("/"))
+    {
+        inputFolder.chop(1);
+    }
+
+    const QString relInputPath = inputFolder;
 
     const QString relOutputPath = conv.m_outputFolder;
     const QString relOutputFile = conv.m_name + ".arrAsset";
@@ -334,4 +367,16 @@ void ConversionManager::SetConversionStatus(int conversionIdx, RR::Status status
 QString Conversion::GetPlaceholderName() const
 {
     return QFileInfo(m_sourceAsset).baseName();
+}
+
+QString Conversion::GetPlaceholderInputFolder() const
+{
+    QString srcFolder = m_sourceAsset;
+    int lastSlash = srcFolder.lastIndexOf("/");
+    if (lastSlash >= 0)
+    {
+        return srcFolder.left(lastSlash + 1);
+    }
+
+    return "";
 }
