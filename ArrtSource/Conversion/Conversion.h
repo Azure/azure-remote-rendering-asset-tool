@@ -67,10 +67,9 @@ struct ConversionOptions
     float m_scaling = 1.0f;
     bool m_recenterToOrigin = false;
     Sideness m_opaqueMaterialDefaultSidedness = Sideness::DoubleSided;
-    QString m_materialOverride;
     bool m_gammaToLinearMaterial = false;
     bool m_gammaToLinearVertex = false;
-    SceneGraphMode m_sceneGraphMode = SceneGraphMode::Dynamic;
+    SceneGraphMode m_sceneGraphMode = SceneGraphMode::Static;
     bool m_generateCollisionMesh = true;
     bool m_unlitMaterials = false;
     bool m_fbxAssumeMetallic = true;

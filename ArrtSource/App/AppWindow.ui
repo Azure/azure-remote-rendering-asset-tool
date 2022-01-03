@@ -226,12 +226,19 @@
                     <x>0</x>
                     <y>0</y>
                     <width>648</width>
-                    <height>566</height>
+                    <height>540</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_8">
                    <item>
                     <layout class="QFormLayout" name="formLayout">
+                     <item row="0" column="1">
+                      <widget class="QPushButton" name="ResetAdvancedButton">
+                       <property name="text">
+                        <string>Reset to defaults</string>
+                       </property>
+                      </widget>
+                     </item>
                      <item row="1" column="0">
                       <widget class="QLabel" name="label_6">
                        <property name="text">
@@ -253,223 +260,13 @@
                       </widget>
                      </item>
                      <item row="2" column="0">
-                      <widget class="QLabel" name="label_7">
-                       <property name="text">
-                        <string>Recenter to Origin</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="0">
-                      <widget class="QLabel" name="label_8">
-                       <property name="text">
-                        <string>Opaque Material Default Sidedness</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="4" column="0">
-                      <widget class="QLabel" name="label_9">
-                       <property name="text">
-                        <string>Material Override</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="5" column="0">
-                      <widget class="QLabel" name="label_10">
-                       <property name="text">
-                        <string>Gamma to Linear Material</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="6" column="0">
-                      <widget class="QLabel" name="label_11">
-                       <property name="text">
-                        <string>Gamma to Linear Vertex</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="7" column="0">
                       <widget class="QLabel" name="label_12">
                        <property name="text">
                         <string>Scene Graph Mode</string>
                        </property>
                       </widget>
                      </item>
-                     <item row="8" column="0">
-                      <widget class="QLabel" name="label_13">
-                       <property name="text">
-                        <string>Generate Collision Mesh</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="9" column="0">
-                      <widget class="QLabel" name="label_14">
-                       <property name="text">
-                        <string>Unlit Materials</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="10" column="0">
-                      <widget class="QLabel" name="label_15">
-                       <property name="text">
-                        <string>FBX Assume Metallic</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="11" column="0">
-                      <widget class="QLabel" name="label_16">
-                       <property name="text">
-                        <string>De-duplicate Materials</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="12" column="0">
-                      <widget class="QLabel" name="label_17">
-                       <property name="text">
-                        <string>Axis [0]</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="13" column="0">
-                      <widget class="QLabel" name="label_18">
-                       <property name="text">
-                        <string>Axis [1]</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="14" column="0">
-                      <widget class="QLabel" name="label_19">
-                       <property name="text">
-                        <string>Axis [2]</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="15" column="0">
-                      <widget class="QLabel" name="label_20">
-                       <property name="text">
-                        <string>Vertex Position</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="16" column="0">
-                      <widget class="QLabel" name="label_21">
-                       <property name="text">
-                        <string>Vertex Color 0</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="17" column="0">
-                      <widget class="QLabel" name="label_22">
-                       <property name="text">
-                        <string>Vertex Color 1</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="18" column="0">
-                      <widget class="QLabel" name="label_23">
-                       <property name="text">
-                        <string>Vertex Normal</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="19" column="0">
-                      <widget class="QLabel" name="label_24">
-                       <property name="text">
-                        <string>Vertex Tangent</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="20" column="0">
-                      <widget class="QLabel" name="label_25">
-                       <property name="text">
-                        <string>Vertex Bitangent</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="21" column="0">
-                      <widget class="QLabel" name="label_26">
-                       <property name="text">
-                        <string>Vertex Texture Coord 0</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="22" column="0">
-                      <widget class="QLabel" name="label_27">
-                       <property name="text">
-                        <string>Vertex Texture Coord 1</string>
-                       </property>
-                      </widget>
-                     </item>
                      <item row="2" column="1">
-                      <widget class="QCheckBox" name="RecenterToOriginCheckbox">
-                       <property name="accessibleName">
-                        <string>Recenter to origin</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="5" column="1">
-                      <widget class="QCheckBox" name="GammaToLinearMaterialCheckbox">
-                       <property name="accessibleName">
-                        <string>Gamma to linear material</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="6" column="1">
-                      <widget class="QCheckBox" name="GammaToLinearVertexCheckbox">
-                       <property name="accessibleName">
-                        <string>Gamma to linear vertex</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="8" column="1">
-                      <widget class="QCheckBox" name="CollisionMeshCheckbox">
-                       <property name="accessibleName">
-                        <string>Generate collision mesh</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="9" column="1">
-                      <widget class="QCheckBox" name="UnlitMaterialsCheckbox">
-                       <property name="accessibleName">
-                        <string>Unlit materials</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="10" column="1">
-                      <widget class="QCheckBox" name="FbxAssumeMetallicCheckbox">
-                       <property name="accessibleName">
-                        <string>FBX assume metallic</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="11" column="1">
-                      <widget class="QCheckBox" name="DeduplicateMaterialsCheckbox">
-                       <property name="accessibleName">
-                        <string>Deduplicate materials</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="7" column="1">
                       <widget class="QComboBox" name="ScenegraphModeCombo">
                        <property name="accessibleName">
                         <string>Scene graph mode</string>
@@ -494,14 +291,160 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="4" column="1">
-                      <widget class="QLineEdit" name="MaterialOverrideEdit">
-                       <property name="accessibleName">
-                        <string>Material override</string>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="label_7">
+                       <property name="text">
+                        <string>Recenter to Origin</string>
                        </property>
                       </widget>
                      </item>
-                     <item row="12" column="1">
+                     <item row="3" column="1">
+                      <widget class="QCheckBox" name="RecenterToOriginCheckbox">
+                       <property name="accessibleName">
+                        <string>Recenter to origin</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="0">
+                      <widget class="QLabel" name="label_13">
+                       <property name="text">
+                        <string>Generate Collision Mesh</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="1">
+                      <widget class="QCheckBox" name="CollisionMeshCheckbox">
+                       <property name="accessibleName">
+                        <string>Generate collision mesh</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
+                      <widget class="QLabel" name="label_14">
+                       <property name="text">
+                        <string>Unlit Materials</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="1">
+                      <widget class="QCheckBox" name="UnlitMaterialsCheckbox">
+                       <property name="accessibleName">
+                        <string>Unlit materials</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="6" column="0">
+                      <widget class="QLabel" name="label_16">
+                       <property name="text">
+                        <string>De-duplicate Materials</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="6" column="1">
+                      <widget class="QCheckBox" name="DeduplicateMaterialsCheckbox">
+                       <property name="accessibleName">
+                        <string>Deduplicate materials</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="7" column="0">
+                      <widget class="QLabel" name="label_8">
+                       <property name="text">
+                        <string>Opaque Material Default Sidedness</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="7" column="1">
+                      <widget class="QComboBox" name="DefaultSidednessCombo">
+                       <property name="accessibleName">
+                        <string>Default sidedness for opaque materials</string>
+                       </property>
+                       <property name="currentIndex">
+                        <number>1</number>
+                       </property>
+                       <item>
+                        <property name="text">
+                         <string>Single Sided</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Double Sided</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                     <item row="8" column="0">
+                      <widget class="QLabel" name="label_10">
+                       <property name="text">
+                        <string>Gamma to Linear Material</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="8" column="1">
+                      <widget class="QCheckBox" name="GammaToLinearMaterialCheckbox">
+                       <property name="accessibleName">
+                        <string>Gamma to linear material</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="9" column="0">
+                      <widget class="QLabel" name="label_11">
+                       <property name="text">
+                        <string>Gamma to Linear Vertex</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="9" column="1">
+                      <widget class="QCheckBox" name="GammaToLinearVertexCheckbox">
+                       <property name="accessibleName">
+                        <string>Gamma to linear vertex</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="10" column="0">
+                      <widget class="QLabel" name="label_15">
+                       <property name="text">
+                        <string>FBX Assume Metallic</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="10" column="1">
+                      <widget class="QCheckBox" name="FbxAssumeMetallicCheckbox">
+                       <property name="accessibleName">
+                        <string>FBX assume metallic</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="11" column="0">
+                      <widget class="QLabel" name="label_17">
+                       <property name="text">
+                        <string>Axis [0]</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="11" column="1">
                       <widget class="QComboBox" name="Axis0Combo">
                        <property name="accessibleName">
                         <string>Main axis 0</string>
@@ -546,7 +489,14 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="13" column="1">
+                     <item row="12" column="0">
+                      <widget class="QLabel" name="label_18">
+                       <property name="text">
+                        <string>Axis [1]</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="12" column="1">
                       <widget class="QComboBox" name="Axis1Combo">
                        <property name="accessibleName">
                         <string>Main axis 1</string>
@@ -591,7 +541,14 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="14" column="1">
+                     <item row="13" column="0">
+                      <widget class="QLabel" name="label_19">
+                       <property name="text">
+                        <string>Axis [2]</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="13" column="1">
                       <widget class="QComboBox" name="Axis2Combo">
                        <property name="accessibleName">
                         <string>Main axis 2</string>
@@ -636,7 +593,14 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="15" column="1">
+                     <item row="14" column="0">
+                      <widget class="QLabel" name="label_20">
+                       <property name="text">
+                        <string>Vertex Position</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="14" column="1">
                       <widget class="QComboBox" name="VertexPositionCombo">
                        <property name="accessibleName">
                         <string>Vertex position data type</string>
@@ -653,57 +617,14 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="21" column="1">
-                      <widget class="QComboBox" name="TexCoord0Combo">
-                       <property name="accessibleName">
-                        <string>Texture coordinate 0 data type</string>
+                     <item row="15" column="0">
+                      <widget class="QLabel" name="label_21">
+                       <property name="text">
+                        <string>Vertex Color 0</string>
                        </property>
-                       <property name="currentIndex">
-                        <number>1</number>
-                       </property>
-                       <item>
-                        <property name="text">
-                         <string>None</string>
-                        </property>
-                       </item>
-                       <item>
-                        <property name="text">
-                         <string>Float 32</string>
-                        </property>
-                       </item>
-                       <item>
-                        <property name="text">
-                         <string>Float 16</string>
-                        </property>
-                       </item>
                       </widget>
                      </item>
-                     <item row="22" column="1">
-                      <widget class="QComboBox" name="TexCoord1Combo">
-                       <property name="accessibleName">
-                        <string>Texture coordinate 1 data type</string>
-                       </property>
-                       <property name="currentIndex">
-                        <number>1</number>
-                       </property>
-                       <item>
-                        <property name="text">
-                         <string>None</string>
-                        </property>
-                       </item>
-                       <item>
-                        <property name="text">
-                         <string>Float 32</string>
-                        </property>
-                       </item>
-                       <item>
-                        <property name="text">
-                         <string>Float 16</string>
-                        </property>
-                       </item>
-                      </widget>
-                     </item>
-                     <item row="16" column="1">
+                     <item row="15" column="1">
                       <widget class="QComboBox" name="VertexColor0Combo">
                        <property name="accessibleName">
                         <string>Vertex color 0 data type</string>
@@ -723,7 +644,14 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="17" column="1">
+                     <item row="16" column="0">
+                      <widget class="QLabel" name="label_22">
+                       <property name="text">
+                        <string>Vertex Color 1</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="16" column="1">
                       <widget class="QComboBox" name="VertexColor1Combo">
                        <property name="accessibleName">
                         <string>Vertex color 1 data type</string>
@@ -740,7 +668,14 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="18" column="1">
+                     <item row="17" column="0">
+                      <widget class="QLabel" name="label_23">
+                       <property name="text">
+                        <string>Vertex Normal</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="17" column="1">
                       <widget class="QComboBox" name="VertexNormalCombo">
                        <property name="accessibleName">
                         <string>Vertex normal data type</string>
@@ -765,7 +700,14 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="19" column="1">
+                     <item row="18" column="0">
+                      <widget class="QLabel" name="label_24">
+                       <property name="text">
+                        <string>Vertex Tangent</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="18" column="1">
                       <widget class="QComboBox" name="VertexTangentCombo">
                        <property name="accessibleName">
                         <string>Vertex tangent data type</string>
@@ -790,7 +732,14 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="20" column="1">
+                     <item row="19" column="0">
+                      <widget class="QLabel" name="label_25">
+                       <property name="text">
+                        <string>Vertex Bitangent</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="19" column="1">
                       <widget class="QComboBox" name="VertexBitangentCombo">
                        <property name="accessibleName">
                         <string>Vertex bitangent data type</string>
@@ -815,31 +764,68 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="3" column="1">
-                      <widget class="QComboBox" name="DefaultSidednessCombo">
+                     <item row="20" column="0">
+                      <widget class="QLabel" name="label_26">
+                       <property name="text">
+                        <string>Vertex Texture Coord 0</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="20" column="1">
+                      <widget class="QComboBox" name="TexCoord0Combo">
                        <property name="accessibleName">
-                        <string>Default sidedness for opaque materials</string>
+                        <string>Texture coordinate 0 data type</string>
                        </property>
                        <property name="currentIndex">
                         <number>1</number>
                        </property>
                        <item>
                         <property name="text">
-                         <string>Single Sided</string>
+                         <string>None</string>
                         </property>
                        </item>
                        <item>
                         <property name="text">
-                         <string>Double Sided</string>
+                         <string>Float 32</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Float 16</string>
                         </property>
                        </item>
                       </widget>
                      </item>
-                     <item row="0" column="1">
-                      <widget class="QPushButton" name="ResetAdvancedButton">
+                     <item row="21" column="0">
+                      <widget class="QLabel" name="label_27">
                        <property name="text">
-                        <string>Reset to defaults</string>
+                        <string>Vertex Texture Coord 1</string>
                        </property>
+                      </widget>
+                     </item>
+                     <item row="21" column="1">
+                      <widget class="QComboBox" name="TexCoord1Combo">
+                       <property name="accessibleName">
+                        <string>Texture coordinate 1 data type</string>
+                       </property>
+                       <property name="currentIndex">
+                        <number>1</number>
+                       </property>
+                       <item>
+                        <property name="text">
+                         <string>None</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Float 32</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Float 16</string>
+                        </property>
+                       </item>
                       </widget>
                      </item>
                     </layout>
@@ -1797,14 +1783,9 @@
   <tabstop>ScalingSpinbox</tabstop>
   <tabstop>RecenterToOriginCheckbox</tabstop>
   <tabstop>DefaultSidednessCombo</tabstop>
-  <tabstop>MaterialOverrideEdit</tabstop>
   <tabstop>GammaToLinearMaterialCheckbox</tabstop>
   <tabstop>GammaToLinearVertexCheckbox</tabstop>
-  <tabstop>ScenegraphModeCombo</tabstop>
-  <tabstop>CollisionMeshCheckbox</tabstop>
-  <tabstop>UnlitMaterialsCheckbox</tabstop>
   <tabstop>FbxAssumeMetallicCheckbox</tabstop>
-  <tabstop>DeduplicateMaterialsCheckbox</tabstop>
   <tabstop>Axis0Combo</tabstop>
   <tabstop>Axis1Combo</tabstop>
   <tabstop>Axis2Combo</tabstop>
