@@ -38,7 +38,7 @@ void StorageBrowserWidget::SetStorageAccount(StorageAccount* account, StorageEnt
     DeleteItemButton->setVisible(allowEdits);
     UploadFileButton->setVisible(allowEdits);
     UploadFolderButton->setVisible(allowEdits);
-    
+
     StorageContainer->setEnabled(!parentOnly);
     AddFolderButton->setEnabled(!parentOnly);
 
@@ -124,7 +124,14 @@ void StorageBrowserWidget::on_AddContainerButton_clicked()
     }
     else
     {
-        QMessageBox::warning(this, "Storage Container Creation Failed", QString("The storage container '%1' could not be created.\n\nReason: %2").arg(name).arg(errorMsg), QMessageBox::StandardButton::Ok);
+        QMessageBox box;
+        box.setWindowTitle("Storage Container Creation Failed");
+        box.setTextFormat(Qt::RichText);
+        box.setText(QString("The storage container '%1' could not be created.<br><br>Reason: %2<br><br>See this link for container name restrictions:<br><a href='https://docs.microsoft.com/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata#container-names'>Naming and Referencing Containers, Blobs, and Metadata</a>").arg(name).arg(errorMsg));
+        box.setStandardButtons(QMessageBox::StandardButton::Ok);
+        box.setIcon(QMessageBox::Warning);
+        box.setTextInteractionFlags(Qt::TextBrowserInteraction);
+        box.exec();
     }
 }
 
