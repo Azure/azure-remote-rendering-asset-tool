@@ -40,7 +40,7 @@ void StorageBrowserWidget::SetStorageAccount(StorageAccount* account, StorageEnt
     UploadFolderButton->setVisible(allowEdits);
 
     StorageContainer->setEnabled(!parentOnly);
-    AddFolderButton->setEnabled(!parentOnly);
+    AddFolderButton->setVisible(!parentOnly);
 
     m_selectedContainer = startContainer;
     m_storageAccount = account;

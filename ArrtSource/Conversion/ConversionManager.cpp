@@ -197,26 +197,42 @@ bool ConversionManager::StartConversionInternal()
     auto& conv = m_conversions[m_selectedConversion];
 
     {
-        QString srcFolder = conv.m_inputFolder;
-
-        // TODO: list recursively
-        std::vector<StorageBlobInfo> dirs, files;
-        m_storageAccount->ListBlobDirectory(conv.m_sourceAssetContainer, srcFolder, dirs, files);
-
+        std::deque<QString> folders;
+        folders.push_back(conv.m_inputFolder);
         int srcAssets = 0;
-        for (const auto& file : files)
-        {
-            if (StorageBrowserModel::IsSrcAsset(file.m_path))
-            {
-                srcAssets++;
-            }
-        }
 
-        if (srcAssets > 1)
+        while (!folders.empty())
         {
-            if (QMessageBox::warning(nullptr, "Multiple Source Assets Found", QString("The folder of the input asset contains %1 asset files (GLB, GLTF or FBX). The conversion service needs to download the entire folder. The more unrelated data is in that folder, the longer the conversion will take because of this download.\n\nFor best conversion speed, every asset (and its accompanying files, such as textures) should reside in its own folder.\n\nContinue anyway?").arg(srcAssets), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+            QString srcFolder = folders.front();
+            folders.pop_front();
+
+            std::vector<StorageBlobInfo> dirs, files;
+            m_storageAccount->ListBlobDirectory(conv.m_sourceAssetContainer, srcFolder, dirs, files);
+
+            for (const auto& file : files)
             {
-                return false;
+                if (StorageBrowserModel::IsSrcAsset(file.m_path))
+                {
+                    srcAssets++;
+                }
+            }
+
+            if (srcAssets > 1)
+            {
+                if (QMessageBox::warning(nullptr, "Multiple Source Assets Found", QString("The folder of the input asset contains %1 asset files (GLB, GLTF or FBX). The conversion service needs to download the entire folder. The more unrelated data is in that folder, the longer the conversion will take because of this download.\n\nFor best conversion speed, every asset (and its accompanying files, such as textures) should reside in its own folder.\n\nContinue anyway?").arg(srcAssets), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+                {
+                    return false;
+                }
+                else
+                {
+                    // asked once, don't ask again
+                    break;
+                }
+            }
+
+            for (const auto& dir : dirs)
+            {
+                folders.push_back(dir.m_path);
             }
         }
     }
@@ -255,7 +271,7 @@ bool ConversionManager::StartConversionInternal()
     {
         relInputFile = relInputFile.mid(inputFolder.length());
     }
-    
+
 
     if (inputFolder.endsWith("/"))
     {
