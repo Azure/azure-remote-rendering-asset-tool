@@ -198,11 +198,6 @@ bool ConversionManager::StartConversionInternal()
 
     {
         QString srcFolder = conv.m_inputFolder;
-        //int lastSlash = srcFolder.lastIndexOf("/");
-        //if (lastSlash >= 0)
-        //{
-        //    srcFolder = srcFolder.left(lastSlash + 1);
-        //}
 
         // TODO: list recursively
         std::vector<StorageBlobInfo> dirs, files;
