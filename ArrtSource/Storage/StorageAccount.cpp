@@ -42,9 +42,9 @@ void StorageAccount::SetSettings(const QString& accountName, const QString& acco
     if (m_accountName == accountName && m_accountKey == accountKey && m_endpointUrl == endpointUrl)
         return;
 
-    m_accountName = accountName;
-    m_accountKey = accountKey;
-    m_endpointUrl = endpointUrl;
+    m_accountName = accountName.trimmed();
+    m_accountKey = accountKey.trimmed();
+    m_endpointUrl = endpointUrl.trimmed();
 
     SaveSettings();
 
@@ -121,6 +121,8 @@ void StorageAccount::DisconnectFromStorageAccount()
 {
     SetConnectionStatus(StorageConnectionStatus::NotAuthenticated);
     m_blobClient = nullptr;
+
+    ClearCache();
 }
 
 bool StorageAccount::CreateContainer(const QString& containerName, QString& errorMsg)
@@ -205,6 +207,8 @@ bool StorageAccount::DeleteItem(const QString& containerName, const QString& pat
             b.delete_blob();
         }
 
+        // TODO: wouldn't need to clear the entire cache
+        ClearCache();
         return true;
     }
     catch (std::exception& e)
@@ -231,6 +235,9 @@ bool StorageAccount::CreateTextItem(const QString& containerName, const QString&
 
         azure::storage::cloud_block_blob blob = container.get_block_blob_reference(path.toStdWString());
         blob.upload_from_stream(is);
+
+        // TODO: wouldn't need to clear the entire cache
+        ClearCache();
 
         return true;
     }
@@ -262,6 +269,16 @@ void StorageAccount::ListBlobDirectory(const QString& containerName, const QStri
     if (!container.is_valid() || container.name() == L"$root")
         return;
 
+    const QString cacheKey = containerName + "##" + prefixPath;
+
+    auto cacheIt = m_cachedBlobs.find(cacheKey);
+    if (cacheIt != m_cachedBlobs.end())
+    {
+        directories = cacheIt->second.m_directories;
+        files = cacheIt->second.m_files;
+        return;
+    }
+
     azure::storage::list_blob_item_iterator endIt;
     for (auto blobIt = container.list_blobs(prefixPath.toStdWString(), false, blob_listing_details::none, 1000, {}, {}); blobIt != endIt; ++blobIt)
     {
@@ -285,6 +302,15 @@ void StorageAccount::ListBlobDirectory(const QString& containerName, const QStri
             directories.push_back(info);
         }
     }
+
+    auto& cached = m_cachedBlobs[cacheKey];
+    cached.m_directories = directories;
+    cached.m_files = files;
+}
+
+void StorageAccount::ClearCache()
+{
+    m_cachedBlobs.clear();
 }
 
 azure::storage::storage_uri StorageAccount::GetContainerUriFromName(const QString& containerName) const

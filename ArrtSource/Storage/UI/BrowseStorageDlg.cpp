@@ -3,7 +3,7 @@
 #include <Storage/UI/BrowseStorageDlg.h>
 #include <QMessageBox>
 
-BrowseStorageDlg::BrowseStorageDlg(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, QWidget* parent /*= {}*/)
+BrowseStorageDlg::BrowseStorageDlg(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, const QString& parentFilter, QWidget* parent /*= {}*/)
     : QDialog(parent)
     , m_showTypes(showTypes)
 {
@@ -11,7 +11,7 @@ BrowseStorageDlg::BrowseStorageDlg(StorageAccount* account, StorageEntry::Type s
 
     connect(StorageBrowser, &StorageBrowserWidget::ItemSelected, this, &BrowseStorageDlg::ItemSelected);
 
-    StorageBrowser->SetStorageAccount(account, showTypes, startContainer);
+    StorageBrowser->SetStorageAccount(account, showTypes, startContainer, parentFilter);
 
     if (account->GetConnectionStatus() != StorageConnectionStatus::Authenticated)
     {

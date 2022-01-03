@@ -24,12 +24,13 @@ void StorageBrowserWidget::RefreshModel()
     m_storageModel.RefreshModel(false);
 }
 
-void StorageBrowserWidget::SetStorageAccount(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer)
+void StorageBrowserWidget::SetStorageAccount(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, const QString& parentFilter)
 {
     if (m_storageAccount == account)
         return;
 
-    const bool allowEdits = (showTypes == StorageEntry::Type::Other);
+    const bool parentOnly = !parentFilter.isEmpty();
+    const bool allowEdits = (showTypes == StorageEntry::Type::Other) && !parentOnly;
 
     // disallow editing containers when selecting a file or folder
     AddContainerButton->setVisible(allowEdits);
@@ -38,9 +39,12 @@ void StorageBrowserWidget::SetStorageAccount(StorageAccount* account, StorageEnt
     UploadFileButton->setVisible(allowEdits);
     UploadFolderButton->setVisible(allowEdits);
 
+    StorageContainer->setEnabled(!parentOnly);
+    AddFolderButton->setEnabled(!parentOnly);
+
     m_selectedContainer = startContainer;
     m_storageAccount = account;
-    m_storageModel.SetShowTypes(showTypes);
+    m_storageModel.SetFilter(showTypes, parentFilter);
 
     UpdateUI();
 
@@ -120,7 +124,14 @@ void StorageBrowserWidget::on_AddContainerButton_clicked()
     }
     else
     {
-        QMessageBox::warning(this, "Storage Container Creation Failed", QString("The storage container '%1' could not be created.\n\nReason: %2").arg(name).arg(errorMsg), QMessageBox::StandardButton::Ok);
+        QMessageBox box;
+        box.setWindowTitle("Storage Container Creation Failed");
+        box.setTextFormat(Qt::RichText);
+        box.setText(QString("The storage container '%1' could not be created.<br><br>Reason: %2<br><br>See this link for container name restrictions:<br><a href='https://docs.microsoft.com/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata#container-names'>Naming and Referencing Containers, Blobs, and Metadata</a>").arg(name).arg(errorMsg));
+        box.setStandardButtons(QMessageBox::StandardButton::Ok);
+        box.setIcon(QMessageBox::Warning);
+        box.setTextInteractionFlags(Qt::TextBrowserInteraction);
+        box.exec();
     }
 }
 

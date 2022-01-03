@@ -122,7 +122,6 @@ QString ConversionOptions::ToJSON() const
         root["generateCollisionMesh"] = m_generateCollisionMesh;
         root["unlitMaterials"] = m_unlitMaterials;
         root["deduplicateMaterials"] = m_deduplicateMaterials;
-        root["material-override"] = m_materialOverride;
         root["sceneGraphMode"] = ToString(m_sceneGraphMode);
         root["opaqueMaterialDefaultSidedness"] = ToString(m_opaqueMaterialDefaultSidedness);
 

@@ -34,6 +34,7 @@ private Q_SLOTS:
     void on_ConversionList_currentRowChanged(int row);
     void on_SelectSourceButton_clicked();
     void on_SelectOutputFolderButton_clicked();
+    void on_SelectInputFolderButton_clicked();
 
     // Log Tab UI
     void on_ClearLogButton_clicked();

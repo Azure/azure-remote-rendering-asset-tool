@@ -127,7 +127,7 @@ ArrtAppWindow::ArrtAppWindow()
     m_storageAccount->ConnectToStorageAccount();
     m_arrAclient->ConnectToArrAccount();
 
-    StorageBrowser->SetStorageAccount(m_storageAccount.get(), StorageEntry::Type::Other, m_lastStorageDisplayContainer);
+    StorageBrowser->SetStorageAccount(m_storageAccount.get(), StorageEntry::Type::Other, m_lastStorageDisplayContainer, QString());
 
     Viewport->SetSceneState(m_sceneState.get());
 

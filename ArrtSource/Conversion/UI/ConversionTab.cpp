@@ -89,7 +89,7 @@ void ArrtAppWindow::on_SelectSourceButton_clicked()
 {
     RetrieveConversionOptions();
 
-    BrowseStorageDlg dlg(m_storageAccount.get(), StorageEntry::Type::SrcAsset, m_lastStorageSelectSrcContainer, this);
+    BrowseStorageDlg dlg(m_storageAccount.get(), StorageEntry::Type::SrcAsset, m_lastStorageSelectSrcContainer, QString(), this);
 
     if (dlg.exec() == QDialog::Accepted)
     {
@@ -98,11 +98,25 @@ void ArrtAppWindow::on_SelectSourceButton_clicked()
     }
 }
 
+void ArrtAppWindow::on_SelectInputFolderButton_clicked()
+{
+    RetrieveConversionOptions();
+
+    const auto& conv = m_conversionManager->GetSelectedConversion();
+
+    BrowseStorageDlg dlg(m_storageAccount.get(), StorageEntry::Type::Folder, conv.m_sourceAssetContainer, conv.GetPlaceholderInputFolder(), this);
+
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        m_conversionManager->SetConversionInputFolder(dlg.GetSelectedItem());
+    }
+}
+
 void ArrtAppWindow::on_SelectOutputFolderButton_clicked()
 {
     RetrieveConversionOptions();
 
-    BrowseStorageDlg dlg(m_storageAccount.get(), StorageEntry::Type::Folder, m_lastStorageSelectDstContainer, this);
+    BrowseStorageDlg dlg(m_storageAccount.get(), StorageEntry::Type::Folder, m_lastStorageSelectDstContainer, QString(), this);
 
     if (dlg.exec() == QDialog::Accepted)
     {
@@ -131,6 +145,7 @@ void ArrtAppWindow::UpdateConversionPane()
         ConversionNameInput->setReadOnly(!allowEditing);
         SelectSourceButton->setEnabled(allowEditing);
         SelectOutputFolderButton->setEnabled(allowEditing);
+        SelectInputFolderButton->setEnabled(allowEditing && !conv.m_sourceAsset.isEmpty());
         OptionsArea->setEnabled(allowEditing);
 
         // enable or disable the start conversion button depending on whether enough data is set
@@ -143,10 +158,17 @@ void ArrtAppWindow::UpdateConversionPane()
         ConversionNameInput->setText(conv.m_name);
         SourceAssetLine->setText(conv.m_sourceAssetContainer + ":" + conv.m_sourceAsset);
         OutputFolderLine->setText(conv.m_outputFolderContainer + ":" + conv.m_outputFolder);
+
+        if (conv.m_inputFolder.isEmpty())
+            InputFolderLine->setText({});
+        else
+            InputFolderLine->setText(conv.m_sourceAssetContainer + ":" + conv.m_inputFolder);
+
         ConversionOptionsCheckbox->blockSignals(true);
         ConversionOptionsCheckbox->setChecked(conv.m_showAdvancedOptions);
         ConversionOptionsCheckbox->blockSignals(false);
         ConversionNameInput->setPlaceholderText(conv.GetPlaceholderName());
+        InputFolderLine->setPlaceholderText(conv.m_sourceAssetContainer + ":" + conv.GetPlaceholderInputFolder());
     }
 
     if (conv.m_message.isEmpty())
@@ -193,7 +215,6 @@ void ArrtAppWindow::UpdateConversionPane()
         ScalingSpinbox->setValue(opt.m_scaling);
         RecenterToOriginCheckbox->setChecked(opt.m_recenterToOrigin);
         DefaultSidednessCombo->setCurrentIndex((int)opt.m_opaqueMaterialDefaultSidedness);
-        MaterialOverrideEdit->setText(opt.m_materialOverride);
         GammaToLinearMaterialCheckbox->setChecked(opt.m_gammaToLinearMaterial);
         GammaToLinearVertexCheckbox->setChecked(opt.m_gammaToLinearVertex);
         ScenegraphModeCombo->setCurrentIndex((int)opt.m_sceneGraphMode);
@@ -226,7 +247,6 @@ void ArrtAppWindow::RetrieveConversionOptions()
     opt.m_scaling = (float)ScalingSpinbox->value();
     opt.m_recenterToOrigin = RecenterToOriginCheckbox->isChecked();
     opt.m_opaqueMaterialDefaultSidedness = (Sideness)DefaultSidednessCombo->currentIndex();
-    opt.m_materialOverride = MaterialOverrideEdit->text();
     opt.m_gammaToLinearMaterial = GammaToLinearMaterialCheckbox->isChecked();
     opt.m_gammaToLinearVertex = GammaToLinearVertexCheckbox->isChecked();
     opt.m_sceneGraphMode = (SceneGraphMode)ScenegraphModeCombo->currentIndex();

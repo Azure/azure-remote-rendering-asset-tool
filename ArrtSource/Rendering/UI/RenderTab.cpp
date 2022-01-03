@@ -13,7 +13,7 @@
 
 void ArrtAppWindow::on_ChangeModelButton_clicked()
 {
-    BrowseStorageDlg dlg(m_storageAccount.get(), StorageEntry::Type::ArrAsset, m_lastStorageLoadModelContainer, this);
+    BrowseStorageDlg dlg(m_storageAccount.get(), StorageEntry::Type::ArrAsset, m_lastStorageLoadModelContainer, QString(), this);
     if (dlg.exec() == QDialog::Rejected)
         return;
 

@@ -2,9 +2,10 @@
 #include <Storage/StorageAccount.h>
 #include <Storage/UI/StorageBrowserModel.h>
 
-void StorageBrowserModel::SetShowTypes(StorageEntry::Type showTypes)
+void StorageBrowserModel::SetFilter(StorageEntry::Type showTypes, const QString& parentPathFilter)
 {
     m_showTypes = showTypes;
+    m_parentPathFilter = parentPathFilter;
 }
 
 bool StorageBrowserModel::SetAccountAndContainer(StorageAccount* account, const QString& containerName)
@@ -172,6 +173,12 @@ void StorageBrowserModel::FillChildEntries(StorageEntry* entry, const QString& e
         e.m_fullPath = dir.m_path;
         e.m_uri = dir.m_uri;
         e.m_Type = StorageEntry::Type::Folder;
+
+        if (!m_parentPathFilter.isEmpty() && (!m_parentPathFilter.startsWith(e.m_fullPath)))
+        {
+            continue;
+        }
+
         output.push_back(e);
     }
 
@@ -193,10 +200,17 @@ void StorageBrowserModel::FillChildEntries(StorageEntry* entry, const QString& e
             e.m_Type = StorageEntry::Type::ArrAsset;
         }
 
-        if (m_showTypes == e.m_Type || m_showTypes == StorageEntry::Type::Other)
+        if (m_showTypes != e.m_Type && m_showTypes != StorageEntry::Type::Other)
         {
-            output.push_back(e);
+            continue;
         }
+
+        if (!m_parentPathFilter.isEmpty() && (!m_parentPathFilter.startsWith(e.m_fullPath)))
+        {
+            continue;
+        }
+
+        output.push_back(e);
     }
 }
 
