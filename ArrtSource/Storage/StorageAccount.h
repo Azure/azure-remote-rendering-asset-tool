@@ -107,6 +107,9 @@ public:
     /// This is not recursive, only the next level of items is returned.
     void ListBlobDirectory(const QString& containerName, const QString& prefixPath, std::vector<StorageBlobInfo>& directories, std::vector<StorageBlobInfo>& files) const;
 
+    /// Clears the cached information about files and folders.
+    void ClearCache();
+
 
     /// Returns the storage_uri for the storage container with the given path.
     azure::storage::storage_uri GetContainerUriFromName(const QString& containerName) const;
@@ -135,6 +138,12 @@ private:
 
     StorageConnectionStatus m_connectionStatus = StorageConnectionStatus::NotAuthenticated;
 
+    struct BlobCache
+    {
+        std::vector<StorageBlobInfo> m_directories;
+        std::vector<StorageBlobInfo> m_files;
+    };
+
     QString m_accountName;
     QString m_accountKey;
     QString m_endpointUrl;
@@ -142,4 +151,5 @@ private:
     std::unique_ptr<azure::storage::cloud_blob_client> m_blobClient;
     azure::storage::storage_credentials m_storageCredentials;
     std::unique_ptr<FileUploader> m_fileUploader;
+    mutable std::map<QString, BlobCache> m_cachedBlobs;
 };
