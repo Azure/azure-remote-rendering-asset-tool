@@ -42,9 +42,9 @@ void StorageAccount::SetSettings(const QString& accountName, const QString& acco
     if (m_accountName == accountName && m_accountKey == accountKey && m_endpointUrl == endpointUrl)
         return;
 
-    m_accountName = accountName;
-    m_accountKey = accountKey;
-    m_endpointUrl = endpointUrl;
+    m_accountName = accountName.trimmed();
+    m_accountKey = accountKey.trimmed();
+    m_endpointUrl = endpointUrl.trimmed();
 
     SaveSettings();
 

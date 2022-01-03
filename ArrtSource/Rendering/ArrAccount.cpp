@@ -133,10 +133,10 @@ void ArrAccount::SetSettings(const QString& accountId, const QString& accountKey
     if (m_accountId == accountId && m_accountKey == accountKey && m_accountDomain == accountDomain && m_region == region)
         return;
 
-    m_accountId = accountId;
-    m_accountKey = accountKey;
-    m_accountDomain = accountDomain;
-    m_region = region;
+    m_accountId = accountId.trimmed();
+    m_accountKey = accountKey.trimmed();
+    m_accountDomain = accountDomain.trimmed();
+    m_region = region.trimmed();
 
     SaveSettings();
 
