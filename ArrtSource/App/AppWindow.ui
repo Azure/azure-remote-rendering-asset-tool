@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1084</width>
-    <height>789</height>
+    <width>1097</width>
+    <height>865</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -225,7 +225,7 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>648</width>
+                    <width>657</width>
                     <height>540</height>
                    </rect>
                   </property>
@@ -1168,7 +1168,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>411</width>
+                 <width>417</width>
                  <height>1022</height>
                 </rect>
                </property>
@@ -1743,7 +1743,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1084</width>
+     <width>1097</width>
      <height>21</height>
     </rect>
    </property>
@@ -1775,13 +1775,19 @@
   <tabstop>ConversionNameInput</tabstop>
   <tabstop>SourceAssetLine</tabstop>
   <tabstop>SelectSourceButton</tabstop>
-  <tabstop>SelectOutputFolderButton</tabstop>
+  <tabstop>InputFolderLine</tabstop>
+  <tabstop>SelectInputFolderButton</tabstop>
   <tabstop>OutputFolderLine</tabstop>
+  <tabstop>SelectOutputFolderButton</tabstop>
   <tabstop>ConversionOptionsCheckbox</tabstop>
   <tabstop>OptionsArea</tabstop>
   <tabstop>ResetAdvancedButton</tabstop>
   <tabstop>ScalingSpinbox</tabstop>
+  <tabstop>ScenegraphModeCombo</tabstop>
   <tabstop>RecenterToOriginCheckbox</tabstop>
+  <tabstop>CollisionMeshCheckbox</tabstop>
+  <tabstop>UnlitMaterialsCheckbox</tabstop>
+  <tabstop>DeduplicateMaterialsCheckbox</tabstop>
   <tabstop>DefaultSidednessCombo</tabstop>
   <tabstop>GammaToLinearMaterialCheckbox</tabstop>
   <tabstop>GammaToLinearVertexCheckbox</tabstop>
@@ -1796,6 +1802,7 @@
   <tabstop>VertexTangentCombo</tabstop>
   <tabstop>VertexBitangentCombo</tabstop>
   <tabstop>TexCoord0Combo</tabstop>
+  <tabstop>TexCoord1Combo</tabstop>
   <tabstop>StartConversionButton</tabstop>
   <tabstop>EditSessionButton</tabstop>
   <tabstop>ChangeModelButton</tabstop>
@@ -1819,15 +1826,8 @@
   <tabstop>VertexColorCheck</tabstop>
   <tabstop>VertexMixSpinner</tabstop>
   <tabstop>VertexAlphaModeCombo</tabstop>
+  <tabstop>ClearLogButton</tabstop>
   <tabstop>LogList</tabstop>
-  <tabstop>RoughnessSpinner</tabstop>
-  <tabstop>RoughnessMap</tabstop>
-  <tabstop>MetalnessSpinner</tabstop>
-  <tabstop>MetalnessMap</tabstop>
-  <tabstop>AoScaleSpinner</tabstop>
-  <tabstop>AoMap</tabstop>
-  <tabstop>TextureScaleX</tabstop>
-  <tabstop>TextureScaleY</tabstop>
   <tabstop>TextureOffsetX</tabstop>
   <tabstop>TextureOffsetY</tabstop>
   <tabstop>FadeCheck</tabstop>
@@ -1835,9 +1835,15 @@
   <tabstop>FresnelCheck</tabstop>
   <tabstop>FresnelColorPicker</tabstop>
   <tabstop>FresnelExponentSpinner</tabstop>
-  <tabstop>TexCoord1Combo</tabstop>
+  <tabstop>MetalnessMap</tabstop>
   <tabstop>NormalMap</tabstop>
-  <tabstop>ClearLogButton</tabstop>
+  <tabstop>TextureScaleX</tabstop>
+  <tabstop>RoughnessMap</tabstop>
+  <tabstop>AoScaleSpinner</tabstop>
+  <tabstop>MetalnessSpinner</tabstop>
+  <tabstop>AoMap</tabstop>
+  <tabstop>TextureScaleY</tabstop>
+  <tabstop>RoughnessSpinner</tabstop>
  </tabstops>
  <resources>
   <include location="../Resources/ArrtApplication.qrc"/>
