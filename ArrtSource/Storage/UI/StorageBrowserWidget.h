@@ -29,7 +29,7 @@ public:
     const QString& GetSelectedContainer() const { return m_selectedContainer; }
 
 Q_SIGNALS:
-    void ItemSelected(QString container, QString path, azure::storage::storage_uri uri, bool dblClick);
+    void ItemSelected(QString container, QString path, bool dblClick);
 
 private Q_SLOTS:
     void on_StorageContainer_currentIndexChanged(int index);

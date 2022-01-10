@@ -16,7 +16,6 @@ enum class StorageConnectionStatus
 struct StorageBlobInfo
 {
     QString m_path;
-    azure::storage::storage_uri m_uri;
 };
 
 
@@ -110,31 +109,34 @@ public:
     /// Clears the cached information about files and folders.
     void ClearCache();
 
-
-    /// Returns the storage_uri for the storage container with the given path.
-    azure::storage::storage_uri GetContainerUriFromName(const QString& containerName) const;
-
-    /// Returns the cloud_blob_container that belongs to the given storage_uri.
-    azure::storage::cloud_blob_container GetContainerFromUri(const azure::storage::storage_uri& containerUri) const;
-
+#if NEW_STORAGE_SDK
+    /// Returns the BlobContainerClient for the storage container with the given name.
+    BlobContainerClient GetStorageContainerFromName(const QString& containerName) const;
+#else
     /// Returns the cloud_blob_container for the storage container with the given name.
     azure::storage::cloud_blob_container GetContainerFromName(const QString& containerName) const;
+#endif
 
     /// Creates a Storage Access Signature (SAS) token that is needed to read or write to files or folders in Azure Storage.
     ///
     /// The token is only valid for a limited amount of time (usually a day).
     /// It is necessary to pass such tokens to the conversion service for it to be able to read and write its inputs and output.
     /// The token is also needed to create a SAS URL to any file. This is needed when loading a model into the ARR runtime.
-    QString CreateSasToken(const azure::storage::storage_uri& uri, int accessTypeMask = azure::storage::blob_shared_access_policy::permissions::read, unsigned int minutes = 60 * 24) const;
+    QString CreateSasToken(const QString& containerName, unsigned int minutes = 60 * 24) const;
 
     /// Create a URL to a file in Azure Storage and appends the necessary SAS token.
     ///
     /// Such a URL is necessary when loading a model into ARR.
-    QString CreateSasURL(const azure::storage::storage_uri& uri, int accessTypeMask = azure::storage::blob_shared_access_policy::permissions::read, unsigned int minutes = 60 * 24) const;
+    QString CreateSasURL(const QString& containerName, const QString& itemPath, unsigned int minutes = 60 * 24) const;
 
 private:
     void SetConnectionStatus(StorageConnectionStatus newStatus);
+
+#if NEW_STORAGE_SDK
+    void ConnectToAzureStorageThread(const QString& endpointUrl, const std::shared_ptr<StorageSharedKeyCredential>& credentials);
+#else
     void ConnectToStorageAccountThread(const QString& storageUrl, const azure::storage::storage_credentials& credentials);
+#endif
 
     StorageConnectionStatus m_connectionStatus = StorageConnectionStatus::NotAuthenticated;
 
@@ -148,8 +150,14 @@ private:
     QString m_accountKey;
     QString m_endpointUrl;
 
-    std::unique_ptr<azure::storage::cloud_blob_client> m_blobClient;
-    azure::storage::storage_credentials m_storageCredentials;
     std::unique_ptr<FileUploader> m_fileUploader;
     mutable std::map<QString, BlobCache> m_cachedBlobs;
+
+#if NEW_STORAGE_SDK
+    std::shared_ptr<StorageSharedKeyCredential> m_azStorageCredentials;
+    std::unique_ptr<BlobServiceClient> m_azStorageServiceClient;
+#else
+    std::unique_ptr<azure::storage::cloud_blob_client> m_blobClient;
+    azure::storage::storage_credentials m_storageCredentials;
+#endif
 };

@@ -23,17 +23,13 @@ public:
     /// Returns the relative path of the selected item.
     const QString& GetSelectedItem() const { return m_currentItem; }
 
-    /// Returns the storage_uri of the selected item.
-    const azure::storage::storage_uri& GetSelectedUri() const { return m_currentUri; }
-
 private Q_SLOTS:
     void on_Buttons_accepted();
     void on_Buttons_rejected();
-    void ItemSelected(QString container, QString path, azure::storage::storage_uri uri, bool dblClick);
+    void ItemSelected(QString container, QString path, bool dblClick);
 
 private:
     QString m_currentContainer;
     QString m_currentItem;
-    azure::storage::storage_uri m_currentUri;
     StorageEntry::Type m_showTypes = StorageEntry::Type::Other;
 };

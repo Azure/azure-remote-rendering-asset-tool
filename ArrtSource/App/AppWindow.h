@@ -104,7 +104,7 @@ private:
     QLabel* m_statusArrSession = nullptr;
     QProgressBar* m_statusLoadProgress = nullptr;
     int m_numFileUploads = 0;
-    QtMsgType m_maxLogType = QtMsgType::QtDebugMsg;
+    int m_maxLogType = 0;
 
     std::unique_ptr<StorageAccount> m_storageAccount;
     std::unique_ptr<ArrAccount> m_arrAclient;

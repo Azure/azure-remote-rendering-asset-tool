@@ -19,14 +19,9 @@ void ArrtAppWindow::on_ChangeModelButton_clicked()
 
     m_lastStorageLoadModelContainer = dlg.GetSelectedContainer();
 
-    auto uri = dlg.GetSelectedUri();
+    QString blobUri = m_storageAccount->CreateSasURL(m_lastStorageLoadModelContainer, dlg.GetSelectedItem());
 
-    if (!uri.primary_uri().is_empty())
-    {
-        QString blobUri = m_storageAccount->CreateSasURL(uri);
-
-        m_arrSession->LoadModel(dlg.GetSelectedItem(), blobUri.toStdString().c_str());
-    }
+    m_arrSession->LoadModel(dlg.GetSelectedItem(), blobUri.toStdString().c_str());
 }
 
 void ArrtAppWindow::on_ClearModelsButton_clicked()

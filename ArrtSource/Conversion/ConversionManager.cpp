@@ -172,7 +172,8 @@ void ConversionManager::OnCheckConversions()
         anyRunning = true;
 
         m_arrClient->GetClient()->GetAssetConversionStatusAsync(conv.m_conversionGuid.toStdString(), [this, conversionIdx](RR::Status status, RR::ApiHandle<RR::AssetConversionStatusResult> result)
-                                                                { SetConversionStatus((int)conversionIdx, status, result); });
+                                                                { QMetaObject::invokeMethod(QApplication::instance(), [this, conversionIdx, status, result]()
+                                                                                            { SetConversionStatus((int)conversionIdx, status, result); }); });
     }
 
     Q_EMIT ListChanged();
@@ -252,13 +253,8 @@ bool ConversionManager::StartConversionInternal()
         }
     }
 
-    const auto inputContainerUri = m_storageAccount->GetContainerUriFromName(conv.m_sourceAssetContainer);
-    const auto outputContainerUri = m_storageAccount->GetContainerUriFromName(conv.m_outputFolderContainer);
-
-    const QString inputSasToken = m_storageAccount->CreateSasToken(inputContainerUri, azure::storage::blob_shared_access_policy::read | azure::storage::blob_shared_access_policy::list);
-
-    const QString outputSasToken = m_storageAccount->CreateSasToken(outputContainerUri, azure::storage::blob_shared_access_policy::write | azure::storage::blob_shared_access_policy::list | azure::storage::blob_shared_access_policy::create);
-
+    const QString inputSasToken = m_storageAccount->CreateSasToken(conv.m_sourceAssetContainer);
+    const QString outputSasToken = m_storageAccount->CreateSasToken(conv.m_outputFolderContainer);
 
     const QString inputUri = QString("%1/%2").arg(m_storageAccount->GetEndpointUrl()).arg(conv.m_sourceAssetContainer);
     const QString outputUri = QString("%1/%2").arg(m_storageAccount->GetEndpointUrl()).arg(conv.m_outputFolderContainer);
@@ -303,19 +299,22 @@ bool ConversionManager::StartConversionInternal()
     {
         QMetaObject::invokeMethod(QApplication::instance(), [this, conversionIdx, status, result]()
                                   {
-                                      std::string conversionUUID;
                                       RR::Result errorCode = RR::StatusToResult(status);
 
                                       if (status == RR::Status::OK)
                                       {
                                           errorCode = result->GetErrorCode();
-                                          result->GetConversionUuid(conversionUUID);
                                       }
 
                                       auto& conv = m_conversions[conversionIdx];
-                                      conv.m_conversionGuid = conversionUUID.c_str();
 
-                                      if (errorCode != RR::Result::Success)
+                                      if (errorCode == RR::Result::Success)
+                                      {
+                                          std::string conversionUUID;
+                                          result->GetConversionUuid(conversionUUID);
+                                          conv.m_conversionGuid = conversionUUID.c_str();
+                                      }
+                                      else
                                       {
                                           conv.m_message = "Starting conversion failed";
                                           conv.m_status = ConversionStatus::Failed;
@@ -366,11 +365,13 @@ void ConversionManager::SetConversionStatus(int conversionIdx, RR::Status status
             conv.m_status = ConversionStatus::Failed;
             conv.m_message = message.c_str();
             conv.m_endConversionTime = QDateTime::currentSecsSinceEpoch();
+            Q_EMIT ConversionFailed();
             break;
 
         case RR::ConversionSessionStatus::Success:
             conv.m_status = ConversionStatus::Finished;
             conv.m_endConversionTime = QDateTime::currentSecsSinceEpoch();
+            Q_EMIT ConversionSucceeded();
             break;
     }
 }

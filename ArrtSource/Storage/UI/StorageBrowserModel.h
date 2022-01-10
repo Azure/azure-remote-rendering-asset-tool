@@ -18,7 +18,6 @@ struct StorageEntry
 
     QString m_fullPath;
     QString m_name;
-    azure::storage::storage_uri m_uri;
     bool m_retrievedChildren = false;
     bool m_hasChanged = false;
     int m_rowIndex = -1;

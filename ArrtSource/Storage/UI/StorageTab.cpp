@@ -1,4 +1,5 @@
 #include <App/AppWindow.h>
+#include <Storage/StorageAccount.h>
 
 void ArrtAppWindow::FileUploadStatusCallback(int numFiles)
 {
@@ -7,6 +8,7 @@ void ArrtAppWindow::FileUploadStatusCallback(int numFiles)
 
     if (numFiles == 0)
     {
+        m_storageAccount->ClearCache();
         StorageBrowser->RefreshModel();
     }
 }
