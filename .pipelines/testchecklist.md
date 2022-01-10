@@ -63,7 +63,7 @@ If you've never used ARRT on this PC before, the settings dialog opens automatic
 - Wait for the conversion to end
 - If it succeeds the icon and the status would reflect completed/failed status.
 - The time on the conversion should stop running and will indicate the total conversion time.
-- On success/failure a label below the advanced options should display the result ("finished successfully" or and error message)
+- On success/failure a label below the advanced options should display the result ("finished successfully" or an error message)
 - When no conversion are running anymore -> the conversion counter should disappear from the status bar
 
 ### Conversion options
@@ -90,19 +90,19 @@ If you've never used ARRT on this PC before, the settings dialog opens automatic
 ### Models / Rendering / Camera
 
 - With a running session, test the *Load Model from Storage* and *Load Model with URL* buttons
-- There should be progress bar at the bottom when any model loading is ongoing
+- There should be a progress bar at the bottom when any model loading is ongoing
 - Verify that the first loaded model gets centered in the viewport
 - You can add multiple models, use *Remove Models* to clear them all
 - Test that the *Model Scale* option works
 - Use the *Camera...* button to adjust camera options (near/far plane, camera speed)
-- In the settings, disconnect from the storage account (e.g. by the name to be invalid)
+- In the settings, disconnect from the storage account (e.g. by changing the name to be invalid)
 - Check that the only available option now is "Load Model with URL"
 - Check also that no conversion or upload operation is available
 - Open the *Camera* dialog, there are instructions how to use the camera, check that they all work
 
 ### Selection and Scene tree
 
-- Verify the scene tree shows a every model and its children (there may be no children, if the object is converted that way)
+- Verify the scene tree shows every model and its children (there may be no children, if the object is converted that way)
 - Click on the model in the viewport. Verify that:
   - The clicked part under the mouse, is highlighted.
   - The same entity is highlighted in the scene tree.

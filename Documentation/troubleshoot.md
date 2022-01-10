@@ -39,7 +39,7 @@ netsh winhttp reset proxy
 
 Or, if you already had another proxy before, use the set proxy command to revert the setting to that instead.
 
-## Connection to ARR sessions fail
+## Connections to ARR sessions fail
 
 Connections to remote rendering sessions use plain UDP/TCP and therefore certain ports must be allowed through the firewall. Sometimes firewalls block these directly on the user's machine and sometimes firewalls inside routers are configured to block them. Make sure to check both.
 
