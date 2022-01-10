@@ -11,8 +11,17 @@ StorageBrowserWidget::StorageBrowserWidget(QWidget* parent /*= {}*/)
 {
     setupUi(this);
 
-    QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_Delete), FileTree);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(on_DeleteItemButton_clicked()));
+    QShortcut* shortcutDel = new QShortcut(QKeySequence(Qt::Key_Delete), FileTree);
+    connect(shortcutDel, SIGNAL(activated()), this, SLOT(on_DeleteItemButton_clicked()));
+
+    QShortcut* shortcutAdd = new QShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_N), FileTree);
+    connect(shortcutAdd, SIGNAL(activated()), this, SLOT(on_AddFolderButton_clicked()));
+
+    QShortcut* shortcutUploadFile = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_U), FileTree);
+    connect(shortcutUploadFile, SIGNAL(activated()), this, SLOT(on_UploadFileButton_clicked()));
+
+    QShortcut* shortcutUploadFolder = new QShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_U), FileTree);
+    connect(shortcutUploadFolder, SIGNAL(activated()), this, SLOT(on_UploadFolderButton_clicked()));
 }
 
 StorageBrowserWidget::~StorageBrowserWidget()
@@ -315,6 +324,7 @@ void StorageBrowserWidget::on_UploadFileButton_clicked()
     fd.setFileMode(QFileDialog::ExistingFiles);
     fd.setOption(QFileDialog::DontUseNativeDialog, false);
     fd.setViewMode(QFileDialog::Detail);
+    fd.setWindowTitle("Select files to upload");
 
     if (fd.exec())
     {
@@ -327,6 +337,7 @@ void StorageBrowserWidget::on_UploadFolderButton_clicked()
     QFileDialog fd(this);
     fd.setFileMode(QFileDialog::Directory);
     fd.setOption(QFileDialog::DontUseNativeDialog, false);
+    fd.setWindowTitle("Select folder to upload");
 
     if (fd.exec())
     {
