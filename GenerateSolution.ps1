@@ -28,7 +28,7 @@ if (Test-Path -Path $CacheFile -PathType leaf) {
 }
 
 Write-Host ""
-Write-Host "=== Preparing vcpkg ==="
+Write-Host "=== Running vcpkg ==="
 Write-Host ""
 
 if ((Test-Path -Path $VcpkgPath) -eq $false) {
@@ -38,9 +38,11 @@ if ((Test-Path -Path $VcpkgPath) -eq $false) {
 }
 
 &$VcpkgPath\bootstrap-vcpkg.bat
-#$Env:Path = "$PSScriptRoot\Tools\CMake\bin;" + $Env:Path
-#$Env:NUGET_PATH = "$PSScriptRoot\Tools\Nuget\"
 &$VcpkgPath\vcpkg.exe install azure-storage-blobs-cpp:x64-windows 
+
+if (!$?) {
+	throw "Vcpkg error $LASTEXITCODE, see log above."
+}
 
 Write-Host ""
 Write-Host "=== Running CMake ==="
@@ -60,9 +62,8 @@ if ($Solution -eq "vs2022") {
 $CMAKE_ARGS += "-DCMAKE_TOOLCHAIN_FILE=$VcpkgPath\scripts\buildsystems\vcpkg.cmake"
 $CMAKE_ARGS += "-DUSE_NEW_AZURE_STORAGE_SDK:BOOL=ON"
 
-#& $PSScriptRoot\Tools\CMake\bin\cmake.exe $CMAKE_ARGS
 & cmake.exe $CMAKE_ARGS
 
 if (!$?) {
-	throw "CMake Error $LASTEXITCODE, see log above."
+	throw "CMake error $LASTEXITCODE, see log above."
 }

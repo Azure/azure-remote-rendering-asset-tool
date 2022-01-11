@@ -1,4 +1,4 @@
-# This is the OneBranch release pipeline for ARRT
+# This is the OneBranch release pipeline for ARRT.
 # It is manually run to produce binaries for public releases.
 
 environment:

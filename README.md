@@ -57,9 +57,9 @@ Prebuilt ARRT binaries [can be found here](https://github.com/Azure/azure-remote
 
 1. Clone this repository
 1. Open a command line terminal
-1. From the repository's root directory, run the script *GenerateSolution.bat \<OutputDirectory\> -vs2019*
-    * The script will run CMake and generate a Visual Studio solution in *OutputDirectory*
-    * Use *-vs2022* if you want to generate the solution for Visual Studio 2022
+1. From the repository's root directory, run the script `GenerateSolution.bat`
+    * The script will run CMake and generate a Visual Studio solution in the **Workspace** sub-folder
+    * To create the solution in a custom directory or with Visual Studio 2022, run: `GenerateSolution.bat path/to/dir vs2022`
 1. Open and compile the generated solution
 
 ## Documentation

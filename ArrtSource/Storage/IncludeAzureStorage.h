@@ -2,15 +2,8 @@
 
 #pragma warning(push)
 #pragma warning(disable : 4996)
-#include <cpprest/containerstream.h>
-#include <cpprest/filestream.h>
-#include <was/blob.h>
-#include <was/core.h>
-#include <was/queue.h>
-#include <was/storage_account.h>
+#include <cpprest/http_client.h>
 #pragma warning(pop)
-
-#include <QObject>
 
 #if NEW_STORAGE_SDK
 
@@ -23,5 +16,19 @@ using namespace Azure::Core;
 using namespace Azure::Storage;
 using namespace Azure::Storage::Blobs;
 using namespace Azure::Storage::Sas;
+
+#else
+
+#    pragma warning(push)
+#    pragma warning(disable : 4996)
+#    include <cpprest/containerstream.h>
+#    include <cpprest/filestream.h>
+#    include <was/blob.h>
+#    include <was/core.h>
+#    include <was/queue.h>
+#    include <was/storage_account.h>
+#    pragma warning(pop)
+
+using namespace azure::storage;
 
 #endif

@@ -1,5 +1,5 @@
-# buddy pipeline triggered on PR to main, to build ARRT and check for errors
-# unrelated to the release process
+# 'arrtBuild' pipeline for validating PRs before they get merged.
+# Unrelated to the release process.
 
 pr:
 - main
