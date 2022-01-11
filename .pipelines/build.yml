@@ -1,5 +1,5 @@
-# buddy pipeline triggered on PR to main, to build ARRT and check for errors
-# unrelated to the release process
+# 'arrtBuild' pipeline for validating PRs before they get merged.
+# Unrelated to the release process.
 
 pr:
 - main
@@ -21,12 +21,13 @@ steps:
 - checkout: self
   submodules: true
 
-- task: BatchScript@1
-  displayName: 'Generate solution for vs2019' 
+- task: PowerShell@2
+  displayName: Generate Solution for vs2019
   inputs:
-    filename: '$(Build.SourcesDirectory)\arr.arrt.dependencies\GenerateSolution.bat'
-    arguments: '-vs2019'
-    workingFolder: 'arr.arrt.dependencies'
+    targetType: inline
+    script: |
+      $Env:Qt5_DIR = "$(Build.SourcesDirectory)\arr.arrt.dependencies\Qt\5.13.1\msvc2017_64"
+      $(Build.SourcesDirectory)\azure-remote-rendering-asset-tool\GenerateSolution.ps1 -Destination $(Build.SourcesDirectory)\ArrtWorkspace
 
 - task: ea576cd4-c61f-48f8-97e7-a3cb07b90a6f@2
   displayName: 'CredScan'

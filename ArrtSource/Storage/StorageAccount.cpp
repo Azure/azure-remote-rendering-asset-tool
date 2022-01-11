@@ -4,9 +4,6 @@
 #include <QSettings>
 #include <Storage/StorageAccount.h>
 #include <Utils/Logging.h>
-#include <cpprest/rawptrstream.h>
-
-using namespace azure::storage;
 
 StorageAccount::StorageAccount(FileUploader::UpdateCallback uploadCallback)
 {

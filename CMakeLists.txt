@@ -1,36 +1,7 @@
 cmake_minimum_required (VERSION 3.12)
 
-# common setup for exe targets
-function(addQtDeployment _TARGET)
-    get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
-    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-    find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
-
-    add_custom_command(
-        TARGET ${_TARGET} POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E
-            env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
-                "$<TARGET_FILE:${_TARGET}>" --no-translations --no-webkit2 --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --no-compiler-runtime
-        COMMENT "Running windeployqt..."
-    )
-    add_custom_command(
-        TARGET ${_TARGET} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${LIB_REST_NAME}.dll
-            ${LIB_BLOB_NAME}.dll
-            ${LIB_ARR_BIN}/RemoteRenderingClient.dll
-            ${LIB_ARR_BIN}/Microsoft.Holographic.HybridRemoting.dll
-            $<TARGET_FILE_DIR:${_TARGET}>
-    )
-endfunction()
-
-# set variables for nuget libraries
-
 set( CFG $<IF:$<CONFIG:Debug>,DEBUG,RELEASE> )
 set( POSTFIX $<$<CONFIG:Debug>:d> )
-
-set(LIB_BLOB_ROOT "${CMAKE_BINARY_DIR}/packages/Microsoft.Azure.Storage.CPP.v140.5.0.0")
-set(LIB_BLOB_NAME "${LIB_BLOB_ROOT}/lib/native/v140/x64/${CFG}/wastorage${POSTFIX}")
 
 set(LIB_REST_ROOT "${CMAKE_BINARY_DIR}/packages/cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1")
 set(LIB_REST_NAME "${LIB_REST_ROOT}/lib/native/v140/windesktop/msvcstl/dyn/rt-dyn/x64/${CFG}/cpprest140${POSTFIX}_2_9")
@@ -137,15 +108,32 @@ endforeach()
 source_group(TREE "${SOURCE_ROOT}" FILES ${SOURCE_LIST})
 
 add_executable(${TARGET} WIN32 ${SOURCE_LIST})
-addQtDeployment(${TARGET})
+
+get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
+
+add_custom_command(
+    TARGET ${TARGET} POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E
+        env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
+            "$<TARGET_FILE:${TARGET}>" --no-translations --no-webkit2 --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --no-compiler-runtime
+    COMMENT "Running windeployqt..."
+)
+
+add_custom_command(
+    TARGET ${TARGET} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${LIB_REST_NAME}.dll
+        ${LIB_ARR_BIN}/RemoteRenderingClient.dll
+        ${LIB_ARR_BIN}/Microsoft.Holographic.HybridRemoting.dll
+        $<TARGET_FILE_DIR:${TARGET}>
+)
 
 target_include_directories(${TARGET} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ArrtSource")
 target_link_libraries(${TARGET} PUBLIC d3d11.lib DXGI.lib)
 
 target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Widgets Qt5::Gui)
-
-target_link_libraries(${TARGET} PUBLIC "${LIB_BLOB_NAME}.lib")
-target_include_directories(${TARGET} PUBLIC "${LIB_BLOB_ROOT}/build/native/include")
 
 target_link_libraries(${TARGET} PUBLIC "${LIB_REST_NAME}.lib")
 target_include_directories(${TARGET} PUBLIC "${LIB_REST_ROOT}/build/native/include")
@@ -161,6 +149,21 @@ if (USE_NEW_AZURE_STORAGE_SDK)
     target_link_libraries(${TARGET} PRIVATE Azure::azure-storage-blobs)
 
     target_compile_definitions(${TARGET} PUBLIC NEW_STORAGE_SDK=1)
+
+else()
+
+    set(LIB_BLOB_ROOT "${CMAKE_BINARY_DIR}/packages/Microsoft.Azure.Storage.CPP.v140.5.0.0")
+    set(LIB_BLOB_NAME "${LIB_BLOB_ROOT}/lib/native/v140/x64/${CFG}/wastorage${POSTFIX}")
+
+    add_custom_command(
+        TARGET ${TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+             ${LIB_BLOB_NAME}.dll
+            $<TARGET_FILE_DIR:${TARGET}>
+    )
+
+    target_link_libraries(${TARGET} PUBLIC "${LIB_BLOB_NAME}.lib")
+    target_include_directories(${TARGET} PUBLIC "${LIB_BLOB_ROOT}/build/native/include")
 
 endif()
 

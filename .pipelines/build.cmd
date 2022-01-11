@@ -1,7 +1,6 @@
 rem Called by the release pipeline to do the actual builds.
 
 SETLOCAL
-SET ARRT_SRC=C:\source
 SET DEPS_DIR=C:\arr.arrt.dependencies
 SET Qt5_DIR=%DEPS_DIR%\Qt\5.13.1\msvc2017_64
 
@@ -10,12 +9,15 @@ CALL "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Too
 echo on
 pushd C:\source
 
-SET CACHEFILE=CMakeCache.txt
+REM this is read by the CMakeLists.txt file to skip nuget restore
 SET NUGET_RESTORE=false
+
 REM SET ARRT_VERSION=v%CDP_PACKAGE_VERSION_SEMANTIC%
 
+set VCPKG_PATH=C:\arr.arrt.dependencies\vcpkg
+
 cmake --version
-cmake -G "Visual Studio 16 2019" -A x64
+cmake -G "Visual Studio 16 2019" -A x64 "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_PATH%\scripts\buildsystems\vcpkg.cmake" "-DUSE_NEW_AZURE_STORAGE_SDK:BOOL=ON"
 if %errorlevel% neq 0 (
     echo Failed to generate solution %errorlevel%
     goto errorExit

@@ -1,5 +1,5 @@
-# This is the OneBranch release pipeline for ARRT
-# It is manually run to produce a binary for public release.
+# This is the OneBranch release pipeline for ARRT.
+# It is manually run to produce binaries for public releases.
 
 environment:
   host:
