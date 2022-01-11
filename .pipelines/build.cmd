@@ -1,3 +1,5 @@
+rem Called by the release pipeline to do the actual builds.
+
 SETLOCAL
 SET ARRT_SRC=C:\source
 SET DEPS_DIR=C:\arr.arrt.dependencies

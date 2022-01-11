@@ -155,5 +155,13 @@ target_include_directories(${TARGET} PUBLIC ${LIB_ARR_INCLUDE})
 
 target_link_libraries(${TARGET} PUBLIC crypt32.lib)
 
+if (USE_NEW_AZURE_STORAGE_SDK)
+
+    find_package(azure-storage-blobs-cpp CONFIG REQUIRED)
+    target_link_libraries(${TARGET} PRIVATE Azure::azure-storage-blobs)
+
+    target_compile_definitions(${TARGET} PUBLIC NEW_STORAGE_SDK=1)
+
+endif()
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Arrt)

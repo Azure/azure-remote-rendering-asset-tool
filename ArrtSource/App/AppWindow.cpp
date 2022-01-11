@@ -172,6 +172,14 @@ ArrtAppWindow::ArrtAppWindow()
                 OnUpdateStatusBar();
             });
 
+    connect(m_conversionManager.get(), &ConversionManager::ConversionSucceeded, this, [this]()
+            {
+                UpdateConversionsList();
+                OnUpdateStatusBar();
+                m_storageAccount->ClearCache(); // new files should show up
+                StorageBrowser->RefreshModel();
+            });
+
     connect(m_arrSession.get(), &ArrSession::FrameStatisticsChanged, this, [this]()
             { UpdateFrameStatisticsUI(); });
 

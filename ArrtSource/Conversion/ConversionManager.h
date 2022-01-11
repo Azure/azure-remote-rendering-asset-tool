@@ -46,6 +46,8 @@ public:
 Q_SIGNALS:
     void SelectedChanged();
     void ListChanged();
+    void ConversionFailed();
+    void ConversionSucceeded();
 
 private Q_SLOTS:
     void OnCheckConversions();

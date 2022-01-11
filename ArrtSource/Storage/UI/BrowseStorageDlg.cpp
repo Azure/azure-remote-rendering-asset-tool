@@ -31,11 +31,10 @@ void BrowseStorageDlg::on_Buttons_rejected()
     reject();
 }
 
-void BrowseStorageDlg::ItemSelected(QString container, QString path, azure::storage::storage_uri uri, bool dblClick)
+void BrowseStorageDlg::ItemSelected(QString container, QString path, bool dblClick)
 {
     m_currentContainer = container;
     m_currentItem = path;
-    m_currentUri = uri;
 
     QPushButton* openButton = Buttons->button(QDialogButtonBox::StandardButton::Open);
 

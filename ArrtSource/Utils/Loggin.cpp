@@ -33,47 +33,46 @@ void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& category, c
     QListWidgetItem* item = new QListWidgetItem();
     item->setText(line);
 
-    QtMsgType prevIcon = m_maxLogType;
+    int prevIcon = m_maxLogType;
 
     switch (type)
     {
         case QtDebugMsg:
             item->setIcon(QIcon(":/ArrtApplication/Icons/debug.svg"));
             break;
+        case QtInfoMsg:
+            item->setIcon(QIcon(":/ArrtApplication/Icons/info.svg"));
+            m_maxLogType = std::max(m_maxLogType, 1);
+            break;
         case QtWarningMsg:
             item->setIcon(QIcon(":/ArrtApplication/Icons/warning.svg"));
-            m_maxLogType = std::max(m_maxLogType, QtWarningMsg);
+            m_maxLogType = std::max(m_maxLogType, 2);
             break;
         case QtCriticalMsg:
             item->setIcon(QIcon(":/ArrtApplication/Icons/critical.svg"));
-            m_maxLogType = std::max(m_maxLogType, QtCriticalMsg);
+            m_maxLogType = std::max(m_maxLogType, 3);
             break;
         case QtFatalMsg:
             item->setIcon(QIcon(":/ArrtApplication/Icons/error.svg"));
-            m_maxLogType = std::max(m_maxLogType, QtFatalMsg);
-            break;
-        case QtInfoMsg:
-            item->setIcon(QIcon(":/ArrtApplication/Icons/info.svg"));
-            m_maxLogType = std::max(m_maxLogType, QtInfoMsg);
+            m_maxLogType = std::max(m_maxLogType, 4);
             break;
     }
 
     if (prevIcon != m_maxLogType)
     {
-
-        switch (type)
+        switch (m_maxLogType)
         {
-            case QtWarningMsg:
+            case 1:
+                Tabs->setTabIcon(3, QIcon(":/ArrtApplication/Icons/info.svg"));
+                break;
+            case 2:
                 Tabs->setTabIcon(3, QIcon(":/ArrtApplication/Icons/warning.svg"));
                 break;
-            case QtCriticalMsg:
+            case 3:
                 Tabs->setTabIcon(3, QIcon(":/ArrtApplication/Icons/critical.svg"));
                 break;
-            case QtFatalMsg:
+            case 4:
                 Tabs->setTabIcon(3, QIcon(":/ArrtApplication/Icons/error.svg"));
-                break;
-            case QtInfoMsg:
-                Tabs->setTabIcon(3, QIcon(":/ArrtApplication/Icons/info.svg"));
                 break;
         }
     }

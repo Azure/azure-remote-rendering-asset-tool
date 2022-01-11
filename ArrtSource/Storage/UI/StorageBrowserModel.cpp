@@ -127,11 +127,6 @@ QVariant StorageBrowserModel::data(const QModelIndex& index, int role /*= Qt::Di
         return entry->m_fullPath;
     }
 
-    if (role == Qt::UserRole + 1)
-    {
-        return QVariant::fromValue(entry->m_uri);
-    }
-
     if (role == Qt::DecorationRole)
     {
         switch (entry->m_Type)
@@ -171,7 +166,6 @@ void StorageBrowserModel::FillChildEntries(StorageEntry* entry, const QString& e
         e.m_rowIndex = rowIdx++;
         e.m_name = dir.m_path.mid(entryPath.length()).chopped(1); // remove the prefix path and the trailing slash
         e.m_fullPath = dir.m_path;
-        e.m_uri = dir.m_uri;
         e.m_Type = StorageEntry::Type::Folder;
 
         if (!m_parentPathFilter.isEmpty() && (!m_parentPathFilter.startsWith(e.m_fullPath)))
@@ -189,7 +183,6 @@ void StorageBrowserModel::FillChildEntries(StorageEntry* entry, const QString& e
         e.m_rowIndex = rowIdx++;
         e.m_name = file.m_path.mid(entryPath.length()); // remove the prefix path
         e.m_fullPath = file.m_path;
-        e.m_uri = file.m_uri;
 
         if (IsSrcAsset(e.m_name))
         {

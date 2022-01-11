@@ -93,12 +93,10 @@ void StorageBrowserWidget::ItemSelectionChanged(const QItemSelection&, const QIt
 void StorageBrowserWidget::EmitItemSelected(bool dblClick)
 {
     m_selectedItem = QString();
-    azure::storage::storage_uri uri;
 
     if (FileTree->selectionModel() && FileTree->selectionModel()->hasSelection())
     {
         m_selectedItem = m_storageModel.data(FileTree->selectionModel()->selectedIndexes()[0], Qt::UserRole).toString();
-        uri = m_storageModel.data(FileTree->selectionModel()->selectedIndexes()[0], Qt::UserRole + 1).value<azure::storage::storage_uri>();
 
         DeleteItemButton->setEnabled(true);
         AddFolderButton->setEnabled(true);
@@ -109,7 +107,7 @@ void StorageBrowserWidget::EmitItemSelected(bool dblClick)
         AddFolderButton->setEnabled(false);
     }
 
-    Q_EMIT ItemSelected(StorageContainer->currentText(), m_selectedItem, uri, dblClick);
+    Q_EMIT ItemSelected(StorageContainer->currentText(), m_selectedItem, dblClick);
 }
 
 void StorageBrowserWidget::on_AddContainerButton_clicked()
@@ -314,8 +312,7 @@ void StorageBrowserWidget::UploadItems(const QStringList& files)
         return;
     }
 
-    auto container = m_storageAccount->GetContainerFromName(GetSelectedContainer());
-    m_storageAccount->GetFileUploader()->UploadFilesAsync(rootDirectory, toUpload, container, dstFolder);
+    m_storageAccount->GetFileUploader()->UploadFilesAsync(rootDirectory, toUpload, GetSelectedContainer(), dstFolder);
 }
 
 void StorageBrowserWidget::on_UploadFileButton_clicked()
@@ -347,5 +344,6 @@ void StorageBrowserWidget::on_UploadFolderButton_clicked()
 
 void StorageBrowserWidget::on_RefreshButton_clicked()
 {
+    m_storageAccount->ClearCache();
     m_storageModel.RefreshModel(false);
 }

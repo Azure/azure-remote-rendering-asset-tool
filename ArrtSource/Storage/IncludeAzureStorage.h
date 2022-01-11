@@ -12,6 +12,16 @@
 
 #include <QObject>
 
-// this is needed to be able to store a storage_uri in a QVariant
-// this is used by the StorageBrowserModel to return the uri of an element
-Q_DECLARE_METATYPE(azure::storage::storage_uri);
+#if NEW_STORAGE_SDK
+
+#    include <azure/core.hpp>
+#    include <azure/storage/blobs.hpp>
+#    include <azure/storage/blobs/blob_sas_builder.hpp>
+
+using namespace Azure;
+using namespace Azure::Core;
+using namespace Azure::Storage;
+using namespace Azure::Storage::Blobs;
+using namespace Azure::Storage::Sas;
+
+#endif
