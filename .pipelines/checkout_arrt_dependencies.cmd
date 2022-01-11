@@ -11,7 +11,7 @@ if %errorlevel% neq 0 (
 )
 
 rem Get ARR and other dependencies from Nuget
-%~dp0..\..\azure-remote-rendering-asset-tool\Tools\Nuget\nuget.exe restore %~dp0..\packages.config -SolutionDirectory %~dp0..
+%~dp0..\..\arr.arrt.dependencies\Nuget\nuget.exe restore %~dp0..\packages.config -SolutionDirectory %~dp0..
 if %errorlevel% neq 0 (
     echo Failed to restore nuget packages %errorlevel%
     exit /B %ERRORLEVEL%
