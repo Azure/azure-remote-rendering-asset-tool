@@ -223,20 +223,20 @@ void SceneState::DeinitializeD3D()
 
 void SceneState::ResizeViewport(int width, int height)
 {
-    if (width == 0 || height == 0 || (width == m_width && height == m_height))
+    if (width == 0 || height == 0 || (width == m_screenWidth && height == m_screenHeight))
     {
         return;
     }
 
-    m_width = width;
-    m_height = height;
+    m_screenWidth = width;
+    m_screenHeight = height;
 
     UpdateProjectionMatrix();
 }
 
 void SceneState::PickEntity(int x, int y)
 {
-    if (m_width <= 0 || m_height <= 0)
+    if (m_screenWidth <= 0 || m_screenHeight <= 0)
     {
         return;
     }
@@ -244,8 +244,8 @@ void SceneState::PickEntity(int x, int y)
     RR::RayCast rc;
 
     // normalize (x,y) to [-1,1] range
-    const float normX = 2.0f * x / float(m_width) - 1.0f;
-    const float normY = -(2.0f * y / float(m_height) - 1.0f);
+    const float normX = 2.0f * x / float(m_screenWidth) - 1.0f;
+    const float normY = -(2.0f * y / float(m_screenHeight) - 1.0f);
 
     const QMatrix4x4 inverse = m_viewMatrixInverse * m_perspectiveMatrixInverse;
 
@@ -350,9 +350,9 @@ void SceneState::UpdateProjectionMatrix()
     // even if the ratio is not valid, which might happen when the viewport is collapsed, or not shown yet, we still need
     // to provide a valid projection matrix, to avoid problems in har
     float ratio = 1.0;
-    if (m_height > 0 && m_width > 0)
+    if (m_screenHeight > 0 && m_screenWidth > 0)
     {
-        ratio = (float)m_width / (float)m_height;
+        ratio = (float)m_screenWidth / (float)m_screenHeight;
     }
 
     const float fovAngle = m_arrOptions->GetFovAngle();
