@@ -106,6 +106,8 @@ public:
             m_size = m_file.size();
         }
 
+        // we upload files in 4 MB chunks ('blocks')
+        // blocks of up to 100 MB would be possible, but become more and more unreliable
         m_maxBytes = 1024 * 1024 * 4;
     }
 
@@ -116,15 +118,18 @@ public:
 
     virtual void Rewind() override
     {
+        // in case of an error, the Storage SDK will rewind and try again
+        // this only affects the current block, though, not the entire file
         m_read = 0;
         m_file.seek(m_offset);
     }
 
     bool FinishBlock()
     {
+        // the next block starts at this offset
         m_offset += m_read;
         m_read = 0;
-        return m_offset < m_size;
+        return m_offset < m_size; // return true, if there is more work left to do
     }
 
     int64_t GetBytesRead() const
@@ -201,10 +206,12 @@ void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const
                 blocks.push_back(guidString);
                 blobClient.StageBlock(guidString, stream);
 
+                // update the progress every time a block has finished uploading
                 NotifyBytesRead(stream.GetBytesRead());
 
             } while (stream.FinishBlock());
 
+            // tell Azure Storage that the file is finished and from which blocks it is made up
             blobClient.CommitBlockList(blocks);
         }
 #else
