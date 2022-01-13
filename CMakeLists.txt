@@ -1,10 +1,6 @@
 cmake_minimum_required (VERSION 3.12)
 
-set( CFG $<IF:$<CONFIG:Debug>,DEBUG,RELEASE> )
-set( POSTFIX $<$<CONFIG:Debug>:d> )
-
-set(LIB_REST_ROOT "${CMAKE_BINARY_DIR}/packages/cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1")
-set(LIB_REST_NAME "${LIB_REST_ROOT}/lib/native/v140/windesktop/msvcstl/dyn/rt-dyn/x64/${CFG}/cpprest140${POSTFIX}_2_9")
+set( CMAKE_CONFIGURATION_TYPES Debug;Release )
 
 if ("$ENV{LIB_ARR_USE_LOCAL}" STREQUAL "true")
     set(LIB_ARR_BIN $<IF:$<CONFIG:Debug>,$ENV{LIB_ARR_BIN_DEBUG},$ENV{LIB_ARR_BIN_RELEASE}>)
@@ -32,15 +28,7 @@ if (NOT "$ENV{NUGET_RESTORE}" STREQUAL "false")
     endif()
 endif()
 
-# forward version from build pipeline
-#if(DEFINED ENV{ARRT_VERSION})
-#    set(ARRT_VERSION $ENV{ARRT_VERSION})
-#    message("ARRT Version = ${ARRT_VERSION}")
-#    add_definitions(-DARRT_VERSION="${ARRT_VERSION}")
-#    set(CMAKE_SUPPRESS_REGENERATION true)
-#endif()
 
-set( CMAKE_CONFIGURATION_TYPES Debug;Release )
 
 #################
 # ARRT SOLUTION
@@ -48,16 +36,12 @@ set( CMAKE_CONFIGURATION_TYPES Debug;Release )
 project(Arrt)
 
 # Global options, for all of the projects
-if(MSVC)
-    add_compile_options( /W4 /wd4505 /wd4068 /MP /bigobj /Zi)
+add_compile_options( /W4 /wd4505 /wd4068 /MP /bigobj /Zi)
  
-	# Enable pdb generation in release builds.
-    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
-    set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
-else()
-    add_compile_options(-Wall -Wextra -pedantic -Werror -Wno-extra-semi -Wno-unused-function -Wno-language-extension-token -Wno-delete-non-abstract-non-virtual-dtor)
-endif()
+# Enable pdb generation in release builds.
+set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -72,11 +56,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-
-find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
 
 ###################
 # ARRT Executable
@@ -84,13 +68,7 @@ find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
 set (TARGET "Arrt")
 
 set (SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/ArrtSource")
-file(GLOB SOURCE_LIST LIST_DIRECTORIES false "${SOURCE_ROOT}/*.cpp" "${SOURCE_ROOT}/*.h" "${SOURCE_ROOT}/Resources/*.qrc" "${SOURCE_ROOT}/Resources/*.ico")
-
-# add the resource file only if it's visual c++, just as a temporary workaround to avoid LLVM errors with the VERSIONINFO parsing
-if(MSVC)
-    file( GLOB NEW_FILES "${SOURCE_ROOT}/Resources/*.rc" )
-    set(SOURCE_LIST ${SOURCE_LIST} ${NEW_FILES})
-endif()
+file(GLOB SOURCE_LIST LIST_DIRECTORIES false "${SOURCE_ROOT}/*.cpp" "${SOURCE_ROOT}/*.h" "${SOURCE_ROOT}/Resources/*.qrc" "${SOURCE_ROOT}/Resources/*.ico" "${SOURCE_ROOT}/Resources/*.rc")
     
 set(SRC_DIRS
 	App
@@ -124,19 +102,18 @@ add_custom_command(
 add_custom_command(
     TARGET ${TARGET} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${LIB_REST_NAME}.dll
         ${LIB_ARR_BIN}/RemoteRenderingClient.dll
         ${LIB_ARR_BIN}/Microsoft.Holographic.HybridRemoting.dll
         $<TARGET_FILE_DIR:${TARGET}>
 )
 
+find_package(cpprestsdk CONFIG REQUIRED)
+target_link_libraries(${TARGET} PRIVATE cpprestsdk::cpprest)
+
 target_include_directories(${TARGET} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ArrtSource")
 target_link_libraries(${TARGET} PUBLIC d3d11.lib DXGI.lib)
 
 target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Widgets Qt5::Gui)
-
-target_link_libraries(${TARGET} PUBLIC "${LIB_REST_NAME}.lib")
-target_include_directories(${TARGET} PUBLIC "${LIB_REST_ROOT}/build/native/include")
 
 target_link_libraries(${TARGET} PUBLIC "${LIB_ARR_LIB}/RemoteRenderingClient.lib")
 target_include_directories(${TARGET} PUBLIC ${LIB_ARR_INCLUDE})
@@ -151,6 +128,9 @@ if (USE_NEW_AZURE_STORAGE_SDK)
     target_compile_definitions(${TARGET} PUBLIC NEW_STORAGE_SDK=1)
 
 else()
+
+    set( CFG $<IF:$<CONFIG:Debug>,DEBUG,RELEASE> )
+    set( POSTFIX $<$<CONFIG:Debug>:d> )
 
     set(LIB_BLOB_ROOT "${CMAKE_BINARY_DIR}/packages/Microsoft.Azure.Storage.CPP.v140.5.0.0")
     set(LIB_BLOB_NAME "${LIB_BLOB_ROOT}/lib/native/v140/x64/${CFG}/wastorage${POSTFIX}")

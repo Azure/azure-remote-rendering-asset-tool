@@ -230,7 +230,7 @@ void ArrtAppWindow::OnUpdateStatusBar()
         case StorageConnectionStatus::Authenticated:
             if (m_numFileUploads > 0)
             {
-                m_statusStorageAccount->setText(QString("<html><head/><body><p>Storage Account: <span style=\"color:#ffaa00;\">Uploading %1 files: %2%</span></p></body></html>").arg(m_numFileUploads).arg(m_fileUploadPercentage * 100.0, 0, 'g', 2));
+                m_statusStorageAccount->setText(QString("<html><head/><body><p>Storage Account: <span style=\"color:#ffaa00;\">Uploading %1 files: %2%</span></p></body></html>").arg(m_numFileUploads).arg(m_fileUploadPercentage * 100.0, 0, 'f', 2));
             }
             else
             {

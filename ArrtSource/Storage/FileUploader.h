@@ -2,9 +2,9 @@
 
 #include <atomic>
 #include <functional>
+#include <qcontainerfwd.h>
 
 class QDir;
-class QStringList;
 class QString;
 class StorageAccount;
 
