@@ -77,6 +77,15 @@ void ArrtAppWindow::OnEntityPicked()
         auto index = m_scenegraphModel->MapArrEntityHandleToModelIndex(entity);
 
         ScenegraphView->selectionModel()->select(index, QItemSelectionModel::SelectionFlag::ClearAndSelect);
+
+        auto parent = m_scenegraphModel->parent(index);
+        while (parent.isValid())
+        {
+            ScenegraphView->setExpanded(parent, true);
+            parent = m_scenegraphModel->parent(parent);
+        }
+
+        ScenegraphView->scrollTo(index);
     }
     else
     {

@@ -36,8 +36,8 @@ ArrtAppWindow::ArrtAppWindow()
 
     LoadSettings();
 
-    m_storageAccount = std::make_unique<StorageAccount>([this](int numFiles)
-                                                        { FileUploadStatusCallback(numFiles); });
+    m_storageAccount = std::make_unique<StorageAccount>([this](int numFiles, float percentage)
+                                                        { FileUploadStatusCallback(numFiles, percentage); });
     m_arrSettings = std::make_unique<ArrSettings>();
     m_arrSettings->LoadSettings();
 
@@ -230,7 +230,7 @@ void ArrtAppWindow::OnUpdateStatusBar()
         case StorageConnectionStatus::Authenticated:
             if (m_numFileUploads > 0)
             {
-                m_statusStorageAccount->setText(QString("<html><head/><body><p>Storage Account: <span style=\"color:#ffaa00;\">Uploading %1 files</span></p></body></html>").arg(m_numFileUploads));
+                m_statusStorageAccount->setText(QString("<html><head/><body><p>Storage Account: <span style=\"color:#ffaa00;\">Uploading %1 files: %2%</span></p></body></html>").arg(m_numFileUploads).arg(m_fileUploadPercentage * 100.0, 0, 'g', 2));
             }
             else
             {

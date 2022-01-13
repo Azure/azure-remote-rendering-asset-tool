@@ -20,6 +20,16 @@ if ($null -eq (Get-Command "cmake.exe" -ErrorAction SilentlyContinue))
 	throw "Unable to find cmake.exe in your PATH environment variable."
 }
 
+if (($null -eq $env:Qt5_DIR) -or -not (Test-Path $env:Qt5_DIR))
+{ 
+	throw "Environment variable Qt5_DIR is not set."
+}
+
+if (-not (Test-Path $env:Qt5_DIR))
+{ 
+	throw "Environment variable Qt5_DIR points to non-existing directory: '$env:Qt5_DIR'."
+}
+
 $CacheFile = $Destination + "\CMakeCache.txt"
 $VcpkgPath = $Destination + "\vcpkg"
 

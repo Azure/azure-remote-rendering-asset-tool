@@ -90,8 +90,11 @@ public:
 
     ID3D11Device* GetDxDevice() const { return m_device; }
 
-    int GetScreenWidth() const { return m_proxyTextureWidth; }
-    int GetScreenHeight() const { return m_proxyTextureHeight; }
+    int GetTextureWidth() const { return m_proxyTextureWidth; }
+    int GetTextureHeight() const { return m_proxyTextureHeight; }
+
+    int GetScreenWidth() const { return m_screenWidth; }
+    int GetScreenHeight() const { return m_screenHeight; }
 
     void RenderTo(ID3D11RenderTargetView* renderTarget);
 
@@ -112,8 +115,8 @@ private:
     int m_proxyTextureWidth = 0;
     int m_proxyTextureHeight = 0;
 
-    int m_width = 0;
-    int m_height = 0;
+    int m_screenWidth = 0;
+    int m_screenHeight = 0;
 
     ArrSettings* m_arrOptions = nullptr;
     ArrSession* m_arrSession = nullptr;

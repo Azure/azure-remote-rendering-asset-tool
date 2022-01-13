@@ -23,6 +23,7 @@ using namespace Azure::Storage::Sas;
 #    pragma warning(disable : 4996)
 #    include <cpprest/containerstream.h>
 #    include <cpprest/filestream.h>
+#    include <cpprest/rawptrstream.h>
 #    include <was/blob.h>
 #    include <was/core.h>
 #    include <was/queue.h>

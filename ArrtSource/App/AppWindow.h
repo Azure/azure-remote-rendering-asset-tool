@@ -86,7 +86,7 @@ private:
     void SaveSettings();
     void CheckForNewVersion();
     void OnCheckForNewVersionResult(QString latestVersion);
-    void FileUploadStatusCallback(int numFiles);
+    void FileUploadStatusCallback(int numFiles, float percentage);
     void UpdateConversionsList();
     void UpdateConversionPane();
     void UpdateConversionStartButton();
@@ -104,6 +104,7 @@ private:
     QLabel* m_statusArrSession = nullptr;
     QProgressBar* m_statusLoadProgress = nullptr;
     int m_numFileUploads = 0;
+    float m_fileUploadPercentage = 0;
     int m_maxLogType = 0;
 
     std::unique_ptr<StorageAccount> m_storageAccount;

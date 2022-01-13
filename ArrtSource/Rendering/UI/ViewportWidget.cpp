@@ -53,7 +53,7 @@ void ViewportWidget::SetSceneState(SceneState* state)
 
     // back buffer always maximum size
     ID3D11Texture2D* pBackBuffer;
-    ThrowIfFailed(m_swapChain->ResizeBuffers(0, m_sceneState->GetScreenWidth(), m_sceneState->GetScreenHeight(), DXGI_FORMAT_UNKNOWN, 0));
+    ThrowIfFailed(m_swapChain->ResizeBuffers(0, m_sceneState->GetTextureWidth(), m_sceneState->GetTextureHeight(), DXGI_FORMAT_UNKNOWN, 0));
     ThrowIfFailed(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer)));
     ThrowIfFailed(dxDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_RTView));
     ReleaseObject(pBackBuffer);
@@ -71,7 +71,7 @@ void ViewportWidget::SetSceneState(SceneState* state)
                          auto* dxDevice = m_sceneState->GetDxDevice();
                          ID3D11Texture2D* pBackBuffer;
                          // back buffer always maximum size
-                         ThrowIfFailed(m_swapChain->ResizeBuffers(0, m_sceneState->GetScreenWidth(), m_sceneState->GetScreenHeight(), DXGI_FORMAT_UNKNOWN, 0));
+                         ThrowIfFailed(m_swapChain->ResizeBuffers(0, m_sceneState->GetTextureWidth(), m_sceneState->GetTextureHeight(), DXGI_FORMAT_UNKNOWN, 0));
                          ThrowIfFailed(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer)));
                          ThrowIfFailed(dxDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_RTView));
                          ReleaseObject(pBackBuffer);
@@ -129,7 +129,14 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent* event)
     if (event->buttons() & Qt::RightButton)
     {
         auto diff = event->pos() - m_dragStartPoint;
-        m_sceneState->RotateCamera(diff.rx(), diff.ry());
+        const float dx = (float)diff.x() / (float)m_sceneState->GetScreenWidth();
+        const float dy = (float)diff.y() / (float)m_sceneState->GetScreenHeight();
+        const float fovy = m_sceneState->GetArrSettings()->GetFovAngle();
+        const float ratio = (float)m_sceneState->GetScreenWidth() / (float)m_sceneState->GetScreenHeight();
+        const float fovx = ratio * fovy;
+        const float speed = 10.0f;
+
+        m_sceneState->RotateCamera(dx * fovx * speed, dy * fovy * speed);
         m_dragStartPoint = event->pos();
     }
 }
