@@ -47,8 +47,18 @@ if ((Test-Path -Path $VcpkgPath) -eq $false) {
 	# could check out a fixed commit, but we'll just try latest for now
 }
 
+# bootstrap vcpkg
 &$VcpkgPath\bootstrap-vcpkg.bat
+
+# get Azure Storage SDK through vcgpk
 &$VcpkgPath\vcpkg.exe install azure-storage-blobs-cpp:x64-windows 
+
+if (!$?) {
+	throw "Vcpkg error $LASTEXITCODE, see log above."
+}
+
+# get CppRest SDK through vcgpk
+&$VcpkgPath\vcpkg.exe install cpprestsdk:x64-windows
 
 if (!$?) {
 	throw "Vcpkg error $LASTEXITCODE, see log above."

@@ -85,8 +85,8 @@ void FileUploader::NotifyBytesRead(int64_t bytes)
 
     const int remainingFiles = m_remainingFiles;
 
-    int64_t read = m_bytesRead;
-    int64_t total = m_totalBytesToRead;
+    const int64_t read = m_bytesRead;
+    const int64_t total = m_totalBytesToRead;
     const float percentage = (total > 0) ? (double)read / (double)total : 1.0;
 
     QMetaObject::invokeMethod(QApplication::instance(), [this, remainingFiles, percentage]()
@@ -245,8 +245,8 @@ void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const
 
     const int remainingFiles = m_remainingFiles.fetch_sub(1) - 1;
 
-    int64_t read = m_bytesRead;
-    int64_t total = m_totalBytesToRead;
+    const int64_t read = m_bytesRead;
+    const int64_t total = m_totalBytesToRead;
     const float percentage = (total > 0) ? (double)read / (double)total : 1.0;
 
     QMetaObject::invokeMethod(QApplication::instance(), [this, remainingFiles, percentage]()
