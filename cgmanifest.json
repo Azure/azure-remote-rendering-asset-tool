@@ -2,37 +2,10 @@
   "Registrations": [
     {
       "component": {
-        "type": "git",
-        "git": {
-          "repositoryUrl": "https://github.com/qt/qt5",
-          "commitHash": "80791b03ee245b893e638a78508f1fa957f0b08d"
-        }
-      }
-    },
-    {
-      "component": {
         "type": "NuGet",
         "NuGet": {
           "Name": "Microsoft.Azure.RemoteRendering.Cpp",
           "Version": "1.0.36"
-        }
-      }
-    },
-    {
-      "component": {
-        "type": "NuGet",
-        "NuGet": {
-          "Name": "Microsoft.Azure.Storage.CPP.v140",
-          "Version": "5.0.0"
-        }
-      }
-    },
-    {
-      "component": {
-        "type": "NuGet",
-        "NuGet": {
-          "Name": "cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn",
-          "Version": "2.9.1"
         }
       }
     }

@@ -28,7 +28,69 @@ if (NOT "$ENV{NUGET_RESTORE}" STREQUAL "false")
     endif()
 endif()
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
+# could switch back to Qt5, if necessary
+set(QTV "Qt6")
+set(CMAKE_PREFIX_PATH "$ENV{${QTV}_DIR}")
+
+function(setup_qt TARGET)
+
+    set(COMPONENTS Core Widgets Gui Svg)
+
+    find_package(${QTV} COMPONENTS ${COMPONENTS} REQUIRED)
+
+    get_target_property(QT_APP_DIR ${QTV}::Core IMPORTED_LOCATION)
+
+    if (${QT_APP_DIR} STREQUAL "QT_APP_DIR-NOTFOUND")
+        get_target_property(QT_APP_DIR ${QTV}::qmake IMPORTED_LOCATION)
+    endif()
+
+    message(STATUS "QT_APP_DIR determined as: ${QT_APP_DIR}")
+
+    get_filename_component(QT_BIN_DIR "${QT_APP_DIR}" DIRECTORY)
+    get_filename_component(QT_DIR "${QT_BIN_DIR}" DIRECTORY)
+
+    if (EXISTS "${QT_DIR}/${QTV}")
+        # vcpkg puts the Qt plugin data into this sub-folder
+        # stock Qt does not, so check whether the folder exists
+        set(QT_DIR "${QT_DIR}/${QTV}")
+    endif()
+
+    foreach(module ${COMPONENTS})
+
+        target_link_libraries(${TARGET} PUBLIC "${QTV}::${module}")
+
+        # copy the dll into the binary folder for each configuration using generator expressions
+        # as a post-build step for every qt-enabled target:
+        add_custom_command(TARGET ${TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:${QTV}::${module}>
+            $<TARGET_FILE_DIR:${TARGET}>)
+
+    endforeach()
+
+    # Copy 'imageformats' into the binary folder.
+    add_custom_command(TARGET ${TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${QT_DIR}/plugins/imageformats"
+        "$<TARGET_FILE_DIR:${TARGET}>/imageformats")
+
+    # Copy 'platforms' into the binary folder.
+    add_custom_command(TARGET ${TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${QT_DIR}/plugins/platforms"
+        "$<TARGET_FILE_DIR:${TARGET}>/platforms")
+
+    # Copy 'iconengines' into the binary folder.
+    add_custom_command(TARGET ${TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${QT_DIR}/plugins/iconengines"
+        "$<TARGET_FILE_DIR:${TARGET}>/iconengines")
+
+endfunction()
 
 #################
 # ARRT SOLUTION
@@ -49,18 +111,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_definitions(-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING -D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 # No Windows.h min and max
 add_definitions(-DNOMINMAX)
+add_definitions(-D_TURN_OFF_PLATFORM_STRING)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
 
 ###################
 # ARRT Executable
@@ -87,17 +144,7 @@ source_group(TREE "${SOURCE_ROOT}" FILES ${SOURCE_LIST})
 
 add_executable(${TARGET} WIN32 ${SOURCE_LIST})
 
-get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
-get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
-
-add_custom_command(
-    TARGET ${TARGET} POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E
-        env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
-            "$<TARGET_FILE:${TARGET}>" --no-translations --no-webkit2 --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --no-compiler-runtime
-    COMMENT "Running windeployqt..."
-)
+setup_qt(${TARGET})
 
 add_custom_command(
     TARGET ${TARGET} POST_BUILD
@@ -113,12 +160,8 @@ target_link_libraries(${TARGET} PRIVATE cpprestsdk::cpprest)
 target_include_directories(${TARGET} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ArrtSource")
 target_link_libraries(${TARGET} PUBLIC d3d11.lib DXGI.lib)
 
-target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Widgets Qt5::Gui)
-
 target_link_libraries(${TARGET} PUBLIC "${LIB_ARR_LIB}/RemoteRenderingClient.lib")
 target_include_directories(${TARGET} PUBLIC ${LIB_ARR_INCLUDE})
-
-target_link_libraries(${TARGET} PUBLIC crypt32.lib)
 
 if (USE_NEW_AZURE_STORAGE_SDK)
 
@@ -148,3 +191,6 @@ else()
 endif()
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Arrt)
+
+
+

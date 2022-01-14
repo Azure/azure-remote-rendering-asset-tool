@@ -28,8 +28,8 @@ steps:
   inputs:
     targetType: inline
     script: |
-      $Env:Qt5_DIR = "$(Build.SourcesDirectory)\arr.arrt.dependencies\Qt\5.13.1\msvc2017_64"
-      $(Build.SourcesDirectory)\azure-remote-rendering-asset-tool\GenerateSolution.ps1 -Destination $(Build.SourcesDirectory)\ArrtWorkspace
+      $Env:Path = "$(Build.SourcesDirectory)\arr.arrt.dependencies\CMake\bin;$Env:Path"
+      $(Build.SourcesDirectory)\azure-remote-rendering-asset-tool\GenerateSolution.ps1 -Destination $(Build.SourcesDirectory)\ArrtWorkspace -Vcpkg "$(Build.SourcesDirectory)\arr.arrt.dependencies\vcpkg"
 
 - task: ea576cd4-c61f-48f8-97e7-a3cb07b90a6f@2
   displayName: 'CredScan'
