@@ -22,12 +22,12 @@ if ($null -eq (Get-Command "cmake.exe" -ErrorAction SilentlyContinue))
 
 if ($null -eq $env:Qt6_DIR)
 { 
-	throw "Environment variable 'Qt6_DIR' is not set."
+	#throw "Environment variable 'Qt6_DIR' is not set."
 }
 
 if (-not (Test-Path $env:Qt6_DIR))
 { 
-	throw "Environment variable Qt6_DIR points to non-existing directory: '$env:Qt6_DIR'."
+	#throw "Environment variable Qt6_DIR points to non-existing directory: '$env:Qt6_DIR'."
 }
 
 $CacheFile = $Destination + "\CMakeCache.txt"
