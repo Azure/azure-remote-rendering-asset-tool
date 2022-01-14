@@ -32,7 +32,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+# could switch back to Qt5, if necessary
 set(QTV "Qt6")
+set(CMAKE_PREFIX_PATH "$ENV{${QTV}_DIR}")
 
 function(setup_qt TARGET)
 
@@ -40,10 +42,22 @@ function(setup_qt TARGET)
 
     find_package(${QTV} COMPONENTS ${COMPONENTS} REQUIRED)
 
-    get_target_property(QT_CORE_DLL ${QTV}::Core IMPORTED_LOCATION)
-    get_filename_component(QT_BIN_DIR "${QT_CORE_DLL}" DIRECTORY)
+    get_target_property(QT_APP_DIR ${QTV}::Core IMPORTED_LOCATION)
+
+    if (${QT_APP_DIR} STREQUAL "QT_APP_DIR-NOTFOUND")
+        get_target_property(QT_APP_DIR ${QTV}::qmake IMPORTED_LOCATION)
+    endif()
+
+    message(STATUS "QT_APP_DIR determined as: ${QT_APP_DIR}")
+
+    get_filename_component(QT_BIN_DIR "${QT_APP_DIR}" DIRECTORY)
     get_filename_component(QT_DIR "${QT_BIN_DIR}" DIRECTORY)
-    set(QT_DIR "${QT_DIR}/${QTV}")
+
+    if (EXISTS "${QT_DIR}/${QTV}")
+        # vcpkg puts the Qt plugin data into this sub-folder
+        # stock Qt does not, so check whether the folder exists
+        set(QT_DIR "${QT_DIR}/${QTV}")
+    endif()
 
     foreach(module ${COMPONENTS})
 

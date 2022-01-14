@@ -117,7 +117,11 @@ void ViewportWidget::mousePressEvent(QMouseEvent* event)
     }
     else if (event->button() == Qt::LeftButton)
     {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         m_sceneState->PickEntity(event->localPos().x(), event->localPos().y());
+#else
+        m_sceneState->PickEntity(event->position().x(), event->position().y());
+#endif
     }
 }
 
