@@ -9,6 +9,7 @@ Write-Host "=== Generating ARRT Solution ==="
 Write-Host ""
 Write-Host "Destination Path: $Destination"
 Write-Host "Solution for: $Solution"
+& cmake.exe --version
 
 if ($null -eq (Get-Command "nuget.exe" -ErrorAction SilentlyContinue)) 
 { 
