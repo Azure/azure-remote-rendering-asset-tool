@@ -25,7 +25,7 @@ if ($null -eq $env:Qt6_DIR)
 	#throw "Environment variable 'Qt6_DIR' is not set."
 }
 
-if (-not (Test-Path $env:Qt6_DIR))
+if (-not ($null -eq $env:Qt6_DIR) -and (-not (Test-Path $env:Qt6_DIR)))
 { 
 	#throw "Environment variable Qt6_DIR points to non-existing directory: '$env:Qt6_DIR'."
 }
