@@ -45,8 +45,8 @@ Prebuilt ARRT binaries [can be found here](https://github.com/Azure/azure-remote
 ### Prerequisites
 
 * [Visual studio 2019 or 2022](https://visualstudio.microsoft.com/downloads).
-* [Qt 5.13.1 or newer](https://www.qt.io/download-qt-installer). Use the default installation options.
-  * Set the `Qt5_DIR` environment variable (e.g. to `C:\5.13.1\msvc2017_64`).
+* [Qt 6.2.0 or newer](https://www.qt.io/download-qt-installer). Use the default installation options.
+  * Set the `Qt6_DIR` environment variable (e.g. to `C:\Qt6\6.2.2\msvc2019_64`).
 * [CMake](https://cmake.org/download).
   * Make sure *cmake.exe* is in the `PATH` environment variable.
 * [Command-line NuGet](https://www.nuget.org/downloads).

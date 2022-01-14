@@ -4,6 +4,9 @@ SETLOCAL
 SET DEPS_DIR=C:\arr.arrt.dependencies
 SET Qt5_DIR=%DEPS_DIR%\Qt\5.13.1\msvc2017_64
 
+rem Qt6_DIR only has to exist, it isn't used
+SET Qt6_DIR=%DEPS_DIR%\Qt
+
 REM Set developer environment for VS 2019
 CALL "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64 -winsdk=10.0.16299.0
 echo on

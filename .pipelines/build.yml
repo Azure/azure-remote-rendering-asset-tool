@@ -29,6 +29,7 @@ steps:
     targetType: inline
     script: |
       $Env:Qt5_DIR = "$(Build.SourcesDirectory)\arr.arrt.dependencies\Qt\5.13.1\msvc2017_64"
+      $Env:Qt6_DIR = "$(Build.SourcesDirectory)\arr.arrt.dependencies\Qt"
       $(Build.SourcesDirectory)\azure-remote-rendering-asset-tool\GenerateSolution.ps1 -Destination $(Build.SourcesDirectory)\ArrtWorkspace
 
 - task: ea576cd4-c61f-48f8-97e7-a3cb07b90a6f@2
