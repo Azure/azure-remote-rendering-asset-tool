@@ -20,8 +20,8 @@ REM SET ARRT_VERSION=v%CDP_PACKAGE_VERSION_SEMANTIC%
 
 set VCPKG_PATH=C:\arr.arrt.dependencies\vcpkg
 
-CMAKEEXE --version
-CMAKEEXE -G "Visual Studio 16 2019" -A x64 -S "." -B "." "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_PATH%\scripts\buildsystems\vcpkg.cmake" "-DUSE_NEW_AZURE_STORAGE_SDK:BOOL=ON"
+%CMAKEEXE% --version
+%CMAKEEXE% -G "Visual Studio 16 2019" -A x64 -S "." -B "." "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_PATH%\scripts\buildsystems\vcpkg.cmake" "-DUSE_NEW_AZURE_STORAGE_SDK:BOOL=ON"
 if %errorlevel% neq 0 (
     echo Failed to generate solution %errorlevel%
     goto errorExit
