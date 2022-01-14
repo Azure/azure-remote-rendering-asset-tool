@@ -22,15 +22,15 @@ if ($null -eq (Get-Command "cmake.exe" -ErrorAction SilentlyContinue)) {
 
 if ($null -eq $env:Qt6_DIR) { 
 	Write-Host "Environment variable 'Qt6_DIR' is not set."
-	#throw "Environment variable 'Qt6_DIR' is not set."
 }
 else {
 	Write-Host "Environment variable Qt6_DIR is set to: '$env:Qt6_DIR'."
+
+	if (-not (Test-Path $env:Qt6_DIR)) { 
+		throw "Environment variable Qt6_DIR points to non-existing directory: '$env:Qt6_DIR'."
+	}
 }
 
-if (-not ($null -eq $env:Qt6_DIR) -and (-not (Test-Path $env:Qt6_DIR))) { 
-	#throw "Environment variable Qt6_DIR points to non-existing directory: '$env:Qt6_DIR'."
-}
 
 $CacheFile = $Destination + "\CMakeCache.txt"
 
@@ -68,7 +68,8 @@ if ("" -eq $Vcpkg) {
 		throw "Vcpkg error $LASTEXITCODE, see log above."
 	}
 
-} else {
+}
+else {
 
 	$VcpkgPath = $Vcpkg
 }
