@@ -2,6 +2,7 @@ rem Called by the release pipeline to do the actual builds.
 
 SETLOCAL
 SET DEPS_DIR=C:\arr.arrt.dependencies
+SET CMAKEEXE=C:\arr.arrt.dependencies\CMake\bin\cmake.exe
 rem SET Qt5_DIR=%DEPS_DIR%\Qt\5.13.1\msvc2017_64
 
 rem Qt6_DIR only has to exist, it isn't used
@@ -19,8 +20,8 @@ REM SET ARRT_VERSION=v%CDP_PACKAGE_VERSION_SEMANTIC%
 
 set VCPKG_PATH=C:\arr.arrt.dependencies\vcpkg
 
-cmake --version
-cmake -G "Visual Studio 16 2019" -A x64 "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_PATH%\scripts\buildsystems\vcpkg.cmake" "-DUSE_NEW_AZURE_STORAGE_SDK:BOOL=ON"
+CMAKEEXE --version
+CMAKEEXE -G "Visual Studio 16 2019" -A x64 -S "." -B "." "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_PATH%\scripts\buildsystems\vcpkg.cmake" "-DUSE_NEW_AZURE_STORAGE_SDK:BOOL=ON"
 if %errorlevel% neq 0 (
     echo Failed to generate solution %errorlevel%
     goto errorExit
