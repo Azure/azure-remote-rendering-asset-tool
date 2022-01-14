@@ -65,8 +65,10 @@ static void SetStyleSheet()
 
 int WinMain(HINSTANCE, HINSTANCE, char*, int)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, false);
     QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
+#endif
 
     QCoreApplication::setApplicationName(VER_PRODUCTNAME);
     QCoreApplication::setOrganizationName(VER_COMPANY);
