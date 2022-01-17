@@ -4,10 +4,12 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QPointer>
+#include <QUuid>
 #include <Rendering/ArrAccount.h>
 #include <Rendering/IncludeAzureRemoteRendering.h>
 #include <Storage/StorageAccount.h>
 #include <Storage/UI/StorageBrowserModel.h>
+#include <Utils/Logging.h>
 
 ConversionManager::ConversionManager(StorageAccount* storageAccount, ArrAccount* arrClient)
 {
@@ -69,11 +71,6 @@ bool ConversionManager::StartConversion()
         conv.m_name = conv.GetPlaceholderName();
     }
 
-    if (conv.m_inputFolder.isEmpty())
-    {
-        conv.m_inputFolder = conv.GetPlaceholderInputFolder();
-    }
-
     if (!StartConversionInternal())
     {
         conv.m_status = ConversionStatus::New;
@@ -108,7 +105,7 @@ void ConversionManager::SetConversionSourceAsset(const QString& container, const
     {
         conv.m_sourceAssetContainer = container;
         conv.m_sourceAsset = path;
-        conv.m_inputFolder.clear(); // reset the input folder
+        conv.m_inputFolder = conv.GetPlaceholderInputFolder(); // reset the input folder
 
         Q_EMIT SelectedChanged();
     }
@@ -242,7 +239,14 @@ bool ConversionManager::StartConversionInternal()
         QString advancedOptionsJSON = conv.m_options.ToJSON();
 
         QFileInfo assetFile(conv.m_sourceAsset);
-        QString settingsFileName = assetFile.path() + "/" + assetFile.completeBaseName() + ".ConversionSettings.json";
+        const QString folder = assetFile.path();
+
+        QString settingsFileName;
+
+        if (!folder.isEmpty() && folder != ".")
+            settingsFileName = folder + "/";
+
+        settingsFileName += assetFile.completeBaseName() + ".ConversionSettings.json";
 
         QString errorMsg;
 
@@ -279,7 +283,10 @@ bool ConversionManager::StartConversionInternal()
     const QString relOutputPath = conv.m_outputFolder;
     const QString relOutputFile = conv.m_name + ".arrAsset";
 
+    conv.m_conversionGuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
+
     RR::AssetConversionOptions options;
+    options.ConversionId = conv.m_conversionGuid.toStdString();
 
     RR::AssetConversionInputOptions& input(options.InputOptions);
     input.BlobPrefix = relInputPath.toStdString();
@@ -294,6 +301,18 @@ bool ConversionManager::StartConversionInternal()
     output.StorageContainerUri = outputUri.toStdString();
 
     int conversionIdx = m_selectedConversion;
+
+    qDebug(LoggingCategory::ArrSdk) << QString("Starting conversion '%1' (%2)").arg(conv.m_name).arg(conv.m_conversionGuid);
+
+    qDebug(LoggingCategory::ArrSdk) << QString("Input Container URI = '%1'").arg(input.StorageContainerUri.c_str());
+    qDebug(LoggingCategory::ArrSdk) << QString("Input BlobPrefix = '%1'").arg(input.BlobPrefix.c_str());
+    qDebug(LoggingCategory::ArrSdk) << QString("Input Filename = '%1'").arg(input.RelativeInputAssetPath.c_str());
+    qDebug(LoggingCategory::ArrSdk) << QString("Input SAS = '%1'").arg(input.StorageContainerReadListSas.c_str());
+
+    qDebug(LoggingCategory::ArrSdk) << QString("Output Container URI = '%1'").arg(output.StorageContainerUri.c_str());
+    qDebug(LoggingCategory::ArrSdk) << QString("Output BlobPrefix = '%1'").arg(output.BlobPrefix.c_str());
+    qDebug(LoggingCategory::ArrSdk) << QString("Output Filename = '%1'").arg(output.OutputAssetFilename.c_str());
+    qDebug(LoggingCategory::ArrSdk) << QString("Output SAS = '%1'").arg(output.StorageContainerWriteSas.c_str());
 
     auto onConversionStartRequestFinished = [this, conversionIdx](RR::Status status, RR::ApiHandle<RR::AssetConversionResult> result)
     {
@@ -316,10 +335,14 @@ bool ConversionManager::StartConversionInternal()
                                       }
                                       else
                                       {
-                                          conv.m_message = "Starting conversion failed";
+                                          conv.m_message = RR::ResultToString(errorCode);
                                           conv.m_status = ConversionStatus::Failed;
                                           conv.m_endConversionTime = QDateTime::currentSecsSinceEpoch();
+
+                                          qCritical(LoggingCategory::ArrSdk) << QString("Starting conversion '%1' failed: %2").arg(conv.m_conversionGuid).arg(conv.m_message);
                                       }
+
+                                      Q_EMIT SelectedChanged();
                                   });
     };
 
@@ -349,7 +372,7 @@ void ConversionManager::SetConversionStatus(int conversionIdx, RR::Status status
     else
     {
         conversionResult = RR::ConversionSessionStatus::Failure;
-        message = "Unknown failure";
+        message = RR::ResultToString(RR::StatusToResult(status));
     }
 
     switch (conversionResult)
@@ -365,6 +388,7 @@ void ConversionManager::SetConversionStatus(int conversionIdx, RR::Status status
             conv.m_status = ConversionStatus::Failed;
             conv.m_message = message.c_str();
             conv.m_endConversionTime = QDateTime::currentSecsSinceEpoch();
+            qCritical(LoggingCategory::ArrSdk) << QString("Conversion '%1' failed: %2").arg(conv.m_conversionGuid).arg(conv.m_message);
             Q_EMIT ConversionFailed();
             break;
 
