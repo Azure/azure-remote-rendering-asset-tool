@@ -242,7 +242,14 @@ bool ConversionManager::StartConversionInternal()
         QString advancedOptionsJSON = conv.m_options.ToJSON();
 
         QFileInfo assetFile(conv.m_sourceAsset);
-        QString settingsFileName = assetFile.path() + "/" + assetFile.completeBaseName() + ".ConversionSettings.json";
+        const QString folder = assetFile.path();
+
+        QString settingsFileName;
+
+        if (!folder.isEmpty() && folder != ".")
+            settingsFileName = folder + "/";
+
+        settingsFileName += assetFile.completeBaseName() + ".ConversionSettings.json";
 
         QString errorMsg;
 
