@@ -1,7 +1,7 @@
+#include <QMessageBox>
 #include <QPushButton>
 #include <Storage/StorageAccount.h>
 #include <Storage/UI/BrowseStorageDlg.h>
-#include <QMessageBox>
 
 BrowseStorageDlg::BrowseStorageDlg(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, const QString& parentFilter, QWidget* parent /*= {}*/)
     : QDialog(parent)
@@ -38,12 +38,6 @@ void BrowseStorageDlg::ItemSelected(QString container, QString path, bool dblCli
 
     QPushButton* openButton = Buttons->button(QDialogButtonBox::StandardButton::Open);
 
-    if (m_currentItem.isEmpty())
-    {
-        openButton->setEnabled(false);
-        return;
-    }
-
     if (m_showTypes == StorageEntry::Type::Folder)
     {
         // if this is a browser for a folder, any selection is accepted
@@ -52,6 +46,12 @@ void BrowseStorageDlg::ItemSelected(QString container, QString path, bool dblCli
     }
     else
     {
+        if (m_currentItem.isEmpty())
+        {
+            openButton->setEnabled(false);
+            return;
+        }
+
         // in all other cases, only file selections are allowed
         openButton->setEnabled(!m_currentItem.endsWith("/"));
 

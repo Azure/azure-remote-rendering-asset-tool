@@ -149,7 +149,7 @@ void ArrtAppWindow::UpdateConversionPane()
         OptionsArea->setEnabled(allowEditing);
 
         // enable or disable the start conversion button depending on whether enough data is set
-        StartConversionButton->setEnabled(allowEditing && !conv.m_sourceAsset.isEmpty() && !conv.m_outputFolder.isEmpty());
+        StartConversionButton->setEnabled(allowEditing && !conv.m_sourceAsset.isEmpty() && !conv.m_outputFolderContainer.isEmpty());
         ResetAdvancedButton->setEnabled(allowEditing);
     }
 
