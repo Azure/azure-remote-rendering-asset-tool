@@ -159,39 +159,28 @@ void ArrtAppWindow::UpdateConversionPane()
         SourceAssetLine->setText(conv.m_sourceAssetContainer + ":" + conv.m_sourceAsset);
         OutputFolderLine->setText(conv.m_outputFolderContainer + ":" + conv.m_outputFolder);
 
-        if (conv.m_inputFolder.isEmpty())
-            InputFolderLine->setText({});
-        else
-            InputFolderLine->setText(conv.m_sourceAssetContainer + ":" + conv.m_inputFolder);
+        InputFolderLine->setText(conv.m_sourceAssetContainer + ":" + conv.m_inputFolder);
 
         ConversionOptionsCheckbox->blockSignals(true);
         ConversionOptionsCheckbox->setChecked(conv.m_showAdvancedOptions);
         ConversionOptionsCheckbox->blockSignals(false);
         ConversionNameInput->setPlaceholderText(conv.GetPlaceholderName());
-        InputFolderLine->setPlaceholderText(conv.m_sourceAssetContainer + ":" + conv.GetPlaceholderInputFolder());
     }
 
-    if (conv.m_message.isEmpty())
+    switch (conv.m_status)
     {
-        switch (conv.m_status)
-        {
-            case ConversionStatus::New:
-                ConversionMessage->setText("Conversion Status: not started");
-                break;
-            case ConversionStatus::Finished:
-                ConversionMessage->setText("Conversion Status: finished successfully");
-                break;
-            case ConversionStatus::Running:
-                ConversionMessage->setText("Conversion Status: currently running");
-                break;
-            case ConversionStatus::Failed:
-                ConversionMessage->setText("Conversion Status: failed (no details)");
-                break;
-        }
-    }
-    else
-    {
-        ConversionMessage->setText(QString("Conversion Status: %1").arg(conv.m_message));
+        case ConversionStatus::New:
+            ConversionMessage->setText("Conversion not started");
+            break;
+        case ConversionStatus::Finished:
+            ConversionMessage->setText("Conversion finished successfully");
+            break;
+        case ConversionStatus::Running:
+            ConversionMessage->setText("Conversion currently running");
+            break;
+        case ConversionStatus::Failed:
+            ConversionMessage->setText(QString("Conversion failed: %1").arg(conv.m_message.isEmpty() ? "(no details)" : conv.m_message));
+            break;
     }
 
     // show advanced options
