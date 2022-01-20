@@ -163,7 +163,7 @@ void ConversionManager::OnCheckConversions()
     {
         auto& conv = m_conversions[conversionIdx];
 
-        if (conv.m_status != ConversionStatus::Running)
+        if (conv.m_status != ConversionStatus::Running || conv.m_conversionGuid.isEmpty())
             continue;
 
         anyRunning = true;
