@@ -7,7 +7,7 @@ contact_links:
     url: https://github.com/Azure/azure-remote-rendering/issues/new?assignees=&labels=conversion%2CARRT&template=2-asset-conversion-problem.md&title=%5BConversion+Problem%5D
     about: Report a conversion problem, include the conversion ID from the conversion panel.
   - name: Provide product feedback
-    url: https://feedback.azure.com/forums/928696-azure-remote-rendering
+    url: https://feedback.azure.com/d365community/forum/46aa4cc0-fd24-ec11-b6e6-000d3a4f07b8
     about: Please provide feedback and request new features here.
   - name: Stack Overflow
     url: https://stackoverflow.com/questions/tagged/azure-remote-rendering
