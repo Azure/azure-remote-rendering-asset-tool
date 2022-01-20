@@ -64,8 +64,6 @@ bool ConversionManager::StartConversion()
 
     auto& conv = m_conversions[m_selectedConversion];
 
-    conv.m_status = ConversionStatus::Running;
-
     if (conv.m_name.isEmpty())
     {
         conv.m_name = conv.GetPlaceholderName();
@@ -74,9 +72,11 @@ bool ConversionManager::StartConversion()
     if (!StartConversionInternal())
     {
         conv.m_status = ConversionStatus::New;
+        Q_EMIT SelectedChanged();
         return false;
     }
 
+    conv.m_status = ConversionStatus::Running;
     Q_EMIT SelectedChanged();
 
     m_conversions.push_back({});
