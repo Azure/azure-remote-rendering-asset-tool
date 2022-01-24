@@ -69,14 +69,26 @@ void ArrtAppWindow::UpdateConversionsList()
             {
                 const uint64_t duration = conv.m_endConversionTime - conv.m_startConversionTime;
                 item->setIcon(QIcon(":/ArrtApplication/Icons/conversion_succeeded.svg"));
-                text += QString(" (succeeded) [%1]").arg(SecToString(duration));
+                text += QString(" (succeeded)");
+
+                if (duration > 0)
+                {
+                    text += QString(" [%1]").arg(SecToString(duration));
+                }
+
                 break;
             }
             case ConversionStatus::Failed:
             {
                 const uint64_t duration = conv.m_endConversionTime - conv.m_startConversionTime;
                 item->setIcon(QIcon(":/ArrtApplication/Icons/conversion_failed.svg"));
-                text += QString(" (failed) [%1]").arg(SecToString(duration));
+                text += QString(" (failed)");
+
+                if (duration > 0)
+                {
+                    text += QString(" [%1]").arg(SecToString(duration));
+                }
+
                 break;
             }
         }
