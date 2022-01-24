@@ -839,6 +839,9 @@
                  <property name="text">
                   <string>Conversion Status: not started</string>
                  </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
                <item>

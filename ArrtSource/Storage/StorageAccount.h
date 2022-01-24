@@ -43,7 +43,7 @@ public:
     /// Sets (and saves) new connection settings.
     ///
     /// If already connected to a storage account, the connection is closed.
-    void SetSettings(const QString& accountName, const QString& accountKey, const QString& endpointUrl);
+    void SetSettings(QString accountName, QString accountKey, QString endpointUrl);
 
     /// Returns the currently set storage account name.
     QString GetAccountName() const { return m_accountName; }
@@ -131,6 +131,8 @@ public:
 
 private:
     void SetConnectionStatus(StorageConnectionStatus newStatus);
+
+    static void SanitizeSettings(QString& accountName, QString& accountKey, QString& endpointUrl);
 
 #if NEW_STORAGE_SDK
     void ConnectToAzureStorageThread(const QString& endpointUrl, const std::shared_ptr<StorageSharedKeyCredential>& credentials);

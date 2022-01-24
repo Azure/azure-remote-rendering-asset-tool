@@ -49,7 +49,7 @@ public:
 
     bool LoadSettings();
     void SaveSettings() const;
-    void SetSettings(const QString& accountId, const QString& accountKey, const QString& accountDomain, const QString& region);
+    void SetSettings(QString accountId, QString accountKey, QString accountDomain, QString region);
 
     QString GetAccountId() const { return m_accountId; }
     QString GetAccountKey() const { return m_accountKey; }
@@ -65,6 +65,7 @@ public:
     void GetAvailableAccountDomains(std::vector<ArrAccountDomainInfo>& domains);
 
 private:
+    static void SanitizeSettings(QString& accountId, QString& accountKey, QString& accountDomain, QString& region);
     void SetConnectionStatus(ArrConnectionStatus newStatus);
     void GetCurrentRenderingSessionsResult(RR::ApiHandle<RR::RemoteRenderingClient> client, RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesArrayResult> result);
 

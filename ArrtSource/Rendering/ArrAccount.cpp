@@ -74,6 +74,8 @@ bool ArrAccount::LoadSettings()
         }
     }
 
+    SanitizeSettings(m_accountId, m_accountKey, m_accountDomain, m_region);
+
     SaveSettings();
 
     return !m_accountId.isEmpty() && !m_accountKey.isEmpty();
@@ -128,15 +130,28 @@ void ArrAccount::SaveSettings() const
     }
 }
 
-void ArrAccount::SetSettings(const QString& accountId, const QString& accountKey, const QString& accountDomain, const QString& region)
+void ArrAccount::SanitizeSettings(QString& accountId, QString& accountKey, QString& accountDomain, QString& region)
 {
+    accountId = accountId.trimmed();
+    accountKey = accountKey.trimmed();
+    accountDomain = accountDomain.trimmed();
+    region = region.trimmed();
+
+    while (accountDomain.endsWith("/"))
+        accountDomain.chop(1);
+}
+
+void ArrAccount::SetSettings(QString accountId, QString accountKey, QString accountDomain, QString region)
+{
+    SanitizeSettings(accountId, accountKey, accountDomain, region);
+
     if (m_accountId == accountId && m_accountKey == accountKey && m_accountDomain == accountDomain && m_region == region)
         return;
 
-    m_accountId = accountId.trimmed();
-    m_accountKey = accountKey.trimmed();
-    m_accountDomain = accountDomain.trimmed();
-    m_region = region.trimmed();
+    m_accountId = accountId;
+    m_accountKey = accountKey;
+    m_accountDomain = accountDomain;
+    m_region = region;
 
     SaveSettings();
 

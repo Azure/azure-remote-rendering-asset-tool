@@ -1,6 +1,8 @@
 #include <QIcon>
+#include <QProcessEnvironment>
 #include <Storage/StorageAccount.h>
 #include <Storage/UI/StorageBrowserModel.h>
+#include <QFileInfo>
 
 void StorageBrowserModel::SetFilter(StorageEntry::Type showTypes, const QString& parentPathFilter)
 {
@@ -263,7 +265,14 @@ bool StorageBrowserModel::IsArrAsset(const QString& file)
 
 bool StorageBrowserModel::IsSrcAsset(const QString& file)
 {
-    return file.endsWith(".gltf", Qt::CaseInsensitive) || file.endsWith(".glb", Qt::CaseInsensitive) || file.endsWith(".fbx", Qt::CaseInsensitive);
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString formats = ";gltf;glb;fbx;" + env.value("ARRT_ALLOWED_ASSET_FORMATS", "") + ";";
+    formats = formats.toLower();
+
+    QFileInfo info(file);
+    QString extension = ";" + info.suffix().toLower() + ";";
+
+    return formats.indexOf(extension) >= 0;
 }
 
 bool StorageEntry::IsDifferent(const StorageEntry& rhs) const
