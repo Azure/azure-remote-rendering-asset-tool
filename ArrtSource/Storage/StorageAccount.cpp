@@ -21,6 +21,8 @@ bool StorageAccount::LoadSettings()
     m_endpointUrl = s.value("EndpointUrl").toString();
     s.endGroup();
 
+    SanitizeSettings(m_accountName, m_accountKey, m_endpointUrl);
+
     return !m_accountName.isEmpty() && !m_accountKey.isEmpty() && !m_endpointUrl.isEmpty();
 }
 
@@ -34,14 +36,26 @@ void StorageAccount::SaveSettings() const
     s.endGroup();
 }
 
-void StorageAccount::SetSettings(const QString& accountName, const QString& accountKey, const QString& endpointUrl)
+void StorageAccount::SanitizeSettings(QString& accountName, QString& accountKey, QString& endpointUrl)
 {
+    accountName = accountName.trimmed();
+    accountKey = accountKey.trimmed();
+    endpointUrl = endpointUrl.trimmed();
+
+    while (endpointUrl.endsWith("/"))
+        endpointUrl.chop(1);
+}
+
+void StorageAccount::SetSettings(QString accountName, QString accountKey, QString endpointUrl)
+{
+    SanitizeSettings(accountName, accountKey, endpointUrl);
+
     if (m_accountName == accountName && m_accountKey == accountKey && m_endpointUrl == endpointUrl)
         return;
 
-    m_accountName = accountName.trimmed();
-    m_accountKey = accountKey.trimmed();
-    m_endpointUrl = endpointUrl.trimmed();
+    m_accountName = accountName;
+    m_accountKey = accountKey;
+    m_endpointUrl = endpointUrl;
 
     SaveSettings();
 
