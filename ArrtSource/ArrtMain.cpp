@@ -52,6 +52,7 @@ static void SetStyleSheet()
     palette.setBrush(QPalette::NoRole, NoRoleBrush);
     palette.setColor(QPalette::ToolTipBase, QColor(255, 255, 220, 255));
     palette.setColor(QPalette::ToolTipText, QColor(0, 0, 0, 255));
+    palette.setColor(QPalette::PlaceholderText, QColor(97, 97, 97, 255));
 
     palette.setColor(QPalette::Disabled, QPalette::WindowText, QColor(128, 128, 128, 255));
     palette.setColor(QPalette::Disabled, QPalette::Button, QColor(80, 80, 80, 255));
