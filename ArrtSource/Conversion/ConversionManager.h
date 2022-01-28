@@ -54,7 +54,8 @@ private Q_SLOTS:
 
 private:
     bool StartConversionInternal();
-    void SetConversionStatus(int conversionIdx, RR::Status status, RR::ApiHandle<RR::AssetConversionStatusResult> result);
+    void SetConversionStatus(int conversionIdx, RR::Status status, RR::ApiHandle<RR::ConversionPropertiesResult> result);
+    void GetCurrentConversionsResult(RR::Status status, RR::ApiHandle<RR::ConversionPropertiesArrayResult> result);
 
     StorageAccount* m_storageAccount = nullptr;
     ArrAccount* m_arrClient = nullptr;

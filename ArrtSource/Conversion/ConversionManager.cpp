@@ -23,6 +23,23 @@ ConversionManager::ConversionManager(StorageAccount* storageAccount, ArrAccount*
     m_updateConversionListTimer.setInterval(1000);
     connect(&m_updateConversionListTimer, &QTimer::timeout, this, [this]()
             { Q_EMIT ListChanged(); });
+
+    connect(arrClient, &ArrAccount::ConnectionStatusChanged, this, [this]()
+            {
+                if (m_arrClient->GetConnectionStatus() != ArrConnectionStatus::Authenticated)
+                    return;
+
+                auto resultCallback = [this](RR::Status status, RR::ApiHandle<RR::ConversionPropertiesArrayResult> result)
+                {
+                    QMetaObject::invokeMethod(QApplication::instance(),
+                                              [this, status, result]()
+                                              {
+                                                  GetCurrentConversionsResult(status, result);
+                                              });
+                };
+
+                m_arrClient->GetClient()->GetCurrentConversionsAsync(resultCallback);
+            });
 }
 
 ConversionManager::~ConversionManager() = default;
@@ -168,9 +185,9 @@ void ConversionManager::OnCheckConversions()
 
         anyRunning = true;
 
-        m_arrClient->GetClient()->GetAssetConversionStatusAsync(conv.m_conversionGuid.toStdString(), [this, conversionIdx](RR::Status status, RR::ApiHandle<RR::AssetConversionStatusResult> result)
-                                                                { QMetaObject::invokeMethod(QApplication::instance(), [this, conversionIdx, status, result]()
-                                                                                            { SetConversionStatus((int)conversionIdx, status, result); }); });
+        m_arrClient->GetClient()->GetConversionPropertiesAsync(conv.m_conversionGuid.toStdString(), [this, conversionIdx](RR::Status status, RR::ApiHandle<RR::ConversionPropertiesResult> result)
+                                                               { QMetaObject::invokeMethod(QApplication::instance(), [this, conversionIdx, status, result]()
+                                                                                           { SetConversionStatus((int)conversionIdx, status, result); }); });
     }
 
     Q_EMIT ListChanged();
@@ -357,34 +374,34 @@ bool ConversionManager::StartConversionInternal()
     return true;
 }
 
-void ConversionManager::SetConversionStatus(int conversionIdx, RR::Status status, RR::ApiHandle<RR::AssetConversionStatusResult> result)
+void ConversionManager::SetConversionStatus(int conversionIdx, RR::Status status, RR::ApiHandle<RR::ConversionPropertiesResult> result)
 {
     auto& conv = m_conversions[conversionIdx];
 
     std::string message;
-    RR::ConversionSessionStatus conversionResult;
+    RR::ConversionStatus conversionResult;
 
     if (status == RR::Status::OK)
     {
-        result->GetErrorMessage(message);
-        conversionResult = result->GetResult();
+        message = result->GetProperties().ErrorMessage;
+        conversionResult = result->GetProperties().Status;
     }
     else
     {
-        conversionResult = RR::ConversionSessionStatus::Failure;
+        conversionResult = RR::ConversionStatus::Failed;
         message = RR::ResultToString(RR::StatusToResult(status));
     }
 
     switch (conversionResult)
     {
-        case RR::ConversionSessionStatus::Unknown:
-        case RR::ConversionSessionStatus::Created:
-        case RR::ConversionSessionStatus::Running:
+        case RR::ConversionStatus::Unknown:
+        case RR::ConversionStatus::NotStarted:
+        case RR::ConversionStatus::Running:
             conv.m_status = ConversionStatus::Running;
             break;
 
-        case RR::ConversionSessionStatus::Aborted:
-        case RR::ConversionSessionStatus::Failure:
+        case RR::ConversionStatus::Canceled:
+        case RR::ConversionStatus::Failed:
             conv.m_status = ConversionStatus::Failed;
             conv.m_message = message.c_str();
             conv.m_endConversionTime = QDateTime::currentSecsSinceEpoch();
@@ -392,11 +409,109 @@ void ConversionManager::SetConversionStatus(int conversionIdx, RR::Status status
             Q_EMIT ConversionFailed();
             break;
 
-        case RR::ConversionSessionStatus::Success:
+        case RR::ConversionStatus::Succeeded:
             conv.m_status = ConversionStatus::Finished;
             conv.m_endConversionTime = QDateTime::currentSecsSinceEpoch();
             Q_EMIT ConversionSucceeded();
             break;
+    }
+}
+
+QString RemoveUrlPrefix(QString url)
+{
+    if (url.startsWith("http://", Qt::CaseInsensitive))
+    {
+        url = url.mid(7);
+    }
+
+    if (url.startsWith("https://", Qt::CaseInsensitive))
+    {
+        url = url.mid(8);
+    }
+
+    int nextSlash = url.indexOf("/");
+    if (nextSlash >= 0)
+    {
+        url = url.mid(nextSlash + 1);
+    }
+
+    return url;
+}
+
+void ConversionManager::GetCurrentConversionsResult(RR::Status status, RR::ApiHandle<RR::ConversionPropertiesArrayResult> result)
+{
+    if (status != RR::Status::OK)
+        return;
+
+    auto errorCode = result->GetErrorCode();
+    if (errorCode != RR::Result::Success)
+        return;
+
+    std::vector<RR::ConversionProperties> conversions;
+    result->GetConversions(conversions);
+
+    bool anyRunning = false;
+
+    for (const auto& conv : conversions)
+    {
+        Conversion c;
+        c.m_conversionGuid = conv.Id.c_str();
+        c.m_message = conv.ErrorMessage.c_str();
+        c.m_name = conv.OutputAssetFilename.c_str();
+        c.m_sourceAssetContainer = RemoveUrlPrefix(conv.InputStorageContainerUri.c_str());
+        c.m_inputFolder = conv.InputBlobPrefix.c_str();
+        c.m_sourceAsset = (conv.InputBlobPrefix + conv.InputRelativeAssetPath).c_str();
+        c.m_outputFolderContainer = RemoveUrlPrefix(conv.OutputStorageContainerUri.c_str());
+        c.m_outputFolder = conv.OutputBlobPrefix.c_str();
+        c.m_startConversionTime = QDateTime::fromString(conv.CreationTime.c_str(), Qt::DateFormat::ISODateWithMs).toSecsSinceEpoch();
+        c.m_endConversionTime = c.m_startConversionTime;
+
+        switch (conv.Status)
+        {
+            case RR::ConversionStatus::Unknown:
+                c.m_status = ConversionStatus::Failed;
+                break;
+            case RR::ConversionStatus::Canceled:
+                c.m_status = ConversionStatus::Failed;
+                break;
+            case RR::ConversionStatus::Failed:
+                c.m_status = ConversionStatus::Failed;
+                break;
+            case RR::ConversionStatus::NotStarted:
+                c.m_status = ConversionStatus::Running;
+                anyRunning = true;
+                break;
+            case RR::ConversionStatus::Running:
+                c.m_status = ConversionStatus::Running;
+                anyRunning = true;
+                break;
+            case RR::ConversionStatus::Succeeded:
+                c.m_status = ConversionStatus::Finished;
+                break;
+        }
+
+        if (c.m_status != ConversionStatus::Running)
+        {
+            const uint64_t secAgo = QDateTime::currentSecsSinceEpoch() - c.m_startConversionTime;
+            
+            // longer than a day ago -> don't show it anymore
+            if (secAgo > 60 * 60 * 24)
+                continue;
+        }
+
+        auto it = m_conversions.begin();
+        it += m_conversions.size() - 1;
+        m_conversions.insert(it, c);
+    }
+
+    m_selectedConversion = (int)m_conversions.size() - 1;
+    Q_EMIT ListChanged();
+    Q_EMIT SelectedChanged();
+
+    if (anyRunning)
+    {
+        m_checkConversionStateTimer.start();
+        m_updateConversionListTimer.start();
     }
 }
 
