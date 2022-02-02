@@ -30,6 +30,9 @@ public:
     /// Changes the currently selected conversion.
     void SetSelectedConversion(int selected);
 
+    /// Returns the index of the selected conversion.
+    int GetSelectedConversionIndex() const { return m_selectedConversion; }
+
     /// Whether the selected conversion is editable, e.g. a not yet started one.
     bool IsEditableSelected() const;
 

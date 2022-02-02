@@ -6,7 +6,6 @@ void ArrtAppWindow::on_ConversionList_currentRowChanged(int row)
 {
     RetrieveConversionOptions();
     m_conversionManager->SetSelectedConversion(row);
-    UpdateConversionPane();
 }
 
 static QString SecToString(uint32_t sec)
@@ -158,7 +157,7 @@ void ArrtAppWindow::UpdateConversionPane()
         SelectSourceButton->setEnabled(allowEditing);
         SelectOutputFolderButton->setEnabled(allowEditing);
         SelectInputFolderButton->setEnabled(allowEditing && !conv.m_sourceAsset.isEmpty());
-        OptionsArea->setEnabled(allowEditing);
+        scrollAreaWidgetContents->setEnabled(allowEditing);
 
         // enable or disable the start conversion button depending on whether enough data is set
         StartConversionButton->setEnabled(allowEditing && !conv.m_sourceAsset.isEmpty() && !conv.m_outputFolderContainer.isEmpty());
@@ -235,12 +234,16 @@ void ArrtAppWindow::UpdateConversionPane()
         TexCoord0Combo->setCurrentIndex((int)opt.m_vertexTexCoord0);
         TexCoord1Combo->setCurrentIndex((int)opt.m_vertexTexCoord1);
     }
+
+    ConversionList->setCurrentRow(m_conversionManager->GetSelectedConversionIndex());
 }
 
 void ArrtAppWindow::RetrieveConversionOptions()
 {
     if (!m_conversionManager->IsEditableSelected())
         return;
+
+    m_conversionManager->blockSignals(true);
 
     m_conversionManager->SetConversionName(ConversionNameInput->text());
 
@@ -268,6 +271,8 @@ void ArrtAppWindow::RetrieveConversionOptions()
     opt.m_vertexTexCoord1 = (VertexTextureCoord)TexCoord1Combo->currentIndex();
 
     m_conversionManager->SetConversionAdvancedOptions(opt);
+
+    m_conversionManager->blockSignals(false);
 }
 
 void ArrtAppWindow::on_ConversionOptionsCheckbox_stateChanged(int state)

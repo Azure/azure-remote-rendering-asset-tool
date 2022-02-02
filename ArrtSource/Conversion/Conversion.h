@@ -84,7 +84,7 @@ struct ConversionOptions
     VertexVector m_vertexTangent = VertexVector::ByteSx4N;
     VertexVector m_vertexBinormal = VertexVector::ByteSx4N;
     VertexTextureCoord m_vertexTexCoord0 = VertexTextureCoord::Float32x2;
-    VertexTextureCoord m_vertexTexCoord1 = VertexTextureCoord::Float32x2;
+    VertexTextureCoord m_vertexTexCoord1 = VertexTextureCoord::None;
 
     QString ToJSON() const;
 };
