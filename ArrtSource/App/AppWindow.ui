@@ -152,7 +152,7 @@
                  <item>
                   <widget class="QLineEdit" name="InputFolderLine">
                    <property name="accessibleName">
-                    <string>Input asset</string>
+                    <string>Input folder</string>
                    </property>
                    <property name="readOnly">
                     <bool>true</bool>
@@ -966,6 +966,9 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="ModelScaleSpinner">
+            <property name="accessibleName">
+             <string>Model Scale</string>
+            </property>
             <property name="decimals">
              <number>3</number>
             </property>
@@ -1710,7 +1713,7 @@
         <item>
          <widget class="QListWidget" name="LogList">
           <property name="accessibleName">
-           <string>List of log messages</string>
+           <string>Log messages</string>
           </property>
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
