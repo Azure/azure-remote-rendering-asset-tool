@@ -95,6 +95,15 @@ void FileUploader::NotifyBytesRead(int64_t bytes)
 
 #if NEW_STORAGE_SDK
 
+constexpr int64_t GetMB(int64_t bytes)
+{
+    return 1024i64 * 1024i64 * bytes;
+}
+constexpr int64_t GetGB(int64_t bytes)
+{
+    return 1024i64 * 1024i64 * 1024i64 * bytes;
+}
+
 class FileStream : public Azure::Core::IO::BodyStream
 {
 public:
@@ -106,9 +115,31 @@ public:
             m_size = m_file.size();
         }
 
-        // we upload files in 4 MB chunks ('blocks')
+        // we upload files in chunks ('blocks')
         // blocks of up to 100 MB would be possible, but become more and more unreliable
-        m_maxBytes = 1024 * 1024 * 4;
+        // however, for larger files, we mustn't use too many blocks, otherwise the commit fails, so use larger chunks there
+
+        m_maxBytes = GetMB(2);
+
+        if (m_size > GetGB(1))
+        {
+            m_maxBytes = GetMB(4);
+        }
+        
+        if (m_size > GetGB(2))
+        {
+            m_maxBytes = GetMB(8);
+        }
+        
+        if (m_size > GetGB(4))
+        {
+            m_maxBytes = GetMB(16);
+        }
+        
+        if (m_size > GetGB(8))
+        {
+            m_maxBytes = GetMB(32);
+        }
     }
 
     virtual int64_t Length() const override
@@ -120,8 +151,11 @@ public:
     {
         // in case of an error, the Storage SDK will rewind and try again
         // this only affects the current block, though, not the entire file
-        m_read = 0;
-        m_file.seek(m_offset);
+        if (m_read > 0)
+        {
+            m_read = 0;
+            m_file.seek(m_offset);
+        }
     }
 
     bool FinishBlock()
@@ -165,10 +199,6 @@ void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const
     // after it's opened, upload it to the blob path
     QString blobPath = (destDirectory + sourceRootDirectory.relativeFilePath(sourceFilePath));
 
-    const QFileInfo fi(sourceFilePath);
-    const int64_t fileSize = fi.size();
-
-
     try
     {
 #if NEW_STORAGE_SDK
@@ -190,9 +220,12 @@ void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const
             }
 
             auto blobClient = container.GetBlockBlobClient(blobPath.toStdString());
+            blobClient.DeleteIfExists();
+
             FileStream stream(sourceFilePath.toStdString());
 
             std::vector<std::string> blocks;
+            blocks.reserve(1000);
 
             // we can't upload files larger than 100MB in one operation
             // for one, this is not even allowed
@@ -203,8 +236,11 @@ void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const
                 QUuid guid = QUuid::createUuid();
                 // have to remove the dashes to make the block identifier valid
                 std::string guidString = guid.toString(QUuid::WithoutBraces).replace("-", "").toStdString();
-                blocks.push_back(guidString);
-                blobClient.StageBlock(guidString, stream);
+
+                std::string blockID = Azure::Core::Convert::Base64Encode(std::vector<uint8_t>(guidString.begin(), guidString.end()));
+
+                blocks.push_back(blockID);
+                blobClient.StageBlock(blockID, stream);
 
                 // update the progress every time a block has finished uploading
                 NotifyBytesRead(stream.GetBytesRead());
@@ -216,6 +252,9 @@ void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const
         }
 #else
         {
+            const QFileInfo fi(sourceFilePath);
+            const int64_t fileSize = fi.size();
+
             // open the file stream
             Concurrency::streams::fstream fileStream;
             Concurrency::streams::istream is = fileStream.open_istream(sourceFilePath.toStdWString()).get();
