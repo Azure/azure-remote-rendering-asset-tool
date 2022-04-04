@@ -237,10 +237,8 @@ void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const
                 // have to remove the dashes to make the block identifier valid
                 std::string guidString = guid.toString(QUuid::WithoutBraces).replace("-", "").toStdString();
 
-                std::string blockID = Azure::Core::Convert::Base64Encode(std::vector<uint8_t>(guidString.begin(), guidString.end()));
-
-                blocks.push_back(blockID);
-                blobClient.StageBlock(blockID, stream);
+                blocks.push_back(guidString);
+                blobClient.StageBlock(guidString, stream);
 
                 // update the progress every time a block has finished uploading
                 NotifyBytesRead(stream.GetBytesRead());
