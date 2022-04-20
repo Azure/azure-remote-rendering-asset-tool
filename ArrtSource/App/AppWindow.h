@@ -82,6 +82,8 @@ private Q_SLOTS:
 private:
     virtual void closeEvent(QCloseEvent* event) override;
 
+    virtual bool eventFilter(QObject* watched, QEvent* event) override;
+
     void LoadSettings();
     void SaveSettings();
     void CheckForNewVersion();
