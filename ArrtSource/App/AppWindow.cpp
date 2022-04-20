@@ -209,6 +209,25 @@ ArrtAppWindow::ArrtAppWindow()
     QTimer::singleShot(500, this, [this]()
                        { CheckForNewVersion(); });
 #endif
+
+    // using the mouse scroll wheel can modify values in these widgets, which is undesirable
+    // instead, the parent object should get the event and thus just scroll the area
+    {
+        ScalingSpinbox->installEventFilter(this);
+        DefaultSidednessCombo->installEventFilter(this);
+        ScenegraphModeCombo->installEventFilter(this);
+        Axis0Combo->installEventFilter(this);
+        Axis1Combo->installEventFilter(this);
+        Axis2Combo->installEventFilter(this);
+        VertexPositionCombo->installEventFilter(this);
+        VertexColor0Combo->installEventFilter(this);
+        VertexColor1Combo->installEventFilter(this);
+        VertexNormalCombo->installEventFilter(this);
+        VertexTangentCombo->installEventFilter(this);
+        VertexBitangentCombo->installEventFilter(this);
+        TexCoord0Combo->installEventFilter(this);
+        TexCoord1Combo->installEventFilter(this);
+    }
 }
 
 ArrtAppWindow::~ArrtAppWindow()
@@ -218,6 +237,21 @@ ArrtAppWindow::~ArrtAppWindow()
     m_arrSession = nullptr;
     m_arrAclient = nullptr;
     m_storageAccount = nullptr;
+}
+
+bool ArrtAppWindow::eventFilter(QObject* watched, QEvent* event)
+{
+    if (event->type() == QEvent::Wheel)
+    {
+        if (watched->parent())
+        {
+            watched->parent()->event(event);
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 void ArrtAppWindow::OnUpdateStatusBar()
