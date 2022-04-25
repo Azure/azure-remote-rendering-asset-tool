@@ -22,6 +22,8 @@ StorageBrowserWidget::StorageBrowserWidget(QWidget* parent /*= {}*/)
 
     QShortcut* shortcutUploadFolder = new QShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_U), FileTree);
     connect(shortcutUploadFolder, SIGNAL(activated()), this, SLOT(on_UploadFolderButton_clicked()));
+
+    on_StorageContainer_currentIndexChanged(-1);
 }
 
 StorageBrowserWidget::~StorageBrowserWidget()
@@ -70,6 +72,9 @@ void StorageBrowserWidget::SetStorageAccount(StorageAccount* account, StorageEnt
 void StorageBrowserWidget::on_StorageContainer_currentIndexChanged(int index)
 {
     DeleteContainerButton->setEnabled(index >= 0);
+    RefreshButton->setEnabled(index >= 0);
+    UploadFileButton->setEnabled(index >= 0);
+    UploadFolderButton->setEnabled(index >= 0);
 
     m_selectedContainer = StorageContainer->currentText();
     if (m_storageModel.SetAccountAndContainer(m_storageAccount, m_selectedContainer))
@@ -98,7 +103,7 @@ void StorageBrowserWidget::EmitItemSelected(bool dblClick)
     {
         m_selectedItem = m_storageModel.data(FileTree->selectionModel()->selectedIndexes()[0], Qt::UserRole).toString();
 
-        DeleteItemButton->setEnabled(true);
+        DeleteItemButton->setEnabled(!m_selectedItem.isEmpty());
         AddFolderButton->setEnabled(true);
     }
     else
@@ -125,6 +130,8 @@ void StorageBrowserWidget::on_AddContainerButton_clicked()
     {
         if (StorageContainer->findText(name) == -1)
         {
+            StorageContainer->setEnabled(true);
+
             StorageContainer->addItem(name);
             StorageContainer->setCurrentIndex(StorageContainer->count() - 1);
         }
@@ -156,6 +163,9 @@ void StorageBrowserWidget::on_DeleteContainerButton_clicked()
     if (m_storageAccount->DeleteContainer(name, errorMsg))
     {
         StorageContainer->removeItem(StorageContainer->findText(name));
+
+        // disable the combo box when it is empty
+        StorageContainer->setEnabled(StorageContainer->count() > 0);
     }
     else
     {
@@ -174,10 +184,12 @@ void StorageBrowserWidget::UpdateUI()
     std::vector<QString> containers;
     m_storageAccount->ListContainers(containers);
 
+    StorageContainer->setEnabled(!containers.empty());
+
     if (m_StorageContainers != containers)
     {
         m_StorageContainers = containers;
-        StorageContainer->blockSignals(true);
+
         StorageContainer->clear();
 
         int containerIdx = 0;
@@ -191,8 +203,6 @@ void StorageBrowserWidget::UpdateUI()
 
             StorageContainer->addItem(m_StorageContainers[i]);
         }
-
-        StorageContainer->blockSignals(false);
 
         StorageContainer->setCurrentIndex(containerIdx);
     }
