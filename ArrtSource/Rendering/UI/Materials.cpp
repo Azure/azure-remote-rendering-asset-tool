@@ -64,7 +64,7 @@ void ArrtAppWindow::UpdateMaterialsList()
     std::map<unsigned long long, RR::ApiHandle<RR::Entity>> allEntities;
     std::map<unsigned long long, RR::ApiHandle<RR::Material>> allMaterials;
 
-    for (auto index : ScenegraphView->selectionModel()->selectedIndexes())
+    for (auto index : RenderingTab->ScenegraphView->selectionModel()->selectedIndexes())
     {
         auto entity = m_scenegraphModel->GetEntityHandle(index);
         GetChildEntities(allEntities, entity);
@@ -81,7 +81,7 @@ void ArrtAppWindow::UpdateMaterialsList()
 
     m_allMaterialsPreviously = allMaterials;
 
-    MaterialsList->clear();
+    RenderingTab->MaterialsList->clear();
     m_materialsList.clear();
 
     if (!allMaterials.empty())
@@ -100,10 +100,10 @@ void ArrtAppWindow::UpdateMaterialsList()
             std::string matName;
             material.second->GetName(matName);
 
-            MaterialsList->addItem(matName.c_str());
+            RenderingTab->MaterialsList->addItem(matName.c_str());
         }
 
-        MaterialsList->setCurrentRow(0);
+        RenderingTab->MaterialsList->setCurrentRow(0);
     }
 }
 
@@ -132,7 +132,7 @@ void ArrtAppWindow::on_MaterialsList_itemSelectionChanged()
 {
     m_selectedMaterial = -1;
 
-    const auto& selection = MaterialsList->selectionModel()->selectedIndexes();
+    const auto& selection = RenderingTab->MaterialsList->selectionModel()->selectedIndexes();
 
     if (!selection.isEmpty())
     {
@@ -162,60 +162,60 @@ void ArrtAppWindow::ShowMaterialUI()
     const bool matAny = matPbr || matCol;
 
     // Both Material Types
-    VertexColorCheck->setVisible(matAny);
-    DoubleSidedCheck->setVisible(matAny);
-    FadeCheck->setVisible(matAny);
-    AlphaClipCheck->setVisible(matAny);
-    WriteDepthCheck->setVisible(matAny);
-    FresnelCheck->setVisible(matAny);
-    AlbedoColorLabel->setVisible(matAny);
-    AlbedoColorPicker->setVisible(matAny);
-    AlbedoTextureLabel->setVisible(matAny);
-    AlbedoTexture->setVisible(matAny);
-    TexScaleLabel->setVisible(matAny);
-    TexOffsetLabel->setVisible(matAny);
-    TexScaleXLabel->setVisible(matAny);
-    TexScaleYLabel->setVisible(matAny);
-    TexOffsetXLabel->setVisible(matAny);
-    TexOffsetYLabel->setVisible(matAny);
-    TextureScaleX->setVisible(matAny);
-    TextureScaleY->setVisible(matAny);
-    TextureOffsetX->setVisible(matAny);
-    TextureOffsetY->setVisible(matAny);
-    FadeOutLabel->setVisible(matAny);
-    FadeOutSpinner->setVisible(matAny);
-    AlphaClipLabel->setVisible(matAny);
-    AlphaThresholdSpinner->setVisible(matAny);
-    FresnelColorLabel->setVisible(matAny);
-    FresnelExpLabel->setVisible(matAny);
-    FresnelColorPicker->setVisible(matAny);
-    FresnelExponentSpinner->setVisible(matAny);
+    RenderingTab->VertexColorCheck->setVisible(matAny);
+    RenderingTab->DoubleSidedCheck->setVisible(matAny);
+    RenderingTab->FadeCheck->setVisible(matAny);
+    RenderingTab->AlphaClipCheck->setVisible(matAny);
+    RenderingTab->WriteDepthCheck->setVisible(matAny);
+    RenderingTab->FresnelCheck->setVisible(matAny);
+    RenderingTab->AlbedoColorLabel->setVisible(matAny);
+    RenderingTab->AlbedoColorPicker->setVisible(matAny);
+    RenderingTab->AlbedoTextureLabel->setVisible(matAny);
+    RenderingTab->AlbedoTexture->setVisible(matAny);
+    RenderingTab->TexScaleLabel->setVisible(matAny);
+    RenderingTab->TexOffsetLabel->setVisible(matAny);
+    RenderingTab->TexScaleXLabel->setVisible(matAny);
+    RenderingTab->TexScaleYLabel->setVisible(matAny);
+    RenderingTab->TexOffsetXLabel->setVisible(matAny);
+    RenderingTab->TexOffsetYLabel->setVisible(matAny);
+    RenderingTab->TextureScaleX->setVisible(matAny);
+    RenderingTab->TextureScaleY->setVisible(matAny);
+    RenderingTab->TextureOffsetX->setVisible(matAny);
+    RenderingTab->TextureOffsetY->setVisible(matAny);
+    RenderingTab->FadeOutLabel->setVisible(matAny);
+    RenderingTab->FadeOutSpinner->setVisible(matAny);
+    RenderingTab->AlphaClipLabel->setVisible(matAny);
+    RenderingTab->AlphaThresholdSpinner->setVisible(matAny);
+    RenderingTab->FresnelColorLabel->setVisible(matAny);
+    RenderingTab->FresnelExpLabel->setVisible(matAny);
+    RenderingTab->FresnelColorPicker->setVisible(matAny);
+    RenderingTab->FresnelExponentSpinner->setVisible(matAny);
 
     // Color Material Only
-    TransparencyModeLabel->setVisible(matCol);
-    TransparencyModeCombo->setVisible(matCol);
-    VertexMixLabel->setVisible(matCol);
-    VertexMixSpinner->setVisible(matCol);
+    RenderingTab->TransparencyModeLabel->setVisible(matCol);
+    RenderingTab->TransparencyModeCombo->setVisible(matCol);
+    RenderingTab->VertexMixLabel->setVisible(matCol);
+    RenderingTab->VertexMixSpinner->setVisible(matCol);
 
     // PBR Material Only
-    NormalMap->setVisible(matPbr);
-    AoMap->setVisible(matPbr);
-    RoughnessMap->setVisible(matPbr);
-    MetalnessMap->setVisible(matPbr);
-    RoughnessSpinner->setVisible(matPbr);
-    MetalnessSpinner->setVisible(matPbr);
-    AoScaleSpinner->setVisible(matPbr);
-    VertexAlphaModeCombo->setVisible(matPbr);
-    TransparentCheck->setVisible(matPbr);
-    SpecularCheck->setVisible(matPbr);
-    VertexModeLabel->setVisible(matPbr);
-    NormalMapLabel->setVisible(matPbr);
-    RoughnessValueLabel->setVisible(matPbr);
-    RoughnessMapLabel->setVisible(matPbr);
-    MetalnessValueLabel->setVisible(matPbr);
-    MetalnessMapLabel->setVisible(matPbr);
-    AoScaleLabel->setVisible(matPbr);
-    AoMapLabel->setVisible(matPbr);
+    RenderingTab->NormalMap->setVisible(matPbr);
+    RenderingTab->AoMap->setVisible(matPbr);
+    RenderingTab->RoughnessMap->setVisible(matPbr);
+    RenderingTab->MetalnessMap->setVisible(matPbr);
+    RenderingTab->RoughnessSpinner->setVisible(matPbr);
+    RenderingTab->MetalnessSpinner->setVisible(matPbr);
+    RenderingTab->AoScaleSpinner->setVisible(matPbr);
+    RenderingTab->VertexAlphaModeCombo->setVisible(matPbr);
+    RenderingTab->TransparentCheck->setVisible(matPbr);
+    RenderingTab->SpecularCheck->setVisible(matPbr);
+    RenderingTab->VertexModeLabel->setVisible(matPbr);
+    RenderingTab->NormalMapLabel->setVisible(matPbr);
+    RenderingTab->RoughnessValueLabel->setVisible(matPbr);
+    RenderingTab->RoughnessMapLabel->setVisible(matPbr);
+    RenderingTab->MetalnessValueLabel->setVisible(matPbr);
+    RenderingTab->MetalnessMapLabel->setVisible(matPbr);
+    RenderingTab->AoScaleLabel->setVisible(matPbr);
+    RenderingTab->AoMapLabel->setVisible(matPbr);
 }
 
 void ArrtAppWindow::SetMaterialUI()
@@ -234,47 +234,47 @@ void ArrtAppWindow::SetMaterialUI()
     {
         if (auto material = materialBase.as<RR::ColorMaterial>())
         {
-            TextureScaleX->setValue(material->GetTexCoordScale().X);
-            TextureScaleY->setValue(material->GetTexCoordScale().Y);
+            RenderingTab->TextureScaleX->setValue(material->GetTexCoordScale().X);
+            RenderingTab->TextureScaleY->setValue(material->GetTexCoordScale().Y);
 
-            TextureOffsetX->setValue(material->GetTexCoordOffset().X);
-            TextureOffsetY->setValue(material->GetTexCoordOffset().Y);
+            RenderingTab->TextureOffsetX->setValue(material->GetTexCoordOffset().X);
+            RenderingTab->TextureOffsetY->setValue(material->GetTexCoordOffset().Y);
 
-            AlbedoTexture->setText(GetTextureName(material->GetAlbedoTexture()));
+            RenderingTab->AlbedoTexture->setText(GetTextureName(material->GetAlbedoTexture()));
 
             {
                 auto ac = material->GetAlbedoColor();
                 ac.R = LinearToGamma(ac.R);
                 ac.G = LinearToGamma(ac.G);
                 ac.B = LinearToGamma(ac.B);
-                AlbedoColorPicker->SetColor(QColor::fromRgbF(ac.R, ac.G, ac.B, ac.A), false);
+                RenderingTab->AlbedoColorPicker->SetColor(QColor::fromRgbF(ac.R, ac.G, ac.B, ac.A), false);
             }
 
-            AlphaThresholdSpinner->setValue(material->GetAlphaClipThreshold());
-            FadeOutSpinner->setValue(material->GetFadeOut());
+            RenderingTab->AlphaThresholdSpinner->setValue(material->GetAlphaClipThreshold());
+            RenderingTab->FadeOutSpinner->setValue(material->GetFadeOut());
 
             {
                 auto fc = material->GetFresnelEffectColor();
                 fc.R = LinearToGamma(fc.R);
                 fc.G = LinearToGamma(fc.G);
                 fc.B = LinearToGamma(fc.B);
-                FresnelColorPicker->SetColor(QColor::fromRgbF(fc.R, fc.G, fc.B, fc.A), false);
+                RenderingTab->FresnelColorPicker->SetColor(QColor::fromRgbF(fc.R, fc.G, fc.B, fc.A), false);
             }
 
-            FresnelExponentSpinner->setValue(material->GetFresnelEffectExponent());
+            RenderingTab->FresnelExponentSpinner->setValue(material->GetFresnelEffectExponent());
 
             const uint32_t flags = (uint32_t)material->GetColorFlags();
 
-            VertexColorCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::UseVertexColor);
-            DoubleSidedCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::DoubleSided);
-            AlphaClipCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::AlphaClipped);
-            FadeCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::FadeToBlack);
-            FresnelCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::FresnelEffect);
-            WriteDepthCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::TransparencyWritesDepth);
+            RenderingTab->VertexColorCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::UseVertexColor);
+            RenderingTab->DoubleSidedCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::DoubleSided);
+            RenderingTab->AlphaClipCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::AlphaClipped);
+            RenderingTab->FadeCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::FadeToBlack);
+            RenderingTab->FresnelCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::FresnelEffect);
+            RenderingTab->WriteDepthCheck->setChecked(flags & (uint32_t)RR::ColorMaterialFeatures::TransparencyWritesDepth);
 
 
-            TransparencyModeCombo->setCurrentIndex((int)material->GetColorTransparencyMode());
-            VertexMixSpinner->setValue(material->GetVertexMix());
+            RenderingTab->TransparencyModeCombo->setCurrentIndex((int)material->GetColorTransparencyMode());
+            RenderingTab->VertexMixSpinner->setValue(material->GetVertexMix());
         }
     }
 
@@ -282,53 +282,53 @@ void ArrtAppWindow::SetMaterialUI()
     {
         if (auto material = materialBase.as<RR::PbrMaterial>())
         {
-            TextureScaleX->setValue(material->GetTexCoordScale().X);
-            TextureScaleY->setValue(material->GetTexCoordScale().Y);
+            RenderingTab->TextureScaleX->setValue(material->GetTexCoordScale().X);
+            RenderingTab->TextureScaleY->setValue(material->GetTexCoordScale().Y);
 
-            TextureOffsetX->setValue(material->GetTexCoordOffset().X);
-            TextureOffsetY->setValue(material->GetTexCoordOffset().Y);
+            RenderingTab->TextureOffsetX->setValue(material->GetTexCoordOffset().X);
+            RenderingTab->TextureOffsetY->setValue(material->GetTexCoordOffset().Y);
 
-            AlbedoTexture->setText(GetTextureName(material->GetAlbedoTexture()));
-            NormalMap->setText(GetTextureName(material->GetNormalMap()));
-            AoMap->setText(GetTextureName(material->GetAOMap()));
-            RoughnessMap->setText(GetTextureName(material->GetRoughnessMap()));
-            MetalnessMap->setText(GetTextureName(material->GetMetalnessMap()));
+            RenderingTab->AlbedoTexture->setText(GetTextureName(material->GetAlbedoTexture()));
+            RenderingTab->NormalMap->setText(GetTextureName(material->GetNormalMap()));
+            RenderingTab->AoMap->setText(GetTextureName(material->GetAOMap()));
+            RenderingTab->RoughnessMap->setText(GetTextureName(material->GetRoughnessMap()));
+            RenderingTab->MetalnessMap->setText(GetTextureName(material->GetMetalnessMap()));
 
             {
                 auto ac = material->GetAlbedoColor();
                 ac.R = LinearToGamma(ac.R);
                 ac.G = LinearToGamma(ac.G);
                 ac.B = LinearToGamma(ac.B);
-                AlbedoColorPicker->SetColor(QColor::fromRgbF(ac.R, ac.G, ac.B, ac.A), false);
+                RenderingTab->AlbedoColorPicker->SetColor(QColor::fromRgbF(ac.R, ac.G, ac.B, ac.A), false);
             }
 
-            RoughnessSpinner->setValue(material->GetRoughness());
-            MetalnessSpinner->setValue(material->GetMetalness());
-            AoScaleSpinner->setValue(material->GetAOScale());
-            AlphaThresholdSpinner->setValue(material->GetAlphaClipThreshold());
-            FadeOutSpinner->setValue(material->GetFadeOut());
+            RenderingTab->RoughnessSpinner->setValue(material->GetRoughness());
+            RenderingTab->MetalnessSpinner->setValue(material->GetMetalness());
+            RenderingTab->AoScaleSpinner->setValue(material->GetAOScale());
+            RenderingTab->AlphaThresholdSpinner->setValue(material->GetAlphaClipThreshold());
+            RenderingTab->FadeOutSpinner->setValue(material->GetFadeOut());
 
             {
                 auto fc = material->GetFresnelEffectColor();
                 fc.R = LinearToGamma(fc.R);
                 fc.G = LinearToGamma(fc.G);
                 fc.B = LinearToGamma(fc.B);
-                FresnelColorPicker->SetColor(QColor::fromRgbF(fc.R, fc.G, fc.B, fc.A), false);
+                RenderingTab->FresnelColorPicker->SetColor(QColor::fromRgbF(fc.R, fc.G, fc.B, fc.A), false);
             }
 
-            FresnelExponentSpinner->setValue(material->GetFresnelEffectExponent());
-            VertexAlphaModeCombo->setCurrentIndex((int)material->GetPbrVertexAlphaMode());
+            RenderingTab->FresnelExponentSpinner->setValue(material->GetFresnelEffectExponent());
+            RenderingTab->VertexAlphaModeCombo->setCurrentIndex((int)material->GetPbrVertexAlphaMode());
 
             const uint32_t flags = (uint32_t)material->GetPbrFlags();
 
-            TransparentCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::TransparentMaterial);
-            VertexColorCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::UseVertexColor);
-            DoubleSidedCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::DoubleSided);
-            SpecularCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::SpecularHighlights);
-            AlphaClipCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::AlphaClipped);
-            FadeCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::FadeToBlack);
-            FresnelCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::FresnelEffect);
-            WriteDepthCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::TransparencyWritesDepth);
+            RenderingTab->TransparentCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::TransparentMaterial);
+            RenderingTab->VertexColorCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::UseVertexColor);
+            RenderingTab->DoubleSidedCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::DoubleSided);
+            RenderingTab->SpecularCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::SpecularHighlights);
+            RenderingTab->AlphaClipCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::AlphaClipped);
+            RenderingTab->FadeCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::FadeToBlack);
+            RenderingTab->FresnelCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::FresnelEffect);
+            RenderingTab->WriteDepthCheck->setChecked(flags & (uint32_t)RR::PbrMaterialFeatures::TransparencyWritesDepth);
         }
     }
 }

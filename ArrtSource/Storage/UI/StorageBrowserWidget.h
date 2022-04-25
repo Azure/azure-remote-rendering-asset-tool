@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include "ui_StorageBrowserWidget.h"
 #include <Storage/UI/StorageBrowserModel.h>
 

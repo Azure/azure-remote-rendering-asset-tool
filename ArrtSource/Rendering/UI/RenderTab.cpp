@@ -76,21 +76,21 @@ void ArrtAppWindow::OnEntityPicked()
     {
         auto index = m_scenegraphModel->MapArrEntityHandleToModelIndex(entity);
 
-        ScenegraphView->selectionModel()->select(index, QItemSelectionModel::SelectionFlag::ClearAndSelect);
+        RenderingTab->ScenegraphView->selectionModel()->select(index, QItemSelectionModel::SelectionFlag::ClearAndSelect);
 
         auto parent = m_scenegraphModel->parent(index);
         while (parent.isValid())
         {
-            ScenegraphView->setExpanded(parent, true);
+            RenderingTab->ScenegraphView->setExpanded(parent, true);
             parent = m_scenegraphModel->parent(parent);
         }
 
-        ScenegraphView->scrollTo(index);
+        RenderingTab->ScenegraphView->scrollTo(index);
     }
     else
     {
         // deselect everything that was selected so far
-        ScenegraphView->selectionModel()->clearSelection();
+        RenderingTab->ScenegraphView->selectionModel()->clearSelection();
     }
 }
 
@@ -104,15 +104,15 @@ void ArrtAppWindow::UpdateFrameStatisticsUI()
 {
     const auto& stats = m_arrSession->GetFrameStatistics();
 
-    LatencyPoseToReceiveLabel->setText(QString("Latency Pose To Receive: %1ms").arg((int)(stats.LatencyPoseToReceive * 1000)));
-    LatencyReceiveToPresentLabel->setText(QString("Latency Receive To Present: %1ms").arg((int)(stats.LatencyReceiveToPresent * 1000)));
-    TimeSinceLastPresentLabel->setText(QString("Time Since Last Present: %1ms").arg((int)(stats.TimeSinceLastPresent * 1000)));
-    VideoFrameReusedCountLabel->setText(QString("Video Frame Reused Count: %1").arg(stats.VideoFrameReusedCount));
-    VideoFramesSkippedLabel->setText(QString("Video Frames Skipped: %1").arg(stats.VideoFramesSkipped));
-    VideoFramesReceivedLabel->setText(QString("Video Frames Received: %1").arg(stats.VideoFramesReceived));
-    VideoFramesDiscardedLabel->setText(QString("Video Frames Discarded: %1").arg(stats.VideoFramesDiscarded));
-    VideoFrameMinDeltaLabel->setText(QString("Video Frame Min Delta: %1ms").arg((int)(stats.VideoFrameMinDelta * 1000)));
-    VideoFrameMaxDeltaLabel->setText(QString("Video Frame Max Delta: %1ms").arg((int)(stats.VideoFrameMaxDelta * 1000)));
+    RenderingTab->LatencyPoseToReceiveLabel->setText(QString("Latency Pose To Receive: %1ms").arg((int)(stats.LatencyPoseToReceive * 1000)));
+    RenderingTab->LatencyReceiveToPresentLabel->setText(QString("Latency Receive To Present: %1ms").arg((int)(stats.LatencyReceiveToPresent * 1000)));
+    RenderingTab->TimeSinceLastPresentLabel->setText(QString("Time Since Last Present: %1ms").arg((int)(stats.TimeSinceLastPresent * 1000)));
+    RenderingTab->VideoFrameReusedCountLabel->setText(QString("Video Frame Reused Count: %1").arg(stats.VideoFrameReusedCount));
+    RenderingTab->VideoFramesSkippedLabel->setText(QString("Video Frames Skipped: %1").arg(stats.VideoFramesSkipped));
+    RenderingTab->VideoFramesReceivedLabel->setText(QString("Video Frames Received: %1").arg(stats.VideoFramesReceived));
+    RenderingTab->VideoFramesDiscardedLabel->setText(QString("Video Frames Discarded: %1").arg(stats.VideoFramesDiscarded));
+    RenderingTab->VideoFrameMinDeltaLabel->setText(QString("Video Frame Min Delta: %1ms").arg((int)(stats.VideoFrameMinDelta * 1000)));
+    RenderingTab->VideoFrameMaxDeltaLabel->setText(QString("Video Frame Max Delta: %1ms").arg((int)(stats.VideoFrameMaxDelta * 1000)));
 }
 
 void ArrtAppWindow::OnEntityDoubleClicked(const QModelIndex& index)
