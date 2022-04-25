@@ -2,7 +2,7 @@
 
 // Version information which is going to be exposed in the output executable
 
-#define ARRT_VERSION "2.3.1"
+#define ARRT_VERSION "2.3.2"
 
 #define VER_COMPANY "Microsoft Corporation"
 #define VER_PRODUCTNAME "Azure Remote Rendering Toolkit"
