@@ -98,6 +98,9 @@ int StorageBrowserModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/)
 {
     if (!parent.isValid())
     {
+        if (m_containerName.isEmpty())
+            return 0;
+
         return 1;
     }
     else
@@ -153,6 +156,9 @@ QVariant StorageBrowserModel::data(const QModelIndex& index, int role /*= Qt::Di
 void StorageBrowserModel::FillChildEntries(StorageEntry* entry, const QString& entryPath, std::vector<StorageEntry>& output) const
 {
     if (m_storageAccount == nullptr)
+        return;
+
+    if (m_containerName.isEmpty())
         return;
 
     std::vector<StorageBlobInfo> directories, files;
