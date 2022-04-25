@@ -1,0 +1,868 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RenderingWidget</class>
+ <widget class="QWidget" name="RenderingWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1239</width>
+    <height>973</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_9">
+     <item>
+      <widget class="QPushButton" name="EditSessionButton">
+       <property name="text">
+        <string>Session...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/start.svg</normaloff>:/ArrtApplication/Icons/start.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="ChangeModelButton">
+       <property name="text">
+        <string>Load Model from Storage...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/upload.svg</normaloff>:/ArrtApplication/Icons/upload.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="LoadModelSasButton">
+       <property name="text">
+        <string>Load Model with URL...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/model.svg</normaloff>:/ArrtApplication/Icons/model.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="ClearModelsButton">
+       <property name="text">
+        <string>Remove Models</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/remove.svg</normaloff>:/ArrtApplication/Icons/remove.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_28">
+       <property name="text">
+        <string>Model Scale:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="ModelScaleSpinner">
+       <property name="accessibleName">
+        <string>Model Scale</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>999.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="CameraOptionsButton">
+       <property name="text">
+        <string>Camera...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/settings.svg</normaloff>:/ArrtApplication/Icons/settings.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="InspectorButton">
+       <property name="text">
+        <string>Open ArrInspector</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../Resources/ArrtApplication.qrc">
+         <normaloff>:/ArrtApplication/Icons/inspector.svg</normaloff>:/ArrtApplication/Icons/inspector.svg</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QSplitter" name="RenderSplitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="QTreeView" name="ScenegraphView">
+         <property name="accessibleName">
+          <string>Scenegraph</string>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
+         <property name="uniformRowHeights">
+          <bool>true</bool>
+         </property>
+         <property name="headerHidden">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="accessibleName">
+          <string>Performance statistics</string>
+         </property>
+         <property name="title">
+          <string>Performance Data:</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QLabel" name="LatencyPoseToReceiveLabel">
+            <property name="toolTip">
+             <string>Time between the client's request for a new remote frame and the arrival of the requested frame.</string>
+            </property>
+            <property name="text">
+             <string>Latency Pose To Receive: N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="LatencyReceiveToPresentLabel">
+            <property name="toolTip">
+             <string>Time between arrival of a new frame and its actual usage.</string>
+            </property>
+            <property name="text">
+             <string>Latency Receive To Present: N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="TimeSinceLastPresentLabel">
+            <property name="toolTip">
+             <string>The time between subsequent calls to PresentFrame on the CPU.</string>
+            </property>
+            <property name="text">
+             <string>Time Since Last Present: N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="VideoFrameReusedCountLabel">
+            <property name="toolTip">
+             <string>Number of received frames in the last second that were used on the device more than once.</string>
+            </property>
+            <property name="text">
+             <string>Video Frame Reused Count: N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="VideoFramesSkippedLabel">
+            <property name="toolTip">
+             <string>Number of received frames in the last second that were decoded, but not shown on display because a newer frame has arrived.</string>
+            </property>
+            <property name="text">
+             <string>Video Frames Skipped: N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="VideoFramesReceivedLabel">
+            <property name="toolTip">
+             <string>The number of frames received from the server in the last second.</string>
+            </property>
+            <property name="text">
+             <string>Video Frames Received: N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="VideoFramesDiscardedLabel">
+            <property name="toolTip">
+             <string>Very similar to FrameStatistics.VideoFramesSkipped, but the reason for being discarded is that a frame came in so late that it couldn't even be correlated with any pending pose anymore. If this happens, there is some severe network contention.</string>
+            </property>
+            <property name="text">
+             <string>Video Frames Discarded: N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="VideoFrameMinDeltaLabel">
+            <property name="toolTip">
+             <string>Minimum amount of time between two consecutive frames arriving during the last second.</string>
+            </property>
+            <property name="text">
+             <string>Video Frame Min Delta: N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="VideoFrameMaxDeltaLabel">
+            <property name="toolTip">
+             <string>Maximum amount of time between two consecutive frames arriving during the last second.</string>
+            </property>
+            <property name="text">
+             <string>Video Frame Max Delta: N/A</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="ViewportWidget" name="Viewport" native="true">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="accessibleName">
+       <string>Rendered Image</string>
+      </property>
+      <property name="accessibleDescription">
+       <string>The remotely rendered image.</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="layoutWidget_2">
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,3">
+       <item>
+        <widget class="QListWidget" name="MaterialsList">
+         <property name="accessibleName">
+          <string>Materials</string>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <property name="uniformItemSizes">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QScrollArea" name="MaterialProperties">
+         <property name="accessibleName">
+          <string>Material properties</string>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>486</width>
+            <height>1134</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <widget class="QCheckBox" name="TransparentCheck">
+             <property name="text">
+              <string>Transparent</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="WriteDepthCheck">
+             <property name="text">
+              <string>Transparency Writes Depth</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="TransparencyModeLabel">
+             <property name="text">
+              <string>Color Transparency Mode:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="TransparencyModeCombo">
+             <item>
+              <property name="text">
+               <string>Opaque</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Alpha Blended</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Additive</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="AlphaClipCheck">
+             <property name="text">
+              <string>Use Alpha Clipping</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="AlphaClipLabel">
+             <property name="text">
+              <string>Alpha Clip Threshold:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="AlphaThresholdSpinner">
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="DoubleSidedCheck">
+             <property name="text">
+              <string>Double Sided</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="SpecularCheck">
+             <property name="text">
+              <string>Specular Highlights</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="AlbedoColorLabel">
+             <property name="text">
+              <string>Albedo Color:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="ColorPickerButton" name="AlbedoColorPicker">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="AlbedoTextureLabel">
+             <property name="text">
+              <string>Albedo Texture:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="AlbedoTexture">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="placeholderText">
+              <string>not set</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="VertexColorCheck">
+             <property name="text">
+              <string>Use Vertex Color</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="VertexMixLabel">
+             <property name="text">
+              <string>Vertex Mix:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="VertexMixSpinner">
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::UpDownArrows</enum>
+             </property>
+             <property name="showGroupSeparator" stdset="0">
+              <bool>false</bool>
+             </property>
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="VertexModeLabel">
+             <property name="text">
+              <string>Vertex Alpha Mode:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="VertexAlphaModeCombo">
+             <item>
+              <property name="text">
+               <string>Occlusion</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Lightmask</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Opacity</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="NormalMapLabel">
+             <property name="text">
+              <string>Normal Map:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="NormalMap">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="placeholderText">
+              <string>not set</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="RoughnessValueLabel">
+             <property name="text">
+              <string>Roughness Value:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="RoughnessSpinner">
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="RoughnessMapLabel">
+             <property name="text">
+              <string>Roughness Map:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="RoughnessMap">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="placeholderText">
+              <string>not set</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="MetalnessValueLabel">
+             <property name="text">
+              <string>Metalness Value:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="MetalnessSpinner">
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="MetalnessMapLabel">
+             <property name="text">
+              <string>Metalness Map:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="MetalnessMap">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="placeholderText">
+              <string>not set</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="AoScaleLabel">
+             <property name="text">
+              <string>Ambient Occlusion Scale:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="AoScaleSpinner">
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="AoMapLabel">
+             <property name="text">
+              <string>Ambient Occlusion Map:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="AoMap">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="placeholderText">
+              <string>not set</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="TexScaleLabel">
+             <property name="text">
+              <string>Texture Scale:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QLabel" name="TexScaleXLabel">
+               <property name="text">
+                <string>X:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="TextureScaleX">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximum">
+                <double>999.990000000000009</double>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="TexScaleYLabel">
+               <property name="text">
+                <string>Y:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="TextureScaleY">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximum">
+                <double>999.990000000000009</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="TexOffsetLabel">
+             <property name="text">
+              <string>Texture Offset:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <item>
+              <widget class="QLabel" name="TexOffsetXLabel">
+               <property name="text">
+                <string>X:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="TextureOffsetX">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimum">
+                <double>-999.000000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>999.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="TexOffsetYLabel">
+               <property name="text">
+                <string>Y:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="TextureOffsetY">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimum">
+                <double>-999.000000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>999.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="FadeCheck">
+             <property name="text">
+              <string>Fade To Black</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="FadeOutLabel">
+             <property name="text">
+              <string>Fade Out:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="FadeOutSpinner">
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="FresnelCheck">
+             <property name="text">
+              <string>Use Fresnel Effect</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="FresnelColorLabel">
+             <property name="text">
+              <string>Fresnel Effect Color:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="ColorPickerButton" name="FresnelColorPicker">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="FresnelExpLabel">
+             <property name="text">
+              <string>Fresnel Effect Exponent:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="FresnelExponentSpinner">
+             <property name="minimum">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.500000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ViewportWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">Rendering/UI/ViewportWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ColorPickerButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">Utils/ColorPickerButton.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>EditSessionButton</tabstop>
+  <tabstop>ChangeModelButton</tabstop>
+  <tabstop>LoadModelSasButton</tabstop>
+  <tabstop>ClearModelsButton</tabstop>
+  <tabstop>ModelScaleSpinner</tabstop>
+  <tabstop>CameraOptionsButton</tabstop>
+  <tabstop>InspectorButton</tabstop>
+  <tabstop>ScenegraphView</tabstop>
+  <tabstop>MaterialsList</tabstop>
+  <tabstop>MaterialProperties</tabstop>
+  <tabstop>TransparentCheck</tabstop>
+  <tabstop>WriteDepthCheck</tabstop>
+  <tabstop>TransparencyModeCombo</tabstop>
+  <tabstop>AlphaClipCheck</tabstop>
+  <tabstop>AlphaThresholdSpinner</tabstop>
+  <tabstop>DoubleSidedCheck</tabstop>
+  <tabstop>SpecularCheck</tabstop>
+  <tabstop>AlbedoColorPicker</tabstop>
+  <tabstop>AlbedoTexture</tabstop>
+  <tabstop>VertexColorCheck</tabstop>
+  <tabstop>VertexMixSpinner</tabstop>
+  <tabstop>VertexAlphaModeCombo</tabstop>
+  <tabstop>NormalMap</tabstop>
+  <tabstop>RoughnessSpinner</tabstop>
+  <tabstop>RoughnessMap</tabstop>
+  <tabstop>MetalnessSpinner</tabstop>
+  <tabstop>MetalnessMap</tabstop>
+  <tabstop>AoScaleSpinner</tabstop>
+  <tabstop>AoMap</tabstop>
+  <tabstop>TextureScaleX</tabstop>
+  <tabstop>TextureScaleY</tabstop>
+  <tabstop>TextureOffsetX</tabstop>
+  <tabstop>TextureOffsetY</tabstop>
+  <tabstop>FadeCheck</tabstop>
+  <tabstop>FadeOutSpinner</tabstop>
+  <tabstop>FresnelCheck</tabstop>
+  <tabstop>FresnelColorPicker</tabstop>
+  <tabstop>FresnelExponentSpinner</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../../Resources/ArrtApplication.qrc"/>
+ </resources>
+ <connections/>
+</ui>

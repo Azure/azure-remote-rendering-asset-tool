@@ -23,29 +23,29 @@ void ArrtAppWindow::UpdateConversionsList()
 {
     const auto& conversions = m_conversionManager->GetConversions();
 
-    if (ConversionList->count() > conversions.size())
+    if (ConversionTab->ConversionList->count() > conversions.size())
     {
         // an element got removed -> clear the entire list and rebuild it
-        ConversionList->clear();
+        ConversionTab->ConversionList->clear();
     }
 
-    if (ConversionList->count() < conversions.size())
+    if (ConversionTab->ConversionList->count() < conversions.size())
     {
         // an element got added (we always append) -> add the new ones
 
-        for (int i = ConversionList->count(); i < (int)conversions.size(); ++i)
+        for (int i = ConversionTab->ConversionList->count(); i < (int)conversions.size(); ++i)
         {
             const Conversion& conv = conversions[i];
 
-            new QListWidgetItem(conv.m_name, ConversionList);
+            new QListWidgetItem(conv.m_name, ConversionTab->ConversionList);
         }
     }
 
     // update the display of all items
-    for (int i = 0; i < ConversionList->count(); ++i)
+    for (int i = 0; i < ConversionTab->ConversionList->count(); ++i)
     {
         const Conversion& conv = conversions[i];
-        QListWidgetItem* item = ConversionList->item(i);
+        QListWidgetItem* item = ConversionTab->ConversionList->item(i);
 
 
         QString text = conv.m_name;
@@ -153,44 +153,44 @@ void ArrtAppWindow::UpdateConversionPane()
     // whether the user can edit this conversion
     {
         const bool allowEditing = (conv.m_status == ConversionStatus::New);
-        ConversionNameInput->setReadOnly(!allowEditing);
-        SelectSourceButton->setEnabled(allowEditing);
-        SelectOutputFolderButton->setEnabled(allowEditing);
-        SelectInputFolderButton->setEnabled(allowEditing && !conv.m_sourceAsset.isEmpty());
-        scrollAreaWidgetContents->setEnabled(allowEditing);
+        ConversionTab->ConversionNameInput->setReadOnly(!allowEditing);
+        ConversionTab->SelectSourceButton->setEnabled(allowEditing);
+        ConversionTab->SelectOutputFolderButton->setEnabled(allowEditing);
+        ConversionTab->SelectInputFolderButton->setEnabled(allowEditing && !conv.m_sourceAsset.isEmpty());
+        ConversionTab->scrollAreaWidgetContents->setEnabled(allowEditing);
 
         // enable or disable the start conversion button depending on whether enough data is set
-        StartConversionButton->setEnabled(allowEditing && !conv.m_sourceAsset.isEmpty() && !conv.m_outputFolderContainer.isEmpty());
-        ResetAdvancedButton->setEnabled(allowEditing);
+        ConversionTab->StartConversionButton->setEnabled(allowEditing && !conv.m_sourceAsset.isEmpty() && !conv.m_outputFolderContainer.isEmpty());
+        ConversionTab->ResetAdvancedButton->setEnabled(allowEditing);
     }
 
     // general state
     {
-        ConversionNameInput->setText(conv.m_name);
-        SourceAssetLine->setText(conv.m_sourceAssetContainer + ":" + conv.m_sourceAsset);
-        OutputFolderLine->setText(conv.m_outputFolderContainer + ":" + conv.m_outputFolder);
+        ConversionTab->ConversionNameInput->setText(conv.m_name);
+        ConversionTab->SourceAssetLine->setText(conv.m_sourceAssetContainer + ":" + conv.m_sourceAsset);
+        ConversionTab->OutputFolderLine->setText(conv.m_outputFolderContainer + ":" + conv.m_outputFolder);
 
-        InputFolderLine->setText(conv.m_sourceAssetContainer + ":" + conv.m_inputFolder);
+        ConversionTab->InputFolderLine->setText(conv.m_sourceAssetContainer + ":" + conv.m_inputFolder);
 
-        ConversionOptionsCheckbox->blockSignals(true);
-        ConversionOptionsCheckbox->setChecked(conv.m_showAdvancedOptions);
-        ConversionOptionsCheckbox->blockSignals(false);
-        ConversionNameInput->setPlaceholderText(conv.GetPlaceholderName());
+        ConversionTab->ConversionOptionsCheckbox->blockSignals(true);
+        ConversionTab->ConversionOptionsCheckbox->setChecked(conv.m_showAdvancedOptions);
+        ConversionTab->ConversionOptionsCheckbox->blockSignals(false);
+        ConversionTab->ConversionNameInput->setPlaceholderText(conv.GetPlaceholderName());
     }
 
     switch (conv.m_status)
     {
         case ConversionStatus::New:
-            ConversionMessage->setText("Conversion not started");
+            ConversionTab->ConversionMessage->setText("Conversion not started");
             break;
         case ConversionStatus::Finished:
-            ConversionMessage->setText("Conversion finished successfully");
+            ConversionTab->ConversionMessage->setText("Conversion finished successfully");
             break;
         case ConversionStatus::Running:
-            ConversionMessage->setText("Conversion currently running");
+            ConversionTab->ConversionMessage->setText("Conversion currently running");
             break;
         case ConversionStatus::Failed:
-            ConversionMessage->setText(QString("Conversion failed: %1").arg(conv.m_message.isEmpty() ? "(no details)" : conv.m_message));
+            ConversionTab->ConversionMessage->setText(QString("Conversion failed: %1").arg(conv.m_message.isEmpty() ? "(no details)" : conv.m_message));
             break;
     }
 
@@ -198,44 +198,44 @@ void ArrtAppWindow::UpdateConversionPane()
     {
         if (conv.m_showAdvancedOptions)
         {
-            OptionsSpacer->changeSize(0, 0, QSizePolicy::Ignored, QSizePolicy::Ignored);
+            ConversionTab->OptionsSpacer->changeSize(0, 0, QSizePolicy::Ignored, QSizePolicy::Ignored);
         }
         else
         {
-            OptionsSpacer->changeSize(0, 0, QSizePolicy::Ignored, QSizePolicy::Expanding);
+            ConversionTab->OptionsSpacer->changeSize(0, 0, QSizePolicy::Ignored, QSizePolicy::Expanding);
         }
 
-        OptionsArea->setVisible(conv.m_showAdvancedOptions);
+        ConversionTab->OptionsArea->setVisible(conv.m_showAdvancedOptions);
     }
 
     // set advanced options
     {
         const auto& opt = conv.m_options;
 
-        ScalingSpinbox->setValue(opt.m_scaling);
-        RecenterToOriginCheckbox->setChecked(opt.m_recenterToOrigin);
-        DefaultSidednessCombo->setCurrentIndex((int)opt.m_opaqueMaterialDefaultSidedness);
-        GammaToLinearMaterialCheckbox->setChecked(opt.m_gammaToLinearMaterial);
-        GammaToLinearVertexCheckbox->setChecked(opt.m_gammaToLinearVertex);
-        ScenegraphModeCombo->setCurrentIndex((int)opt.m_sceneGraphMode);
-        CollisionMeshCheckbox->setChecked(opt.m_generateCollisionMesh);
-        UnlitMaterialsCheckbox->setChecked(opt.m_unlitMaterials);
-        FbxAssumeMetallicCheckbox->setChecked(opt.m_fbxAssumeMetallic);
-        DeduplicateMaterialsCheckbox->setChecked(opt.m_deduplicateMaterials);
-        Axis0Combo->setCurrentIndex((int)opt.m_axis1);
-        Axis1Combo->setCurrentIndex((int)opt.m_axis2);
-        Axis2Combo->setCurrentIndex((int)opt.m_axis3);
-        VertexPositionCombo->setCurrentIndex((int)opt.m_vertexPosition);
-        VertexColor0Combo->setCurrentIndex((int)opt.m_vertexColor0);
-        VertexColor1Combo->setCurrentIndex((int)opt.m_vertexColor1);
-        VertexNormalCombo->setCurrentIndex((int)opt.m_vertexNormal);
-        VertexTangentCombo->setCurrentIndex((int)opt.m_vertexTangent);
-        VertexBitangentCombo->setCurrentIndex((int)opt.m_vertexBinormal);
-        TexCoord0Combo->setCurrentIndex((int)opt.m_vertexTexCoord0);
-        TexCoord1Combo->setCurrentIndex((int)opt.m_vertexTexCoord1);
+        ConversionTab->ScalingSpinbox->setValue(opt.m_scaling);
+        ConversionTab->RecenterToOriginCheckbox->setChecked(opt.m_recenterToOrigin);
+        ConversionTab->DefaultSidednessCombo->setCurrentIndex((int)opt.m_opaqueMaterialDefaultSidedness);
+        ConversionTab->GammaToLinearMaterialCheckbox->setChecked(opt.m_gammaToLinearMaterial);
+        ConversionTab->GammaToLinearVertexCheckbox->setChecked(opt.m_gammaToLinearVertex);
+        ConversionTab->ScenegraphModeCombo->setCurrentIndex((int)opt.m_sceneGraphMode);
+        ConversionTab->CollisionMeshCheckbox->setChecked(opt.m_generateCollisionMesh);
+        ConversionTab->UnlitMaterialsCheckbox->setChecked(opt.m_unlitMaterials);
+        ConversionTab->FbxAssumeMetallicCheckbox->setChecked(opt.m_fbxAssumeMetallic);
+        ConversionTab->DeduplicateMaterialsCheckbox->setChecked(opt.m_deduplicateMaterials);
+        ConversionTab->Axis0Combo->setCurrentIndex((int)opt.m_axis1);
+        ConversionTab->Axis1Combo->setCurrentIndex((int)opt.m_axis2);
+        ConversionTab->Axis2Combo->setCurrentIndex((int)opt.m_axis3);
+        ConversionTab->VertexPositionCombo->setCurrentIndex((int)opt.m_vertexPosition);
+        ConversionTab->VertexColor0Combo->setCurrentIndex((int)opt.m_vertexColor0);
+        ConversionTab->VertexColor1Combo->setCurrentIndex((int)opt.m_vertexColor1);
+        ConversionTab->VertexNormalCombo->setCurrentIndex((int)opt.m_vertexNormal);
+        ConversionTab->VertexTangentCombo->setCurrentIndex((int)opt.m_vertexTangent);
+        ConversionTab->VertexBitangentCombo->setCurrentIndex((int)opt.m_vertexBinormal);
+        ConversionTab->TexCoord0Combo->setCurrentIndex((int)opt.m_vertexTexCoord0);
+        ConversionTab->TexCoord1Combo->setCurrentIndex((int)opt.m_vertexTexCoord1);
     }
 
-    ConversionList->setCurrentRow(m_conversionManager->GetSelectedConversionIndex());
+    ConversionTab->ConversionList->setCurrentRow(m_conversionManager->GetSelectedConversionIndex());
 }
 
 void ArrtAppWindow::RetrieveConversionOptions()
@@ -245,30 +245,30 @@ void ArrtAppWindow::RetrieveConversionOptions()
 
     m_conversionManager->blockSignals(true);
 
-    m_conversionManager->SetConversionName(ConversionNameInput->text());
+    m_conversionManager->SetConversionName(ConversionTab->ConversionNameInput->text());
 
     ConversionOptions opt;
-    opt.m_scaling = (float)ScalingSpinbox->value();
-    opt.m_recenterToOrigin = RecenterToOriginCheckbox->isChecked();
-    opt.m_opaqueMaterialDefaultSidedness = (Sideness)DefaultSidednessCombo->currentIndex();
-    opt.m_gammaToLinearMaterial = GammaToLinearMaterialCheckbox->isChecked();
-    opt.m_gammaToLinearVertex = GammaToLinearVertexCheckbox->isChecked();
-    opt.m_sceneGraphMode = (SceneGraphMode)ScenegraphModeCombo->currentIndex();
-    opt.m_generateCollisionMesh = CollisionMeshCheckbox->isChecked();
-    opt.m_unlitMaterials = UnlitMaterialsCheckbox->isChecked();
-    opt.m_fbxAssumeMetallic = FbxAssumeMetallicCheckbox->isChecked();
-    opt.m_deduplicateMaterials = DeduplicateMaterialsCheckbox->isChecked();
-    opt.m_axis1 = (Axis)Axis0Combo->currentIndex();
-    opt.m_axis2 = (Axis)Axis1Combo->currentIndex();
-    opt.m_axis3 = (Axis)Axis2Combo->currentIndex();
-    opt.m_vertexPosition = (VertexPosition)VertexPositionCombo->currentIndex();
-    opt.m_vertexColor0 = (VertexColor)VertexColor0Combo->currentIndex();
-    opt.m_vertexColor1 = (VertexColor)VertexColor1Combo->currentIndex();
-    opt.m_vertexNormal = (VertexVector)VertexNormalCombo->currentIndex();
-    opt.m_vertexTangent = (VertexVector)VertexTangentCombo->currentIndex();
-    opt.m_vertexBinormal = (VertexVector)VertexBitangentCombo->currentIndex();
-    opt.m_vertexTexCoord0 = (VertexTextureCoord)TexCoord0Combo->currentIndex();
-    opt.m_vertexTexCoord1 = (VertexTextureCoord)TexCoord1Combo->currentIndex();
+    opt.m_scaling = (float)ConversionTab->ScalingSpinbox->value();
+    opt.m_recenterToOrigin = ConversionTab->RecenterToOriginCheckbox->isChecked();
+    opt.m_opaqueMaterialDefaultSidedness = (Sideness)ConversionTab->DefaultSidednessCombo->currentIndex();
+    opt.m_gammaToLinearMaterial = ConversionTab->GammaToLinearMaterialCheckbox->isChecked();
+    opt.m_gammaToLinearVertex = ConversionTab->GammaToLinearVertexCheckbox->isChecked();
+    opt.m_sceneGraphMode = (SceneGraphMode)ConversionTab->ScenegraphModeCombo->currentIndex();
+    opt.m_generateCollisionMesh = ConversionTab->CollisionMeshCheckbox->isChecked();
+    opt.m_unlitMaterials = ConversionTab->UnlitMaterialsCheckbox->isChecked();
+    opt.m_fbxAssumeMetallic = ConversionTab->FbxAssumeMetallicCheckbox->isChecked();
+    opt.m_deduplicateMaterials = ConversionTab->DeduplicateMaterialsCheckbox->isChecked();
+    opt.m_axis1 = (Axis)ConversionTab->Axis0Combo->currentIndex();
+    opt.m_axis2 = (Axis)ConversionTab->Axis1Combo->currentIndex();
+    opt.m_axis3 = (Axis)ConversionTab->Axis2Combo->currentIndex();
+    opt.m_vertexPosition = (VertexPosition)ConversionTab->VertexPositionCombo->currentIndex();
+    opt.m_vertexColor0 = (VertexColor)ConversionTab->VertexColor0Combo->currentIndex();
+    opt.m_vertexColor1 = (VertexColor)ConversionTab->VertexColor1Combo->currentIndex();
+    opt.m_vertexNormal = (VertexVector)ConversionTab->VertexNormalCombo->currentIndex();
+    opt.m_vertexTangent = (VertexVector)ConversionTab->VertexTangentCombo->currentIndex();
+    opt.m_vertexBinormal = (VertexVector)ConversionTab->VertexBitangentCombo->currentIndex();
+    opt.m_vertexTexCoord0 = (VertexTextureCoord)ConversionTab->TexCoord0Combo->currentIndex();
+    opt.m_vertexTexCoord1 = (VertexTextureCoord)ConversionTab->TexCoord1Combo->currentIndex();
 
     m_conversionManager->SetConversionAdvancedOptions(opt);
 
@@ -287,11 +287,11 @@ void ArrtAppWindow::UpdateConversionStartButton()
     const Conversion& conv = m_conversionManager->GetSelectedConversion();
     if (conv.m_status != ConversionStatus::New || conv.m_sourceAsset.isEmpty() || conv.m_outputFolder.isEmpty())
     {
-        StartConversionButton->setEnabled(false);
+        ConversionTab->StartConversionButton->setEnabled(false);
         return;
     }
 
-    StartConversionButton->setEnabled(true);
+    ConversionTab->StartConversionButton->setEnabled(true);
 }
 
 void ArrtAppWindow::on_ResetAdvancedButton_clicked()

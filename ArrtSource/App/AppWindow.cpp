@@ -53,31 +53,30 @@ ArrtAppWindow::ArrtAppWindow()
 
         // settings menu
         {
-            QMenu* settingsMenu = menuBar->addMenu("Settings");
+            QMenu* settingsMenu = menuBar->addMenu("&Settings");
 
-            QAction* act = settingsMenu->addAction(tr("Account Settings..."), [this]()
+            QAction* act = settingsMenu->addAction(tr("&Account Settings..."), [this]()
                                                    {
                                                        SettingsDlg dlg(m_storageAccount.get(), m_arrAclient.get(), this);
-                                                       dlg.exec();
-                                                   });
+                                                       dlg.exec(); });
             act->setIcon(QIcon(":/ArrtApplication/Icons/settings.svg"));
         }
 
         // help menu
         {
-            QMenu* helpMenu = menuBar->addMenu("Help");
+            QMenu* helpMenu = menuBar->addMenu("&Help");
 
-            helpMenu->addAction(tr("Send Feedback"), [this]()
+            helpMenu->addAction(tr("Send &Feedback"), [this]()
                                 { QDesktopServices::openUrl(QUrl("https://feedback.azure.com/d365community/forum/46aa4cc0-fd24-ec11-b6e6-000d3a4f07b8")); });
-            helpMenu->addAction(tr("File an Issue"), [this]()
+            helpMenu->addAction(tr("File an &Issue"), [this]()
                                 { QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/issues/new")); });
-            helpMenu->addAction(tr("Open Releases"), [this]()
+            helpMenu->addAction(tr("Open &Releases"), [this]()
                                 { QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/releases")); });
-            helpMenu->addAction(tr("Open Documentation"), [this]()
+            helpMenu->addAction(tr("Open &Documentation"), [this]()
                                 { QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/blob/main/Documentation/index.md")); });
-            helpMenu->addAction(tr("Privacy Statement"), [this]()
+            helpMenu->addAction(tr("&Privacy Statement"), [this]()
                                 { QDesktopServices::openUrl(QUrl("https://privacy.microsoft.com/privacystatement")); });
-            helpMenu->addAction(tr("About ARRT"), [this]()
+            helpMenu->addAction(tr("&About ARRT"), [this]()
                                 { QMessageBox::information(this, "About ARRT", VER_PRODUCTNAME "\n\n" VER_COPYRIGHT " " VER_COMPANY "\n\nVersion: " ARRT_VERSION, QMessageBox::Ok); });
         }
     }
@@ -129,37 +128,35 @@ ArrtAppWindow::ArrtAppWindow()
 
     StorageBrowser->SetStorageAccount(m_storageAccount.get(), StorageEntry::Type::Other, m_lastStorageDisplayContainer, QString());
 
-    Viewport->SetSceneState(m_sceneState.get());
+    RenderingTab->Viewport->SetSceneState(m_sceneState.get());
 
     m_scenegraphModel = std::make_unique<ScenegraphModel>(m_arrSession.get());
-    ScenegraphView->setModel(m_scenegraphModel.get());
+    RenderingTab->ScenegraphView->setModel(m_scenegraphModel.get());
 
-    connect(ScenegraphView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ArrtAppWindow::OnEntitySelectionChanged);
-    connect(ScenegraphView, &QTreeView::doubleClicked, this, &ArrtAppWindow::OnEntityDoubleClicked);
+    connect(RenderingTab->ScenegraphView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ArrtAppWindow::OnEntitySelectionChanged);
+    connect(RenderingTab->ScenegraphView, &QTreeView::doubleClicked, this, &ArrtAppWindow::OnEntityDoubleClicked);
 
     connect(m_sceneState.get(), &SceneState::PickedEntity, this, &ArrtAppWindow::OnEntityPicked);
 
     // when a model gets loaded, the scenegraph model needs to be refreshed
     connect(m_arrSession.get(), &ArrSession::ModelLoaded, this, [this]()
             {
-                ScenegraphView->selectionModel()->clearSelection();
+            RenderingTab->ScenegraphView->selectionModel()->clearSelection();
                 m_scenegraphModel->RefreshModel();
-                ClearModelsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
+                RenderingTab->ClearModelsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
 
                 if (m_arrSession->GetLoadedModels().size() == 1)
                 {
                     m_sceneState->FocusOnSelectedEntity();
-                }
-            });
+                } });
 
     connect(m_arrSession.get(), &ArrSession::SessionStatusChanged, this, [this]()
             {
                 if (!m_arrSession || !m_arrSession->GetSessionStatus().IsRunning())
                 {
-                    ScenegraphView->selectionModel()->clearSelection();
+                    RenderingTab->ScenegraphView->selectionModel()->clearSelection();
                     m_scenegraphModel->RefreshModel();
-                }
-            });
+                } });
 
     // when the selected conversion changes, the conversion pane (showing the details) has to be updated
     connect(m_conversionManager.get(), &ConversionManager::SelectedChanged, this, [this]()
@@ -169,16 +166,14 @@ ArrtAppWindow::ArrtAppWindow()
     connect(m_conversionManager.get(), &ConversionManager::ListChanged, this, [this]()
             {
                 UpdateConversionsList();
-                OnUpdateStatusBar();
-            });
+                OnUpdateStatusBar(); });
 
     connect(m_conversionManager.get(), &ConversionManager::ConversionSucceeded, this, [this]()
             {
                 UpdateConversionsList();
                 OnUpdateStatusBar();
                 m_storageAccount->ClearCache(); // new files should show up
-                StorageBrowser->RefreshModel();
-            });
+                StorageBrowser->RefreshModel(); });
 
     connect(m_arrSession.get(), &ArrSession::FrameStatisticsChanged, this, [this]()
             { UpdateFrameStatisticsUI(); });
@@ -186,13 +181,13 @@ ArrtAppWindow::ArrtAppWindow()
     // make sure the UI is properly initialized for the first time, before any data is read from it
     UpdateConversionPane();
     UpdateConversionsList();
-    ConversionList->setCurrentRow(0);
+    ConversionTab->ConversionList->setCurrentRow(0);
 
     ShowMaterialUI();
 
     // give the scenegraph / 3D view / material panel a proper ratio
     // based on https://stackoverflow.com/questions/43831474/how-to-equally-distribute-the-width-of-qsplitter/43835396
-    ((QSplitter*)RenderSplitter)->setSizes(QList<int>({800, 2000, 800}));
+    ((QSplitter*)RenderingTab->RenderSplitter)->setSizes(QList<int>({800, 2000, 800}));
 
     OnUpdateStatusBar();
 
@@ -201,8 +196,7 @@ ArrtAppWindow::ArrtAppWindow()
         QTimer::singleShot(500, this, [this]()
                            {
                                SettingsDlg dlg(m_storageAccount.get(), m_arrAclient.get(), this);
-                               dlg.exec();
-                           });
+                               dlg.exec(); });
     }
 
 #ifdef NDEBUG
@@ -213,21 +207,23 @@ ArrtAppWindow::ArrtAppWindow()
     // using the mouse scroll wheel can modify values in these widgets, which is undesirable
     // instead, the parent object should get the event and thus just scroll the area
     {
-        ScalingSpinbox->installEventFilter(this);
-        DefaultSidednessCombo->installEventFilter(this);
-        ScenegraphModeCombo->installEventFilter(this);
-        Axis0Combo->installEventFilter(this);
-        Axis1Combo->installEventFilter(this);
-        Axis2Combo->installEventFilter(this);
-        VertexPositionCombo->installEventFilter(this);
-        VertexColor0Combo->installEventFilter(this);
-        VertexColor1Combo->installEventFilter(this);
-        VertexNormalCombo->installEventFilter(this);
-        VertexTangentCombo->installEventFilter(this);
-        VertexBitangentCombo->installEventFilter(this);
-        TexCoord0Combo->installEventFilter(this);
-        TexCoord1Combo->installEventFilter(this);
+        ConversionTab->ScalingSpinbox->installEventFilter(this);
+        ConversionTab->DefaultSidednessCombo->installEventFilter(this);
+        ConversionTab->ScenegraphModeCombo->installEventFilter(this);
+        ConversionTab->Axis0Combo->installEventFilter(this);
+        ConversionTab->Axis1Combo->installEventFilter(this);
+        ConversionTab->Axis2Combo->installEventFilter(this);
+        ConversionTab->VertexPositionCombo->installEventFilter(this);
+        ConversionTab->VertexColor0Combo->installEventFilter(this);
+        ConversionTab->VertexColor1Combo->installEventFilter(this);
+        ConversionTab->VertexNormalCombo->installEventFilter(this);
+        ConversionTab->VertexTangentCombo->installEventFilter(this);
+        ConversionTab->VertexBitangentCombo->installEventFilter(this);
+        ConversionTab->TexCoord0Combo->installEventFilter(this);
+        ConversionTab->TexCoord1Combo->installEventFilter(this);
     }
+
+    LogTab->LogList->addItem("The log has been cleared."); // for accessibility reasons always have one item in the log
 }
 
 ArrtAppWindow::~ArrtAppWindow()
@@ -344,20 +340,24 @@ void ArrtAppWindow::OnUpdateStatusBar()
             break;
     }
 
-    EditSessionButton->setEnabled(m_arrAclient->GetConnectionStatus() == ArrConnectionStatus::Authenticated);
-    ChangeModelButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_storageAccount->GetConnectionStatus() == StorageConnectionStatus::Authenticated);
-    LoadModelSasButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
-    CameraOptionsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
-    InspectorButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
-    ClearModelsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
+    RenderingTab->EditSessionButton->setEnabled(m_arrAclient->GetConnectionStatus() == ArrConnectionStatus::Authenticated);
+    RenderingTab->ChangeModelButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_storageAccount->GetConnectionStatus() == StorageConnectionStatus::Authenticated);
+    RenderingTab->LoadModelSasButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    RenderingTab->CameraOptionsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    RenderingTab->InspectorButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    RenderingTab->ClearModelsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
+    RenderingTab->ScenegraphView->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    RenderingTab->MaterialsList->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    RenderingTab->MaterialProperties->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    RenderingTab->Viewport->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
 
     if (m_arrSession->GetSessionStatus().IsRunning())
     {
-        EditSessionButton->setIcon(QIcon(":/ArrtApplication/Icons/stop.svg"));
+        RenderingTab->EditSessionButton->setIcon(QIcon(":/ArrtApplication/Icons/stop.svg"));
     }
     else
     {
-        EditSessionButton->setIcon(QIcon(":/ArrtApplication/Icons/start.svg"));
+        RenderingTab->EditSessionButton->setIcon(QIcon(":/ArrtApplication/Icons/start.svg"));
     }
 
     float fModelLoad = m_arrSession->GetModelLoadingProgress();
@@ -435,8 +435,7 @@ void ArrtAppWindow::CheckForNewVersion()
                                           catch (...)
                                           {
                                               // in case of any exception, don't show the dialog
-                                          }
-                                      });
+                                          } });
 }
 
 void ArrtAppWindow::OnCheckForNewVersionResult(QString latestVersion)

@@ -5,7 +5,8 @@
 
 void ArrtAppWindow::on_ClearLogButton_clicked()
 {
-    LogList->clear();
+    LogTab->LogList->clear();
+    LogTab->LogList->addItem("The log has been cleared."); // for accessibility reasons always have one item in the log
 
     Tabs->setTabIcon(3, QIcon());
     m_maxLogType = QtDebugMsg;
@@ -77,7 +78,7 @@ void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& category, c
         }
     }
 
-    LogList->addItem(item);
+    LogTab->LogList->addItem(item);
 }
 
 QLoggingCategory LoggingCategory::ArrSdk(QT_TR_NOOP("ARR SDK"));
