@@ -134,8 +134,7 @@ void StorageAccount::ConnectToAzureStorageThread(const QString& endpointUrl, con
     QMetaObject::invokeMethod(QApplication::instance(), [this, storageIsValid, client = std::move(client)]() mutable
                               {
                                   m_azStorageServiceClient = std::move(client);
-                                  SetConnectionStatus(storageIsValid ? StorageConnectionStatus::Authenticated : StorageConnectionStatus::InvalidCredentials);
-                              });
+                                  SetConnectionStatus(storageIsValid ? StorageConnectionStatus::Authenticated : StorageConnectionStatus::InvalidCredentials); });
 }
 #else
 void StorageAccount::ConnectToStorageAccountThread(const QString& storageUrl, const azure::storage::storage_credentials& credentials)
@@ -160,8 +159,7 @@ void StorageAccount::ConnectToStorageAccountThread(const QString& storageUrl, co
     QMetaObject::invokeMethod(QApplication::instance(), [this, storageIsValid, client = std::move(client)]() mutable
                               {
                                   m_blobClient = std::move(client);
-                                  SetConnectionStatus(storageIsValid ? StorageConnectionStatus::Authenticated : StorageConnectionStatus::InvalidCredentials);
-                              });
+                                  SetConnectionStatus(storageIsValid ? StorageConnectionStatus::Authenticated : StorageConnectionStatus::InvalidCredentials); });
 }
 #endif
 
@@ -401,7 +399,7 @@ void StorageAccount::ListBlobDirectory(const QString& containerName, const QStri
     {
         StorageBlobInfo info;
         info.m_path = blob.Name.c_str();
-        //info.m_uri = needed ??
+        // info.m_uri = needed ??
 
         // skip our own empty folder dummy files
         if (!info.m_path.endsWith(".EmptyFolderDummy"))
@@ -414,7 +412,7 @@ void StorageAccount::ListBlobDirectory(const QString& containerName, const QStri
     {
         StorageBlobInfo info;
         info.m_path = blob.c_str();
-        //info.m_uri = needed ??
+        // info.m_uri = needed ??
 
         directories.push_back(info);
     }
@@ -514,13 +512,18 @@ QString StorageAccount::CreateSasToken(const QString& containerName, unsigned in
 
 QString StorageAccount::CreateSasURL(const QString& containerName, const QString& itemPath, unsigned int minutes /*= 60 * 24*/) const
 {
+    QUrl url;
+    url.setPath(itemPath);
+    QString encodedPath = url.path(QUrl::ComponentFormattingOption::FullyEncoded);
+
     QString sas = CreateSasToken(containerName, minutes);
     QString uriAndSas = m_endpointUrl;
     uriAndSas.append("/");
     uriAndSas.append(containerName);
     uriAndSas.append("/");
-    uriAndSas.append(itemPath);
+    uriAndSas.append(encodedPath);
     uriAndSas.append("?");
     uriAndSas.append(sas);
+
     return uriAndSas;
 }
