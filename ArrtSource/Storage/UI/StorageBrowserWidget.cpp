@@ -53,11 +53,14 @@ void StorageBrowserWidget::SetStorageAccount(StorageAccount* account, StorageEnt
     StorageContainer->setEnabled(!parentOnly);
     AddFolderButton->setVisible(!parentOnly);
 
-    m_selectedContainer = startContainer;
     m_storageAccount = account;
     m_storageModel.SetFilter(showTypes, parentFilter);
 
     UpdateUI();
+    if (int idx = StorageContainer->findText(startContainer); idx >= 0)
+    {
+        StorageContainer->setCurrentIndex(idx);
+    }
 
     connect(m_storageAccount, &StorageAccount::ConnectionStatusChanged, this, &StorageBrowserWidget::UpdateUI);
 

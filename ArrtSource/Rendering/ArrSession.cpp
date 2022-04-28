@@ -215,8 +215,18 @@ void ArrSession::OnConnectionStatusChanged(RR::ConnectionStatus status, RR::Resu
         }
         else
         {
-            qWarning(LoggingCategory::RenderingSession)
-                << "Connection status: " << status << "Reason: " << result;
+            qWarning(LoggingCategory::RenderingSession) << "Connection status: " << status << "Reason: " << result;
+
+            if (result == RR::Result::ConnectionLost)
+            {
+                QString sessionID = GetSessionID();
+
+                qInfo(LoggingCategory::RenderingSession) << "Attempting to reconnect to session " << sessionID;
+                qWarning(LoggingCategory::RenderingSession) << "Please be aware that previously loaded models will disappear after a connection loss.";
+
+                CloseSession(true);
+                OpenSession(sessionID);
+            }
         }
     }
 
@@ -478,8 +488,7 @@ void ArrSession::CheckEntityBounds(RR::ApiHandle<RR::Entity> entity)
                                           // pass the information to the main thread, because we want to interact with the GUI
                                           QMetaObject::invokeMethod(QApplication::instance(), [this, bounds]()
                                                                     { CheckEntityBoundsResult(bounds); });
-                                      }
-                                  });
+                                      } });
 }
 
 void ArrSession::CheckEntityBoundsResult(RR::Bounds bounds)
@@ -543,6 +552,9 @@ void ArrSession::CheckEntityBoundsResult(RR::Bounds bounds)
 
 void ArrSession::UpdatePerformanceStatistics()
 {
+    if (m_arrSession == nullptr || m_arrSession->GetGraphicsBinding() == nullptr)
+        return;
+
     RR::FrameStatistics stats;
     if (m_arrSession->GetGraphicsBinding()->GetLastFrameStatistics(&stats) != RR::Result::Success)
         return;
@@ -617,8 +629,7 @@ void ArrSession::ChangeSessionLeaseTime(int totalLeaseMinutes)
                                       }
 
                                       m_renewAsyncInProgress = false;
-                                      UpdateSessionProperties();
-                                  });
+                                      UpdateSessionProperties(); });
     };
 
     m_arrSession->RenewAsync(params, onRenew);
@@ -672,7 +683,7 @@ void ArrSession::StartArrInspector()
         }
         else
         {
-            //try and start a browser
+            // try and start a browser
             if (!QDesktopServices::openUrl(QUrl::fromLocalFile(result.c_str())))
             {
                 QMessageBox::warning(nullptr, "Starting ArrInspector failed", QString("Failed to open a browser to the URL:\n%1").arg(result.c_str()), QMessageBox::Ok);
