@@ -333,6 +333,9 @@
            </item>
            <item>
             <widget class="QComboBox" name="TransparencyModeCombo">
+             <property name="accessibleName">
+              <string>Color transparency mode</string>
+             </property>
              <item>
               <property name="text">
                <string>Opaque</string>
@@ -366,6 +369,9 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="AlphaThresholdSpinner">
+             <property name="accessibleName">
+              <string>Alpha clip threshold</string>
+             </property>
              <property name="maximum">
               <double>1.000000000000000</double>
              </property>
@@ -403,6 +409,9 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="accessibleName">
+              <string>Albedo color</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -417,6 +426,9 @@
            </item>
            <item>
             <widget class="QLineEdit" name="AlbedoTexture">
+             <property name="accessibleName">
+              <string>Albedo texture</string>
+             </property>
              <property name="readOnly">
               <bool>true</bool>
              </property>
@@ -441,6 +453,9 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="VertexMixSpinner">
+             <property name="accessibleName">
+              <string>Vertex mix</string>
+             </property>
              <property name="buttonSymbols">
               <enum>QAbstractSpinBox::UpDownArrows</enum>
              </property>
@@ -464,6 +479,9 @@
            </item>
            <item>
             <widget class="QComboBox" name="VertexAlphaModeCombo">
+             <property name="accessibleName">
+              <string>Vertex alpha mode</string>
+             </property>
              <item>
               <property name="text">
                <string>Occlusion</string>
@@ -490,6 +508,9 @@
            </item>
            <item>
             <widget class="QLineEdit" name="NormalMap">
+             <property name="accessibleName">
+              <string>Normal map</string>
+             </property>
              <property name="readOnly">
               <bool>true</bool>
              </property>
@@ -507,6 +528,9 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="RoughnessSpinner">
+             <property name="accessibleName">
+              <string>Roughness value</string>
+             </property>
              <property name="decimals">
               <number>2</number>
              </property>
@@ -527,6 +551,9 @@
            </item>
            <item>
             <widget class="QLineEdit" name="RoughnessMap">
+             <property name="accessibleName">
+              <string>Roughness map</string>
+             </property>
              <property name="readOnly">
               <bool>true</bool>
              </property>
@@ -544,6 +571,9 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="MetalnessSpinner">
+             <property name="accessibleName">
+              <string>Metalness value</string>
+             </property>
              <property name="maximum">
               <double>1.000000000000000</double>
              </property>
@@ -561,6 +591,9 @@
            </item>
            <item>
             <widget class="QLineEdit" name="MetalnessMap">
+             <property name="accessibleName">
+              <string>Metalness map</string>
+             </property>
              <property name="readOnly">
               <bool>true</bool>
              </property>
@@ -578,6 +611,9 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="AoScaleSpinner">
+             <property name="accessibleName">
+              <string>Ambient occlusion scale</string>
+             </property>
              <property name="decimals">
               <number>2</number>
              </property>
@@ -598,6 +634,9 @@
            </item>
            <item>
             <widget class="QLineEdit" name="AoMap">
+             <property name="accessibleName">
+              <string>Ambient occlusion map</string>
+             </property>
              <property name="readOnly">
               <bool>true</bool>
              </property>
@@ -630,6 +669,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="accessibleName">
+                <string>Texture scale X</string>
+               </property>
                <property name="maximum">
                 <double>999.990000000000009</double>
                </property>
@@ -649,6 +691,9 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="accessibleName">
+                <string>Texture scale Y</string>
                </property>
                <property name="maximum">
                 <double>999.990000000000009</double>
@@ -681,6 +726,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="accessibleName">
+                <string>Texture offset X</string>
+               </property>
                <property name="minimum">
                 <double>-999.000000000000000</double>
                </property>
@@ -703,6 +751,9 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="accessibleName">
+                <string>Texture offset Y</string>
                </property>
                <property name="minimum">
                 <double>-999.000000000000000</double>
@@ -730,6 +781,9 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="FadeOutSpinner">
+             <property name="accessibleName">
+              <string>Fade out</string>
+             </property>
              <property name="maximum">
               <double>1.000000000000000</double>
              </property>
@@ -760,6 +814,9 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="accessibleName">
+              <string>Fresnel effect color</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -774,6 +831,9 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="FresnelExponentSpinner">
+             <property name="accessibleName">
+              <string>Fresnel effect exponent</string>
+             </property>
              <property name="minimum">
               <double>0.010000000000000</double>
              </property>
