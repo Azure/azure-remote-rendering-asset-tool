@@ -100,7 +100,7 @@
            <normaloff>:/ArrtApplication/Icons/extendtime.svg</normaloff>:/ArrtApplication/Icons/extendtime.svg</iconset>
          </property>
          <property name="checkable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
