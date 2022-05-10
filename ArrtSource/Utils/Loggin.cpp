@@ -1,7 +1,36 @@
 #include <App/AppWindow.h>
+#include <QAccessible>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <Utils/Logging.h>
+#include <map>
+
+void ScreenReaderAlert(const char* state, const char* announcement)
+{
+    if (!QAccessible::isActive())
+        return;
+
+    QWidget* focusedWidget = QApplication::focusWidget();
+    if (focusedWidget == nullptr)
+        return;
+
+    if (announcement == nullptr)
+        announcement = "";
+
+    static std::map<std::string, std::string> lastAnnouncement;
+
+    // don't announce anything twice
+    if (lastAnnouncement[state] == announcement)
+        return;
+
+    lastAnnouncement[state] = announcement;
+
+    if (strcmp(announcement, "") == 0)
+        return;
+
+    QAccessibleValueChangeEvent ev(focusedWidget, announcement);
+    QAccessible::updateAccessibility(&ev);
+}
 
 void ArrtAppWindow::on_ClearLogButton_clicked()
 {

@@ -1,5 +1,6 @@
 #include <App/AppWindow.h>
 #include <Storage/StorageAccount.h>
+#include <Utils/Logging.h>
 
 void ArrtAppWindow::FileUploadStatusCallback(int numFiles, float percentage)
 {
@@ -11,5 +12,8 @@ void ArrtAppWindow::FileUploadStatusCallback(int numFiles, float percentage)
     {
         m_storageAccount->ClearCache();
         StorageBrowser->RefreshModel();
+
+        ScreenReaderAlert("Upload", nullptr);
+        ScreenReaderAlert("Upload", "File upload finished");
     }
 }

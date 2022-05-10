@@ -23,3 +23,5 @@ QDebug& operator<<(QDebug& logger, const RR::Result& arrResult);
 QDebug& operator<<(QDebug& logger, const RR::Status& arrStatus);
 QDebug& operator<<(QDebug& logger, const RR::SessionGeneralContext& context);
 QDebug& operator<<(QDebug& logger, const RR::ConnectionStatus& connectionStatus);
+
+void ScreenReaderAlert(const char* state, const char* announcement);
