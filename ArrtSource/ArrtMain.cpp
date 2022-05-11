@@ -20,7 +20,7 @@ static bool IsHighContrastOn()
     }
 }
 
-static void SetStyleSheet()
+static void SetStyleSheet(QApplication* app)
 {
     if (IsHighContrastOn())
     {
@@ -31,19 +31,19 @@ static void SetStyleSheet()
     QApplication::setStyle(QStyleFactory::create("fusion"));
     QPalette palette;
 
-    palette.setColor(QPalette::WindowText, QColor(200, 200, 200, 255));
-    palette.setColor(QPalette::Button, QColor(100, 100, 100, 255));
+    palette.setColor(QPalette::WindowText, QColor(230, 230, 230, 255));
+    palette.setColor(QPalette::Button, QColor(60, 60, 65, 255));
     palette.setColor(QPalette::Light, QColor(97, 97, 97, 255));
     palette.setColor(QPalette::Midlight, QColor(59, 59, 59, 255));
     palette.setColor(QPalette::Dark, QColor(37, 37, 37, 255));
     palette.setColor(QPalette::Mid, QColor(45, 45, 45, 255));
     palette.setColor(QPalette::Text, QColor(200, 200, 200, 255));
     palette.setColor(QPalette::BrightText, QColor(37, 37, 37, 255));
-    palette.setColor(QPalette::ButtonText, QColor(200, 200, 200, 255));
-    palette.setColor(QPalette::Base, QColor(42, 42, 42, 255));
-    palette.setColor(QPalette::Window, QColor(68, 68, 68, 255));
+    palette.setColor(QPalette::ButtonText, QColor(230, 230, 230, 255));
+    palette.setColor(QPalette::Base, QColor(25, 25, 30, 255));
+    palette.setColor(QPalette::Window, QColor(43, 48, 52, 255));
     palette.setColor(QPalette::Shadow, QColor(0, 0, 0, 255));
-    palette.setColor(QPalette::Highlight, QColor(143, 58, 255, 255));
+    palette.setColor(QPalette::Highlight, QColor(80, 110, 20, 255));
     palette.setColor(QPalette::HighlightedText, QColor(255, 255, 255, 255));
     palette.setColor(QPalette::Link, QColor(0, 148, 255, 255));
     palette.setColor(QPalette::LinkVisited, QColor(255, 0, 220, 255));
@@ -55,13 +55,15 @@ static void SetStyleSheet()
     palette.setColor(QPalette::PlaceholderText, QColor(97, 97, 97, 255));
 
     palette.setColor(QPalette::Disabled, QPalette::WindowText, QColor(128, 128, 128, 255));
-    palette.setColor(QPalette::Disabled, QPalette::Button, QColor(80, 80, 80, 255));
+    palette.setColor(QPalette::Disabled, QPalette::Button, QColor(40, 40, 40, 255));
     palette.setColor(QPalette::Disabled, QPalette::Text, QColor(105, 105, 105, 255));
     palette.setColor(QPalette::Disabled, QPalette::BrightText, QColor(255, 255, 255, 255));
-    palette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(128, 128, 128, 255));
+    palette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(150, 150, 150, 255));
     palette.setColor(QPalette::Disabled, QPalette::Highlight, QColor(86, 117, 148, 255));
 
     QApplication::setPalette(palette);
+
+    app->setStyleSheet("QTabBar::tab {color: #BBBBBB; selection-background-color: rgb(255, 255, 0);} QTabBar::tab:selected {color: #FFFFFF;}");
 }
 
 int WinMain(HINSTANCE, HINSTANCE, char*, int)
@@ -79,7 +81,7 @@ int WinMain(HINSTANCE, HINSTANCE, char*, int)
     int argc = 0;
     QApplication app(argc, 0);
 
-    SetStyleSheet();
+    SetStyleSheet(&app);
 
     ArrtAppWindow* appWindow = new ArrtAppWindow();
     appWindow->show();
