@@ -21,8 +21,7 @@ StartSessionDlg::StartSessionDlg(ArrSession* arrSession, ArrSettings* settings, 
     m_arrSettings = settings;
     m_arrSession = arrSession;
 
-    QObject::connect(m_arrSession, &ArrSession::SessionStatusChanged, this, [this]()
-                     { UpdateUi(); });
+    QObject::connect(m_arrSession, &ArrSession::SessionStatusChanged, this, [this]() { UpdateUi(); });
 
     VmSize->addItem(tr("Standard"), QVariant((int)ArrVmSize::Standard));
     VmSize->addItem(tr("Premium"), QVariant((int)ArrVmSize::Premium));
@@ -47,6 +46,10 @@ StartSessionDlg::StartSessionDlg(ArrSession* arrSession, ArrSettings* settings, 
 
     // extend time
     {
+        AutoExtendBy->setVisible(false); // not exposed in UI at the moment
+        ExtendNow->setVisible(false);
+        ExtendLabel->setVisible(false);
+
         AutoExtendBy->blockSignals(true);
         AutoExtendBy->setValidator(new TimeValidator(this));
         AutoExtendBy->setText(TimeValidator::minutesToString(m_extendMinutes));
@@ -85,6 +88,8 @@ StartSessionDlg::StartSessionDlg(ArrSession* arrSession, ArrSettings* settings, 
     }
 
     UpdateUi();
+
+    SessionID->selectAll();
 }
 
 StartSessionDlg::~StartSessionDlg() = default;
@@ -209,7 +214,11 @@ void StartSessionDlg::UpdateUi()
 
     if (running)
     {
-        SessionID->setText(m_arrSession->GetSessionID());
+        if (SessionID->text() != m_arrSession->GetSessionID()) // accessibility fix to not lose text highlight when session update timer fires
+        {
+            SessionID->setPlaceholderText({});
+            SessionID->setText(m_arrSession->GetSessionID());
+        }
 
         auto status = m_arrSession->GetSessionStatus();
         MaxTime->setText(TimeValidator::minutesToString(status.m_leaseTimeInMinutes));
@@ -218,6 +227,7 @@ void StartSessionDlg::UpdateUi()
     else
     {
         SessionID->setText("");
+        SessionID->setPlaceholderText("<no session running>");
         RemainingTime->setText("");
     }
 }

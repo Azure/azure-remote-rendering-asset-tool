@@ -319,12 +319,14 @@ void ArrtAppWindow::OnUpdateStatusBar()
             break;
         case ArrSessionStatus::State::Expired:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#aaaaff;\">Expired</span></p></body></html>");
+            ScreenReaderAlert("Session", "ARR session expired");
             break;
         case ArrSessionStatus::State::Error:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#aa0000;\">Error!</span></p></body></html>");
             break;
         case ArrSessionStatus::State::StartRequested:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Start Requested...</span></p></body></html>");
+            ScreenReaderAlert("Session", nullptr);
             break;
         case ArrSessionStatus::State::Starting:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Starting...</span></p></body></html>");
@@ -334,9 +336,11 @@ void ArrtAppWindow::OnUpdateStatusBar()
             break;
         case ArrSessionStatus::State::ReadyConnecting:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Connecting...</span></p></body></html>");
+            ScreenReaderAlert("Session", nullptr);
             break;
         case ArrSessionStatus::State::ReadyConnected:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#00aa00;\">Connected</span></p></body></html>");
+            ScreenReaderAlert("Session", "ARR session ready");
             break;
     }
 
@@ -363,8 +367,17 @@ void ArrtAppWindow::OnUpdateStatusBar()
     float fModelLoad = m_arrSession->GetModelLoadingProgress();
 
     m_statusLoadProgress->setFormat("Loading Model: %p%");
-    m_statusLoadProgress->setVisible(fModelLoad > 0 && fModelLoad < 1.0f && m_arrSession->GetSessionStatus().IsRunning());
+    m_statusLoadProgress->setVisible(fModelLoad < 1.0f && m_arrSession->GetSessionStatus().IsRunning());
     m_statusLoadProgress->setValue((int)(fModelLoad * 100));
+
+    if (fModelLoad == 1.0f)
+    {
+        ScreenReaderAlert("ModelLoad", "Loading model finished");
+    }
+    else
+    {
+        ScreenReaderAlert("ModelLoad", nullptr);
+    }
 }
 
 void ArrtAppWindow::LoadSettings()

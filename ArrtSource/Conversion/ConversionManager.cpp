@@ -406,12 +406,16 @@ void ConversionManager::SetConversionStatus(int conversionIdx, RR::Status status
             conv.m_message = message.c_str();
             conv.m_endConversionTime = QDateTime::currentSecsSinceEpoch();
             qCritical(LoggingCategory::ArrSdk) << QString("Conversion '%1' failed: %2").arg(conv.m_conversionGuid).arg(conv.m_message);
+            ScreenReaderAlert("Conversion", nullptr);
+            ScreenReaderAlert("Conversion", "Model conversion failed.");
             Q_EMIT ConversionFailed();
             break;
 
         case RR::ConversionStatus::Succeeded:
             conv.m_status = ConversionStatus::Finished;
             conv.m_endConversionTime = QDateTime::currentSecsSinceEpoch();
+            ScreenReaderAlert("Conversion", nullptr);
+            ScreenReaderAlert("Conversion", "Model conversion succeeded.");
             Q_EMIT ConversionSucceeded();
             break;
     }

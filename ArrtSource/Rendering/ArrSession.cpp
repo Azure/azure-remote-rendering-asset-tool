@@ -784,7 +784,7 @@ void ArrSession::RemoveModel(size_t idx)
 
 float ArrSession::GetModelLoadingProgress() const
 {
-    float totalProgress = 1.0f;
+    float totalProgress = 2.0f;
 
     for (auto prog : m_loadingProgress)
     {
