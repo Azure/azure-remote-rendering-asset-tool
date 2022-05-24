@@ -1,6 +1,8 @@
 #include <App/AppWindow.h>
 #include <ArrtVersion.h>
 #include <QApplication>
+#include <QPainter>
+#include <QProxyStyle>
 #include <QStyleFactory>
 #include <windows.h>
 
@@ -20,7 +22,96 @@ static bool IsHighContrastOn()
     }
 }
 
-static void SetStyleSheet(QApplication* app)
+/// Overrides some colors of the Fusion style for improved visibility of elements with keyboard focus
+class ArrtStyle : public QProxyStyle
+{
+public:
+    ArrtStyle()
+        : QProxyStyle("fusion")
+    {
+    }
+
+    virtual void drawControl(ControlElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget = nullptr) const override
+    {
+        QColor c(100, 130, 20);
+        c = c.lighter();
+        c = c.lighter();
+
+        if (element == ControlElement::CE_TabBarTabLabel)
+        {
+            QStyleOptionTab opt = *static_cast<const QStyleOptionTab*>(option);
+
+            if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
+            {
+                opt.palette.setColor(QPalette::ColorRole::WindowText, c);
+            }
+
+            QProxyStyle::drawControl(element, &opt, painter, widget);
+
+            return;
+        }
+
+        if (element == ControlElement::CE_PushButtonLabel)
+        {
+            QStyleOptionButton opt = *static_cast<const QStyleOptionButton*>(option);
+
+            if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
+            {
+                opt.palette.setColor(QPalette::ColorRole::ButtonText, c);
+            }
+
+            QProxyStyle::drawControl(element, &opt, painter, widget);
+
+            return;
+        }
+
+        if (element == ControlElement::CE_ComboBoxLabel)
+        {
+            QStyleOptionComboBox opt = *static_cast<const QStyleOptionComboBox*>(option);
+
+            if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
+            {
+                opt.palette.setColor(QPalette::ColorRole::ButtonText, c);
+            }
+
+            QProxyStyle::drawControl(element, &opt, painter, widget);
+
+            return;
+        }
+
+        if (element == ControlElement::CE_CheckBoxLabel)
+        {
+            QStyleOptionButton opt = *static_cast<const QStyleOptionButton*>(option);
+
+            if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
+            {
+                opt.palette.setColor(QPalette::ColorRole::WindowText, c);
+            }
+
+            QProxyStyle::drawControl(element, &opt, painter, widget);
+
+            return;
+        }
+
+        if (element == ControlElement::CE_ShapedFrame)
+        {
+            QStyleOptionFrame opt = *static_cast<const QStyleOptionFrame*>(option);
+
+            if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
+            {
+                opt.palette.setColor(QPalette::ColorRole::Window, c);
+            }
+
+            QProxyStyle::drawControl(element, &opt, painter, widget);
+
+            return;
+        }
+
+        QProxyStyle::drawControl(element, option, painter, widget);
+    }
+};
+
+static void SetStyleSheet(QApplication* /*app*/)
 {
     if (IsHighContrastOn())
     {
@@ -28,7 +119,7 @@ static void SetStyleSheet(QApplication* app)
         return;
     }
 
-    QApplication::setStyle(QStyleFactory::create("fusion"));
+    QApplication::setStyle(new ArrtStyle());
     QPalette palette;
 
     palette.setColor(QPalette::WindowText, QColor(230, 230, 230, 255));
@@ -59,11 +150,13 @@ static void SetStyleSheet(QApplication* app)
     palette.setColor(QPalette::Disabled, QPalette::Text, QColor(105, 105, 105, 255));
     palette.setColor(QPalette::Disabled, QPalette::BrightText, QColor(255, 255, 255, 255));
     palette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(150, 150, 150, 255));
-    palette.setColor(QPalette::Disabled, QPalette::Highlight, QColor(86, 117, 148, 255));
+
+    palette.setColor(QPalette::Disabled, QPalette::Highlight, palette.highlight().color().darker());
+    palette.setColor(QPalette::Inactive, QPalette::Highlight, palette.highlight().color().darker());
 
     QApplication::setPalette(palette);
 
-    app->setStyleSheet("QTabBar::tab {color: #BBBBBB; selection-background-color: rgb(255, 255, 0);} QTabBar::tab:selected {color: #FFFFFF;}");
+    // app->setStyleSheet("QTabBar::tab {color: #BBBBBB; selection-background-color: rgb(255, 255, 0);} QTabBar::tab:selected {color: #FFFFFF;}");
 }
 
 int WinMain(HINSTANCE, HINSTANCE, char*, int)
@@ -84,6 +177,7 @@ int WinMain(HINSTANCE, HINSTANCE, char*, int)
     SetStyleSheet(&app);
 
     ArrtAppWindow* appWindow = new ArrtAppWindow();
+    appWindow->setWindowTitle("Azure Remote Rendering Toolkit v" ARRT_VERSION);
     appWindow->show();
 
     return app.exec();
