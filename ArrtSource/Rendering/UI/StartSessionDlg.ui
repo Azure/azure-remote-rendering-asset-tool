@@ -253,6 +253,9 @@
         <iconset resource="../../Resources/ArrtApplication.qrc">
          <normaloff>:/ArrtApplication/Icons/start.svg</normaloff>:/ArrtApplication/Icons/start.svg</iconset>
        </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
