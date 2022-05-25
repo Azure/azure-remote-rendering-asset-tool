@@ -155,8 +155,6 @@ static void SetStyleSheet(QApplication* /*app*/)
     palette.setColor(QPalette::Inactive, QPalette::Highlight, palette.highlight().color().darker());
 
     QApplication::setPalette(palette);
-
-    // app->setStyleSheet("QTabBar::tab {color: #BBBBBB; selection-background-color: rgb(255, 255, 0);} QTabBar::tab:selected {color: #FFFFFF;}");
 }
 
 int WinMain(HINSTANCE, HINSTANCE, char*, int)
