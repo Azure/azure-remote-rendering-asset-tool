@@ -59,7 +59,9 @@ SceneState::SceneState(ArrSettings* arrOptions)
                      { SceneRefresh(); });
 
     QObject::connect(m_arrOptions, &ArrSettings::OptionsChanged, this, [this]()
-                     { UpdateProjectionMatrix(); });
+                     { 
+                        UpdateProjectionMatrix();
+                        UpdatePointSize(); });
 
     InitializeD3D();
 }
@@ -118,6 +120,7 @@ void SceneState::InitializeClient()
         ZeroMemory(&m_simUpdate, sizeof(m_simUpdate));
 
         UpdateProjectionMatrix();
+        UpdatePointSize();
         m_refreshTimer->start(1000ms / m_refreshRate);
     }
 }
@@ -232,6 +235,7 @@ void SceneState::ResizeViewport(int width, int height)
     m_screenHeight = height;
 
     UpdateProjectionMatrix();
+    UpdatePointSize();
 }
 
 void SceneState::PickEntity(int x, int y)
@@ -378,6 +382,14 @@ void SceneState::UpdateProjectionMatrix()
     m_perspectiveMatrixInverse = m.inverted();
 }
 
+void SceneState::UpdatePointSize()
+{
+    if (m_client)
+    {
+        m_client->GetPointCloudSettingsExperimental()->SetPointSizeScale(m_arrOptions->GetPointSize() / 10.0f);
+    }
+}
+
 void SceneState::SceneRefresh()
 {
     if (m_graphicsBinding)
@@ -461,8 +473,7 @@ void SceneState::FocusOnEntity(RR::ApiHandle<RR::Entity> entity)
                                       if (status == RR::Status::OK && bounds.IsValid())
                                       {
                                           FocusOnBounds(bounds);
-                                      }
-                                  });
+                                      } });
 }
 
 void SceneState::FocusOnBounds(const RR::Bounds& bounds)
