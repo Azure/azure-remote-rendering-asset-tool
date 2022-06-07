@@ -3,7 +3,7 @@ title: Uploading Files with ARRT
 description: Describes how to upload 3D models to Azure Storage with the Azure Remote Rendering Toolkit
 author: jakras
 ms.author: jakras
-ms.date: 12/23/2021
+ms.date: 06/07/2022
 ms.topic: article
 ---
 
