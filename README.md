@@ -3,7 +3,7 @@ title: Azure Remote Rendering Toolkit
 description: Azure Remote Rendering Toolkit welcome page
 author: jakras
 ms.author: jakras
-ms.date: 12/23/2021
+ms.date: 06/07/2022
 ms.topic: article
 ---
 

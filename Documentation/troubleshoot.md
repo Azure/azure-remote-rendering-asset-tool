@@ -3,7 +3,7 @@ title: ARRT Troubleshooting
 description: Lists known issues and potential solutions
 author: jakras
 ms.author: jakras
-ms.date: 01/05/2022
+ms.date: 06/07/2022
 ms.topic: article
 ---
 

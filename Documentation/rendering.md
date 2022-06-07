@@ -3,7 +3,7 @@ title: Rendering 3D models with ARRT
 description: Describes how to render a 3D model with the Azure Remote Rendering Toolkit
 author: jakras
 ms.author: jakras
-ms.date: 12/23/2021
+ms.date: 06/07/2022
 ms.topic: article
 ---
 
@@ -21,7 +21,7 @@ The **Sessions...** button in the top left corner opens this dialog:
 
 Click **Start** to create a new session. If you already have a session running, you can also enter its *Session ID* here first, then *Start* will connect to the existing session.
 
-Afterwards the dialog will close. You can reopen the dialog at any time with the *Sessions...* button. While a session is running you can manually extend the session time, or change the auto-extension options.
+Afterwards the dialog will close. You can reopen the dialog at any time with the *Sessions...* button. While a session is running you can change the auto-extension option.
 
 You can also stop the session at any time. If you just close ARRT, it will automatically stop the session for you. If you click **Stop** yourself, you get the option to keep the session running, which allows you to reconnect to it again (though you need to note the session ID somewhere first).
 
@@ -49,7 +49,7 @@ Press the **Camera...** button to open a dialog where you can configure the fiel
 
 ## Scene tree
 
-The scene tree on the left displays the structure of the loaded models. You can load multiple models simultaneously. Use the **Remove Models...** button at the top to clear the entire scene. This is especially necessary, if the loaded models exceed the [limits of the rendering VM](https://docs.microsoft.com/azure/remote-rendering/reference/limits#overall-number-of-polygons). In that case you will only see a **checkerboard pattern**.
+The scene tree on the left displays the structure of the loaded models. You can load multiple models simultaneously. Use the **Remove Models** button at the top to clear the entire scene. This is especially necessary, if the loaded models exceed the [limits of the rendering VM](https://docs.microsoft.com/azure/remote-rendering/reference/limits#overall-number-of-polygons). In that case you will only see a **checkerboard pattern**.
 
 Select an item either through the tree or by clicking on it in the viewport. If you **double click** an item in the scene tree, the camera will focus on it. The same can be achieved by pressing the **F key** while the viewport has input focus.
 
@@ -59,7 +59,7 @@ Some models are very large, others are very small and yet others are very far aw
 
 ## Material editing
 
-When an object is selected, the list on the right hand side shows all available the materials. You can edit any material and see the effect live in the viewport. More information on materials is available [in the ARR documentation](https://docs.microsoft.com/azure/remote-rendering/concepts/materials). Note that there are two types of materials: [PBR materials](https://docs.microsoft.com/azure/remote-rendering/overview/features/pbr-materials) and [color materials](https://docs.microsoft.com/azure/remote-rendering/overview/features/color-materials), which is why you will see different options in the UI depending on the selected material type.
+When an object is selected, the list on the right hand side shows all the available materials. You can edit any material and see the effect live in the viewport. More information on materials is available [in the ARR documentation](https://docs.microsoft.com/azure/remote-rendering/concepts/materials). Note that there are two types of materials: [PBR materials](https://docs.microsoft.com/azure/remote-rendering/overview/features/pbr-materials) and [color materials](https://docs.microsoft.com/azure/remote-rendering/overview/features/color-materials), which is why you will see different options in the UI depending on the selected material type.
 
 > **Note:**
 >
@@ -67,7 +67,7 @@ When an object is selected, the list on the right hand side shows all available 
 
 ## ArrInspector
 
-You can launch [ArrInspector](https://docs.microsoft.com/azure/remote-rendering/resources/tools/arr-inspector) for your session with the button in the toolbar. ArrInspector is a great tool to live inspect performance stats and capture traces for debugging for any of your sessions.
+You can launch [ArrInspector](https://docs.microsoft.com/azure/remote-rendering/resources/tools/arr-inspector) for your session with the button in the toolbar. ArrInspector is a great tool to live inspect performance stats and capture traces for debugging.
 
 ## Performance statistics
 
