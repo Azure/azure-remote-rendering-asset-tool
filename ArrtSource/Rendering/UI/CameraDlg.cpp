@@ -54,7 +54,7 @@ void CameraDlg::updateLabels()
     NearPlaneLabel->setText(QString("%1 meters").arg(m_options->GetNearPlaneCM() / 100.0f));
     FarPlaneLabel->setText(QString("%1 meters").arg(m_options->GetFarPlaneCM() / 100.0f));
     CamSpeedLabel->setText(QString("%1 m/sec").arg(m_options->GetCameraSpeedMetersPerSecond()));
-    PointSizeLabel->setText(QString("%1").arg(m_options->GetPointSize() / 10.0, 0, 'f', 1));
+    PointSizeLabel->setText(QString("%1").arg(m_options->GetPointSizeFloat(), 0, 'f', 1));
 }
 
 void CameraDlg::closeEvent(QCloseEvent*)

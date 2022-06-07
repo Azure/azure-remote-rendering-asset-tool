@@ -36,6 +36,7 @@ public:
 
     int GetPointSize() const { return m_pointSize; }
     void SetPointSize(int value);
+    float GetPointSizeFloat() const { return m_pointSize / 10.0f; }
 
     void SaveSettings() const;
     void LoadSettings();

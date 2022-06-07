@@ -386,7 +386,7 @@ void SceneState::UpdatePointSize()
 {
     if (m_client)
     {
-        m_client->GetPointCloudSettingsExperimental()->SetPointSizeScale(m_arrOptions->GetPointSize() / 10.0f);
+        m_client->GetPointCloudSettingsExperimental()->SetPointSizeScale(m_arrOptions->GetPointSizeFloat());
     }
 }
 
