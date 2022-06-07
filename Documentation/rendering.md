@@ -29,13 +29,13 @@ Once you start a session, it can take some time for it to become fully available
 
 ## Loading a model from a URL
 
-Press the button **Load Model with URL...**. In the following dialog you can enter any [SAS URL](https://docs.microsoft.com/azure/storage/common/storage-sas-overview) to a converted asset in Azure Storage. You can generate such a URL with [Microsoft Azure Storage Explorer](https://azure.microsoft.com/features/storage-explorer).
+From the **Model** dropdown menu, select **Load with URL...**. In the following dialog you can enter any [SAS URL](https://docs.microsoft.com/azure/storage/common/storage-sas-overview) to a converted asset in Azure Storage. You can generate such a URL with [Microsoft Azure Storage Explorer](https://azure.microsoft.com/features/storage-explorer).
 
 However, you can also just keep the special URL **builtin://Engine** to load the standard sample model. This is the easiest way to see anything in ARRT, since you don't need to convert a model yourself to get started.
 
 ## Loading a model from Azure Storage
 
-Press the button **Load Model from Storage...** and select a [converted](conversion.md) `.arrAsset` file from your connected storage account.
+From the **Model** dropdown menu, select **Load from storage...** and select a [converted](conversion.md) `.arrAsset` file from your connected storage account.
 
 ## Model rendering
 
@@ -49,13 +49,13 @@ Press the **Camera...** button to open a dialog where you can configure the fiel
 
 ## Scene tree
 
-The scene tree on the left displays the structure of the loaded models. You can load multiple models simultaneously. Use the **Remove Models** button at the top to clear the entire scene. This is especially necessary, if the loaded models exceed the [limits of the rendering VM](https://docs.microsoft.com/azure/remote-rendering/reference/limits#overall-number-of-polygons). In that case you will only see a **checkerboard pattern**.
+The scene tree on the left displays the structure of the loaded models. You can load multiple models simultaneously. Use the **Remove all models** option from the **Models** dropdown menu to clear the entire scene. This is especially necessary, if the loaded models exceed the [limits of the rendering VM](https://docs.microsoft.com/azure/remote-rendering/reference/limits#overall-number-of-polygons). In that case you will only see a **checkerboard pattern**.
 
 Select an item either through the tree or by clicking on it in the viewport. If you **double click** an item in the scene tree, the camera will focus on it. The same can be achieved by pressing the **F key** while the viewport has input focus.
 
 ## Model scale
 
-Some models are very large, others are very small and yet others are very far away from the origin. ARRT attempts to detect extreme cases and notify you about it. In any case, you can always use the **Model Scale** option from the toolbar to adjust the size of the loaded models. Also change the camera movement speed as necessary and make sure the near and far plane are configured accordingly.
+Some models are very large, others are very small and yet others are very far away from the origin. ARRT attempts to detect extreme cases and notify you about it. In any case, you can always use the **Scale** option from the toolbar to adjust the size of the loaded models. Also change the camera movement speed as necessary and make sure the near and far plane are configured accordingly.
 
 ## Material editing
 
@@ -67,7 +67,7 @@ When an object is selected, the list on the right hand side shows all the availa
 
 ## ArrInspector
 
-You can launch [ArrInspector](https://docs.microsoft.com/azure/remote-rendering/resources/tools/arr-inspector) for your session with the button in the toolbar. ArrInspector is a great tool to live inspect performance stats and capture traces for debugging.
+You can launch [ArrInspector](https://docs.microsoft.com/azure/remote-rendering/resources/tools/arr-inspector) for your session with the **Inspect...** button in the toolbar. ArrInspector is a great tool to live inspect performance stats and capture traces for debugging.
 
 ## Performance statistics
 
