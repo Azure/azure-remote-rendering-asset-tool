@@ -108,6 +108,9 @@ private:
     int m_numFileUploads = 0;
     float m_fileUploadPercentage = 0;
     int m_maxLogType = 0;
+    QAction* m_loadFromStorageAction = nullptr;
+    QAction* m_clearModelsAction = nullptr;
+    QAction* m_loadWithUrlAction = nullptr;
 
     std::unique_ptr<StorageAccount> m_storageAccount;
     std::unique_ptr<ArrAccount> m_arrAclient;

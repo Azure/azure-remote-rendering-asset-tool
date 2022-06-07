@@ -81,6 +81,21 @@ ArrtAppWindow::ArrtAppWindow()
         }
     }
 
+    // set up toolbutton menu for model actions
+    {
+        m_clearModelsAction = new QAction(QIcon(":/ArrtApplication/Icons/remove.svg"), "Remove all models");
+        m_loadFromStorageAction = new QAction(QIcon(":/ArrtApplication/Icons/upload.svg"), "Load from storage...");
+        m_loadWithUrlAction = new QAction(QIcon(":/ArrtApplication/Icons/model.svg"), "Load with URL...");
+
+        RenderingTab->ModelsToolbutton->addAction(m_loadFromStorageAction);
+        RenderingTab->ModelsToolbutton->addAction(m_loadWithUrlAction);
+        RenderingTab->ModelsToolbutton->addAction(m_clearModelsAction);
+
+        connect(m_loadFromStorageAction, &QAction::triggered, this, &ArrtAppWindow::on_ChangeModelButton_clicked);
+        connect(m_loadWithUrlAction, &QAction::triggered, this, &ArrtAppWindow::on_LoadModelSasButton_clicked);
+        connect(m_clearModelsAction, &QAction::triggered, this, &ArrtAppWindow::on_ClearModelsButton_clicked);
+    }
+
     // setup the status bar
     {
         m_statusBar = new QStatusBar(this);
@@ -143,7 +158,7 @@ ArrtAppWindow::ArrtAppWindow()
             {
             RenderingTab->ScenegraphView->selectionModel()->clearSelection();
                 m_scenegraphModel->RefreshModel();
-                RenderingTab->ClearModelsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
+                m_clearModelsAction->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
 
                 if (m_arrSession->GetLoadedModels().size() == 1)
                 {
@@ -345,11 +360,12 @@ void ArrtAppWindow::OnUpdateStatusBar()
     }
 
     RenderingTab->EditSessionButton->setEnabled(m_arrAclient->GetConnectionStatus() == ArrConnectionStatus::Authenticated);
-    RenderingTab->ChangeModelButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_storageAccount->GetConnectionStatus() == StorageConnectionStatus::Authenticated);
-    RenderingTab->LoadModelSasButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    m_loadFromStorageAction->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_storageAccount->GetConnectionStatus() == StorageConnectionStatus::Authenticated);
+    m_loadWithUrlAction->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    RenderingTab->ModelScaleSpinner->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     RenderingTab->CameraOptionsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     RenderingTab->InspectorButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
-    RenderingTab->ClearModelsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
+    m_clearModelsAction->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
     RenderingTab->ScenegraphView->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     RenderingTab->MaterialsList->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
     RenderingTab->MaterialProperties->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
