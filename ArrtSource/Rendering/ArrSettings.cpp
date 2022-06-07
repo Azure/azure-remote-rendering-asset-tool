@@ -73,6 +73,15 @@ void ArrSettings::SetFarPlaneCM(int value)
     }
 }
 
+void ArrSettings::SetPointSize(int value)
+{
+    if (m_pointSize != value)
+    {
+        m_pointSize = value;
+        Q_EMIT OptionsChanged();
+    }
+}
+
 void ArrSettings::SaveSettings() const
 {
     QSettings s;
@@ -84,6 +93,7 @@ void ArrSettings::SaveSettings() const
     s.setValue("CameraNear", m_nearPlaneCM);
     s.setValue("CameraFar", m_farPlaneCM);
     s.setValue("CameraSpeed", m_cameraSpeedPow2);
+    s.setValue("PointSize", m_pointSize);
     s.endGroup();
 }
 
@@ -98,5 +108,6 @@ void ArrSettings::LoadSettings()
     m_nearPlaneCM = s.value("CameraNear", m_nearPlaneCM).toInt();
     m_farPlaneCM = s.value("CameraFar", m_farPlaneCM).toInt();
     m_cameraSpeedPow2 = s.value("CameraSpeed", m_cameraSpeedPow2).toInt();
+    m_pointSize = s.value("PointSize", m_pointSize).toInt();
     s.endGroup();
 }

@@ -105,6 +105,7 @@ Q_SIGNALS:
 
 private:
     void UpdateProjectionMatrix();
+    void UpdatePointSize();
     void SceneRefresh();
     void InitializeClient();
     void DeinitializeClient();

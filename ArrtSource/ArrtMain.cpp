@@ -29,21 +29,28 @@ public:
     ArrtStyle()
         : QProxyStyle("fusion")
     {
+        m_HighlightColorBase = QColor(100, 130, 20);
+        m_HighlightColorLight = m_HighlightColorBase.lighter();
+        m_HighlightColorVeryLight = m_HighlightColorLight.lighter();
     }
+
+    QColor m_HighlightColorBase;
+    QColor m_HighlightColorLight;
+    QColor m_HighlightColorVeryLight;
 
     virtual void drawControl(ControlElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget = nullptr) const override
     {
-        QColor c(100, 130, 20);
-        c = c.lighter();
-        c = c.lighter();
-
         if (element == ControlElement::CE_TabBarTabLabel)
         {
             QStyleOptionTab opt = *static_cast<const QStyleOptionTab*>(option);
 
             if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
             {
-                opt.palette.setColor(QPalette::ColorRole::WindowText, c);
+                opt.palette.setColor(QPalette::ColorRole::WindowText, m_HighlightColorVeryLight);
+                opt.state.setFlag(QStyle::StateFlag::State_HasFocus, false);
+
+                painter->setPen(QPen(m_HighlightColorLight, 1, Qt::PenStyle::DotLine));
+                painter->drawRect(opt.rect.adjusted(4, 4, -4, -4));
             }
 
             QProxyStyle::drawControl(element, &opt, painter, widget);
@@ -57,11 +64,33 @@ public:
 
             if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
             {
-                opt.palette.setColor(QPalette::ColorRole::ButtonText, c);
+                opt.palette.setColor(QPalette::ColorRole::ButtonText, m_HighlightColorVeryLight);
+                opt.state.setFlag(QStyle::StateFlag::State_HasFocus, false);
+
+                painter->setPen(QPen(m_HighlightColorLight, 1, Qt::PenStyle::DotLine));
+                painter->drawRect(opt.rect.adjusted(3, 3, -3, -3));
             }
 
             QProxyStyle::drawControl(element, &opt, painter, widget);
 
+            return;
+        }
+
+
+        if (element == ControlElement::CE_ToolButtonLabel)
+        {
+            QStyleOptionToolButton opt = *static_cast<const QStyleOptionToolButton*>(option);
+
+            if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
+            {
+                opt.palette.setColor(QPalette::ColorRole::ButtonText, m_HighlightColorVeryLight);
+                opt.state.setFlag(QStyle::StateFlag::State_HasFocus, false);
+
+                painter->setPen(QPen(m_HighlightColorLight, 1, Qt::PenStyle::DotLine));
+                painter->drawRect(opt.rect.adjusted(1, 1, -1, -1));
+            }
+
+            QProxyStyle::drawControl(element, &opt, painter, widget);
             return;
         }
 
@@ -71,7 +100,11 @@ public:
 
             if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
             {
-                opt.palette.setColor(QPalette::ColorRole::ButtonText, c);
+                opt.palette.setColor(QPalette::ColorRole::ButtonText, m_HighlightColorVeryLight);
+                opt.state.setFlag(QStyle::StateFlag::State_HasFocus, false);
+
+                painter->setPen(QPen(m_HighlightColorLight, 1, Qt::PenStyle::DotLine));
+                painter->drawRect(opt.rect.adjusted(3, 3, -3, -3));
             }
 
             QProxyStyle::drawControl(element, &opt, painter, widget);
@@ -85,7 +118,8 @@ public:
 
             if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
             {
-                opt.palette.setColor(QPalette::ColorRole::WindowText, c);
+                opt.palette.setColor(QPalette::ColorRole::WindowText, m_HighlightColorVeryLight);
+                opt.state.setFlag(QStyle::StateFlag::State_HasFocus, false);
             }
 
             QProxyStyle::drawControl(element, &opt, painter, widget);
@@ -99,7 +133,7 @@ public:
 
             if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
             {
-                opt.palette.setColor(QPalette::ColorRole::Window, c);
+                opt.palette.setColor(QPalette::ColorRole::Window, m_HighlightColorVeryLight);
             }
 
             QProxyStyle::drawControl(element, &opt, painter, widget);
@@ -108,6 +142,69 @@ public:
         }
 
         QProxyStyle::drawControl(element, option, painter, widget);
+    }
+
+    virtual void drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget = nullptr) const override
+    {
+        if (element == QStyle::PrimitiveElement::PE_FrameFocusRect)
+            return;
+
+        if (element == QStyle::PrimitiveElement::PE_IndicatorCheckBox)
+        {
+            QStyleOptionButton opt = *static_cast<const QStyleOptionButton*>(option);
+
+            if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
+            {
+                opt.palette.setColor(QPalette::ColorRole::Window, m_HighlightColorVeryLight);
+                opt.state.setFlag(QStyle::StateFlag::State_HasFocus, false);
+            }
+
+            QProxyStyle::drawPrimitive(element, &opt, painter, widget);
+            return;
+        }
+
+        if (element == QStyle::PrimitiveElement::PE_FrameLineEdit)
+        {
+            QStyleOptionFrame opt = *static_cast<const QStyleOptionFrame*>(option);
+
+            if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
+            {
+                opt.palette.setColor(QPalette::ColorRole::Window, m_HighlightColorVeryLight);
+                opt.state.setFlag(QStyle::StateFlag::State_HasFocus, false);
+            }
+
+            QProxyStyle::drawPrimitive(element, &opt, painter, widget);
+
+            if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
+            {
+                painter->setPen(QPen(m_HighlightColorLight, 1, Qt::PenStyle::SolidLine));
+                painter->drawRect(opt.rect);
+            }
+
+            return;
+        }
+
+        QProxyStyle::drawPrimitive(element, option, painter, widget);
+    }
+
+    virtual void drawComplexControl(ComplexControl control, const QStyleOptionComplex* option, QPainter* painter, const QWidget* widget = nullptr) const override
+    {
+        if (control == QStyle::CC_SpinBox)
+        {
+            QStyleOptionSpinBox opt = *static_cast<const QStyleOptionSpinBox*>(option);
+
+            if (option->state.testFlag(QStyle::StateFlag::State_HasFocus))
+            {
+                opt.palette.setColor(QPalette::ColorRole::Window, m_HighlightColorVeryLight);
+                opt.state.setFlag(QStyle::StateFlag::State_HasFocus, false);
+            }
+
+            QProxyStyle::drawComplexControl(control, &opt, painter, widget);
+
+            return;
+        }
+
+        QProxyStyle::drawComplexControl(control, option, painter, widget);
     }
 };
 

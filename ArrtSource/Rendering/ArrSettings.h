@@ -34,6 +34,10 @@ public:
     int GetFarPlaneCM() const { return m_farPlaneCM; }
     void SetFarPlaneCM(int value);
 
+    int GetPointSize() const { return m_pointSize; }
+    void SetPointSize(int value);
+    float GetPointSizeFloat() const { return m_pointSize / 10.0f; }
+
     void SaveSettings() const;
     void LoadSettings();
 
@@ -58,4 +62,6 @@ private:
 
     int m_nearPlaneCM = 5;
     int m_farPlaneCM = 5000;
+
+    int m_pointSize = 10;
 };

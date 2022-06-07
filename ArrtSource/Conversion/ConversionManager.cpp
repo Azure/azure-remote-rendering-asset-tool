@@ -38,8 +38,7 @@ ConversionManager::ConversionManager(StorageAccount* storageAccount, ArrAccount*
                                               });
                 };
 
-                m_arrClient->GetClient()->GetCurrentConversionsAsync(resultCallback);
-            });
+                m_arrClient->GetClient()->GetCurrentConversionsAsync(resultCallback); });
 }
 
 ConversionManager::~ConversionManager() = default;
@@ -114,6 +113,27 @@ void ConversionManager::SetConversionName(const QString& name)
     }
 }
 
+const char* ToString(Axis axis)
+{
+    switch (axis)
+    {
+    case Axis::PosX:
+        return "+X";
+    case Axis::NegX:
+        return "-X";
+    case Axis::PosY:
+        return "+Y";
+    case Axis::NegY:
+        return "-Y";
+    case Axis::PosZ:
+        return "+Z";
+    case Axis::NegZ:
+        return "-Z";
+    }
+
+    return "?";
+}
+
 void ConversionManager::SetConversionSourceAsset(const QString& container, const QString& path)
 {
     auto& conv = m_conversions[m_selectedConversion];
@@ -123,6 +143,21 @@ void ConversionManager::SetConversionSourceAsset(const QString& container, const
         conv.m_sourceAssetContainer = container;
         conv.m_sourceAsset = path;
         conv.m_inputFolder = conv.GetPlaceholderInputFolder(); // reset the input folder
+
+        Axis axis1, axis2, axis3;
+        StorageBrowserModel::GetSrcAssetAxisMapping(path, axis1, axis2, axis3);
+
+        if (conv.m_options.m_axis1 != axis1 ||
+            conv.m_options.m_axis2 != axis2 ||
+            conv.m_options.m_axis3 != axis3)
+        {
+            if (QMessageBox::question(nullptr, "Change Coordinate System?", QString("For this file type we recommend using the (%1 | %2 | %3) axis mapping.\nThis usually results in the proper orientation of objects.\n\nShould it be applied to the advanced options?").arg(ToString(axis1)).arg(ToString(axis2)).arg(ToString(axis3)), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+            {
+                conv.m_options.m_axis1 = axis1;
+                conv.m_options.m_axis2 = axis2;
+                conv.m_options.m_axis3 = axis3;
+            }
+        }
 
         Q_EMIT SelectedChanged();
     }
@@ -359,8 +394,7 @@ bool ConversionManager::StartConversionInternal()
                                           qCritical(LoggingCategory::ArrSdk) << QString("Starting conversion '%1' failed: %2").arg(conv.m_conversionGuid).arg(conv.m_message);
                                       }
 
-                                      Q_EMIT SelectedChanged();
-                                  });
+                                      Q_EMIT SelectedChanged(); });
     };
 
     m_arrClient->GetClient()->StartAssetConversionAsync(options, onConversionStartRequestFinished);
@@ -497,7 +531,7 @@ void ConversionManager::GetCurrentConversionsResult(RR::Status status, RR::ApiHa
         if (c.m_status != ConversionStatus::Running)
         {
             const uint64_t secAgo = QDateTime::currentSecsSinceEpoch() - c.m_startConversionTime;
-            
+
             // longer than a day ago -> don't show it anymore
             if (secAgo > 60 * 60 * 24)
                 continue;

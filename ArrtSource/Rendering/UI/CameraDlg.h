@@ -20,6 +20,7 @@ private Q_SLOTS:
     void on_NearPlaneSlider_valueChanged(int value);
     void on_FarPlaneSlider_valueChanged(int value);
     void on_CamMoveSpeedSlider_valueChanged(int value);
+    void on_PointSizeSlider_valueChanged(int value);
 
 private:
     ArrSettings* m_options = nullptr;

@@ -44,6 +44,7 @@ void CameraDlg::updateUi()
     NearPlaneSlider->setValue(m_options->GetNearPlaneCM());
     FarPlaneSlider->setValue(m_options->GetFarPlaneCM());
     CamMoveSpeedSlider->setValue(m_options->GetCameraSpeedInPow2());
+    PointSizeSlider->setValue(m_options->GetPointSize());
     updateLabels();
 }
 
@@ -53,6 +54,7 @@ void CameraDlg::updateLabels()
     NearPlaneLabel->setText(QString("%1 meters").arg(m_options->GetNearPlaneCM() / 100.0f));
     FarPlaneLabel->setText(QString("%1 meters").arg(m_options->GetFarPlaneCM() / 100.0f));
     CamSpeedLabel->setText(QString("%1 m/sec").arg(m_options->GetCameraSpeedMetersPerSecond()));
+    PointSizeLabel->setText(QString("%1").arg(m_options->GetPointSizeFloat(), 0, 'f', 1));
 }
 
 void CameraDlg::closeEvent(QCloseEvent*)
@@ -87,5 +89,11 @@ void CameraDlg::on_FarPlaneSlider_valueChanged(int value)
 void CameraDlg::on_CamMoveSpeedSlider_valueChanged(int value)
 {
     m_options->SetCameraSpeedInPow2(value);
+    updateLabels();
+}
+
+void CameraDlg::on_PointSizeSlider_valueChanged(int value)
+{
+    m_options->SetPointSize(value);
     updateLabels();
 }
