@@ -41,42 +41,26 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="ChangeModelButton">
+      <widget class="QToolButton" name="ModelsToolbutton">
        <property name="text">
-        <string>Load Model from Storage...</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/upload.svg</normaloff>:/ArrtApplication/Icons/upload.svg</iconset>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="LoadModelSasButton">
-       <property name="text">
-        <string>Load Model with URL...</string>
+        <string>Model</string>
        </property>
        <property name="icon">
         <iconset resource="../../Resources/ArrtApplication.qrc">
          <normaloff>:/ArrtApplication/Icons/model.svg</normaloff>:/ArrtApplication/Icons/model.svg</iconset>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="ClearModelsButton">
-       <property name="text">
-        <string>Remove Models</string>
+       <property name="popupMode">
+        <enum>QToolButton::InstantPopup</enum>
        </property>
-       <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/remove.svg</normaloff>:/ArrtApplication/Icons/remove.svg</iconset>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_28">
        <property name="text">
-        <string>Model Scale:</string>
+        <string>Scale:</string>
        </property>
       </widget>
      </item>
@@ -126,7 +110,7 @@
      <item>
       <widget class="QPushButton" name="InspectorButton">
        <property name="text">
-        <string>Open ArrInspector</string>
+        <string>Inspect...</string>
        </property>
        <property name="icon">
         <iconset resource="../../Resources/ArrtApplication.qrc">
@@ -336,7 +320,7 @@
                <x>0</x>
                <y>0</y>
                <width>478</width>
-               <height>1134</height>
+               <height>1118</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -916,9 +900,6 @@
  </customwidgets>
  <tabstops>
   <tabstop>EditSessionButton</tabstop>
-  <tabstop>ChangeModelButton</tabstop>
-  <tabstop>LoadModelSasButton</tabstop>
-  <tabstop>ClearModelsButton</tabstop>
   <tabstop>ModelScaleSpinner</tabstop>
   <tabstop>CameraOptionsButton</tabstop>
   <tabstop>InspectorButton</tabstop>
