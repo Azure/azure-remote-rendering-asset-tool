@@ -236,6 +236,24 @@ ArrtAppWindow::ArrtAppWindow()
         ConversionTab->VertexBitangentCombo->installEventFilter(this);
         ConversionTab->TexCoord0Combo->installEventFilter(this);
         ConversionTab->TexCoord1Combo->installEventFilter(this);
+
+
+        RenderingTab->ModelScaleSpinner->installEventFilter(this);
+        RenderingTab->TransparencyModeCombo->installEventFilter(this);
+        RenderingTab->AlphaThresholdSpinner->installEventFilter(this);
+        RenderingTab->AlbedoColorPicker->installEventFilter(this);
+        RenderingTab->VertexMixSpinner->installEventFilter(this);
+        RenderingTab->VertexAlphaModeCombo->installEventFilter(this);
+        RenderingTab->RoughnessSpinner->installEventFilter(this);
+        RenderingTab->MetalnessSpinner->installEventFilter(this);
+        RenderingTab->AoScaleSpinner->installEventFilter(this);
+        RenderingTab->TextureScaleX->installEventFilter(this);
+        RenderingTab->TextureScaleY->installEventFilter(this);
+        RenderingTab->TextureOffsetX->installEventFilter(this);
+        RenderingTab->TextureOffsetY->installEventFilter(this);
+        RenderingTab->FadeOutSpinner->installEventFilter(this);
+        RenderingTab->FresnelColorPicker->installEventFilter(this);
+        RenderingTab->FresnelExponentSpinner->installEventFilter(this);
     }
 
     LogTab->LogList->addItem("The log has been cleared."); // for accessibility reasons always have one item in the log
