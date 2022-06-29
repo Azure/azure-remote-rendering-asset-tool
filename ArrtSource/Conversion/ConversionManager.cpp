@@ -159,7 +159,7 @@ void ConversionManager::SetConversionSourceAsset(const QString& container, const
             }
         }
 
-        conv.m_displayOptions = GetAssetConversionOptions(path);
+        conv.m_availableOptions = GetAssetConversionOptions(path);
 
         Q_EMIT SelectedChanged();
     }
@@ -204,7 +204,6 @@ void ConversionManager::SetConversionAdvanced(bool advanced)
 void ConversionManager::SetConversionAdvancedOptions(const ConversionOptions& options)
 {
     auto& conv = m_conversions[m_selectedConversion];
-
     conv.m_options = options;
     Q_EMIT SelectedChanged();
 }
@@ -290,7 +289,7 @@ bool ConversionManager::StartConversionInternal()
     }
 
     {
-        QString advancedOptionsJSON = conv.m_options.ToJSON();
+        QString advancedOptionsJSON = conv.m_options.ToJSON(conv.m_availableOptions);
 
         QFileInfo assetFile(conv.m_sourceAsset);
         const QString folder = assetFile.path();
