@@ -110,23 +110,51 @@ static QString ToString(VertexTextureCoord value)
     return "";
 }
 
-QString ConversionOptions::ToJSON() const
+QString ConversionOptions::ToJSON(uint64_t availableOptions) const
 {
+    const auto flags = availableOptions;
+
     QJsonObject root;
     {
-        root["scaling"] = m_scaling;
-        root["recenterToOrigin"] = m_recenterToOrigin;
-        root["fbxAssumeMetallic"] = m_fbxAssumeMetallic;
-        root["gammaToLinearMaterial"] = m_gammaToLinearMaterial;
-        root["gammaToLinearVertex"] = m_gammaToLinearVertex;
-        root["generateCollisionMesh"] = m_generateCollisionMesh;
-        root["unlitMaterials"] = m_unlitMaterials;
-        root["deduplicateMaterials"] = m_deduplicateMaterials;
-        root["sceneGraphMode"] = ToString(m_sceneGraphMode);
-        root["opaqueMaterialDefaultSidedness"] = ToString(m_opaqueMaterialDefaultSidedness);
+        if (flags & (uint64_t)ConversionOption::UniformScaling)
+            root["scaling"] = m_scaling;
 
-        QJsonArray axes;
+        if (flags & (uint64_t)ConversionOption::RecenterToOrigin)
+            root["recenterToOrigin"] = m_recenterToOrigin;
+
+        if (flags & (uint64_t)ConversionOption::FbxAssumeMetallic)
+            root["fbxAssumeMetallic"] = m_fbxAssumeMetallic;
+
+        if (flags & (uint64_t)ConversionOption::GammaToLinearMaterial)
         {
+            if (m_materialColorSpace != ColorSpaceMode::FormatDefault)
+                root["gammaToLinearMaterial"] = m_materialColorSpace == ColorSpaceMode::GammaSpace;
+        }
+
+        if (flags & (uint64_t)ConversionOption::GammaToLinearVertex)
+        {
+            if (m_vertexColorSpace != ColorSpaceMode::FormatDefault)
+                root["gammaToLinearVertex"] = m_vertexColorSpace == ColorSpaceMode::GammaSpace;
+        }
+
+        if (flags & (uint64_t)ConversionOption::CollisionMesh)
+            root["generateCollisionMesh"] = m_generateCollisionMesh;
+
+        if (flags & (uint64_t)ConversionOption::UnlitMaterials)
+            root["unlitMaterials"] = m_unlitMaterials;
+
+        if (flags & (uint64_t)ConversionOption::DeduplicateMaterials)
+            root["deduplicateMaterials"] = m_deduplicateMaterials;
+
+        if (flags & (uint64_t)ConversionOption::SceneGraphMode)
+            root["sceneGraphMode"] = ToString(m_sceneGraphMode);
+
+        if (flags & (uint64_t)ConversionOption::MaterialDefaultSidedness)
+            root["opaqueMaterialDefaultSidedness"] = ToString(m_opaqueMaterialDefaultSidedness);
+
+        if (flags & (uint64_t)ConversionOption::AxisMapping)
+        {
+            QJsonArray axes;
             axes.append(ToString(m_axis1));
             axes.append(ToString(m_axis2));
             axes.append(ToString(m_axis3));
@@ -134,18 +162,35 @@ QString ConversionOptions::ToJSON() const
             root[QLatin1String("axis")] = axes;
         }
 
-        QJsonObject vertex;
         {
-            vertex["position"] = ToString(m_vertexPosition);
-            vertex["color0"] = ToString(m_vertexColor0);
-            vertex["color1"] = ToString(m_vertexColor1);
-            vertex["normal"] = ToString(m_vertexNormal);
-            vertex["tangent"] = ToString(m_vertexTangent);
-            vertex["binormal"] = ToString(m_vertexBinormal);
-            vertex["texcoord0"] = ToString(m_vertexTexCoord0);
-            vertex["texcoord1"] = ToString(m_vertexTexCoord1);
+            QJsonObject vertex;
 
-            root[QLatin1String("vertex")] = vertex;
+            if (flags & (uint64_t)ConversionOption::VertexPositionFormat)
+                vertex["position"] = ToString(m_vertexPosition);
+
+            if (flags & (uint64_t)ConversionOption::VertexColor0Format)
+                vertex["color0"] = ToString(m_vertexColor0);
+
+            if (flags & (uint64_t)ConversionOption::VertexColor1Format)
+                vertex["color1"] = ToString(m_vertexColor1);
+
+            if (flags & (uint64_t)ConversionOption::VertexNormalFormat)
+                vertex["normal"] = ToString(m_vertexNormal);
+
+            if (flags & (uint64_t)ConversionOption::VertexTangentFormat)
+                vertex["tangent"] = ToString(m_vertexTangent);
+
+            if (flags & (uint64_t)ConversionOption::VertexBinormalFormat)
+                vertex["binormal"] = ToString(m_vertexBinormal);
+
+            if (flags & (uint64_t)ConversionOption::VertexTexCoord0Format)
+                vertex["texcoord0"] = ToString(m_vertexTexCoord0);
+
+            if (flags & (uint64_t)ConversionOption::VertexTexCoord1Format)
+                vertex["texcoord1"] = ToString(m_vertexTexCoord1);
+
+            if (!vertex.isEmpty())
+                root[QLatin1String("vertex")] = vertex;
         }
     }
 

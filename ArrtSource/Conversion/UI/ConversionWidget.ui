@@ -378,35 +378,59 @@
                 <item row="8" column="0">
                  <widget class="QLabel" name="GammaToLinearMaterialCheckboxL">
                   <property name="text">
-                   <string>Gamma to Linear Material</string>
+                   <string>Material Color Space</string>
                   </property>
                  </widget>
                 </item>
                 <item row="8" column="1">
-                 <widget class="QCheckBox" name="GammaToLinearMaterialCheckbox">
+                 <widget class="QComboBox" name="GammaToLinearMaterialCombo">
                   <property name="accessibleName">
-                   <string>Gamma to linear material</string>
+                   <string>Material Color Space</string>
                   </property>
-                  <property name="text">
-                   <string/>
-                  </property>
+                  <item>
+                   <property name="text">
+                    <string>Format-specific default</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Gamma space</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Linear space</string>
+                   </property>
+                  </item>
                  </widget>
                 </item>
                 <item row="9" column="0">
                  <widget class="QLabel" name="GammaToLinearVertexCheckboxL">
                   <property name="text">
-                   <string>Gamma to Linear Vertex</string>
+                   <string>Vertex Color Space</string>
                   </property>
                  </widget>
                 </item>
                 <item row="9" column="1">
-                 <widget class="QCheckBox" name="GammaToLinearVertexCheckbox">
+                 <widget class="QComboBox" name="GammaToLinearVertexCombo">
                   <property name="accessibleName">
-                   <string>Gamma to linear vertex</string>
+                   <string>Vertex Color Space</string>
                   </property>
-                  <property name="text">
-                   <string/>
-                  </property>
+                  <item>
+                   <property name="text">
+                    <string>Format-specific default</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Gamma space</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Linear space</string>
+                   </property>
+                  </item>
                  </widget>
                 </item>
                 <item row="10" column="0">

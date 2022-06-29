@@ -61,32 +61,11 @@ enum class VertexTextureCoord
     Float16x2
 };
 
-/// All options describing a conversion
-struct ConversionOptions
+enum class ColorSpaceMode
 {
-    float m_scaling = 1.0f;
-    bool m_recenterToOrigin = false;
-    Sideness m_opaqueMaterialDefaultSidedness = Sideness::DoubleSided;
-    bool m_gammaToLinearMaterial = false;
-    bool m_gammaToLinearVertex = false;
-    SceneGraphMode m_sceneGraphMode = SceneGraphMode::Static;
-    bool m_generateCollisionMesh = true;
-    bool m_unlitMaterials = false;
-    bool m_fbxAssumeMetallic = true;
-    bool m_deduplicateMaterials = true;
-    Axis m_axis1 = Axis::PosX;
-    Axis m_axis2 = Axis::PosY;
-    Axis m_axis3 = Axis::PosZ;
-    VertexPosition m_vertexPosition = VertexPosition::Float32x3;
-    VertexColor m_vertexColor0 = VertexColor::ByteUx4N;
-    VertexColor m_vertexColor1 = VertexColor::None;
-    VertexVector m_vertexNormal = VertexVector::ByteSx4N;
-    VertexVector m_vertexTangent = VertexVector::ByteSx4N;
-    VertexVector m_vertexBinormal = VertexVector::ByteSx4N;
-    VertexTextureCoord m_vertexTexCoord0 = VertexTextureCoord::Float32x2;
-    VertexTextureCoord m_vertexTexCoord1 = VertexTextureCoord::None;
-
-    QString ToJSON() const;
+    FormatDefault,
+    GammaSpace,
+    LinearSpace,
 };
 
 enum class ConversionOption : uint64_t
@@ -114,6 +93,34 @@ enum class ConversionOption : uint64_t
     All = 0xFFFFFFFFFFFFFFFF
 };
 
+/// All options describing a conversion
+struct ConversionOptions
+{
+    float m_scaling = 1.0f;
+    bool m_recenterToOrigin = false;
+    Sideness m_opaqueMaterialDefaultSidedness = Sideness::DoubleSided;
+    ColorSpaceMode m_materialColorSpace = ColorSpaceMode::FormatDefault;
+    ColorSpaceMode m_vertexColorSpace = ColorSpaceMode::FormatDefault;
+    SceneGraphMode m_sceneGraphMode = SceneGraphMode::Static;
+    bool m_generateCollisionMesh = true;
+    bool m_unlitMaterials = false;
+    bool m_fbxAssumeMetallic = true;
+    bool m_deduplicateMaterials = true;
+    Axis m_axis1 = Axis::PosX;
+    Axis m_axis2 = Axis::PosY;
+    Axis m_axis3 = Axis::PosZ;
+    VertexPosition m_vertexPosition = VertexPosition::Float32x3;
+    VertexColor m_vertexColor0 = VertexColor::ByteUx4N;
+    VertexColor m_vertexColor1 = VertexColor::None;
+    VertexVector m_vertexNormal = VertexVector::ByteSx4N;
+    VertexVector m_vertexTangent = VertexVector::ByteSx4N;
+    VertexVector m_vertexBinormal = VertexVector::ByteSx4N;
+    VertexTextureCoord m_vertexTexCoord0 = VertexTextureCoord::Float32x2;
+    VertexTextureCoord m_vertexTexCoord1 = VertexTextureCoord::None;
+
+    QString ToJSON(uint64_t availableOptions) const;
+};
+
 /// A single conversion that either ran previously or is currently running
 struct Conversion
 {
@@ -131,7 +138,7 @@ struct Conversion
     uint64_t m_startConversionTime;
     uint64_t m_endConversionTime;
     ConversionOptions m_options;
-    uint64_t m_displayOptions = (uint64_t)ConversionOption::All;
+    uint64_t m_availableOptions = (uint64_t)ConversionOption::All;
 
     QString GetPlaceholderName() const;
     QString GetPlaceholderInputFolder() const;
