@@ -89,6 +89,31 @@ struct ConversionOptions
     QString ToJSON() const;
 };
 
+enum class ConversionOption : uint64_t
+{
+    UniformScaling = 1 << 0,
+    RecenterToOrigin = 1 << 1,
+    MaterialDefaultSidedness = 1 << 2,
+    GammaToLinearVertex = 1 << 3,
+    GammaToLinearMaterial = 1 << 4,
+    CollisionMesh = 1 << 5,
+    UnlitMaterials = 1 << 6,
+    FbxAssumeMetallic = 1 << 7,
+    DeduplicateMaterials = 1 << 8,
+    AxisMapping = 1 << 9,
+    VertexPositionFormat = 1 << 10,
+    VertexColor0Format = 1 << 11,
+    VertexColor1Format = 1 << 12,
+    VertexNormalFormat = 1 << 13,
+    VertexTangentFormat = 1 << 14,
+    VertexBinormalFormat = 1 << 15,
+    VertexTexCoord0Format = 1 << 16,
+    VertexTexCoord1Format = 1 << 17,
+    SceneGraphMode = 1 << 18,
+
+    All = 0xFFFFFFFFFFFFFFFF
+};
+
 /// A single conversion that either ran previously or is currently running
 struct Conversion
 {
@@ -106,7 +131,11 @@ struct Conversion
     uint64_t m_startConversionTime;
     uint64_t m_endConversionTime;
     ConversionOptions m_options;
+    uint64_t m_displayOptions = (uint64_t)ConversionOption::All;
 
     QString GetPlaceholderName() const;
     QString GetPlaceholderInputFolder() const;
 };
+
+void GetSrcAssetAxisMapping(const QString& file, Axis& out1, Axis& out2, Axis& out3);
+uint64_t GetAssetConversionOptions(const QString& file);

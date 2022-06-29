@@ -54,7 +54,6 @@ public:
 
     static bool IsArrAsset(const QString& file);
     static bool IsSrcAsset(const QString& file);
-    static void GetSrcAssetAxisMapping(const QString& extension, Axis& out1, Axis& out2, Axis& out3);
 
 private:
     void FillChildEntries(StorageEntry* entry, const QString& entryPath, std::vector<StorageEntry>& output) const;

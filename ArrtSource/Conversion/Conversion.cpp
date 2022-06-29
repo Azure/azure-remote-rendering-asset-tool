@@ -152,3 +152,35 @@ QString ConversionOptions::ToJSON() const
     QJsonDocument configuration(root);
     return configuration.toJson(QJsonDocument::Indented);
 }
+
+void GetSrcAssetAxisMapping(const QString& file, Axis& out1, Axis& out2, Axis& out3)
+{
+    out1 = Axis::PosX;
+    out2 = Axis::PosY;
+    out3 = Axis::PosZ;
+
+    if (file.endsWith(".e57", Qt::CaseInsensitive) ||
+        file.endsWith(".ply", Qt::CaseInsensitive) ||
+        file.endsWith(".xyz", Qt::CaseInsensitive))
+    {
+        out1 = Axis::PosX;
+        out2 = Axis::PosZ;
+        out3 = Axis::NegY;
+    }
+}
+
+uint64_t GetAssetConversionOptions(const QString& file)
+{
+    if (file.endsWith(".e57", Qt::CaseInsensitive) ||
+        file.endsWith(".ply", Qt::CaseInsensitive) ||
+        file.endsWith(".xyz", Qt::CaseInsensitive))
+    {
+        return (uint64_t)ConversionOption::UniformScaling |
+               (uint64_t)ConversionOption::RecenterToOrigin |
+               (uint64_t)ConversionOption::GammaToLinearVertex |
+               (uint64_t)ConversionOption::AxisMapping |
+               (uint64_t)ConversionOption::CollisionMesh;
+    }
+
+    return (uint64_t)ConversionOption::All;
+}
