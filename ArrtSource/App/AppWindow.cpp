@@ -400,7 +400,7 @@ void ArrtAppWindow::OnUpdateStatusBar()
 
     float fModelLoad = m_arrSession->GetModelLoadingProgress();
 
-    m_statusLoadProgress->setFormat("Loading Model: %p%");
+    m_statusLoadProgress->setTextVisible(false);
     m_statusLoadProgress->setVisible(fModelLoad < 1.0f && m_arrSession->GetSessionStatus().IsRunning());
     m_statusLoadProgress->setValue((int)(fModelLoad * 100));
 
