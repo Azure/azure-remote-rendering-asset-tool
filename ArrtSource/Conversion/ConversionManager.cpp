@@ -145,7 +145,7 @@ void ConversionManager::SetConversionSourceAsset(const QString& container, const
         conv.m_inputFolder = conv.GetPlaceholderInputFolder(); // reset the input folder
 
         Axis axis1, axis2, axis3;
-        StorageBrowserModel::GetSrcAssetAxisMapping(path, axis1, axis2, axis3);
+        GetSrcAssetAxisMapping(path, axis1, axis2, axis3);
 
         if (conv.m_options.m_axis1 != axis1 ||
             conv.m_options.m_axis2 != axis2 ||
@@ -158,6 +158,8 @@ void ConversionManager::SetConversionSourceAsset(const QString& container, const
                 conv.m_options.m_axis3 = axis3;
             }
         }
+
+        conv.m_displayOptions = GetAssetConversionOptions(path);
 
         Q_EMIT SelectedChanged();
     }

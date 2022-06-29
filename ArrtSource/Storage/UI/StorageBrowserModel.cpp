@@ -281,22 +281,6 @@ bool StorageBrowserModel::IsSrcAsset(const QString& file)
     return formats.indexOf(extension) >= 0;
 }
 
-void StorageBrowserModel::GetSrcAssetAxisMapping(const QString& file, Axis& out1, Axis& out2, Axis& out3)
-{
-    out1 = Axis::PosX;
-    out2 = Axis::PosY;
-    out3 = Axis::PosZ;
-
-    if (file.endsWith(".e57", Qt::CaseInsensitive) ||
-        file.endsWith(".ply", Qt::CaseInsensitive) ||
-        file.endsWith(".xyz", Qt::CaseInsensitive))
-    {
-        out1 = Axis::PosX;
-        out2 = Axis::PosZ;
-        out3 = Axis::NegY;
-    }
-}
-
 bool StorageEntry::IsDifferent(const StorageEntry& rhs) const
 {
     if (m_name != rhs.m_name)
