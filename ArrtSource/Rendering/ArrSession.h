@@ -2,8 +2,7 @@
 
 #include <QObject>
 
-#include <QElapsedTimer>
-#include <Rendering/IncludeAzureRemoteRendering.h>
+#include <Rendering/ArrConnectionLogic.h>
 #include <deque>
 
 namespace Microsoft::Azure::RemoteRendering
@@ -19,28 +18,32 @@ class ArrAccount;
 class QTimer;
 class SceneState;
 
-struct ArrSessionStatus
-{
-    enum class State
-    {
-        NotActive,
-        Stopped,
-        Expired,
-        Error,
-
-        StartRequested,
-        Starting,
-        ReadyNotConnected,
-        ReadyConnecting,
-        ReadyConnected,
-    };
-
-    bool IsRunning() const;
-
-    State m_state = State::NotActive;
-    int m_elapsedTimeInMinutes = 0;
-    int m_leaseTimeInMinutes = 0;
-};
+// struct RemoteRenderingState
+//{
+//     enum class State
+//     {
+//         Inactive,
+//         OpeningSession,
+//         SessionReady,
+//         SessionStopped,
+//         SessionExpired,
+//         SessionError,
+//
+//         RuntimeConnecting,
+//         RuntimeConnected,
+//
+//         Disconnecting,
+//     };
+//
+//     bool IsBusy() const;
+//     bool IsStoppable() const;
+//     bool IsFullyConnected() const;
+//     void Update(const RR::RenderingSessionProperties& properties, RR::ConnectionStatus connection);
+//
+//     State m_CurrentState = State::Inactive;
+//     int m_elapsedTimeInMinutes = 0;
+//     int m_leaseTimeInMinutes = 0;
+// };
 
 /// Manages all aspects of a Remote Rendering session
 ///
@@ -55,9 +58,16 @@ Q_SIGNALS:
     void ModelLoadProgressChanged();
     void FrameStatisticsChanged();
 
+private Q_SLOTS:
+    void OnConnectionStateChanged();
+    void OnInitGrahpcs();
+    void OnDeinitGrahpcs();
+
 public:
     ArrSession(ArrAccount* arrClient, SceneState* sceneState);
     ~ArrSession();
+
+    const ArrConnectionLogic& GetConnectionState() const { return m_ConnectionLogic; }
 
     /// Creates a new session with the provided options.
     void CreateSession(const RR::RenderingSessionCreationOptions& info);
@@ -67,8 +77,6 @@ public:
 
     /// Disconnects from the current session and optionally stops the session as well.
     void CloseSession(bool keepRunning);
-
-    ArrSessionStatus GetSessionStatus() const;
 
     /// Returns the session ID of the currently running session.
     QString GetSessionID() const;
@@ -114,40 +122,23 @@ public:
     const RR::FrameStatistics& GetFrameStatistics() const { return m_frameStats; }
 
 private:
-    void OpenOrCreateSessionResult(RR::Status status, RR::ApiHandle<RR::CreateRenderingSessionResult> result);
-    void ConnectToSessionRuntime();
-    void ConnectToSessionRuntimeResult(RR::Status status, RR::ConnectionStatus result);
-    void DisconnectFromSessionRuntime();
-    void GetSessionPropertiesResult(RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesResult> result);
-    void OnSessionPropertiesUpdated();
-    void OnConnectionStatusChanged(RR::ConnectionStatus status, RR::Result result);
     void ExtendSessionIfNeeded();
     void OnSceneRefresh();
-    void UpdateSessionProperties();
     void UpdatePerformanceStatistics();
-    void ConfigureSessionPropertiesUpdateTimer();
     void CheckEntityBounds(RR::ApiHandle<RR::Entity> entity);
     void CheckEntityBoundsResult(RR::Bounds bounds);
     RR::ApiHandle<RR::RenderingConnection> GetRenderingConnection();
 
-    ArrAccount* m_arrClient = nullptr;
-    RR::ApiHandle<RR::RenderingSession> m_arrSession = nullptr;
+    ArrConnectionLogic m_ConnectionLogic;
+
+    ArrAccount* m_arrAccount = nullptr;
 
     int m_extensionMinutes = 0;
 
     SceneState* m_sceneState = nullptr;
 
-    QElapsedTimer m_connectingElapsedTime;
-    QTimer* m_updateSessionPropertiesTimer = nullptr;
-
-    std::atomic_bool m_createSessionInProgress = false;
-    std::atomic_bool m_connectingInProgress = false;
     std::atomic_bool m_connectToArrInspectorInProgress = false;
     std::atomic_bool m_renewAsyncInProgress = false;
-
-    RR::RenderingSessionProperties m_lastProperties = {};
-    RR::event_token m_statusChangedToken;
-    RR::event_token m_messageLoggedToken;
 
     float m_modelScale = 1.0f;
     std::vector<float> m_loadingProgress;
@@ -156,4 +147,6 @@ private:
 
     int m_frameStatsUpdateDelay = 60;
     RR::FrameStatistics m_frameStats;
+
+    ArrConnectionLogic::State m_previousState = ArrConnectionLogic::State::Inactive;
 };

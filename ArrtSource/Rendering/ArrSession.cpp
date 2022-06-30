@@ -11,414 +11,88 @@
 #include <Utils/Logging.h>
 #include <windows.h>
 
-using namespace std::chrono_literals;
-
-// interval to check the status (elapsed time, connection status etc)
-const std::chrono::milliseconds s_updatePropertiesFast = 10s;
-// interval to check the status (elapsed time, connection status etc) when the session is connected
-const std::chrono::milliseconds s_updatePropertiesSlow = 15s;
-// timeout for connecting to the azure session, once it's ready
-const std::chrono::milliseconds s_connectionTimeout = 10s;
-
-bool ArrSessionStatus::IsRunning() const
+void ArrSession::OnConnectionStateChanged()
 {
-    switch (m_state)
+    if (m_previousState != m_ConnectionLogic.GetCurrentState())
     {
-        case ArrSessionStatus::State::StartRequested:
-        case ArrSessionStatus::State::Starting:
-        case ArrSessionStatus::State::ReadyNotConnected:
-        case ArrSessionStatus::State::ReadyConnecting:
-        case ArrSessionStatus::State::ReadyConnected:
-            return true;
+        m_previousState = m_ConnectionLogic.GetCurrentState();
 
-        default:
-            return false;
+        qInfo(LoggingCategory::RenderingSession) << "Connection state changed to " << ArrConnectionLogic::GetStateString(m_ConnectionLogic.GetCurrentState());
+
+        if (!m_ConnectionLogic.IsConnectionStoppable())
+        {
+            m_loadingProgress.clear();
+            m_loadedModels.clear();
+            m_selectedEntities.clear();
+        }
     }
+
+    ExtendSessionIfNeeded();
+
+    Q_EMIT SessionStatusChanged();
+}
+
+void ArrSession::OnInitGrahpcs()
+{
+    m_sceneState->SetSession(m_ConnectionLogic.GetArrSession(), this);
+}
+
+void ArrSession::OnDeinitGrahpcs()
+{
+    m_sceneState->SetSession(nullptr, this);
+
+    m_loadingProgress.clear();
+    m_loadedModels.clear();
+    m_selectedEntities.clear();
+
+    Q_EMIT ModelLoadProgressChanged();
 }
 
 ArrSession::ArrSession(ArrAccount* arrClient, SceneState* sceneState)
 {
-    m_arrClient = arrClient;
+    m_arrAccount = arrClient;
     m_sceneState = sceneState;
-
-    m_updateSessionPropertiesTimer = new QTimer(this);
-    connect(m_updateSessionPropertiesTimer, &QTimer::timeout, this, [this]()
-            { UpdateSessionProperties(); });
 
     connect(sceneState, &SceneState::SceneRefreshed, this, [this]()
             { OnSceneRefresh(); });
+
+    connect(&m_ConnectionLogic, &ArrConnectionLogic::ConnectionStateChanged, this, &ArrSession::OnConnectionStateChanged);
+    connect(&m_ConnectionLogic, &ArrConnectionLogic::InitGraphics, this, &ArrSession::OnInitGrahpcs, Qt::DirectConnection);
+    connect(&m_ConnectionLogic, &ArrConnectionLogic::DeinitGraphics, this, &ArrSession::OnDeinitGrahpcs, Qt::DirectConnection);
 }
 
-ArrSession::~ArrSession()
-{
-    CloseSession(false);
-}
+ArrSession::~ArrSession() = default;
 
 RR::ApiHandle<RR::RenderingConnection> ArrSession::GetRenderingConnection()
 {
-    return (m_arrSession && m_arrSession->GetValid()) ? m_arrSession->Connection() : RR::ApiHandle<RR::RenderingConnection>();
+    return m_ConnectionLogic.GetArrRenderingConnection();
 }
 
 QString ArrSession::GetSessionID() const
 {
-    if (!m_arrSession && !m_arrSession->GetValid())
+    if (!m_ConnectionLogic.GetArrSession())
     {
         return "no active session";
     }
 
     std::string sessionUuid;
-    m_arrSession->GetSessionUuid(sessionUuid);
+    m_ConnectionLogic.GetArrSession()->GetSessionUuid(sessionUuid);
     return sessionUuid.c_str();
-}
-
-ArrSessionStatus ArrSession::GetSessionStatus() const
-{
-    ArrSessionStatus status;
-
-    if (m_arrSession && m_arrSession->GetValid())
-    {
-        status.m_state = ArrSessionStatus::State::NotActive;
-
-        switch (m_lastProperties.Status)
-        {
-            case RR::RenderingSessionStatus::Unknown:
-                status.m_state = ArrSessionStatus::State::NotActive;
-                break;
-            case RR::RenderingSessionStatus::Starting:
-                status.m_state = ArrSessionStatus::State::Starting;
-                break;
-            case RR::RenderingSessionStatus::Ready:
-                status.m_state = ArrSessionStatus::State::ReadyConnected;
-                break;
-            case RR::RenderingSessionStatus::Stopped:
-                status.m_state = ArrSessionStatus::State::Stopped;
-                break;
-            case RR::RenderingSessionStatus::Expired:
-                status.m_state = ArrSessionStatus::State::Expired;
-                break;
-            case RR::RenderingSessionStatus::Error:
-                status.m_state = ArrSessionStatus::State::Error;
-                break;
-        }
-
-        if (status.m_state == ArrSessionStatus::State::ReadyConnected)
-        {
-            switch (m_arrSession->GetConnectionStatus())
-            {
-                case RR::ConnectionStatus::Disconnected:
-                    status.m_state = ArrSessionStatus::State::ReadyNotConnected;
-                    break;
-                case RR::ConnectionStatus::Connecting:
-                    status.m_state = ArrSessionStatus::State::ReadyConnecting;
-                    break;
-                case RR::ConnectionStatus::Connected:
-                    status.m_state = ArrSessionStatus::State::ReadyConnected;
-                    break;
-            }
-        }
-
-        status.m_elapsedTimeInMinutes = m_lastProperties.ElapsedTimeInMinutes;
-        status.m_leaseTimeInMinutes = m_lastProperties.MaxLeaseInMinutes;
-    }
-    else if (m_createSessionInProgress)
-    {
-        status.m_state = ArrSessionStatus::State::StartRequested;
-    }
-
-    return status;
 }
 
 void ArrSession::CreateSession(const RR::RenderingSessionCreationOptions& info)
 {
-    if (m_createSessionInProgress)
-        return;
-
-    // this callback might get called on any worker thread
-    auto resultCallback = [this](RR::Status status, RR::ApiHandle<RR::CreateRenderingSessionResult> result)
-    {
-        // invoke the lambda on the main thread, so that it can access Qt elements
-        QMetaObject::invokeMethod(QApplication::instance(), [this, status, result]()
-                                  { this->OpenOrCreateSessionResult(status, result); });
-    };
-
-    m_createSessionInProgress = true;
-    m_arrClient->GetClient()->CreateNewRenderingSessionAsync(info, resultCallback);
+    m_ConnectionLogic.CreateNewSession(m_arrAccount->GetClient(), info);
 }
 
 void ArrSession::OpenSession(const QString& sessionID)
 {
-    if (m_createSessionInProgress)
-        return;
-
-    // this callback might get called on any worker thread
-    auto resultCallback = [this](RR::Status status, RR::ApiHandle<RR::CreateRenderingSessionResult> result)
-    {
-        // invoke the lambda on the main thread, so that it can access Qt elements
-        QMetaObject::invokeMethod(QApplication::instance(), [this, status, result]()
-                                  { this->OpenOrCreateSessionResult(status, result); });
-    };
-
-    m_createSessionInProgress = true;
-    m_arrClient->GetClient()->OpenRenderingSessionAsync(sessionID.toStdString(), resultCallback);
-}
-
-void ArrSession::OpenOrCreateSessionResult(RR::Status status, RR::ApiHandle<RR::CreateRenderingSessionResult> result)
-{
-    RR::Result errorCode = RR::StatusToResult(status);
-
-    if (status == RR::Status::OK)
-    {
-        // if the call to the service generally succeeded, retrieve details
-        // session creation might still have failed, though
-        errorCode = result->GetErrorCode();
-    }
-
-    if (errorCode == RR::Result::Success)
-    {
-        // everything went fine -> use the session
-        m_arrSession = result->GetSession();
-
-        auto resultCallback = [this](RR::ConnectionStatus status, RR::Result result)
-        {
-            QMetaObject::invokeMethod(QApplication::instance(), [this, status, result]
-                                      { OnConnectionStatusChanged(status, result); });
-        };
-
-        // we want to be informed whenever the status of the session changes
-        m_statusChangedToken = m_arrSession->ConnectionStatusChanged(resultCallback).value();
-
-        UpdateSessionProperties();
-    }
-    else
-    {
-        qCritical(LoggingCategory::RenderingSession)
-            << "Session creation failed: " << errorCode;
-
-        qDebug(LoggingCategory::RenderingSession)
-            << "Session context:\n"
-            << result->GetContext();
-
-        // TODO: show details in message box
-        QMessageBox::warning(nullptr, "Session Creation Failed", "Session creation failed.\n\nSee the log for details.", QMessageBox::Ok, QMessageBox::Ok);
-    }
-
-    m_createSessionInProgress = false;
-}
-
-void ArrSession::OnConnectionStatusChanged(RR::ConnectionStatus status, RR::Result result)
-{
-    if (result != RR::Result::Success)
-    {
-        if (result == RR::Result::DisconnectRequest)
-        {
-            qInfo(LoggingCategory::RenderingSession) << "Rendering connection closed by user.";
-        }
-        else
-        {
-            qWarning(LoggingCategory::RenderingSession) << "Connection status: " << status << "Reason: " << result;
-
-            if (result == RR::Result::ConnectionLost)
-            {
-                QString sessionID = GetSessionID();
-
-                qInfo(LoggingCategory::RenderingSession) << "Attempting to reconnect to session " << sessionID;
-                qWarning(LoggingCategory::RenderingSession) << "Please be aware that previously loaded models will disappear after a connection loss.";
-
-                CloseSession(true);
-                OpenSession(sessionID);
-            }
-        }
-    }
-
-    UpdateSessionProperties();
+    m_ConnectionLogic.OpenExistingSession(m_arrAccount->GetClient(), sessionID);
 }
 
 void ArrSession::CloseSession(bool keepRunning)
 {
-    if (!m_arrSession)
-        return;
-
-    DisconnectFromSessionRuntime();
-
-    if (keepRunning == false)
-    {
-        auto onStop = [](RR::Status, RR::ApiHandle<RR::SessionContextResult>) { /* we could retrieve details here, but there is really no reason why stopping a session should fail, other than if we tried to stop an already stopped or expired session */ };
-        m_arrSession->StopAsync(onStop);
-    }
-
-    // remove the status changed event callback
-    if (m_statusChangedToken)
-    {
-        m_arrSession->ConnectionStatusChanged(m_statusChangedToken);
-        m_statusChangedToken.invalidate();
-    }
-
-    m_arrSession = {};
-
-    UpdateSessionProperties();
-}
-
-void ArrSession::UpdateSessionProperties()
-{
-    if (m_arrSession)
-    {
-        // this callback might get called on any worker thread
-        auto resultCallback = [this](RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesResult> result)
-        {
-            // invoke the lambda on the main thread, so that it can access Qt elements
-            QMetaObject::invokeMethod(QApplication::instance(), [this, status, result]
-                                      { GetSessionPropertiesResult(status, result); });
-        };
-
-        m_arrSession->GetPropertiesAsync(resultCallback);
-    }
-    else
-    {
-        OnSessionPropertiesUpdated();
-    }
-}
-
-void ArrSession::GetSessionPropertiesResult(RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesResult> result)
-{
-    RR::Result errorCode = RR::StatusToResult(status);
-
-    if (status == RR::Status::OK)
-    {
-        // if the call to the service generally succeeded, retrieve details
-        errorCode = result->GetErrorCode();
-    }
-
-    if (errorCode == RR::Result::Success)
-    {
-        auto props = result->GetSessionProperties();
-
-        if (m_lastProperties.Status != props.Status)
-        {
-            if (props.Status == RR::RenderingSessionStatus::Error || props.Status == RR::RenderingSessionStatus::Unknown)
-            {
-                qCritical(LoggingCategory::RenderingSession) << "Session status changed: " << toString(m_lastProperties.Status) << " -> " << toString(props.Status);
-            }
-            else
-            {
-                qInfo(LoggingCategory::RenderingSession) << "Session status changed: " << toString(m_lastProperties.Status) << " -> " << toString(props.Status);
-            }
-        }
-
-        m_lastProperties = props;
-        OnSessionPropertiesUpdated();
-    }
-    else
-    {
-        qCritical(LoggingCategory::RenderingSession) << "Retrieving session properties failed: " << errorCode;
-    }
-}
-
-void ArrSession::OnSessionPropertiesUpdated()
-{
-    const auto status = GetSessionStatus();
-
-    ConfigureSessionPropertiesUpdateTimer();
-
-    // if the connection attempt takes too long, disconnect
-    // the code below will then attempt another try to connect
-    if (m_connectingInProgress && m_connectingElapsedTime.elapsed() > s_connectionTimeout.count())
-    {
-        qCritical(LoggingCategory::RenderingSession) << "Connection reached timeout (10 sec). Session ID: " << GetSessionID();
-
-        DisconnectFromSessionRuntime();
-    }
-
-    if (!m_connectingInProgress && status.m_state == ArrSessionStatus::State::ReadyNotConnected)
-    {
-        // Try to connect whenever the session is ready
-        ConnectToSessionRuntime();
-    }
-
-    if (status.IsRunning())
-    {
-        ExtendSessionIfNeeded();
-    }
-    else
-    {
-        m_loadedModels.clear();
-    }
-
-    Q_EMIT SessionStatusChanged();
-}
-
-void ArrSession::ConnectToSessionRuntime()
-{
-    if (m_connectingInProgress)
-        return;
-
-    m_connectingInProgress = true;
-
-    // this is needed to initialize the ARR graphics settings
-    m_sceneState->SetSession(m_arrSession, this);
-
-    RR::RendererInitOptions options = {RR::ServiceRenderMode::DepthBasedComposition, false};
-
-    // this callback might get called on any worker thread
-    auto resultCallback = [this](RR::Status status, RR::ConnectionStatus result)
-    {
-        // invoke the lambda on the main thread, so that it can access Qt elements
-        QMetaObject::invokeMethod(QApplication::instance(), [this, status, result]
-                                  { ConnectToSessionRuntimeResult(status, result); });
-    };
-
-    m_arrSession->ConnectAsync(options, resultCallback);
-    m_connectingElapsedTime.start();
-}
-
-void ArrSession::ConnectToSessionRuntimeResult(RR::Status status, RR::ConnectionStatus /*result*/)
-{
-    if (status != RR::Status::OK)
-    {
-        m_sceneState->SetSession({}, this);
-
-        qCritical(LoggingCategory::RenderingSession)
-            << "Connection failed: " << status;
-
-        // TODO: show details in message box
-        QMessageBox::warning(nullptr, "Connection Failed", "Connecting to the rendering session failed.\n\nSee the log for details.", QMessageBox::Ok, QMessageBox::Ok);
-    }
-    else
-    {
-        m_arrSession->Connection()->SetLogLevel(RR::LogLevel::Information);
-        m_messageLoggedToken = m_arrSession->Connection()->MessageLogged(&ForwardArrLogMsgToQt).value();
-    }
-
-    m_connectingInProgress = false;
-}
-
-void ArrSession::DisconnectFromSessionRuntime()
-{
-    if (!m_arrSession)
-        return;
-
-    m_sceneState->SetSession({}, nullptr);
-
-    // remove the message event callback
-    if (m_messageLoggedToken)
-    {
-        if (auto renderConnection = GetRenderingConnection())
-        {
-            renderConnection->MessageLogged(m_messageLoggedToken);
-        }
-
-        m_messageLoggedToken.invalidate();
-    }
-
-    m_arrSession->Disconnect();
-
-    // cleanup of loaded models
-    {
-        m_loadingProgress.clear();
-        m_loadedModels.clear();
-        m_selectedEntities.clear();
-
-        Q_EMIT ModelLoadProgressChanged();
-    }
+    m_ConnectionLogic.CloseSession(keepRunning);
 }
 
 void ArrSession::OnSceneRefresh()
@@ -431,51 +105,6 @@ void ArrSession::OnSceneRefresh()
         renderConnection->Update();
 
         UpdatePerformanceStatistics();
-    }
-}
-
-void ArrSession::ConfigureSessionPropertiesUpdateTimer()
-{
-    enum class UpdateType
-    {
-        // no update needed. The session is not active
-        STOPPED,
-        // the session is in a temporary state. Update with higher frequency
-        FAST_UPDATE,
-        // the session is connected and in a stable state. Update with a slower frequency
-        SLOW_UPDATE
-    };
-
-    UpdateType oldUpdateType = UpdateType::STOPPED;
-
-    if (m_updateSessionPropertiesTimer->isActive())
-    {
-        oldUpdateType = m_updateSessionPropertiesTimer->interval() == s_updatePropertiesFast.count() ? UpdateType::FAST_UPDATE : UpdateType::SLOW_UPDATE;
-    }
-
-    UpdateType newUpdateType = UpdateType::STOPPED;
-
-    if (GetSessionStatus().IsRunning())
-    {
-        newUpdateType = GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected ? UpdateType::SLOW_UPDATE : UpdateType::FAST_UPDATE;
-    }
-
-    if (oldUpdateType != newUpdateType)
-    {
-        switch (newUpdateType)
-        {
-            case UpdateType::STOPPED:
-                m_updateSessionPropertiesTimer->stop();
-                break;
-            case UpdateType::FAST_UPDATE:
-                m_updateSessionPropertiesTimer->setInterval(s_updatePropertiesFast);
-                m_updateSessionPropertiesTimer->start();
-                break;
-            case UpdateType::SLOW_UPDATE:
-                m_updateSessionPropertiesTimer->setInterval(s_updatePropertiesSlow);
-                m_updateSessionPropertiesTimer->start();
-                break;
-        }
     }
 }
 
@@ -552,11 +181,11 @@ void ArrSession::CheckEntityBoundsResult(RR::Bounds bounds)
 
 void ArrSession::UpdatePerformanceStatistics()
 {
-    if (m_arrSession == nullptr || m_arrSession->GetGraphicsBinding() == nullptr)
+    if (!m_ConnectionLogic.GetArrSession() || m_ConnectionLogic.GetArrSession()->GetGraphicsBinding() == nullptr)
         return;
 
     RR::FrameStatistics stats;
-    if (m_arrSession->GetGraphicsBinding()->GetLastFrameStatistics(&stats) != RR::Result::Success)
+    if (m_ConnectionLogic.GetArrSession()->GetGraphicsBinding()->GetLastFrameStatistics(&stats) != RR::Result::Success)
         return;
 
 #define accumulate(value) m_frameStats.value = std::max(m_frameStats.value, stats.value);
@@ -602,13 +231,11 @@ void ArrSession::SetAutoExtensionMinutes(int extendByMinutes)
 
 void ArrSession::ChangeSessionLeaseTime(int totalLeaseMinutes)
 {
-    if (m_arrSession == nullptr || m_renewAsyncInProgress)
+    if (!m_ConnectionLogic.GetArrSession() || m_renewAsyncInProgress.exchange(true))
         return;
 
     RR::RenderingSessionUpdateOptions params;
     params.MaxLeaseInMinutes = totalLeaseMinutes;
-
-    m_renewAsyncInProgress = true;
 
     // this callback might get called on any worker thread
     auto onRenew = [this](RR::Status status, RR::ApiHandle<RR::SessionContextResult> result)
@@ -629,10 +256,12 @@ void ArrSession::ChangeSessionLeaseTime(int totalLeaseMinutes)
                                       }
 
                                       m_renewAsyncInProgress = false;
-                                      UpdateSessionProperties(); });
+            
+                                      
+                                      /* TODO UpdateSessionProperties();*/ });
     };
 
-    m_arrSession->RenewAsync(params, onRenew);
+    m_ConnectionLogic.GetArrSession()->RenewAsync(params, onRenew);
 }
 
 void ArrSession::ExtendSessionIfNeeded()
@@ -640,19 +269,17 @@ void ArrSession::ExtendSessionIfNeeded()
     if (m_extensionMinutes == 0)
         return;
 
-    const auto status = GetSessionStatus();
-
-    if (!status.IsRunning() || status.m_state == ArrSessionStatus::State::StartRequested)
+    if (!m_ConnectionLogic.IsConnectionStoppable())
         return;
 
-    const int remainingMinutes = status.m_leaseTimeInMinutes - status.m_elapsedTimeInMinutes;
+    const int remainingMinutes = m_ConnectionLogic.GetLeaseTimeInMinutes() - m_ConnectionLogic.GetElapsedTimeInMinutes();
 
     // once the remaining time gets close to the auto-extension time, we update the session lease time
     // such that the desired extension time always remains
     if (remainingMinutes <= m_extensionMinutes)
     {
         // we always extend an extra minute, otherwise we'd be extending the session every update
-        ChangeSessionLeaseTime(status.m_elapsedTimeInMinutes + m_extensionMinutes + 1);
+        ChangeSessionLeaseTime(m_ConnectionLogic.GetElapsedTimeInMinutes() + m_extensionMinutes + 1);
     }
 }
 
@@ -667,10 +294,8 @@ void ArrSession::ExtendSessionIfNeeded()
 
 void ArrSession::StartArrInspector()
 {
-    if (m_arrSession == nullptr || m_connectToArrInspectorInProgress)
+    if (!m_ConnectionLogic.GetArrSession() || m_connectToArrInspectorInProgress.exchange(true))
         return;
-
-    m_connectToArrInspectorInProgress = true;
 
     auto onConnected = [this](RR::Status status, std::string result)
     {
@@ -693,7 +318,7 @@ void ArrSession::StartArrInspector()
         m_connectToArrInspectorInProgress = false;
     };
 
-    m_arrSession->ConnectToArrInspectorAsync(onConnected);
+    m_ConnectionLogic.GetArrSession()->ConnectToArrInspectorAsync(onConnected);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -850,7 +475,7 @@ void ArrSession::SetEntitySelected(const RR::ApiHandle<RR::Entity>& entity, bool
         return;
 
     // through the ARR RenderingConnection we can modify the scene
-    if (auto component = m_arrSession->Connection()->CreateComponent(RR::ObjectType::HierarchicalStateOverrideComponent, entity))
+    if (auto component = m_ConnectionLogic.GetArrRenderingConnection()->CreateComponent(RR::ObjectType::HierarchicalStateOverrideComponent, entity))
     {
         if (auto hierarchicalComp = component->as<RR::HierarchicalStateOverrideComponent>())
         {

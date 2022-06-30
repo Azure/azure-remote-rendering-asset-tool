@@ -15,7 +15,7 @@ void ScenegraphModel::RefreshModel()
     m_ArrHandleToQt.clear();
     m_modelRoots.clear();
 
-    if (m_arrSession->GetSessionStatus().IsRunning())
+    if (m_arrSession->GetConnectionState().IsConnectionRendering())
     {
         auto& models = m_arrSession->GetLoadedModels();
 

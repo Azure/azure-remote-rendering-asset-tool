@@ -158,7 +158,7 @@ ArrtAppWindow::ArrtAppWindow()
             {
             RenderingTab->ScenegraphView->selectionModel()->clearSelection();
                 m_scenegraphModel->RefreshModel();
-                m_clearModelsAction->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
+                m_clearModelsAction->setEnabled(m_arrSession->GetConnectionState().IsConnectionRendering() && m_arrSession->GetLoadedModels().size() > 0);
 
                 if (m_arrSession->GetLoadedModels().size() == 1)
                 {
@@ -167,7 +167,7 @@ ArrtAppWindow::ArrtAppWindow()
 
     connect(m_arrSession.get(), &ArrSession::SessionStatusChanged, this, [this]()
             {
-                if (!m_arrSession || !m_arrSession->GetSessionStatus().IsRunning())
+                if (!m_arrSession || !m_arrSession->GetConnectionState().IsConnectionActive())
                 {
                     RenderingTab->ScenegraphView->selectionModel()->clearSelection();
                     m_scenegraphModel->RefreshModel();
@@ -342,54 +342,62 @@ void ArrtAppWindow::OnUpdateStatusBar()
             break;
     }
 
-    switch (m_arrSession->GetSessionStatus().m_state)
+    const auto& state = m_arrSession->GetConnectionState();
+
+    switch (state.GetCurrentState())
     {
-        case ArrSessionStatus::State::NotActive:
+        case ArrConnectionLogic::State::Inactive:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#7e7e7e;\">Not Active</span></p></body></html>");
             break;
-        case ArrSessionStatus::State::Stopped:
+        case ArrConnectionLogic::State::Stopped:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#aaaaff;\">Stopped</span></p></body></html>");
             break;
-        case ArrSessionStatus::State::Expired:
+        case ArrConnectionLogic::State::Expired:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#aaaaff;\">Expired</span></p></body></html>");
             ScreenReaderAlert("Session", "ARR session expired");
             break;
-        case ArrSessionStatus::State::Error:
+        case ArrConnectionLogic::State::Error:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#aa0000;\">Error!</span></p></body></html>");
             break;
-        case ArrSessionStatus::State::StartRequested:
-            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Start Requested...</span></p></body></html>");
+        case ArrConnectionLogic::State::OpeningSession:
+            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Opening Session...</span></p></body></html>");
             ScreenReaderAlert("Session", nullptr);
             break;
-        case ArrSessionStatus::State::Starting:
-            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Starting...</span></p></body></html>");
+        case ArrConnectionLogic::State::SessionOpen:
+            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#00aa00;\">Session Open</span></p></body></html>");
             break;
-        case ArrSessionStatus::State::ReadyNotConnected:
-            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#00aa00;\">Ready</span></p></body></html>");
-            break;
-        case ArrSessionStatus::State::ReadyConnecting:
+        case ArrConnectionLogic::State::RuntimeConnecting:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Connecting...</span></p></body></html>");
             ScreenReaderAlert("Session", nullptr);
             break;
-        case ArrSessionStatus::State::ReadyConnected:
+        case ArrConnectionLogic::State::RuntimeConnected:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#00aa00;\">Connected</span></p></body></html>");
             ScreenReaderAlert("Session", "ARR session ready");
+            break;
+
+        case ArrConnectionLogic::State::Disconnecting:
+            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Disconnecting...</span></p></body></html>");
+            ScreenReaderAlert("Session", "ARR session ready");
+            break;
+
+        default:
+            assert(false);
             break;
     }
 
     RenderingTab->EditSessionButton->setEnabled(m_arrAclient->GetConnectionStatus() == ArrConnectionStatus::Authenticated);
-    m_loadFromStorageAction->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_storageAccount->GetConnectionStatus() == StorageConnectionStatus::Authenticated);
-    m_loadWithUrlAction->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
-    RenderingTab->ModelScaleSpinner->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
-    RenderingTab->CameraOptionsButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
-    RenderingTab->InspectorButton->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
-    m_clearModelsAction->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected && m_arrSession->GetLoadedModels().size() > 0);
-    RenderingTab->ScenegraphView->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
-    RenderingTab->MaterialsList->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
-    RenderingTab->MaterialProperties->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
-    RenderingTab->Viewport->setEnabled(m_arrSession->GetSessionStatus().m_state == ArrSessionStatus::State::ReadyConnected);
+    m_loadFromStorageAction->setEnabled(state.IsConnectionRendering() && m_storageAccount->GetConnectionStatus() == StorageConnectionStatus::Authenticated);
+    m_loadWithUrlAction->setEnabled(state.IsConnectionRendering());
+    RenderingTab->ModelScaleSpinner->setEnabled(state.IsConnectionRendering());
+    RenderingTab->CameraOptionsButton->setEnabled(state.IsConnectionRendering());
+    RenderingTab->InspectorButton->setEnabled(state.IsConnectionRendering());
+    m_clearModelsAction->setEnabled(state.IsConnectionRendering() && m_arrSession->GetLoadedModels().size() > 0);
+    RenderingTab->ScenegraphView->setEnabled(state.IsConnectionRendering());
+    RenderingTab->MaterialsList->setEnabled(state.IsConnectionRendering());
+    RenderingTab->MaterialProperties->setEnabled(state.IsConnectionRendering());
+    RenderingTab->Viewport->setEnabled(state.IsConnectionRendering());
 
-    if (m_arrSession->GetSessionStatus().IsRunning())
+    if (state.IsConnectionActive())
     {
         RenderingTab->EditSessionButton->setIcon(QIcon(":/ArrtApplication/Icons/stop.svg"));
     }
@@ -401,7 +409,7 @@ void ArrtAppWindow::OnUpdateStatusBar()
     float fModelLoad = m_arrSession->GetModelLoadingProgress();
 
     m_statusLoadProgress->setTextVisible(false);
-    m_statusLoadProgress->setVisible(fModelLoad < 1.0f && m_arrSession->GetSessionStatus().IsRunning());
+    m_statusLoadProgress->setVisible(fModelLoad < 1.0f && state.IsConnectionStoppable());
     m_statusLoadProgress->setValue((int)(fModelLoad * 100));
 
     if (fModelLoad == 1.0f)

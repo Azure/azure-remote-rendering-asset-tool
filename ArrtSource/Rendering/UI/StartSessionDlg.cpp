@@ -21,7 +21,8 @@ StartSessionDlg::StartSessionDlg(ArrSession* arrSession, ArrSettings* settings, 
     m_arrSettings = settings;
     m_arrSession = arrSession;
 
-    QObject::connect(m_arrSession, &ArrSession::SessionStatusChanged, this, [this]() { UpdateUi(); });
+    QObject::connect(m_arrSession, &ArrSession::SessionStatusChanged, this, [this]()
+                     { UpdateUi(); });
 
     VmSize->addItem(tr("Standard"), QVariant((int)ArrVmSize::Standard));
     VmSize->addItem(tr("Premium"), QVariant((int)ArrVmSize::Premium));
@@ -152,7 +153,7 @@ void StartSessionDlg::on_StopSession_clicked()
 
 void StartSessionDlg::on_AutoExtend_stateChanged(int)
 {
-    if (m_arrSession->GetSessionStatus().IsRunning())
+    if (m_arrSession->GetConnectionState().IsConnectionStoppable())
     {
         SetAutoExtension();
     }
@@ -160,7 +161,7 @@ void StartSessionDlg::on_AutoExtend_stateChanged(int)
 
 void StartSessionDlg::on_AutoExtendBy_editingFinished()
 {
-    if (m_arrSession->GetSessionStatus().IsRunning())
+    if (m_arrSession->GetConnectionState().IsConnectionStoppable())
     {
         SetAutoExtension();
     }
@@ -168,11 +169,11 @@ void StartSessionDlg::on_AutoExtendBy_editingFinished()
 
 void StartSessionDlg::on_ExtendNow_clicked()
 {
-    if (m_arrSession->GetSessionStatus().IsRunning())
-    {
-        auto status = m_arrSession->GetSessionStatus();
+    const auto& status = m_arrSession->GetConnectionState();
 
-        m_arrSession->ChangeSessionLeaseTime(status.m_leaseTimeInMinutes + m_extendMinutes);
+    if (status.IsConnectionStoppable())
+    {
+        m_arrSession->ChangeSessionLeaseTime(status.GetLeaseTimeInMinutes() + m_extendMinutes);
     }
 }
 
@@ -200,19 +201,21 @@ void StartSessionDlg::LoadState()
 
 void StartSessionDlg::UpdateUi()
 {
-    const bool running = m_arrSession->GetSessionStatus().IsRunning();
+    const auto& status = m_arrSession->GetConnectionState();
+    const bool busy = status.IsConnectionActive();
+    const bool stoppable = status.IsConnectionStoppable();
 
-    StartSession->setEnabled(!running);
-    VmSize->setEnabled(!running);
-    MaxTime->setEnabled(!running);
-    StopSession->setEnabled(running);
-    ExtendNow->setEnabled(running);
-    ResolutionX->setEnabled(!running);
-    ResolutionY->setEnabled(!running);
-    RefreshRate->setEnabled(!running);
-    SessionID->setReadOnly(running);
+    StartSession->setEnabled(!busy);
+    VmSize->setEnabled(!busy);
+    MaxTime->setEnabled(!busy);
+    StopSession->setEnabled(stoppable);
+    ExtendNow->setEnabled(busy);
+    ResolutionX->setEnabled(!busy);
+    ResolutionY->setEnabled(!busy);
+    RefreshRate->setEnabled(!busy);
+    SessionID->setReadOnly(busy);
 
-    if (running)
+    if (busy)
     {
         if (SessionID->text() != m_arrSession->GetSessionID()) // accessibility fix to not lose text highlight when session update timer fires
         {
@@ -220,9 +223,8 @@ void StartSessionDlg::UpdateUi()
             SessionID->setText(m_arrSession->GetSessionID());
         }
 
-        auto status = m_arrSession->GetSessionStatus();
-        MaxTime->setText(TimeValidator::minutesToString(status.m_leaseTimeInMinutes));
-        RemainingTime->setText(TimeValidator::minutesToString(status.m_leaseTimeInMinutes - status.m_elapsedTimeInMinutes));
+        MaxTime->setText(TimeValidator::minutesToString(status.GetLeaseTimeInMinutes()));
+        RemainingTime->setText(TimeValidator::minutesToString(status.GetLeaseTimeInMinutes() - status.GetElapsedTimeInMinutes()));
     }
     else
     {
