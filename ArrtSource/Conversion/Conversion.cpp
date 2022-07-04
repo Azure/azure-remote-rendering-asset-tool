@@ -227,5 +227,10 @@ uint64_t GetAssetConversionOptions(const QString& file)
                (uint64_t)ConversionOption::CollisionMesh;
     }
 
-    return (uint64_t)ConversionOption::All;
+    if (file.endsWith(".fbx", Qt::CaseInsensitive))
+    {
+        return (uint64_t)ConversionOption::All;
+    }
+
+    return (uint64_t)ConversionOption::All & ~(uint64_t)ConversionOption::FbxAssumeMetallic;
 }
