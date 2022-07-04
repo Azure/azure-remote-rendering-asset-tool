@@ -198,6 +198,11 @@ ArrtAppWindow::ArrtAppWindow()
     UpdateConversionsList();
     ConversionTab->ConversionList->setCurrentRow(0);
 
+    Tabs->setTabToolTip(0, "Tab 1 of 4");
+    Tabs->setTabToolTip(1, "Tab 2 of 4");
+    Tabs->setTabToolTip(2, "Tab 3 of 4");
+    Tabs->setTabToolTip(3, "Tab 4 of 4");
+
     ShowMaterialUI();
 
     // give the scenegraph / 3D view / material panel a proper ratio
