@@ -12,6 +12,9 @@ SettingsDlg::SettingsDlg(StorageAccount* storage, ArrAccount* arrClient, QWidget
 
     setupUi(this);
 
+    tabWidget->setTabToolTip(0, "Tab 1 of 2");
+    tabWidget->setTabToolTip(1, "Tab 2 of 2");
+
     // Storage Account
     {
         StorageName->setText(m_storageAccount->GetAccountName());
