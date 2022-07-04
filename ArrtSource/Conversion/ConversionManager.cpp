@@ -156,6 +156,7 @@ void ConversionManager::SetConversionSourceAsset(const QString& container, const
                 conv.m_options.m_axis1 = axis1;
                 conv.m_options.m_axis2 = axis2;
                 conv.m_options.m_axis3 = axis3;
+                conv.m_showAdvancedOptions = true;
             }
         }
 
