@@ -37,26 +37,30 @@ enum class SceneGraphMode
 
 enum class VertexPosition
 {
-    Float32x3 = 0,
+    FormatDefault,
+    Float32x3,
     Float16x3
 };
 
 enum class VertexColor
 {
-    None = 0,
+    FormatDefault,
+    None,
     ByteUx4N
 };
 
 enum class VertexVector
 {
-    None = 0,
+    FormatDefault,
+    None,
     ByteSx4N,
     Float16x4,
 };
 
 enum class VertexTextureCoord
 {
-    None = 0,
+    FormatDefault,
+    None,
     Float32x2,
     Float16x2
 };
@@ -109,14 +113,14 @@ struct ConversionOptions
     Axis m_axis1 = Axis::PosX;
     Axis m_axis2 = Axis::PosY;
     Axis m_axis3 = Axis::PosZ;
-    VertexPosition m_vertexPosition = VertexPosition::Float32x3;
-    VertexColor m_vertexColor0 = VertexColor::ByteUx4N;
-    VertexColor m_vertexColor1 = VertexColor::None;
-    VertexVector m_vertexNormal = VertexVector::ByteSx4N;
-    VertexVector m_vertexTangent = VertexVector::ByteSx4N;
-    VertexVector m_vertexBinormal = VertexVector::ByteSx4N;
-    VertexTextureCoord m_vertexTexCoord0 = VertexTextureCoord::Float32x2;
-    VertexTextureCoord m_vertexTexCoord1 = VertexTextureCoord::None;
+    VertexPosition m_vertexPosition = VertexPosition::FormatDefault;
+    VertexColor m_vertexColor0 = VertexColor::FormatDefault;
+    VertexColor m_vertexColor1 = VertexColor::FormatDefault;
+    VertexVector m_vertexNormal = VertexVector::FormatDefault;
+    VertexVector m_vertexTangent = VertexVector::FormatDefault;
+    VertexVector m_vertexBinormal = VertexVector::FormatDefault;
+    VertexTextureCoord m_vertexTexCoord0 = VertexTextureCoord::FormatDefault;
+    VertexTextureCoord m_vertexTexCoord1 = VertexTextureCoord::FormatDefault;
 
     QString ToJSON(uint64_t availableOptions) const;
 };

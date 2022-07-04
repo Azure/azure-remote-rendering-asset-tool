@@ -620,6 +620,11 @@
                   </property>
                   <item>
                    <property name="text">
+                    <string>Format-specific default</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
                     <string>Float 32</string>
                    </property>
                   </item>
@@ -643,8 +648,13 @@
                    <string>Vertex color 0 data type</string>
                   </property>
                   <property name="currentIndex">
-                   <number>1</number>
+                   <number>0</number>
                   </property>
+                  <item>
+                   <property name="text">
+                    <string>Format-specific default</string>
+                   </property>
+                  </item>
                   <item>
                    <property name="text">
                     <string>None</string>
@@ -671,6 +681,11 @@
                   </property>
                   <item>
                    <property name="text">
+                    <string>Format-specific default</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
                     <string>None</string>
                    </property>
                   </item>
@@ -694,8 +709,13 @@
                    <string>Vertex normal data type</string>
                   </property>
                   <property name="currentIndex">
-                   <number>1</number>
+                   <number>0</number>
                   </property>
+                  <item>
+                   <property name="text">
+                    <string>Format-specific default</string>
+                   </property>
+                  </item>
                   <item>
                    <property name="text">
                     <string>None</string>
@@ -726,8 +746,13 @@
                    <string>Vertex tangent data type</string>
                   </property>
                   <property name="currentIndex">
-                   <number>1</number>
+                   <number>0</number>
                   </property>
+                  <item>
+                   <property name="text">
+                    <string>Format-specific default</string>
+                   </property>
+                  </item>
                   <item>
                    <property name="text">
                     <string>None</string>
@@ -758,8 +783,13 @@
                    <string>Vertex bitangent data type</string>
                   </property>
                   <property name="currentIndex">
-                   <number>1</number>
+                   <number>0</number>
                   </property>
+                  <item>
+                   <property name="text">
+                    <string>Format-specific default</string>
+                   </property>
+                  </item>
                   <item>
                    <property name="text">
                     <string>None</string>
@@ -790,8 +820,13 @@
                    <string>Texture coordinate 0 data type</string>
                   </property>
                   <property name="currentIndex">
-                   <number>1</number>
+                   <number>0</number>
                   </property>
+                  <item>
+                   <property name="text">
+                    <string>Format-specific default</string>
+                   </property>
+                  </item>
                   <item>
                    <property name="text">
                     <string>None</string>
@@ -822,8 +857,13 @@
                    <string>Texture coordinate 1 data type</string>
                   </property>
                   <property name="currentIndex">
-                   <number>1</number>
+                   <number>0</number>
                   </property>
+                  <item>
+                   <property name="text">
+                    <string>Format-specific default</string>
+                   </property>
+                  </item>
                   <item>
                    <property name="text">
                     <string>None</string>

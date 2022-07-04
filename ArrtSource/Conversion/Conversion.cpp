@@ -166,28 +166,52 @@ QString ConversionOptions::ToJSON(uint64_t availableOptions) const
             QJsonObject vertex;
 
             if (flags & (uint64_t)ConversionOption::VertexPositionFormat)
-                vertex["position"] = ToString(m_vertexPosition);
+            {
+                if (m_vertexPosition != VertexPosition::FormatDefault)
+                    vertex["position"] = ToString(m_vertexPosition);
+            }
 
             if (flags & (uint64_t)ConversionOption::VertexColor0Format)
-                vertex["color0"] = ToString(m_vertexColor0);
+            {
+                if (m_vertexColor0 != VertexColor::FormatDefault)
+                    vertex["color0"] = ToString(m_vertexColor0);
+            }
 
             if (flags & (uint64_t)ConversionOption::VertexColor1Format)
-                vertex["color1"] = ToString(m_vertexColor1);
+            {
+                if (m_vertexColor1 != VertexColor::FormatDefault)
+                    vertex["color1"] = ToString(m_vertexColor1);
+            }
 
             if (flags & (uint64_t)ConversionOption::VertexNormalFormat)
-                vertex["normal"] = ToString(m_vertexNormal);
+            {
+                if (m_vertexNormal != VertexVector::FormatDefault)
+                    vertex["normal"] = ToString(m_vertexNormal);
+            }
 
             if (flags & (uint64_t)ConversionOption::VertexTangentFormat)
-                vertex["tangent"] = ToString(m_vertexTangent);
+            {
+                if (m_vertexTangent != VertexVector::FormatDefault)
+                    vertex["tangent"] = ToString(m_vertexTangent);
+            }
 
             if (flags & (uint64_t)ConversionOption::VertexBinormalFormat)
-                vertex["binormal"] = ToString(m_vertexBinormal);
+            {
+                if (m_vertexBinormal != VertexVector::FormatDefault)
+                    vertex["binormal"] = ToString(m_vertexBinormal);
+            }
 
             if (flags & (uint64_t)ConversionOption::VertexTexCoord0Format)
-                vertex["texcoord0"] = ToString(m_vertexTexCoord0);
+            {
+                if (m_vertexTexCoord0 != VertexTextureCoord::FormatDefault)
+                    vertex["texcoord0"] = ToString(m_vertexTexCoord0);
+            }
 
             if (flags & (uint64_t)ConversionOption::VertexTexCoord1Format)
-                vertex["texcoord1"] = ToString(m_vertexTexCoord1);
+            {
+                if (m_vertexTexCoord1 != VertexTextureCoord::FormatDefault)
+                    vertex["texcoord1"] = ToString(m_vertexTexCoord1);
+            }
 
             if (!vertex.isEmpty())
                 root[QLatin1String("vertex")] = vertex;
