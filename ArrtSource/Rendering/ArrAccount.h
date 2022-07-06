@@ -6,11 +6,6 @@
 
 namespace RR = Microsoft::Azure::RemoteRendering;
 
-namespace Microsoft::Azure::RemoteRendering::Internal
-{
-    class RemoteRenderingClient;
-}; // namespace Microsoft::Azure::RemoteRendering::Internal
-
 struct ArrRegionInfo
 {
     QString m_name;

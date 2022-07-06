@@ -16,11 +16,6 @@ struct ID3D11Texture2D;
 class ArrSettings;
 class ArrSession;
 
-namespace Microsoft::Azure::RemoteRendering::Internal
-{
-    class GraphicsBindingSimD3d11;
-} // namespace Microsoft::Azure::RemoteRendering::Internal
-
 #define ReleaseObject(object) \
     if ((object) != nullptr)  \
     {                         \

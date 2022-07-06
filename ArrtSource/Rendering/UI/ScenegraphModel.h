@@ -11,6 +11,7 @@ struct SceneEntry
 {
     QString m_name;
     int m_rowIndex = -1;
+    bool m_traversedChildren = false;
     SceneEntry* m_parent = nullptr;
     std::vector<SceneEntry> m_children;
     RR::ApiHandle<RR::Entity> m_arrEntity;
@@ -39,11 +40,11 @@ public:
 
 private:
     /// Recursively traverses the entire entity hierarchy and stores the necessary information to access each piece
-    void FillChildEntries(SceneEntry* entry);
+    void FillChildEntries(SceneEntry* entry) const;
 
     mutable std::vector<SceneEntry> m_modelRoots;
 
     ArrSession* m_arrSession = nullptr;
 
-    std::map<unsigned long long, QModelIndex> m_ArrHandleToQt;
+    mutable std::map<unsigned long long, QModelIndex> m_ArrHandleToQt;
 };
