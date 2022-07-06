@@ -84,6 +84,9 @@ int ScenegraphModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) con
     else
     {
         SceneEntry* entry = (SceneEntry*)parent.internalPointer();
+
+        FillChildEntries(entry);
+
         return (int)entry->m_children.size();
     }
 }
@@ -121,6 +124,22 @@ QModelIndex ScenegraphModel::MapArrEntityHandleToModelIndex(const RR::ApiHandle<
 {
     auto it = m_ArrHandleToQt.find(handle->GetHandle());
 
+    if (it == m_ArrHandleToQt.end())
+    {
+        // if the entry doesn't exist yet, try to get the entry for the parent instead
+        // and then retrieve the data for all the parent's children to populate the UI on-demand
+
+        QModelIndex parentIdx = MapArrEntityHandleToModelIndex(handle->GetParent());
+        if (parentIdx.isValid())
+        {
+            SceneEntry* entry = (SceneEntry*)(parentIdx.internalPointer());
+            FillChildEntries(entry);
+
+            // try again
+            it = m_ArrHandleToQt.find(handle->GetHandle());
+        }
+    }
+
     if (it != m_ArrHandleToQt.end())
     {
         return it->second;
@@ -129,8 +148,13 @@ QModelIndex ScenegraphModel::MapArrEntityHandleToModelIndex(const RR::ApiHandle<
     return {};
 }
 
-void ScenegraphModel::FillChildEntries(SceneEntry* entry)
+void ScenegraphModel::FillChildEntries(SceneEntry* entry) const
 {
+    if (entry->m_traversedChildren)
+        return;
+
+    entry->m_traversedChildren = true;
+
     std::vector<RR::ApiHandle<RR::Entity>> children;
     entry->m_arrEntity->GetChildren(children);
 
@@ -147,7 +171,5 @@ void ScenegraphModel::FillChildEntries(SceneEntry* entry)
         entry->m_children[c].m_rowIndex = c;
 
         m_ArrHandleToQt[entry->m_children[c].m_arrEntity->GetHandle()] = createIndex(c, 0, &entry->m_children[c]);
-
-        FillChildEntries(&entry->m_children[c]);
     }
 }
