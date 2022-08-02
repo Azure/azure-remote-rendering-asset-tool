@@ -86,7 +86,13 @@ ArrSession::ArrSession(ArrAccount* arrClient, SceneState* sceneState)
     connect(&m_ConnectionLogic, &ArrConnectionLogic::SessionPropertiesUpdated, this, &ArrSession::OnSessionPropertiesUpdated);
 }
 
-ArrSession::~ArrSession() = default;
+ArrSession::~ArrSession()
+{
+    if (m_ConnectionLogic.IsConnectionStoppable())
+    {
+        m_ConnectionLogic.CloseSession(false);
+    }
+}
 
 RR::ApiHandle<RR::RenderingConnection> ArrSession::GetRenderingConnection()
 {

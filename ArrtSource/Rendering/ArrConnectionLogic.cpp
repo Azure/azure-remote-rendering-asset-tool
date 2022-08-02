@@ -22,10 +22,7 @@ ArrConnectionLogic::ArrConnectionLogic()
 
 ArrConnectionLogic::~ArrConnectionLogic()
 {
-    if (IsConnectionStoppable())
-    {
-        CloseSession(false);
-    }
+    // don't do anything here, higher level code has to decide whether to stop the session or not
 }
 
 QString ArrConnectionLogic::GetStateString(State state)
