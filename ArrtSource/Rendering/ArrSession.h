@@ -4,6 +4,7 @@
 
 #include <Rendering/ArrConnectionLogic.h>
 #include <deque>
+#include <QDateTime>
 
 namespace Microsoft::Azure::RemoteRendering
 {
@@ -60,6 +61,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void OnConnectionStateChanged();
+    void OnSessionPropertiesUpdated();
     void OnInitGrahpcs();
     void OnDeinitGrahpcs();
 
@@ -149,4 +151,5 @@ private:
     RR::FrameStatistics m_frameStats;
 
     ArrConnectionLogic::State m_previousState = ArrConnectionLogic::State::Inactive;
+    QTime m_previousStateChange = QTime::currentTime();
 };

@@ -42,8 +42,10 @@ QString ArrConnectionLogic::GetStateString(State state)
             return "Expired";
         case ArrConnectionLogic::State::OpeningSession:
             return "Opening Session";
-        case ArrConnectionLogic::State::SessionOpen:
-            return "Session Open";
+        case ArrConnectionLogic::State::SessionStarting:
+            return "Session Starting";
+        case ArrConnectionLogic::State::SessionReady:
+            return "Session Ready";
         case ArrConnectionLogic::State::RuntimeConnecting:
             return "Runtime Connecting";
         case ArrConnectionLogic::State::RuntimeConnected:
@@ -61,7 +63,8 @@ bool ArrConnectionLogic::IsConnectionActive() const
     switch (m_currentState)
     {
         case State::OpeningSession:
-        case State::SessionOpen:
+        case State::SessionStarting:
+        case State::SessionReady:
         case State::RuntimeConnecting:
         case State::RuntimeConnected:
         case State::Disconnecting:
@@ -86,7 +89,8 @@ bool ArrConnectionLogic::IsConnectionStoppable() const
     switch (m_currentState)
     {
         case State::OpeningSession:
-        case State::SessionOpen:
+        case State::SessionStarting:
+        case State::SessionReady:
         case State::RuntimeConnecting:
         case State::RuntimeConnected:
             return true;
@@ -150,15 +154,7 @@ void ArrConnectionLogic::CloseSession(bool keepRunning)
     m_currentState = State::Disconnecting;
     Q_EMIT ConnectionStateChanged();
 
-    // remove the status changed event callback
-    if (m_arrConnectionStatusChangedToken)
-    {
-        m_arrSession->ConnectionStatusChanged(m_arrConnectionStatusChangedToken);
-        m_arrConnectionStatusChangedToken.invalidate();
-    }
-
-    // stop the update timer
-    ConfigureSessionPropertiesUpdateTimer();
+    CleanupSession();
 
     DisconnectFromRuntime();
 
@@ -171,6 +167,19 @@ void ArrConnectionLogic::CloseSession(bool keepRunning)
     m_arrSession = {};
     m_currentState = State::Stopped;
     Q_EMIT ConnectionStateChanged();
+}
+
+void ArrConnectionLogic::CleanupSession()
+{
+    // remove the status changed event callback
+    if (m_arrConnectionStatusChangedToken)
+    {
+        m_arrSession->ConnectionStatusChanged(m_arrConnectionStatusChangedToken);
+        m_arrConnectionStatusChangedToken.invalidate();
+    }
+
+    // stop the update timer
+    ConfigureSessionPropertiesUpdateTimer();
 }
 
 RR::ApiHandle<RR::RenderingSession> ArrConnectionLogic::GetArrSession() const
@@ -205,7 +214,7 @@ void ArrConnectionLogic::OpenOrCreateSessionResult(RR::Status status, RR::ApiHan
         // everything went fine -> use the session
         m_arrSession = result->GetSession();
 
-        m_currentState = State::SessionOpen;
+        m_currentState = State::SessionStarting;
         Q_EMIT ConnectionStateChanged();
 
         std::string sessionUuid;
@@ -347,17 +356,17 @@ void ArrConnectionLogic::SessionPropertiesResult(RR::Status status, RR::ApiHandl
 
             DisconnectFromRuntime();
 
-            m_currentState = State::SessionOpen;
+            m_currentState = State::SessionReady;
             Q_EMIT ConnectionStateChanged();
         }
 
-        if (m_currentState == State::SessionOpen)
+        if (m_currentState == State::SessionReady)
         {
             // Try to connect whenever the session is ready
             ConnectToRuntime();
         }
 
-        Q_EMIT ConnectionStateChanged();
+        Q_EMIT SessionPropertiesUpdated();
     }
     else
     {
@@ -367,12 +376,28 @@ void ArrConnectionLogic::SessionPropertiesResult(RR::Status status, RR::ApiHandl
 
 void ArrConnectionLogic::UpdateState(const RR::RenderingSessionProperties& properties, RR::ConnectionStatus connection)
 {
+    const State prevState = m_currentState;
+    UpdateStateInternal(properties, connection);
+
+    if (m_currentState == State::Stopped || m_currentState == State::Error || m_currentState == State::Expired)
+    {
+        CleanupSession();
+    }
+
+    if (prevState != m_currentState)
+    {
+        Q_EMIT ConnectionStateChanged();
+    }
+}
+
+void ArrConnectionLogic::UpdateStateInternal(const RR::RenderingSessionProperties& properties, RR::ConnectionStatus connection)
+{
     m_elapsedTimeInMinutes = properties.ElapsedTimeInMinutes;
     m_leaseTimeInMinutes = properties.MaxLeaseInMinutes;
 
-    if (m_currentState == State::Disconnecting)
+    if (m_currentState == State::Disconnecting || m_currentState == State::Stopped || m_currentState == State::Error || m_currentState == State::Expired)
     {
-        // no state change while we are disconnecting
+        // no state change while we are disconnecting or already stopped
         return;
     }
 
@@ -390,21 +415,34 @@ void ArrConnectionLogic::UpdateState(const RR::RenderingSessionProperties& prope
             m_currentState = State::Stopped;
             return;
 
-        case Microsoft::Azure::RemoteRendering::RenderingSessionStatus::Unknown:
         case Microsoft::Azure::RemoteRendering::RenderingSessionStatus::Starting:
-            // no state change
+            assert(m_currentState == State::SessionStarting);
+            return;
+
+        case Microsoft::Azure::RemoteRendering::RenderingSessionStatus::Unknown:
+            assert(false);
             return;
 
         case Microsoft::Azure::RemoteRendering::RenderingSessionStatus::Ready:
+            if (m_currentState == State::SessionStarting)
+            {
+                m_currentState = State::SessionReady;
+            }
+            else
+            {
+                assert(m_currentState == State::SessionReady ||
+                       m_currentState == State::RuntimeConnecting ||
+                       m_currentState == State::RuntimeConnected);
+            }
             break;
     }
 
-    if (m_currentState == State::SessionOpen || m_currentState == State::RuntimeConnecting || m_currentState == State::RuntimeConnected)
+    if (m_currentState == State::SessionReady || m_currentState == State::RuntimeConnecting || m_currentState == State::RuntimeConnected)
     {
         switch (connection)
         {
             case RR::ConnectionStatus::Disconnected:
-                m_currentState = State::SessionOpen;
+                m_currentState = State::SessionReady;
                 return;
 
             case RR::ConnectionStatus::Connecting:
@@ -420,7 +458,7 @@ void ArrConnectionLogic::UpdateState(const RR::RenderingSessionProperties& prope
 
 void ArrConnectionLogic::ConnectToRuntime()
 {
-    assert(m_currentState == State::SessionOpen);
+    assert(m_currentState == State::SessionReady);
     m_currentState = State::RuntimeConnecting;
     Q_EMIT ConnectionStateChanged();
 

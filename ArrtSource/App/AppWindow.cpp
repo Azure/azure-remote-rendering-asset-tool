@@ -363,13 +363,19 @@ void ArrtAppWindow::OnUpdateStatusBar()
             break;
         case ArrConnectionLogic::State::Error:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#aa0000;\">Error!</span></p></body></html>");
+            ScreenReaderAlert("Session", "ARR connection failed");
             break;
         case ArrConnectionLogic::State::OpeningSession:
-            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Opening Session...</span></p></body></html>");
+            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Opening session...</span></p></body></html>");
             ScreenReaderAlert("Session", nullptr);
             break;
-        case ArrConnectionLogic::State::SessionOpen:
-            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#00aa00;\">Session Open</span></p></body></html>");
+        case ArrConnectionLogic::State::SessionStarting:
+            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Session starting...</span></p></body></html>");
+            ScreenReaderAlert("Session", nullptr);
+            break;
+        case ArrConnectionLogic::State::SessionReady:
+            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#00aa00;\">Session ready</span></p></body></html>");
+            ScreenReaderAlert("Session", nullptr);
             break;
         case ArrConnectionLogic::State::RuntimeConnecting:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Connecting...</span></p></body></html>");
@@ -382,7 +388,6 @@ void ArrtAppWindow::OnUpdateStatusBar()
 
         case ArrConnectionLogic::State::Disconnecting:
             m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Disconnecting...</span></p></body></html>");
-            ScreenReaderAlert("Session", "ARR session ready");
             break;
 
         default:

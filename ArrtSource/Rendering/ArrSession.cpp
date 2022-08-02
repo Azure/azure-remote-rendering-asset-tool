@@ -11,13 +11,28 @@
 #include <Utils/Logging.h>
 #include <windows.h>
 
+QString FormatTime(int msecs)
+{
+    const int hours = msecs / (60 * 60 * 1000);
+    msecs -= hours * (60 * 60 * 1000);
+    const int minutes = msecs / (60 * 1000);
+    msecs -= minutes * (60 * 1000);
+    const int seconds = msecs / 1000;
+    msecs -= seconds * 1000;
+
+    return QString(" [%1:%2:%3.%4]").arg(hours, 2, 10, (QLatin1Char)'0').arg(minutes, 2, 10, (QLatin1Char)'0').arg(seconds, 2, 10, (QLatin1Char)'0').arg(msecs, 3, 10, (QLatin1Char)'0');
+}
+
 void ArrSession::OnConnectionStateChanged()
 {
     if (m_previousState != m_ConnectionLogic.GetCurrentState())
     {
-        m_previousState = m_ConnectionLogic.GetCurrentState();
+        const int timeDiffMsecs = m_previousStateChange.msecsTo(QTime::currentTime());
+        m_previousStateChange = QTime::currentTime();
 
-        qInfo(LoggingCategory::RenderingSession) << "Connection state changed to " << ArrConnectionLogic::GetStateString(m_ConnectionLogic.GetCurrentState());
+        qInfo(LoggingCategory::RenderingSession) << "New connection state: " << ArrConnectionLogic::GetStateString(m_ConnectionLogic.GetCurrentState()) << FormatTime(timeDiffMsecs).toUtf8().data();
+
+        m_previousState = m_ConnectionLogic.GetCurrentState();
 
         if (!m_ConnectionLogic.IsConnectionStoppable())
         {
@@ -27,9 +42,12 @@ void ArrSession::OnConnectionStateChanged()
         }
     }
 
-    ExtendSessionIfNeeded();
-
     Q_EMIT SessionStatusChanged();
+}
+
+void ArrSession::OnSessionPropertiesUpdated()
+{
+    ExtendSessionIfNeeded();
 }
 
 void ArrSession::OnInitGrahpcs()
@@ -59,6 +77,7 @@ ArrSession::ArrSession(ArrAccount* arrClient, SceneState* sceneState)
     connect(&m_ConnectionLogic, &ArrConnectionLogic::ConnectionStateChanged, this, &ArrSession::OnConnectionStateChanged);
     connect(&m_ConnectionLogic, &ArrConnectionLogic::InitGraphics, this, &ArrSession::OnInitGrahpcs, Qt::DirectConnection);
     connect(&m_ConnectionLogic, &ArrConnectionLogic::DeinitGraphics, this, &ArrSession::OnDeinitGrahpcs, Qt::DirectConnection);
+    connect(&m_ConnectionLogic, &ArrConnectionLogic::SessionPropertiesUpdated, this, &ArrSession::OnSessionPropertiesUpdated);
 }
 
 ArrSession::~ArrSession() = default;
@@ -339,8 +358,12 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
     int loadIdx = (int)m_loadingProgress.size();
     m_loadingProgress.push_back(0.01f);
 
+    qInfo(LoggingCategory::RenderingSession) << "Loading model " << modelName;
+
+    const QTime startTime = QTime::currentTime();
+
     // the callback is called from the GUI thread
-    auto onModelLoaded = [thisPtr, modelName, loadIdx](RR::Status status, RR::ApiHandle<RR::LoadModelResult> loadResult)
+    auto onModelLoaded = [thisPtr, modelName, loadIdx, startTime](RR::Status status, RR::ApiHandle<RR::LoadModelResult> loadResult)
     {
         thisPtr->m_loadingProgress[loadIdx] = 1.0;
 
@@ -364,6 +387,10 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
                 res.m_LoadResult = std::move(loadResult);
 
                 Q_EMIT thisPtr->ModelLoaded();
+
+                const int timeDiffMsecs = startTime.msecsTo(QTime::currentTime());
+
+                qInfo(LoggingCategory::RenderingSession) << "Finished loading model " << modelName << FormatTime(timeDiffMsecs).toUtf8().data();
 
                 thisPtr->CheckEntityBounds(root);
             }
