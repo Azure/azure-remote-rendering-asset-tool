@@ -109,13 +109,8 @@ public:
     /// Clears the cached information about files and folders.
     void ClearCache();
 
-#if NEW_STORAGE_SDK
     /// Returns the BlobContainerClient for the storage container with the given name.
     BlobContainerClient GetStorageContainerFromName(const QString& containerName) const;
-#else
-    /// Returns the cloud_blob_container for the storage container with the given name.
-    azure::storage::cloud_blob_container GetContainerFromName(const QString& containerName) const;
-#endif
 
     /// Creates a Storage Access Signature (SAS) token that is needed to read or write to files or folders in Azure Storage.
     ///
@@ -134,11 +129,7 @@ private:
 
     static void SanitizeSettings(QString& accountName, QString& accountKey, QString& endpointUrl);
 
-#if NEW_STORAGE_SDK
     void ConnectToAzureStorageThread(const QString& endpointUrl, const std::shared_ptr<StorageSharedKeyCredential>& credentials);
-#else
-    void ConnectToStorageAccountThread(const QString& storageUrl, const azure::storage::storage_credentials& credentials);
-#endif
 
     StorageConnectionStatus m_connectionStatus = StorageConnectionStatus::NotAuthenticated;
 
@@ -155,11 +146,6 @@ private:
     std::unique_ptr<FileUploader> m_fileUploader;
     mutable std::map<QString, BlobCache> m_cachedBlobs;
 
-#if NEW_STORAGE_SDK
     std::shared_ptr<StorageSharedKeyCredential> m_azStorageCredentials;
     std::unique_ptr<BlobServiceClient> m_azStorageServiceClient;
-#else
-    std::unique_ptr<azure::storage::cloud_blob_client> m_blobClient;
-    azure::storage::storage_credentials m_storageCredentials;
-#endif
 };
