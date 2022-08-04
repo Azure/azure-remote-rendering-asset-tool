@@ -93,8 +93,6 @@ void FileUploader::NotifyBytesRead(int64_t bytes)
                               { m_remainingFilesCallback(remainingFiles, percentage); });
 }
 
-#if NEW_STORAGE_SDK
-
 constexpr int64_t GetMB(int64_t bytes)
 {
     return 1024i64 * 1024i64 * bytes;
@@ -191,8 +189,6 @@ private:
     int64_t m_maxBytes = 0;
 };
 
-#endif
-
 // upload one file to a blob storage directory synchronously. SourceRootDirectory will map to destDirectory
 void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const QString& sourceFilePath, const QString& containerName, const QString& destDirectory)
 {
@@ -201,7 +197,6 @@ void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const
 
     try
     {
-#if NEW_STORAGE_SDK
         {
             auto container = m_storageAccount->GetStorageContainerFromName(containerName);
 
@@ -248,23 +243,6 @@ void FileUploader::UploadFileInternalSync(const QDir& sourceRootDirectory, const
             // tell Azure Storage that the file is finished and from which blocks it is made up
             blobClient.CommitBlockList(blocks);
         }
-#else
-        {
-            const QFileInfo fi(sourceFilePath);
-            const int64_t fileSize = fi.size();
-
-            // open the file stream
-            Concurrency::streams::fstream fileStream;
-            Concurrency::streams::istream is = fileStream.open_istream(sourceFilePath.toStdWString()).get();
-
-            auto container = m_storageAccount->GetContainerFromName(containerName);
-
-            azure::storage::cloud_block_blob blob = container.get_block_blob_reference(blobPath.toStdWString());
-            blob.upload_from_stream(is);
-
-            NotifyBytesRead(fileSize);
-        }
-#endif
 
         qInfo(LoggingCategory::AzureStorage)
             << "File upload finished."

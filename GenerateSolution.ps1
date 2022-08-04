@@ -95,7 +95,6 @@ else {
 }
 
 $CMAKE_ARGS += "-DCMAKE_TOOLCHAIN_FILE=$VcpkgPath\scripts\buildsystems\vcpkg.cmake"
-$CMAKE_ARGS += "-DUSE_NEW_AZURE_STORAGE_SDK:BOOL=ON"
 
 & cmake.exe $CMAKE_ARGS
 

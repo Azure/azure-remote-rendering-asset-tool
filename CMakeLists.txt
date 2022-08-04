@@ -163,32 +163,8 @@ target_link_libraries(${TARGET} PUBLIC d3d11.lib DXGI.lib)
 target_link_libraries(${TARGET} PUBLIC "${LIB_ARR_LIB}/RemoteRenderingClient.lib")
 target_include_directories(${TARGET} PUBLIC ${LIB_ARR_INCLUDE})
 
-if (USE_NEW_AZURE_STORAGE_SDK)
-
-    find_package(azure-storage-blobs-cpp CONFIG REQUIRED)
-    target_link_libraries(${TARGET} PRIVATE Azure::azure-storage-blobs)
-
-    target_compile_definitions(${TARGET} PUBLIC NEW_STORAGE_SDK=1)
-
-else()
-
-    set( CFG $<IF:$<CONFIG:Debug>,DEBUG,RELEASE> )
-    set( POSTFIX $<$<CONFIG:Debug>:d> )
-
-    set(LIB_BLOB_ROOT "${CMAKE_BINARY_DIR}/packages/Microsoft.Azure.Storage.CPP.v140.5.0.0")
-    set(LIB_BLOB_NAME "${LIB_BLOB_ROOT}/lib/native/v140/x64/${CFG}/wastorage${POSTFIX}")
-
-    add_custom_command(
-        TARGET ${TARGET} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-             ${LIB_BLOB_NAME}.dll
-            $<TARGET_FILE_DIR:${TARGET}>
-    )
-
-    target_link_libraries(${TARGET} PUBLIC "${LIB_BLOB_NAME}.lib")
-    target_include_directories(${TARGET} PUBLIC "${LIB_BLOB_ROOT}/build/native/include")
-
-endif()
+find_package(azure-storage-blobs-cpp CONFIG REQUIRED)
+target_link_libraries(${TARGET} PRIVATE Azure::azure-storage-blobs)
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Arrt)
 
