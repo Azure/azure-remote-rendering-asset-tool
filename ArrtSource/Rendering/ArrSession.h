@@ -2,8 +2,10 @@
 
 #include <QObject>
 
+#include <QDateTime>
 #include <Rendering/ArrConnectionLogic.h>
 #include <deque>
+#include <mutex>
 
 namespace Microsoft::Azure::RemoteRendering
 {
@@ -60,6 +62,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void OnConnectionStateChanged();
+    void OnSessionPropertiesUpdated();
     void OnInitGrahpcs();
     void OnDeinitGrahpcs();
 
@@ -141,12 +144,15 @@ private:
     std::atomic_bool m_renewAsyncInProgress = false;
 
     float m_modelScale = 1.0f;
+    std::map<unsigned long long, RR::ApiHandle<RR::Entity>> m_selectedEntities;
+
+    mutable std::recursive_mutex m_modelMutex;
     std::vector<float> m_loadingProgress;
     std::deque<LoadedModel> m_loadedModels;
-    std::map<unsigned long long, RR::ApiHandle<RR::Entity>> m_selectedEntities;
 
     int m_frameStatsUpdateDelay = 60;
     RR::FrameStatistics m_frameStats;
 
     ArrConnectionLogic::State m_previousState = ArrConnectionLogic::State::Inactive;
+    QTime m_previousStateChange = QTime::currentTime();
 };

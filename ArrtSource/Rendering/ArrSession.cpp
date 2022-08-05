@@ -9,27 +9,48 @@
 #include <Rendering/ArrSettings.h>
 #include <Rendering/UI/SceneState.h>
 #include <Utils/Logging.h>
+#include <mutex>
 #include <windows.h>
+
+QString FormatTime(int msecs)
+{
+    const int hours = msecs / (60 * 60 * 1000);
+    msecs -= hours * (60 * 60 * 1000);
+    const int minutes = msecs / (60 * 1000);
+    msecs -= minutes * (60 * 1000);
+    const int seconds = msecs / 1000;
+    msecs -= seconds * 1000;
+
+    return QString(" [%1:%2:%3.%4]").arg(hours, 2, 10, (QLatin1Char)'0').arg(minutes, 2, 10, (QLatin1Char)'0').arg(seconds, 2, 10, (QLatin1Char)'0').arg(msecs, 3, 10, (QLatin1Char)'0');
+}
 
 void ArrSession::OnConnectionStateChanged()
 {
     if (m_previousState != m_ConnectionLogic.GetCurrentState())
     {
-        m_previousState = m_ConnectionLogic.GetCurrentState();
+        const int timeDiffMsecs = m_previousStateChange.msecsTo(QTime::currentTime());
+        m_previousStateChange = QTime::currentTime();
 
-        qInfo(LoggingCategory::RenderingSession) << "Connection state changed to " << ArrConnectionLogic::GetStateString(m_ConnectionLogic.GetCurrentState());
+        qInfo(LoggingCategory::RenderingSession) << "New connection state: " << ArrConnectionLogic::GetStateString(m_ConnectionLogic.GetCurrentState()) << FormatTime(timeDiffMsecs).toUtf8().data();
+
+        m_previousState = m_ConnectionLogic.GetCurrentState();
 
         if (!m_ConnectionLogic.IsConnectionStoppable())
         {
+            std::lock_guard<std::recursive_mutex> lk(m_modelMutex);
+
             m_loadingProgress.clear();
             m_loadedModels.clear();
             m_selectedEntities.clear();
         }
     }
 
-    ExtendSessionIfNeeded();
-
     Q_EMIT SessionStatusChanged();
+}
+
+void ArrSession::OnSessionPropertiesUpdated()
+{
+    ExtendSessionIfNeeded();
 }
 
 void ArrSession::OnInitGrahpcs()
@@ -41,9 +62,12 @@ void ArrSession::OnDeinitGrahpcs()
 {
     m_sceneState->SetSession(nullptr, this);
 
-    m_loadingProgress.clear();
-    m_loadedModels.clear();
-    m_selectedEntities.clear();
+    {
+        std::lock_guard<std::recursive_mutex> lk(m_modelMutex);
+        m_loadingProgress.clear();
+        m_loadedModels.clear();
+        m_selectedEntities.clear();
+    }
 
     Q_EMIT ModelLoadProgressChanged();
 }
@@ -59,9 +83,16 @@ ArrSession::ArrSession(ArrAccount* arrClient, SceneState* sceneState)
     connect(&m_ConnectionLogic, &ArrConnectionLogic::ConnectionStateChanged, this, &ArrSession::OnConnectionStateChanged);
     connect(&m_ConnectionLogic, &ArrConnectionLogic::InitGraphics, this, &ArrSession::OnInitGrahpcs, Qt::DirectConnection);
     connect(&m_ConnectionLogic, &ArrConnectionLogic::DeinitGraphics, this, &ArrSession::OnDeinitGrahpcs, Qt::DirectConnection);
+    connect(&m_ConnectionLogic, &ArrConnectionLogic::SessionPropertiesUpdated, this, &ArrSession::OnSessionPropertiesUpdated);
 }
 
-ArrSession::~ArrSession() = default;
+ArrSession::~ArrSession()
+{
+    if (m_ConnectionLogic.IsConnectionStoppable())
+    {
+        m_ConnectionLogic.CloseSession(false);
+    }
+}
 
 RR::ApiHandle<RR::RenderingConnection> ArrSession::GetRenderingConnection()
 {
@@ -336,13 +367,27 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
         return false;
 
     QPointer<ArrSession> thisPtr = this;
-    int loadIdx = (int)m_loadingProgress.size();
-    m_loadingProgress.push_back(0.01f);
+
+    int loadIdx = 0;
+    {
+        std::lock_guard<std::recursive_mutex> lk(thisPtr->m_modelMutex);
+        loadIdx = (int)m_loadingProgress.size();
+        m_loadingProgress.push_back(0.01f);
+    }
+
+    qInfo(LoggingCategory::RenderingSession) << "Loading model " << modelName;
+
+    const QTime startTime = QTime::currentTime();
 
     // the callback is called from the GUI thread
-    auto onModelLoaded = [thisPtr, modelName, loadIdx](RR::Status status, RR::ApiHandle<RR::LoadModelResult> loadResult)
+    auto onModelLoaded = [thisPtr, modelName, loadIdx, startTime](RR::Status status, RR::ApiHandle<RR::LoadModelResult> loadResult)
     {
-        thisPtr->m_loadingProgress[loadIdx] = 1.0;
+        std::lock_guard<std::recursive_mutex> lk(thisPtr->m_modelMutex);
+
+        if (loadIdx < thisPtr->m_loadingProgress.size())
+        {
+            thisPtr->m_loadingProgress[loadIdx] = 1.0;
+        }
 
         if (status != RR::Status::OK)
         {
@@ -353,17 +398,25 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
         {
             if (loadResult.valid())
             {
+
                 auto root = loadResult->GetRoot();
 
                 const float scale = thisPtr->m_modelScale;
                 root->SetScale(RR::Float3{scale, scale, scale});
 
-                thisPtr->m_loadedModels.push_back({});
-                auto& res = thisPtr->m_loadedModels.back();
-                res.m_ModelName = modelName;
-                res.m_LoadResult = std::move(loadResult);
+                {
+                    std::lock_guard<std::recursive_mutex> lk(thisPtr->m_modelMutex);
+                    thisPtr->m_loadedModels.push_back({});
+                    auto& res = thisPtr->m_loadedModels.back();
+                    res.m_ModelName = modelName;
+                    res.m_LoadResult = std::move(loadResult);
+                }
 
                 Q_EMIT thisPtr->ModelLoaded();
+
+                const int timeDiffMsecs = startTime.msecsTo(QTime::currentTime());
+
+                qInfo(LoggingCategory::RenderingSession) << "Finished loading model " << modelName << FormatTime(timeDiffMsecs).toUtf8().data();
 
                 thisPtr->CheckEntityBounds(root);
             }
@@ -379,7 +432,12 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
 
     auto onModelLoadingProgress = [thisPtr, loadIdx](float progress)
     {
-        thisPtr->m_loadingProgress[loadIdx] = std::max(thisPtr->m_loadingProgress[loadIdx], progress);
+        std::lock_guard<std::recursive_mutex> lk(thisPtr->m_modelMutex);
+
+        if (loadIdx < thisPtr->m_loadingProgress.size())
+        {
+            thisPtr->m_loadingProgress[loadIdx] = std::max(thisPtr->m_loadingProgress[loadIdx], progress);
+        }
 
         Q_EMIT thisPtr->ModelLoadProgressChanged();
     };
@@ -393,16 +451,20 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
 
 void ArrSession::RemoveModel(size_t idx)
 {
-    m_selectedEntities.erase(m_loadedModels[idx].m_LoadResult->GetRoot()->GetHandle());
-
-    m_loadedModels[idx].m_LoadResult->GetRoot()->Destroy();
-
-    if (m_loadedModels.size() > 1)
     {
-        m_loadedModels[idx] = m_loadedModels.back();
-    }
+        std::lock_guard<std::recursive_mutex> lk(m_modelMutex);
 
-    m_loadedModels.pop_back();
+        m_selectedEntities.erase(m_loadedModels[idx].m_LoadResult->GetRoot()->GetHandle());
+
+        m_loadedModels[idx].m_LoadResult->GetRoot()->Destroy();
+
+        if (m_loadedModels.size() > 1)
+        {
+            m_loadedModels[idx] = m_loadedModels.back();
+        }
+
+        m_loadedModels.pop_back();
+    }
 
     Q_EMIT ModelLoaded();
 }
@@ -410,6 +472,8 @@ void ArrSession::RemoveModel(size_t idx)
 float ArrSession::GetModelLoadingProgress() const
 {
     float totalProgress = 2.0f;
+
+    std::lock_guard<std::recursive_mutex> lk(m_modelMutex);
 
     for (auto prog : m_loadingProgress)
     {
@@ -425,6 +489,8 @@ float ArrSession::GetModelLoadingProgress() const
 void ArrSession::SetModelScale(float scale)
 {
     m_modelScale = scale;
+
+    std::lock_guard<std::recursive_mutex> lk(m_modelMutex);
 
     for (auto& model : m_loadedModels)
     {

@@ -14,6 +14,7 @@ Q_SIGNALS:
     void ConnectionStateChanged();
     void InitGraphics();
     void DeinitGraphics();
+    void SessionPropertiesUpdated();
 
 public:
     enum class State
@@ -26,7 +27,8 @@ public:
 
         // active states
         OpeningSession,
-        SessionOpen,
+        SessionStarting,
+        SessionReady,
         RuntimeConnecting,
         RuntimeConnected,
         Disconnecting,
@@ -49,6 +51,8 @@ public:
     void CreateNewSession(RR::ApiHandle<RR::RemoteRenderingClient>& client, const RR::RenderingSessionCreationOptions& info);
     void OpenExistingSession(RR::ApiHandle<RR::RemoteRenderingClient>& client, const QString& sessionID);
     void CloseSession(bool keepRunning);
+
+    void CleanupSession();
 
     int GetElapsedTimeInMinutes() const { return m_elapsedTimeInMinutes; }
     int GetLeaseTimeInMinutes() const { return m_leaseTimeInMinutes; }
@@ -78,6 +82,7 @@ private:
     void UpdateSessionProperties();
     void SessionPropertiesResult(RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesResult> result);
     void UpdateState(const RR::RenderingSessionProperties& properties, RR::ConnectionStatus connection);
+    void UpdateStateInternal(const RR::RenderingSessionProperties& properties, RR::ConnectionStatus connection);
     void ConnectToRuntime();
     void ConnectToRuntimeResult(RR::Status status, RR::ConnectionStatus result);
     void DisconnectFromRuntime();
