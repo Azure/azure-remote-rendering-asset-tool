@@ -117,6 +117,8 @@ void SceneState::InitializeClient()
             return;
         }
 
+        m_graphicsBinding->SetPoseMode(RR::PoseMode::Passthrough);
+
         ZeroMemory(&m_simUpdate, sizeof(m_simUpdate));
 
         UpdateProjectionMatrix();

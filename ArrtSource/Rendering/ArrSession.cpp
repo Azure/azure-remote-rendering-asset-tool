@@ -405,7 +405,7 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
                 root->SetScale(RR::Float3{scale, scale, scale});
 
                 {
-                    std::lock_guard<std::recursive_mutex> lk(thisPtr->m_modelMutex);
+                    std::lock_guard<std::recursive_mutex> lk2(thisPtr->m_modelMutex);
                     thisPtr->m_loadedModels.push_back({});
                     auto& res = thisPtr->m_loadedModels.back();
                     res.m_ModelName = modelName;
