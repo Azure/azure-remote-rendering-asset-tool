@@ -480,6 +480,10 @@ void SceneState::FocusOnEntity(RR::ApiHandle<RR::Entity> entity)
 
 void SceneState::FocusOnBounds(const RR::Bounds& bounds)
 {
+    const float fovAngle = m_arrOptions->GetFovAngle();
+    const float nearPlane = m_arrOptions->GetNearPlaneCM() / 100.0f;
+    const float farPlane = m_arrOptions->GetFarPlaneCM() / 100.0f;
+
     const float maxX = (float)bounds.Max.X;
     const float minX = (float)bounds.Min.X;
     const float maxY = (float)bounds.Max.Y;
@@ -487,14 +491,34 @@ void SceneState::FocusOnBounds(const RR::Bounds& bounds)
     const float maxZ = (float)bounds.Max.Z;
     const float minZ = (float)bounds.Min.Z;
 
-    const QVector3D center = QVector3D(minX, minY, minZ) + (QVector3D(maxX, maxY, maxZ) - QVector3D(minX, minY, minZ)) * 0.5f;
+    const QVector3D center = (QVector3D(maxX, maxY, maxZ) + QVector3D(minX, minY, minZ)) * 0.5f;
 
     float maxRadius = maxX - minX;
     maxRadius = std::max(maxRadius, maxY - minY);
     maxRadius = std::max(maxRadius, maxZ - minZ);
 
+    maxRadius = std::min(maxRadius, farPlane * 0.9f); // make sure the object at least intersects with the far plane, and is not entirely behind it
+
     QVector3D xAxis, yAxis, zAxis;
     m_cameraRotation.getAxes(&xAxis, &yAxis, &zAxis);
+
+    // find a corner on the near plane and compute the distance to it
+    // this is the real (maximum) near plane distance (because the near culling is done with a sphere)
+    // we move the camera back by this amount, to ensure no near plane culling happens on the framed object
+    {
+        float ratio = 1.0;
+        if (m_screenHeight > 0 && m_screenWidth > 0)
+        {
+            ratio = (float)m_screenWidth / (float)m_screenHeight;
+        }
+
+        QMatrix4x4 m;
+        m.perspective(fovAngle, ratio, nearPlane, farPlane);
+        m = m.inverted();
+
+        QVector3D corner = m.map(QVector3D(-1, -1, 0));
+        maxRadius += corner.length();
+    }
 
     QVector3D newTargetPos = center - maxRadius * zAxis;
 
