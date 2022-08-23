@@ -35,7 +35,7 @@ void ArrSession::OnConnectionStateChanged()
 
         m_previousState = m_ConnectionLogic.GetCurrentState();
 
-        if (!m_ConnectionLogic.IsConnectionStoppable())
+        if (!m_ConnectionLogic.IsConnectionRendering())
         {
             std::lock_guard<std::recursive_mutex> lk(m_modelMutex);
 

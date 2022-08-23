@@ -167,7 +167,7 @@ ArrtAppWindow::ArrtAppWindow()
 
     connect(m_arrSession.get(), &ArrSession::SessionStatusChanged, this, [this]()
             {
-                if (!m_arrSession || !m_arrSession->GetConnectionState().IsConnectionActive())
+                if (!m_arrSession || m_arrSession->GetConnectionState().IsConnectionRendering())
                 {
                     RenderingTab->ScenegraphView->selectionModel()->clearSelection();
                     m_scenegraphModel->RefreshModel();
