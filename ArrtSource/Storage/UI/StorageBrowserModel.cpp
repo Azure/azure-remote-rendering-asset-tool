@@ -272,7 +272,7 @@ bool StorageBrowserModel::IsArrAsset(const QString& file)
 bool StorageBrowserModel::IsSrcAsset(const QString& file)
 {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    QString formats = ";gltf;glb;fbx;e57;ply;xyz;" + env.value("ARRT_ALLOWED_ASSET_FORMATS", "") + ";";
+    QString formats = ";gltf;glb;fbx;e57;ply;xyz;las;laz;" + env.value("ARRT_ALLOWED_ASSET_FORMATS", "") + ";";
     formats = formats.toLower();
 
     QFileInfo info(file);

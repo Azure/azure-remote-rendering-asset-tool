@@ -230,7 +230,9 @@ void GetSrcAssetAxisMapping(const QString& file, Axis& out1, Axis& out2, Axis& o
 
     if (file.endsWith(".e57", Qt::CaseInsensitive) ||
         file.endsWith(".ply", Qt::CaseInsensitive) ||
-        file.endsWith(".xyz", Qt::CaseInsensitive))
+        file.endsWith(".xyz", Qt::CaseInsensitive) ||
+        file.endsWith(".las", Qt::CaseInsensitive) ||
+        file.endsWith(".laz", Qt::CaseInsensitive))
     {
         out1 = Axis::PosX;
         out2 = Axis::PosZ;
@@ -242,7 +244,9 @@ uint64_t GetAssetConversionOptions(const QString& file)
 {
     if (file.endsWith(".e57", Qt::CaseInsensitive) ||
         file.endsWith(".ply", Qt::CaseInsensitive) ||
-        file.endsWith(".xyz", Qt::CaseInsensitive))
+        file.endsWith(".xyz", Qt::CaseInsensitive) ||
+        file.endsWith(".las", Qt::CaseInsensitive) ||
+        file.endsWith(".laz", Qt::CaseInsensitive))
     {
         return (uint64_t)ConversionOption::UniformScaling |
                (uint64_t)ConversionOption::RecenterToOrigin |
