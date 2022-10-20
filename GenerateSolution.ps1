@@ -1,7 +1,7 @@
 param 
 (
 	[Parameter(Mandatory = $False)] [string] $Destination = "$PSScriptRoot\Workspace",
-	[Parameter(Mandatory = $False)] [ValidateSet('vs2019', 'vs2022')] $Solution = "vs2019",
+	[Parameter(Mandatory = $False)] [ValidateSet('vs2019', 'vs2022')] $Solution = "vs2022",
 	[Parameter(Mandatory = $False)] [string] $Vcpkg = ""
 )
 
