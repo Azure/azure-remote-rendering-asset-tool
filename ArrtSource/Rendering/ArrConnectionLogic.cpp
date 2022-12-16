@@ -482,6 +482,18 @@ void ArrConnectionLogic::ConnectToRuntimeResult(RR::Status status, RR::Connectio
         m_arrSession->Connection()->SetLogLevel(RR::LogLevel::Information);
         m_messageLoggedToken = m_arrSession->Connection()->MessageLogged(&ForwardArrLogMsgToQt).value();
     }
+    else
+    {
+        if (status == RR::Status::DisconnectRequest)
+        {
+            ForwardArrLogMsgToQt(RR::LogLevel::Information, "User disconnect request.");
+        }
+        else
+        {
+            QString text = "Connection to ARR rendering session failed: " + toString(status) + " (retrying)";
+            ForwardArrLogMsgToQt(RR::LogLevel::Error, text.toUtf8().data());
+        }
+    }
 
     UpdateSessionProperties();
 }

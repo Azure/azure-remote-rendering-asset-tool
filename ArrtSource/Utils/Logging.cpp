@@ -137,34 +137,7 @@ void ForwardArrLogMsgToQt(RR::LogLevel logLevel, const void* msgPtr)
 
 QString toString(const RR::Status& arrStatus)
 {
-    if (arrStatus >= RR::Status::CoreReturnValueStart)
-    {
-        return RR::ResultToString((RR::Result)((uint32_t)arrStatus - 1 - (uint32_t)RR::Status::CoreReturnValueStart));
-    }
-    else
-    {
-        switch (arrStatus)
-        {
-            case RR::Status::OK:
-                return "OK";
-            case RR::Status::Failed:
-                return "Failed";
-            case RR::Status::ObjectDisposed:
-                return "ObjectDisposed";
-            case RR::Status::OutOfMemory:
-                return "OutOfMemory";
-            case RR::Status::InvalidArgument:
-                return "InvalidArgument";
-            case RR::Status::OutOfRange:
-                return "OutOfRange";
-            case RR::Status::NotImplemented:
-                return "NotImplemented";
-            case RR::Status::KeyNotFound:
-                return "KeyNotFound";
-            default:
-                return QString("ARR::Status=%1").arg((int)arrStatus);
-        }
-    }
+    return RR::ResultToString(RR::StatusToResult(arrStatus));
 }
 
 QString toString(const RR::ConnectionStatus& connectionStatus)
