@@ -31,6 +31,11 @@ void ArrSession::OnConnectionStateChanged()
         const int timeDiffMsecs = m_previousStateChange.msecsTo(QTime::currentTime());
         m_previousStateChange = QTime::currentTime();
 
+        if (m_previousState == ArrConnectionLogic::State::RuntimeConnected && m_ConnectionLogic.GetCurrentState() == ArrConnectionLogic::State::SessionReady)
+        {
+            qWarning(LoggingCategory::RenderingSession) << "Rendering session got disconnected, most likely due to a network timeout. Loaded models will be cleared." << FormatTime(timeDiffMsecs).toUtf8().data();
+        }
+
         qInfo(LoggingCategory::RenderingSession) << "New connection state: " << ArrConnectionLogic::GetStateString(m_ConnectionLogic.GetCurrentState()) << FormatTime(timeDiffMsecs).toUtf8().data();
 
         m_previousState = m_ConnectionLogic.GetCurrentState();
