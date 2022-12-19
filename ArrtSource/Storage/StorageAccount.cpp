@@ -42,6 +42,18 @@ void StorageAccount::SanitizeSettings(QString& accountName, QString& accountKey,
     accountKey = accountKey.trimmed();
     endpointUrl = endpointUrl.trimmed();
 
+    // connecting to a storage account using HTTP (or no protocol) does work
+    // however, converting models will fail, unless HTTPS is used
+    if (endpointUrl.startsWith("http://", Qt::CaseInsensitive))
+    {
+        endpointUrl = endpointUrl.mid(7);
+    }
+
+    if (!endpointUrl.startsWith("https://", Qt::CaseInsensitive))
+    {
+        endpointUrl = "https://" + endpointUrl;
+    }
+
     while (endpointUrl.endsWith("/"))
         endpointUrl.chop(1);
 }
