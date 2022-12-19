@@ -158,7 +158,7 @@ find_package(cpprestsdk CONFIG REQUIRED)
 target_link_libraries(${TARGET} PRIVATE cpprestsdk::cpprest)
 
 target_include_directories(${TARGET} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ArrtSource")
-target_link_libraries(${TARGET} PUBLIC d3d11.lib DXGI.lib)
+target_link_libraries(${TARGET} PUBLIC d3d11.lib DXGI.lib Mfplat mfuuid)
 
 target_link_libraries(${TARGET} PUBLIC "${LIB_ARR_LIB}/RemoteRenderingClient.lib")
 target_include_directories(${TARGET} PUBLIC ${LIB_ARR_INCLUDE})
