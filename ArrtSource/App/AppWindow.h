@@ -78,10 +78,8 @@ private Q_SLOTS:
     void on_FresnelColorPicker_ColorChanged(const QColor& newColor);
     void on_FresnelExponentSpinner_valueChanged(double d);
 
-
 private:
     virtual void closeEvent(QCloseEvent* event) override;
-
     virtual bool eventFilter(QObject* watched, QEvent* event) override;
 
     void LoadSettings();

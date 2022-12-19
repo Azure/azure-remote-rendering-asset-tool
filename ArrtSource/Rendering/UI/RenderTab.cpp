@@ -3,6 +3,7 @@
 
 #include <App/AppWindow.h>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <Rendering/ArrSession.h>
 #include <Rendering/UI/SceneState.h>
 #include <Rendering/UI/ScenegraphModel.h>
@@ -10,6 +11,8 @@
 #include <Rendering/Ui/CameraDlg.h>
 #include <Storage/StorageAccount.h>
 #include <Storage/UI/BrowseStorageDlg.h>
+
+bool IsVideoDecoderAvailable(std::string& details);
 
 void ArrtAppWindow::on_ChangeModelButton_clicked()
 {
@@ -44,6 +47,13 @@ void ArrtAppWindow::on_LoadModelSasButton_clicked()
 
 void ArrtAppWindow::on_EditSessionButton_clicked()
 {
+    std::string details;
+    if (!IsVideoDecoderAvailable(details))
+    {
+        QMessageBox::critical(this, "Missing Video Decoder", QString("<html>This PC does not meet the minimum requirements to display a remotely rendered video stream.<br><br>Error: '") + QString(details.c_str()) + QString("'<br><br>Please <a href=\"https://learn.microsoft.com/azure/remote-rendering/overview/system-requirements#devices\">check the documentation</a> for details.</html>"));
+        return;
+    }
+
     StartSessionDlg dlg(m_arrSession.get(), m_arrSettings.get(), this);
     dlg.exec();
 }
