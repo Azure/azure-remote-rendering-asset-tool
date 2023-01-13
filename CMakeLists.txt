@@ -168,5 +168,7 @@ target_link_libraries(${TARGET} PRIVATE Azure::azure-storage-blobs)
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Arrt)
 
+target_compile_options(${TARGET} PRIVATE /guard:cf)
+target_link_options(${TARGET} PRIVATE /guard:cf)
 
 
