@@ -6,6 +6,8 @@
 #include <QStyleFactory>
 #include <windows.h>
 
+// DON'T PANIC !
+
 static bool IsHighContrastOn()
 {
     HIGHCONTRAST info = {0};
