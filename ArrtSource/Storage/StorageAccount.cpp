@@ -49,7 +49,12 @@ void StorageAccount::SanitizeSettings(QString& accountName, QString& accountKey,
         endpointUrl = endpointUrl.mid(7);
     }
 
-    if (!endpointUrl.startsWith("https://", Qt::CaseInsensitive))
+    if (endpointUrl.startsWith("https://", Qt::CaseInsensitive))
+    {
+        endpointUrl = endpointUrl.mid(8);
+    }
+
+    if (!endpointUrl.isEmpty() && !endpointUrl.startsWith("https://", Qt::CaseInsensitive))
     {
         endpointUrl = "https://" + endpointUrl;
     }
