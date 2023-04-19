@@ -261,6 +261,7 @@ int WinMain(HINSTANCE, HINSTANCE, char*, int)
     QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
 #endif
 
+    QCoreApplication::addLibraryPath(".");
     QCoreApplication::setApplicationName(VER_PRODUCTNAME);
     QCoreApplication::setOrganizationName(VER_COMPANY);
     QCoreApplication::setOrganizationDomain("https://github.com/azure/azure-remote-rendering-asset-tool");
