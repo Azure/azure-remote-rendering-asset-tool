@@ -228,7 +228,15 @@ void ArrAccount::GetCurrentRenderingSessionsResult(RR::ApiHandle<RR::RemoteRende
     {
         SetConnectionStatus(ArrConnectionStatus::InvalidCredentials);
 
-        qCritical(LoggingCategory::RenderingSession) << "Failed to get rendering sessions, account credentials might be incorrect: " << errorCode;
+        if (errorCode == RR::Result::DomainUnreachable)
+        {
+            qCritical(LoggingCategory::RenderingSession) << "'" << errorCode << "' - this typically happens when a firewall or router blocks UDP traffic.";
+            qCritical(LoggingCategory::RenderingSession) << "Visit https://learn.microsoft.com/azure/remote-rendering/resources/troubleshoot for help.";
+        }
+        else
+        {
+            qCritical(LoggingCategory::RenderingSession) << "Failed to get rendering sessions, account credentials might be incorrect: " << errorCode;
+        }
     }
 
     {
