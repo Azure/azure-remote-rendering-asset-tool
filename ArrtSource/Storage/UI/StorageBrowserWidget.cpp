@@ -141,6 +141,12 @@ void StorageBrowserWidget::on_AddContainerButton_clicked()
     }
     else
     {
+        int cut = errorMsg.indexOf("RequestId", 0, Qt::CaseInsensitive);
+        if (cut > 0)
+        {
+            errorMsg = errorMsg.left(cut);
+        }
+
         QMessageBox box;
         box.setWindowTitle("Storage Container Creation Failed");
         box.setTextFormat(Qt::RichText);
