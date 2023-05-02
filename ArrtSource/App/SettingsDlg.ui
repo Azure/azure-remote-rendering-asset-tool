@@ -243,6 +243,9 @@
          <property name="toolTip">
           <string>Adds a connection profile.</string>
          </property>
+         <property name="accessibleName">
+          <string>Add Connection Profile</string>
+         </property>
          <property name="text">
           <string> + </string>
          </property>
@@ -252,6 +255,9 @@
         <widget class="QToolButton" name="RemoveProfile">
          <property name="toolTip">
           <string>Removes the currently selected connection profile.</string>
+         </property>
+         <property name="accessibleName">
+          <string>Remove Connection Profile</string>
          </property>
          <property name="text">
           <string> X </string>
