@@ -36,7 +36,7 @@
         <string/>
        </property>
        <property name="accessibleName">
-        <string>VM size</string>
+        <string>Rendering VM Size</string>
        </property>
       </widget>
      </item>
@@ -136,15 +136,18 @@
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label">
+       <property name="accessibleName">
+        <string/>
+       </property>
        <property name="text">
-        <string>Size:</string>
+        <string>Rendering VM Size:</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
       <widget class="QLineEdit" name="MaxTime">
        <property name="accessibleName">
-        <string>Max VM allocation time</string>
+        <string>Max Session Duration (H colon MM)</string>
        </property>
        <property name="placeholderText">
         <string>example: 0:15</string>
@@ -197,7 +200,7 @@
      <item row="14" column="1">
       <widget class="QLabel" name="RemainingTime">
        <property name="accessibleName">
-        <string>Remaining time</string>
+        <string>Remaining time (H colon MM)</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::Box</enum>
@@ -210,7 +213,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Max Time (H:MM):</string>
+        <string>Max Session Duration (H:MM):</string>
        </property>
       </widget>
      </item>
