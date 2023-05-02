@@ -155,7 +155,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label_9">
        <property name="text">
-        <string>Profile:</string>
+        <string>Connection Profile:</string>
        </property>
       </widget>
      </item>
@@ -232,6 +232,9 @@
          </property>
          <property name="toolTip">
           <string>List of connection profiles to switch between accounts.</string>
+         </property>
+         <property name="accessibleName">
+          <string>Connection Profile</string>
          </property>
         </widget>
        </item>
