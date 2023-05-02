@@ -106,6 +106,7 @@ private:
     int m_numFileUploads = 0;
     float m_fileUploadPercentage = 0;
     int m_maxLogType = 0;
+    bool m_logClearMsgAdded = true;
     QAction* m_loadFromStorageAction = nullptr;
     QAction* m_clearModelsAction = nullptr;
     QAction* m_loadWithUrlAction = nullptr;
