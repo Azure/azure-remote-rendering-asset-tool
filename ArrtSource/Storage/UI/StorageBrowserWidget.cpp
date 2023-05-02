@@ -194,6 +194,7 @@ void StorageBrowserWidget::UpdateUI()
     m_storageAccount->ListContainers(containers);
 
     StorageContainer->setEnabled(!containers.empty());
+    FileTree->setEnabled(!containers.empty());
 
     if (m_StorageContainers != containers)
     {
