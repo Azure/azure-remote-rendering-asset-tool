@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>457</width>
-    <height>352</height>
+    <height>358</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -161,7 +161,7 @@
      <item row="4" column="1">
       <widget class="QSlider" name="PointSizeSlider">
        <property name="accessibleName">
-        <string>Camera move speed</string>
+        <string>Point Size</string>
        </property>
        <property name="minimum">
         <number>0</number>

@@ -83,6 +83,18 @@ void SettingsDlg::on_TestArr_clicked()
 {
     ApplyArr();
 
+    if (ArrAccountID->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Test ARR account connection", "Please provide a valid ARR account ID.", QMessageBox::Ok);
+        return;
+    }
+
+    if (ArrAccountKey->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Test ARR account connection", "Please provide a valid ARR account key.", QMessageBox::Ok);
+        return;
+    }
+
     for (int i = 0; i < 100; ++i)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -113,6 +125,24 @@ void SettingsDlg::on_TestArr_clicked()
 void SettingsDlg::on_TestStorage_clicked()
 {
     ApplyStorage();
+
+    if (StorageName->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Test storage account connection", "Please provide a valid storage account name.", QMessageBox::Ok);
+        return;
+    }
+
+    if (StorageKey->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Test storage account connection", "Please provide a valid storage account key.", QMessageBox::Ok);
+        return;
+    }
+
+    if (StorageEndpoint->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Test storage account connection", "Please provide a valid storage endpoint.", QMessageBox::Ok);
+        return;
+    }
 
     for (int i = 0; i < 100; ++i)
     {

@@ -45,7 +45,7 @@
         <string>Create new storage container</string>
        </property>
        <property name="accessibleName">
-        <string>Add storage container</string>
+        <string/>
        </property>
        <property name="text">
         <string/>
@@ -62,7 +62,7 @@
         <string>Delete active storage container</string>
        </property>
        <property name="accessibleName">
-        <string>Delete storage container</string>
+        <string/>
        </property>
        <property name="text">
         <string/>
@@ -79,7 +79,7 @@
         <string>Refresh display of storage container contents</string>
        </property>
        <property name="accessibleName">
-        <string>Refresh storage container</string>
+        <string/>
        </property>
        <property name="text">
         <string/>
@@ -109,7 +109,7 @@
         <string>Create new folder in currently selected folder.</string>
        </property>
        <property name="accessibleName">
-        <string>Create folder in selected folder</string>
+        <string/>
        </property>
        <property name="text">
         <string/>
@@ -126,7 +126,7 @@
         <string>Delete currently selected file or folder.</string>
        </property>
        <property name="accessibleName">
-        <string>Delete selected item</string>
+        <string/>
        </property>
        <property name="text">
         <string/>

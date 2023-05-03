@@ -36,6 +36,7 @@ void ArrtAppWindow::on_ClearLogButton_clicked()
 {
     LogTab->LogList->clear();
     LogTab->LogList->addItem("The log has been cleared."); // for accessibility reasons always have one item in the log
+    m_logClearMsgAdded = true;
 
     Tabs->setTabIcon(3, QIcon());
     m_maxLogType = QtDebugMsg;
@@ -105,6 +106,12 @@ void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& category, c
                 Tabs->setTabIcon(3, QIcon(":/ArrtApplication/Icons/error.svg"));
                 break;
         }
+    }
+
+    if (m_logClearMsgAdded)
+    {
+        m_logClearMsgAdded = false;
+        LogTab->LogList->clear();
     }
 
     LogTab->LogList->addItem(item);

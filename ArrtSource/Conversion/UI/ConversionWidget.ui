@@ -28,7 +28,7 @@
        <item>
         <widget class="QListWidget" name="ConversionList">
          <property name="accessibleName">
-          <string>All conversions</string>
+          <string>List of conversions</string>
          </property>
         </widget>
        </item>
@@ -212,7 +212,7 @@
                <x>0</x>
                <y>0</y>
                <width>687</width>
-               <height>556</height>
+               <height>582</height>
               </rect>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_8">
