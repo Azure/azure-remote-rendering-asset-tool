@@ -85,13 +85,13 @@ void SettingsDlg::on_TestArr_clicked()
 
     if (ArrAccountID->text().isEmpty())
     {
-        QMessageBox::warning(this, "Test ARR account connection", "Please provide a valid account ID.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Test ARR account connection", "Please provide a valid ARR account ID.", QMessageBox::Ok);
         return;
     }
 
     if (ArrAccountKey->text().isEmpty())
     {
-        QMessageBox::warning(this, "Test ARR account connection", "Please provide a valid account key.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Test ARR account connection", "Please provide a valid ARR account key.", QMessageBox::Ok);
         return;
     }
 
@@ -128,13 +128,13 @@ void SettingsDlg::on_TestStorage_clicked()
 
     if (StorageName->text().isEmpty())
     {
-        QMessageBox::warning(this, "Test storage account connection", "Please provide a valid storage name.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Test storage account connection", "Please provide a valid storage account name.", QMessageBox::Ok);
         return;
     }
 
     if (StorageKey->text().isEmpty())
     {
-        QMessageBox::warning(this, "Test storage account connection", "Please provide a valid storage key.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Test storage account connection", "Please provide a valid storage account key.", QMessageBox::Ok);
         return;
     }
 
