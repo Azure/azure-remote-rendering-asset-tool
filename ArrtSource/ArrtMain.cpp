@@ -210,11 +210,27 @@ public:
 
 static void SetStyleSheet(QApplication* /*app*/)
 {
+    // need to have any thing active, even if it's one that doesn't exist
+    QIcon::setThemeName("none");
+
     if (IsHighContrastOn())
     {
-        // if high contrast mode is enabled, we just don't use a custom theme
+        if (QApplication::palette().window().color().lightness() < 150)
+        {
+            // use icons from the dark theme
+            QIcon::setFallbackSearchPaths(QIcon::fallbackSearchPaths() << ":theme-dark");
+        }
+        else
+        {
+            // use icons from the light theme
+            QIcon::setFallbackSearchPaths(QIcon::fallbackSearchPaths() << ":theme-light");
+        }
+
+        // if high contrast mode is enabled, we just don't use custom colors
         return;
     }
+
+    QIcon::setFallbackSearchPaths(QIcon::fallbackSearchPaths() << ":theme-dark");
 
     QApplication::setStyle(new ArrtStyle());
     QPalette palette;

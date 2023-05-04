@@ -22,8 +22,7 @@
         <string>Clear Log</string>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/remove.svg</normaloff>:/ArrtApplication/Icons/remove.svg</iconset>
+        <iconset theme="remove"/>
        </property>
       </widget>
      </item>

@@ -59,7 +59,7 @@ ArrtAppWindow::ArrtAppWindow()
                                                    {
                                                        SettingsDlg dlg(m_storageAccount.get(), m_arrAclient.get(), this);
                                                        dlg.exec(); });
-            act->setIcon(QIcon(":/ArrtApplication/Icons/settings.svg"));
+            act->setIcon(QIcon::fromTheme("settings"));
         }
 
         // help menu
@@ -83,9 +83,9 @@ ArrtAppWindow::ArrtAppWindow()
 
     // set up toolbutton menu for model actions
     {
-        m_clearModelsAction = new QAction(QIcon(":/ArrtApplication/Icons/remove.svg"), "Remove all models");
-        m_loadFromStorageAction = new QAction(QIcon(":/ArrtApplication/Icons/upload.svg"), "Load from storage...");
-        m_loadWithUrlAction = new QAction(QIcon(":/ArrtApplication/Icons/model.svg"), "Load with URL...");
+        m_clearModelsAction = new QAction(QIcon::fromTheme("remove"), "Remove all models");
+        m_loadFromStorageAction = new QAction(QIcon::fromTheme("upload"), "Load from storage...");
+        m_loadWithUrlAction = new QAction(QIcon::fromTheme("model"), "Load with URL...");
 
         RenderingTab->ModelsToolbutton->addAction(m_loadFromStorageAction);
         RenderingTab->ModelsToolbutton->addAction(m_loadWithUrlAction);
@@ -409,11 +409,11 @@ void ArrtAppWindow::OnUpdateStatusBar()
 
     if (state.IsConnectionActive())
     {
-        RenderingTab->EditSessionButton->setIcon(QIcon(":/ArrtApplication/Icons/stop.svg"));
+        RenderingTab->EditSessionButton->setIcon(QIcon::fromTheme("stop"));
     }
     else
     {
-        RenderingTab->EditSessionButton->setIcon(QIcon(":/ArrtApplication/Icons/start.svg"));
+        RenderingTab->EditSessionButton->setIcon(QIcon::fromTheme("start"));
     }
 
     float fModelLoad = m_arrSession->GetModelLoadingProgress();
@@ -505,18 +505,28 @@ void ArrtAppWindow::CheckForNewVersion()
 
 void ArrtAppWindow::OnCheckForNewVersionResult(QString latestVersion)
 {
-    const QString currentVersion(ARRT_VERSION);
-
     if (latestVersion.startsWith('v', Qt::CaseInsensitive))
     {
         latestVersion = latestVersion.mid(1);
     }
 
-    if (currentVersion != latestVersion)
+    QStringList numbers = latestVersion.split('.', Qt::SkipEmptyParts);
+
+    if (numbers.size() != 3)
+        goto ask;
+
+    if (numbers[0].toUInt() > ARRT_VERSION_MAJOR)
+        goto ask;
+    if (numbers[1].toUInt() > ARRT_VERSION_MINOR)
+        goto ask;
+    if (numbers[2].toUInt() > ARRT_VERSION_PATCH)
+        goto ask;
+
+    return;
+
+ask:
+    if (QMessageBox::question(this, "New Version Available", QString("ARRT version %1 is now available.\n\nDo you want to open the GitHub release page?").arg(latestVersion), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
     {
-        if (QMessageBox::question(this, "New Version Available", QString("ARRT version %1 is now available.\n\nDo you want to open the GitHub release page?").arg(latestVersion), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
-        {
-            QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/releases"));
-        }
+        QDesktopServices::openUrl(QUrl("https://github.com/Azure/azure-remote-rendering-asset-tool/releases"));
     }
 }

@@ -137,13 +137,13 @@ QVariant StorageBrowserModel::data(const QModelIndex& index, int role /*= Qt::Di
         switch (entry->m_Type)
         {
             case StorageEntry::Type::Folder:
-                return QIcon(":/ArrtApplication/Icons/directory.svg");
+                return QIcon::fromTheme("directory");
 
             case StorageEntry::Type::ArrAsset:
-                return QIcon(":/ArrtApplication/Icons/remoterendering.png");
+                return QIcon::fromTheme("remoterendering");
 
             case StorageEntry::Type::SrcAsset:
-                return QIcon(":/ArrtApplication/Icons/model.svg");
+                return QIcon::fromTheme("model");
 
             default:
                 break;

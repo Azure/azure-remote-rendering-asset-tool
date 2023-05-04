@@ -53,21 +53,21 @@ void ArrtAppWindow::UpdateConversionsList()
         {
             case ConversionStatus::New:
             {
-                item->setIcon(QIcon(":/ArrtApplication/Icons/conversion.svg"));
+                item->setIcon(QIcon::fromTheme("conversion"));
                 text = "<new conversion>";
                 break;
             }
             case ConversionStatus::Running:
             {
                 const uint64_t duration = QDateTime::currentSecsSinceEpoch() - conv.m_startConversionTime;
-                item->setIcon(QIcon(":/ArrtApplication/Icons/conversion_running.svg"));
+                item->setIcon(QIcon::fromTheme("conversion_running"));
                 text += QString(" (running) [%1]").arg(SecToString(duration));
                 break;
             }
             case ConversionStatus::Finished:
             {
                 const uint64_t duration = conv.m_endConversionTime - conv.m_startConversionTime;
-                item->setIcon(QIcon(":/ArrtApplication/Icons/conversion_succeeded.svg"));
+                item->setIcon(QIcon::fromTheme("conversion_succeeded"));
                 text += QString(" (succeeded)");
 
                 if (duration > 0)
@@ -80,7 +80,7 @@ void ArrtAppWindow::UpdateConversionsList()
             case ConversionStatus::Failed:
             {
                 const uint64_t duration = conv.m_endConversionTime - conv.m_startConversionTime;
-                item->setIcon(QIcon(":/ArrtApplication/Icons/conversion_failed.svg"));
+                item->setIcon(QIcon::fromTheme("conversion_failed"));
                 text += QString(" (failed)");
 
                 if (duration > 0)
