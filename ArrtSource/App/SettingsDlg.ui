@@ -249,6 +249,9 @@
          <property name="text">
           <string> + </string>
          </property>
+         <property name="icon">
+          <iconset theme="new"/>
+         </property>
         </widget>
        </item>
        <item>
@@ -261,6 +264,9 @@
          </property>
          <property name="text">
           <string> X </string>
+         </property>
+         <property name="icon">
+          <iconset theme="remove"/>
          </property>
         </widget>
        </item>

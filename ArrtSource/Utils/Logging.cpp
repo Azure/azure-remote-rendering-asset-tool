@@ -69,22 +69,22 @@ void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& category, c
     switch (type)
     {
         case QtDebugMsg:
-            item->setIcon(QIcon(":/ArrtApplication/Icons/debug.svg"));
+            item->setIcon(QIcon::fromTheme("debug"));
             break;
         case QtInfoMsg:
-            item->setIcon(QIcon(":/ArrtApplication/Icons/info.svg"));
+            item->setIcon(QIcon::fromTheme("info"));
             m_maxLogType = std::max(m_maxLogType, 1);
             break;
         case QtWarningMsg:
-            item->setIcon(QIcon(":/ArrtApplication/Icons/warning.svg"));
+            item->setIcon(QIcon::fromTheme("warning"));
             m_maxLogType = std::max(m_maxLogType, 2);
             break;
         case QtCriticalMsg:
-            item->setIcon(QIcon(":/ArrtApplication/Icons/critical.svg"));
+            item->setIcon(QIcon::fromTheme("critical"));
             m_maxLogType = std::max(m_maxLogType, 3);
             break;
         case QtFatalMsg:
-            item->setIcon(QIcon(":/ArrtApplication/Icons/error.svg"));
+            item->setIcon(QIcon::fromTheme("error"));
             m_maxLogType = std::max(m_maxLogType, 4);
             break;
     }
@@ -94,16 +94,16 @@ void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& category, c
         switch (m_maxLogType)
         {
             case 1:
-                Tabs->setTabIcon(3, QIcon(":/ArrtApplication/Icons/info.svg"));
+                Tabs->setTabIcon(3, QIcon::fromTheme("info"));
                 break;
             case 2:
-                Tabs->setTabIcon(3, QIcon(":/ArrtApplication/Icons/warning.svg"));
+                Tabs->setTabIcon(3, QIcon::fromTheme("warning"));
                 break;
             case 3:
-                Tabs->setTabIcon(3, QIcon(":/ArrtApplication/Icons/critical.svg"));
+                Tabs->setTabIcon(3, QIcon::fromTheme("critical"));
                 break;
             case 4:
-                Tabs->setTabIcon(3, QIcon(":/ArrtApplication/Icons/error.svg"));
+                Tabs->setTabIcon(3, QIcon::fromTheme("error"));
                 break;
         }
     }

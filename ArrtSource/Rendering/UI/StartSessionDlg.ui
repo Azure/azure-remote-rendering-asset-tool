@@ -78,10 +78,6 @@
          <property name="text">
           <string>Extend Now</string>
          </property>
-         <property name="icon">
-          <iconset resource="../../Resources/ArrtApplication.qrc">
-           <normaloff>:/ArrtApplication/Icons/extendtime.svg</normaloff>:/ArrtApplication/Icons/extendtime.svg</iconset>
-         </property>
          <property name="checkable">
           <bool>false</bool>
          </property>
@@ -192,8 +188,7 @@
         <string>Auto Extend</string>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/autoextendtime.svg</normaloff>:/ArrtApplication/Icons/autoextendtime.svg</iconset>
+        <iconset theme="autoextendtime"/>
        </property>
       </widget>
      </item>
@@ -253,8 +248,7 @@
         <string>Start</string>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/start.svg</normaloff>:/ArrtApplication/Icons/start.svg</iconset>
+        <iconset theme="start"/>
        </property>
        <property name="default">
         <bool>true</bool>
@@ -267,8 +261,7 @@
         <string>Stop</string>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/stop.svg</normaloff>:/ArrtApplication/Icons/stop.svg</iconset>
+        <iconset theme="stop"/>
        </property>
       </widget>
      </item>

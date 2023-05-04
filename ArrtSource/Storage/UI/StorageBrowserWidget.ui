@@ -51,8 +51,8 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/new.svg</normaloff>:/ArrtApplication/Icons/new.svg</iconset>
+        <iconset theme="new">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -68,8 +68,8 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/remove.svg</normaloff>:/ArrtApplication/Icons/remove.svg</iconset>
+        <iconset theme="remove">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -85,8 +85,8 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/refresh.svg</normaloff>:/ArrtApplication/Icons/refresh.svg</iconset>
+        <iconset theme="refresh">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -115,8 +115,8 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/newfolder.svg</normaloff>:/ArrtApplication/Icons/newfolder.svg</iconset>
+        <iconset theme="newfolder">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -132,8 +132,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/session_error.svg</normaloff>:/ArrtApplication/Icons/session_error.svg</iconset>
+        <iconset theme="session_error"/>
        </property>
       </widget>
      </item>
@@ -146,8 +145,8 @@
         <string>Upload File...</string>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/upload.svg</normaloff>:/ArrtApplication/Icons/upload.svg</iconset>
+        <iconset theme="upload">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -160,8 +159,8 @@
         <string>Upload Folder...</string>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/directory.svg</normaloff>:/ArrtApplication/Icons/directory.svg</iconset>
+        <iconset theme="directory">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>

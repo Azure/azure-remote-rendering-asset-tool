@@ -22,8 +22,7 @@
         <string>Session...</string>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/start.svg</normaloff>:/ArrtApplication/Icons/start.svg</iconset>
+        <iconset theme="start"/>
        </property>
       </widget>
      </item>
@@ -46,8 +45,8 @@
         <string>Model</string>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/model.svg</normaloff>:/ArrtApplication/Icons/model.svg</iconset>
+        <iconset theme="model">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="popupMode">
         <enum>QToolButton::InstantPopup</enum>
@@ -102,8 +101,8 @@
         <string>Camera...</string>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/settings.svg</normaloff>:/ArrtApplication/Icons/settings.svg</iconset>
+        <iconset theme="settings">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -113,8 +112,8 @@
         <string>Inspect...</string>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/ArrtApplication.qrc">
-         <normaloff>:/ArrtApplication/Icons/inspector.svg</normaloff>:/ArrtApplication/Icons/inspector.svg</iconset>
+        <iconset theme="inspector">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>

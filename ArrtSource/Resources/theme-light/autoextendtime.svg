@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   viewBox="0 0 2048 2048"
+   width="32"
+   height="32"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="autoextendtime.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="3840"
+     inkscape:window-height="2019"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="20.85965"
+     inkscape:cx="29.92534"
+     inkscape:cy="0.14751022"
+     inkscape:window-x="3827"
+     inkscape:window-y="-13"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <path
+     fill="white"
+     d="M1024 384v640h384v128H896V384h128zm1024 640q0 140-37 272t-105 248-167 213-221 163h274v128h-512v-512h128v297q117-55 211-140t162-190 103-228 36-251q0-123-32-237t-90-214-141-182-181-140-214-91-238-32q-123 0-237 32t-214 90-182 141-140 181-91 214-32 238q0 150 48 289t136 253 207 197 266 124l-34 123q-166-45-304-140t-237-226-155-289-55-331q0-141 36-272t103-245 160-207 208-160T751 37t273-37q141 0 272 36t245 103 207 160 160 208 103 245 37 272z"
+     id="path2"
+     style="fill:#000000;fill-opacity:1" />
+</svg>
