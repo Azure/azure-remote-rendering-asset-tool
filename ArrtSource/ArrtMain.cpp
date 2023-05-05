@@ -68,7 +68,7 @@ public:
                 opt.state.setFlag(QStyle::StateFlag::State_HasFocus, false);
 
                 painter->setPen(QPen(m_HighlightColorLight, 1, Qt::PenStyle::DotLine));
-                painter->drawRect(opt.rect.adjusted(3, 3, -3, -3));
+                painter->drawRect(opt.rect.adjusted(2, 2, -2, -2));
             }
 
             QProxyStyle::drawControl(element, &opt, painter, widget);
@@ -241,7 +241,7 @@ static void SetStyleSheet(QApplication* /*app*/)
     palette.setColor(QPalette::Midlight, QColor(59, 59, 59, 255));
     palette.setColor(QPalette::Dark, QColor(37, 37, 37, 255));
     palette.setColor(QPalette::Mid, QColor(45, 45, 45, 255));
-    palette.setColor(QPalette::Text, QColor(200, 200, 200, 255));
+    palette.setColor(QPalette::Text, QColor(220, 220, 220, 255));
     palette.setColor(QPalette::BrightText, QColor(37, 37, 37, 255));
     palette.setColor(QPalette::ButtonText, QColor(230, 230, 230, 255));
     palette.setColor(QPalette::Base, QColor(25, 25, 30, 255));
@@ -256,7 +256,7 @@ static void SetStyleSheet(QApplication* /*app*/)
     palette.setBrush(QPalette::NoRole, NoRoleBrush);
     palette.setColor(QPalette::ToolTipBase, QColor(255, 255, 220, 255));
     palette.setColor(QPalette::ToolTipText, QColor(0, 0, 0, 255));
-    palette.setColor(QPalette::PlaceholderText, QColor(97, 97, 97, 255));
+    palette.setColor(QPalette::PlaceholderText, QColor(150, 150, 150, 255));
 
     palette.setColor(QPalette::Disabled, QPalette::WindowText, QColor(128, 128, 128, 255));
     palette.setColor(QPalette::Disabled, QPalette::Button, QColor(40, 40, 40, 255));
