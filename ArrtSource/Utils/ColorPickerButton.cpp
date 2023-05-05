@@ -39,6 +39,7 @@ ColorPickerButton::ColorPickerButton(QWidget* parent)
     connect(this, SIGNAL(clicked()), this, SLOT(OpenColorDialog()));
 
     SetColor(QColor(255, 255, 255), false);
+    setMinimumHeight(30);
 }
 
 void ColorPickerButton::OpenColorDialog()
@@ -93,8 +94,8 @@ void ColorPickerButton::paintEvent(QPaintEvent* e)
     QPushButton::paintEvent(e);
 
     QColor c = m_color;
-    const int borderW = 3;
-    QRect r = rect().adjusted(borderW, borderW, -borderW - 1, -borderW - 1);
+    const int borderW = 7;
+    QRect r = rect().adjusted(borderW, borderW, -borderW, -borderW);
     QPainter p(this);
 
     {
