@@ -23,10 +23,54 @@
        </property>
       </widget>
      </item>
-     <item row="14" column="0">
-      <widget class="QLabel" name="label_4">
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="SessionID">
+       <property name="accessibleName">
+        <string>Current session ID</string>
+       </property>
+       <property name="readOnly">
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>&lt;no session running&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Remaining Time (H:MM):</string>
+        <string>Max Session Duration (H:MM):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="MaxTime">
+       <property name="accessibleName">
+        <string>Max Session Duration (H colon MM)</string>
+       </property>
+       <property name="placeholderText">
+        <string>example: 0:15</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="AutoExtend">
+       <property name="text">
+        <string>Auto Extend</string>
+       </property>
+       <property name="icon">
+        <iconset theme="autoextendtime">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label">
+       <property name="accessibleName">
+        <string/>
+       </property>
+       <property name="text">
+        <string>Rendering VM Size:</string>
        </property>
       </widget>
      </item>
@@ -44,20 +88,6 @@
       <widget class="QLabel" name="ExtendLabel">
        <property name="text">
         <string>Extend By (H:MM):</string>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="0">
-      <widget class="QLabel" name="RefreshRateLabel">
-       <property name="text">
-        <string>Refresh Rate:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="ResolutionYLabel">
-       <property name="text">
-        <string>Resolution Y:</string>
        </property>
       </widget>
      </item>
@@ -111,42 +141,10 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="1">
-      <widget class="QSpinBox" name="RefreshRate">
-       <property name="accessibleName">
-        <string>Refresh Rate</string>
-       </property>
-       <property name="correctionMode">
-        <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
-       </property>
-       <property name="minimum">
-        <number>15</number>
-       </property>
-       <property name="maximum">
-        <number>60</number>
-       </property>
-       <property name="singleStep">
-        <number>5</number>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label">
-       <property name="accessibleName">
-        <string/>
-       </property>
+     <item row="10" column="0">
+      <widget class="QLabel" name="ResolutionYLabel">
        <property name="text">
-        <string>Rendering VM Size:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="MaxTime">
-       <property name="accessibleName">
-        <string>Max Session Duration (H colon MM)</string>
-       </property>
-       <property name="placeholderText">
-        <string>example: 0:15</string>
+        <string>Resolution Y:</string>
        </property>
       </widget>
      </item>
@@ -169,26 +167,36 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="SessionID">
-       <property name="accessibleName">
-        <string>Current session ID</string>
-       </property>
-       <property name="readOnly">
-        <bool>false</bool>
-       </property>
-       <property name="placeholderText">
-        <string>&lt;no session running&gt;</string>
+     <item row="11" column="0">
+      <widget class="QLabel" name="RefreshRateLabel">
+       <property name="text">
+        <string>Refresh Rate:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QCheckBox" name="AutoExtend">
-       <property name="text">
-        <string>Auto Extend</string>
+     <item row="11" column="1">
+      <widget class="QSpinBox" name="RefreshRate">
+       <property name="accessibleName">
+        <string>Refresh Rate</string>
        </property>
-       <property name="icon">
-        <iconset theme="autoextendtime"/>
+       <property name="correctionMode">
+        <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+       </property>
+       <property name="minimum">
+        <number>15</number>
+       </property>
+       <property name="maximum">
+        <number>60</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Remaining Time (H:MM):</string>
        </property>
       </widget>
      </item>
@@ -202,13 +210,6 @@
        </property>
        <property name="text">
         <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Max Session Duration (H:MM):</string>
        </property>
       </widget>
      </item>
@@ -248,7 +249,8 @@
         <string>Start</string>
        </property>
        <property name="icon">
-        <iconset theme="start"/>
+        <iconset theme="start">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="default">
         <bool>true</bool>
@@ -261,7 +263,8 @@
         <string>Stop</string>
        </property>
        <property name="icon">
-        <iconset theme="stop"/>
+        <iconset theme="stop">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
