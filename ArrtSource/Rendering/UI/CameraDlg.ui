@@ -16,6 +16,49 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Field of View:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSlider" name="FieldOfViewSlider">
+       <property name="accessibleName">
+        <string>Field of view</string>
+       </property>
+       <property name="minimum">
+        <number>15</number>
+       </property>
+       <property name="maximum">
+        <number>160</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="FovLabel">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>FOV Label</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Near Plane:</string>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="1">
       <widget class="QSlider" name="NearPlaneSlider">
        <property name="accessibleName">
@@ -35,10 +78,17 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="2">
-      <widget class="QLabel" name="CamSpeedLabel">
+     <item row="1" column="2">
+      <widget class="QLabel" name="NearPlaneLabel">
        <property name="text">
-        <string>CamSpeed Label</string>
+        <string>NearPlane Label</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Far Plane:</string>
        </property>
       </widget>
      </item>
@@ -61,17 +111,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_5">
+     <item row="2" column="2">
+      <widget class="QLabel" name="FarPlaneLabel">
        <property name="text">
-        <string>Far Plane:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Near Plane:</string>
+        <string>FarPlane Label</string>
        </property>
       </widget>
      </item>
@@ -101,53 +144,10 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="FovLabel">
-       <property name="minimumSize">
-        <size>
-         <width>90</width>
-         <height>0</height>
-        </size>
-       </property>
+     <item row="3" column="2">
+      <widget class="QLabel" name="CamSpeedLabel">
        <property name="text">
-        <string>FOV Label</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Field of View:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QLabel" name="FarPlaneLabel">
-       <property name="text">
-        <string>FarPlane Label</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QLabel" name="NearPlaneLabel">
-       <property name="text">
-        <string>NearPlane Label</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QSlider" name="FieldOfViewSlider">
-       <property name="accessibleName">
-        <string>Field of view</string>
-       </property>
-       <property name="minimum">
-        <number>15</number>
-       </property>
-       <property name="maximum">
-        <number>160</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <string>CamSpeed Label</string>
        </property>
       </widget>
      </item>

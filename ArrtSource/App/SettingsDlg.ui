@@ -32,34 +32,67 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="6" column="1">
-      <widget class="QComboBox" name="ArrRegion">
-       <property name="toolTip">
-        <string>The region where the remote rendering session should be started. Choose the region that is closest to your physical location.</string>
-       </property>
-       <property name="accessibleName">
-        <string>ARR Rendering Region</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_3">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_9">
        <property name="text">
-        <string>Account Domain:</string>
+        <string>Connection Profile:</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>Blob Endpoint:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="12" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item row="0" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <spacer name="horizontalSpacer_2">
+        <widget class="QComboBox" name="ProfileDropDown">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>List of connection profiles to switch between accounts.</string>
+         </property>
+         <property name="accessibleName">
+          <string>Connection Profile</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="AddProfile">
+         <property name="toolTip">
+          <string>Adds a connection profile.</string>
+         </property>
+         <property name="accessibleName">
+          <string>Add Connection Profile</string>
+         </property>
+         <property name="text">
+          <string> + </string>
+         </property>
+         <property name="icon">
+          <iconset theme="new">
+           <normaloff>.</normaloff>.</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="RemoveProfile">
+         <property name="toolTip">
+          <string>Removes the currently selected connection profile.</string>
+         </property>
+         <property name="accessibleName">
+          <string>Remove Connection Profile</string>
+         </property>
+         <property name="text">
+          <string> X </string>
+         </property>
+         <property name="icon">
+          <iconset theme="remove">
+           <normaloff>.</normaloff>.</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_4">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -71,23 +104,45 @@
          </property>
         </spacer>
        </item>
-       <item>
-        <widget class="QPushButton" name="TestStorage">
-         <property name="toolTip">
-          <string>Tests whether the connection to the storage account works.</string>
-         </property>
-         <property name="text">
-          <string>Test Storage Account Settings</string>
-         </property>
-         <property name="autoDefault">
-          <bool>false</bool>
-         </property>
-         <property name="default">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
       </layout>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>ARR Account:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Account ID:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="ArrAccountID">
+       <property name="toolTip">
+        <string>The ID for the remote rendering account.</string>
+       </property>
+       <property name="accessibleName">
+        <string>ARR Account ID</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Account Key:</string>
+       </property>
+      </widget>
      </item>
      <item row="4" column="1">
       <widget class="QLineEdit" name="ArrAccountKey">
@@ -102,10 +157,37 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="label_5">
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Name:</string>
+        <string>Account Domain:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QComboBox" name="ArrAccountDomain">
+       <property name="toolTip">
+        <string>Where the remote rendering account was set up.</string>
+       </property>
+       <property name="accessibleName">
+        <string>ARR Account Domain</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Region:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QComboBox" name="ArrRegion">
+       <property name="toolTip">
+        <string>The region where the remote rendering session should be started. Choose the region that is closest to your physical location.</string>
+       </property>
+       <property name="accessibleName">
+        <string>ARR Rendering Region</string>
        </property>
       </widget>
      </item>
@@ -142,20 +224,27 @@
        </item>
       </layout>
      </item>
-     <item row="5" column="1">
-      <widget class="QComboBox" name="ArrAccountDomain">
-       <property name="toolTip">
-        <string>Where the remote rendering account was set up.</string>
-       </property>
-       <property name="accessibleName">
-        <string>ARR Account Domain</string>
+     <item row="8" column="0">
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>Storage Account:</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_9">
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Connection Profile:</string>
+        <string>Name:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QLineEdit" name="StorageName">
+       <property name="toolTip">
+        <string>The name of the storage account to connect to.</string>
+       </property>
+       <property name="accessibleName">
+        <string>Storage Account Name</string>
        </property>
       </widget>
      </item>
@@ -163,13 +252,6 @@
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Key:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Account Key:</string>
        </property>
       </widget>
      </item>
@@ -186,6 +268,13 @@
        </property>
       </widget>
      </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Blob Endpoint:</string>
+       </property>
+      </widget>
+     </item>
      <item row="11" column="1">
       <widget class="QLineEdit" name="StorageEndpoint">
        <property name="toolTip">
@@ -199,79 +288,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_8">
-       <property name="text">
-        <string>ARR Account:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>Storage Account:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Region:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item row="12" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QComboBox" name="ProfileDropDown">
-         <property name="minimumSize">
-          <size>
-           <width>150</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>List of connection profiles to switch between accounts.</string>
-         </property>
-         <property name="accessibleName">
-          <string>Connection Profile</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="AddProfile">
-         <property name="toolTip">
-          <string>Adds a connection profile.</string>
-         </property>
-         <property name="accessibleName">
-          <string>Add Connection Profile</string>
-         </property>
-         <property name="text">
-          <string> + </string>
-         </property>
-         <property name="icon">
-          <iconset theme="new"/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="RemoveProfile">
-         <property name="toolTip">
-          <string>Removes the currently selected connection profile.</string>
-         </property>
-         <property name="accessibleName">
-          <string>Remove Connection Profile</string>
-         </property>
-         <property name="text">
-          <string> X </string>
-         </property>
-         <property name="icon">
-          <iconset theme="remove"/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_4">
+        <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -283,41 +303,23 @@
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="QPushButton" name="TestStorage">
+         <property name="toolTip">
+          <string>Tests whether the connection to the storage account works.</string>
+         </property>
+         <property name="text">
+          <string>Test Storage Account Settings</string>
+         </property>
+         <property name="autoDefault">
+          <bool>false</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="ArrAccountID">
-       <property name="toolTip">
-        <string>The ID for the remote rendering account.</string>
-       </property>
-       <property name="accessibleName">
-        <string>ARR Account ID</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Account ID:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QLineEdit" name="StorageName">
-       <property name="toolTip">
-        <string>The name of the storage account to connect to.</string>
-       </property>
-       <property name="accessibleName">
-        <string>Storage Account Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_11">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
