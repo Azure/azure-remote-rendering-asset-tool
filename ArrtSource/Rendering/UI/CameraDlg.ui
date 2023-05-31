@@ -26,7 +26,10 @@
      <item row="0" column="1">
       <widget class="QSlider" name="FieldOfViewSlider">
        <property name="accessibleName">
-        <string>Field of view</string>
+        <string>Field of view in degree</string>
+       </property>
+       <property name="accessibleDescription">
+        <string>acessible description</string>
        </property>
        <property name="minimum">
         <number>15</number>
@@ -62,7 +65,7 @@
      <item row="1" column="1">
       <widget class="QSlider" name="NearPlaneSlider">
        <property name="accessibleName">
-        <string>Near plane distance</string>
+        <string>Near plane distance in centimeters</string>
        </property>
        <property name="minimum">
         <number>1</number>
@@ -95,7 +98,7 @@
      <item row="2" column="1">
       <widget class="QSlider" name="FarPlaneSlider">
        <property name="accessibleName">
-        <string>Far plane distance</string>
+        <string>Far plane distance in centimeters</string>
        </property>
        <property name="minimum">
         <number>10</number>
@@ -161,7 +164,7 @@
      <item row="4" column="1">
       <widget class="QSlider" name="PointSizeSlider">
        <property name="accessibleName">
-        <string>Point Size</string>
+        <string>Point Size Scale</string>
        </property>
        <property name="minimum">
         <number>0</number>
