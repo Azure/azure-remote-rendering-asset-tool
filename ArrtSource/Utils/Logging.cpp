@@ -58,11 +58,8 @@ void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& category, c
 {
     QString line;
 
-    line += QString("%1: ").arg(category);
-    line += msg;
 
     QListWidgetItem* item = new QListWidgetItem();
-    item->setText(line);
 
     int prevIcon = m_maxLogType;
 
@@ -70,24 +67,34 @@ void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& category, c
     {
         case QtDebugMsg:
             item->setIcon(QIcon::fromTheme("debug"));
+            line = "Debug: ";
             break;
         case QtInfoMsg:
             item->setIcon(QIcon::fromTheme("info"));
             m_maxLogType = std::max(m_maxLogType, 1);
+            line = "Info: ";
             break;
         case QtWarningMsg:
             item->setIcon(QIcon::fromTheme("warning"));
             m_maxLogType = std::max(m_maxLogType, 2);
+            line = "Warning: ";
             break;
         case QtCriticalMsg:
             item->setIcon(QIcon::fromTheme("critical"));
             m_maxLogType = std::max(m_maxLogType, 3);
+            line = "Critical: ";
             break;
         case QtFatalMsg:
             item->setIcon(QIcon::fromTheme("error"));
             m_maxLogType = std::max(m_maxLogType, 4);
+            line = "Error: ";
             break;
     }
+
+    //line += QString("%1: ").arg(category);
+    line += msg;
+
+    item->setText(line);
 
     if (prevIcon != m_maxLogType)
     {
