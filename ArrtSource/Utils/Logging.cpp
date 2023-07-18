@@ -54,7 +54,7 @@ void ArrtAppWindow::LogMessageHandlerStatic(QtMsgType type, const QMessageLogCon
                               { ArrtAppWindow::s_instance->LogMessageHandler(type, category, msg); });
 }
 
-void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& category, const QString& msg)
+void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& /*category*/, const QString& msg)
 {
     QString line;
 
