@@ -5,6 +5,7 @@
 #include <QShortcut>
 #include <Storage/StorageAccount.h>
 #include <Storage/UI/StorageBrowserWidget.h>
+#include <Utils/Logging.h>
 
 StorageBrowserWidget::StorageBrowserWidget(QWidget* parent /*= {}*/)
     : QWidget(parent)
@@ -366,4 +367,7 @@ void StorageBrowserWidget::on_RefreshButton_clicked()
 {
     m_storageAccount->ClearCache();
     m_storageModel.RefreshModel(false);
+
+    ScreenReaderAlert("Storage", "Storage Container Refreshed");
+    ScreenReaderAlert("Storage", nullptr);
 }
