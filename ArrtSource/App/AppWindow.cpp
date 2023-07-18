@@ -298,21 +298,21 @@ void ArrtAppWindow::OnUpdateStatusBar()
         case StorageConnectionStatus::Authenticated:
             if (m_numFileUploads > 0)
             {
-                m_statusStorageAccount->setText(QString("<html><head/><body><p>Storage Account: <span style=\"color:#ffaa00;\">Uploading %1 files: %2%</span></p></body></html>").arg(m_numFileUploads).arg(m_fileUploadPercentage * 100.0, 0, 'f', 2));
+                m_statusStorageAccount->setText(QString("<html><head/><body><p>Storage: <span style=\"color:#ffaa00;\">Uploading %1 files: %2%</span></p></body></html>").arg(m_numFileUploads).arg(m_fileUploadPercentage * 100.0, 0, 'f', 2));
             }
             else
             {
-                m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#00aa00;\">Connected</span></p></body></html>");
+                m_statusStorageAccount->setText("<html><head/><body><p>Storage: <span style=\"color:#00aa00;\">Connected</span></p></body></html>");
             }
             break;
         case StorageConnectionStatus::CheckingCredentials:
-            m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#ffaa00;\">Checking...</span></p></body></html>");
+            m_statusStorageAccount->setText("<html><head/><body><p>Storage: <span style=\"color:#ffaa00;\">Checking...</span></p></body></html>");
             break;
         case StorageConnectionStatus::InvalidCredentials:
-            m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#aa0000;\">Invalid Credentials</span></p></body></html>");
+            m_statusStorageAccount->setText("<html><head/><body><p>Storage: <span style=\"color:#aa0000;\">Invalid Credentials</span></p></body></html>");
             break;
         case StorageConnectionStatus::NotAuthenticated:
-            m_statusStorageAccount->setText("<html><head/><body><p>Storage Account: <span style=\"color:#7e7e7e;\">Not Connected</span></p></body></html>");
+            m_statusStorageAccount->setText("<html><head/><body><p>Storage: <span style=\"color:#7e7e7e;\">Not Connected</span></p></body></html>");
             break;
         default:
             break;
@@ -327,20 +327,20 @@ void ArrtAppWindow::OnUpdateStatusBar()
 
             if (activeConversions > 0)
             {
-                m_statusArrAccount->setText(QString("<html><head/><body><p>ARR Account: <span style=\"color:#ffaa00;\">%1 conversions running</span></p></body></html>").arg(activeConversions));
+                m_statusArrAccount->setText(QString("<html><head/><body><p>ARR: <span style=\"color:#ffaa00;\">%1 conversions running</span></p></body></html>").arg(activeConversions));
             }
             else
             {
-                m_statusArrAccount->setText("<html><head/><body><p>ARR Account: <span style=\"color:#00aa00;\">Connected</span></p></body></html>");
+                m_statusArrAccount->setText("<html><head/><body><p>ARR: <span style=\"color:#00aa00;\">Connected</span></p></body></html>");
             }
             break;
         }
 
         case ArrConnectionStatus::CheckingCredentials:
-            m_statusArrAccount->setText("<html><head/><body><p>ARR Account: <span style=\"color:#ffaa00;\">Checking...</span></p></body></html>");
+            m_statusArrAccount->setText("<html><head/><body><p>ARR: <span style=\"color:#ffaa00;\">Checking...</span></p></body></html>");
             break;
         case ArrConnectionStatus::InvalidCredentials:
-            m_statusArrAccount->setText("<html><head/><body><p>ARR Account: <span style=\"color:#aa0000;\">Invalid Credentials</span></p></body></html>");
+            m_statusArrAccount->setText("<html><head/><body><p>ARR: <span style=\"color:#aa0000;\">Invalid Credentials</span></p></body></html>");
             break;
         case ArrConnectionStatus::NotAuthenticated:
             m_statusArrAccount->setText("<html><head/><body><p>ARR: <span style=\"color:#7e7e7e;\">Not Connected</span></p></body></html>");
@@ -366,15 +366,15 @@ void ArrtAppWindow::OnUpdateStatusBar()
             ScreenReaderAlert("Session", "ARR connection failed");
             break;
         case ArrConnectionLogic::State::OpeningSession:
-            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Opening session...</span></p></body></html>");
+            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Opening...</span></p></body></html>");
             ScreenReaderAlert("Session", nullptr);
             break;
         case ArrConnectionLogic::State::SessionStarting:
-            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Session starting...</span></p></body></html>");
+            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#ffaa00;\">Starting...</span></p></body></html>");
             ScreenReaderAlert("Session", nullptr);
             break;
         case ArrConnectionLogic::State::SessionReady:
-            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#00aa00;\">Session ready</span></p></body></html>");
+            m_statusArrSession->setText("<html><head/><body><p>Session: <span style=\"color:#00aa00;\">Ready</span></p></body></html>");
             ScreenReaderAlert("Session", nullptr);
             break;
         case ArrConnectionLogic::State::RuntimeConnecting:

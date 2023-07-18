@@ -22,7 +22,8 @@
         <string>Session...</string>
        </property>
        <property name="icon">
-        <iconset theme="start"/>
+        <iconset theme="start">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -170,94 +171,125 @@
              <string>Performance Data:</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_7">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item>
-              <widget class="QLabel" name="LatencyPoseToReceiveLabel">
-               <property name="toolTip">
-                <string>Time between the client's request for a new remote frame and the arrival of the requested frame.</string>
+              <widget class="QScrollArea" name="scrollArea">
+               <property name="widgetResizable">
+                <bool>true</bool>
                </property>
-               <property name="text">
-                <string>Latency Pose To Receive: N/A</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="LatencyReceiveToPresentLabel">
-               <property name="toolTip">
-                <string>Time between arrival of a new frame and its actual usage.</string>
-               </property>
-               <property name="text">
-                <string>Latency Receive To Present: N/A</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="TimeSinceLastPresentLabel">
-               <property name="toolTip">
-                <string>The time between subsequent calls to PresentFrame on the CPU.</string>
-               </property>
-               <property name="text">
-                <string>Time Since Last Present: N/A</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="VideoFrameReusedCountLabel">
-               <property name="toolTip">
-                <string>Number of received frames in the last second that were used on the device more than once.</string>
-               </property>
-               <property name="text">
-                <string>Video Frame Reused Count: N/A</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="VideoFramesSkippedLabel">
-               <property name="toolTip">
-                <string>Number of received frames in the last second that were decoded, but not shown on display because a newer frame has arrived.</string>
-               </property>
-               <property name="text">
-                <string>Video Frames Skipped: N/A</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="VideoFramesReceivedLabel">
-               <property name="toolTip">
-                <string>The number of frames received from the server in the last second.</string>
-               </property>
-               <property name="text">
-                <string>Video Frames Received: N/A</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="VideoFramesDiscardedLabel">
-               <property name="toolTip">
-                <string>Very similar to FrameStatistics.VideoFramesSkipped, but the reason for being discarded is that a frame came in so late that it couldn't even be correlated with any pending pose anymore. If this happens, there is some severe network contention.</string>
-               </property>
-               <property name="text">
-                <string>Video Frames Discarded: N/A</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="VideoFrameMinDeltaLabel">
-               <property name="toolTip">
-                <string>Minimum amount of time between two consecutive frames arriving during the last second.</string>
-               </property>
-               <property name="text">
-                <string>Video Frame Min Delta: N/A</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="VideoFrameMaxDeltaLabel">
-               <property name="toolTip">
-                <string>Maximum amount of time between two consecutive frames arriving during the last second.</string>
-               </property>
-               <property name="text">
-                <string>Video Frame Max Delta: N/A</string>
-               </property>
+               <widget class="QWidget" name="scrollAreaWidgetContents">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>493</width>
+                  <height>244</height>
+                 </rect>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_3">
+                 <item>
+                  <widget class="QLabel" name="LatencyPoseToReceiveLabel">
+                   <property name="toolTip">
+                    <string>Time between the client's request for a new remote frame and the arrival of the requested frame.</string>
+                   </property>
+                   <property name="text">
+                    <string>Latency Pose To Receive: N/A</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="LatencyReceiveToPresentLabel">
+                   <property name="toolTip">
+                    <string>Time between arrival of a new frame and its actual usage.</string>
+                   </property>
+                   <property name="text">
+                    <string>Latency Receive To Present: N/A</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="TimeSinceLastPresentLabel">
+                   <property name="toolTip">
+                    <string>The time between subsequent calls to PresentFrame on the CPU.</string>
+                   </property>
+                   <property name="text">
+                    <string>Time Since Last Present: N/A</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="VideoFrameReusedCountLabel">
+                   <property name="toolTip">
+                    <string>Number of received frames in the last second that were used on the device more than once.</string>
+                   </property>
+                   <property name="text">
+                    <string>Video Frame Reused Count: N/A</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="VideoFramesSkippedLabel">
+                   <property name="toolTip">
+                    <string>Number of received frames in the last second that were decoded, but not shown on display because a newer frame has arrived.</string>
+                   </property>
+                   <property name="text">
+                    <string>Video Frames Skipped: N/A</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="VideoFramesReceivedLabel">
+                   <property name="toolTip">
+                    <string>The number of frames received from the server in the last second.</string>
+                   </property>
+                   <property name="text">
+                    <string>Video Frames Received: N/A</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="VideoFramesDiscardedLabel">
+                   <property name="toolTip">
+                    <string>Very similar to FrameStatistics.VideoFramesSkipped, but the reason for being discarded is that a frame came in so late that it couldn't even be correlated with any pending pose anymore. If this happens, there is some severe network contention.</string>
+                   </property>
+                   <property name="text">
+                    <string>Video Frames Discarded: N/A</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="VideoFrameMinDeltaLabel">
+                   <property name="toolTip">
+                    <string>Minimum amount of time between two consecutive frames arriving during the last second.</string>
+                   </property>
+                   <property name="text">
+                    <string>Video Frame Min Delta: N/A</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="VideoFrameMaxDeltaLabel">
+                   <property name="toolTip">
+                    <string>Maximum amount of time between two consecutive frames arriving during the last second.</string>
+                   </property>
+                   <property name="text">
+                    <string>Video Frame Max Delta: N/A</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
               </widget>
              </item>
             </layout>
@@ -319,7 +351,7 @@
                <x>0</x>
                <y>0</y>
                <width>478</width>
-               <height>1118</height>
+               <height>1022</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
