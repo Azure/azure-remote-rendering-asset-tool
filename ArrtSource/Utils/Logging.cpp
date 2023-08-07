@@ -36,6 +36,7 @@ void ArrtAppWindow::on_ClearLogButton_clicked()
 {
     LogTab->LogList->clear();
     LogTab->LogList->addItem("The log has been cleared."); // for accessibility reasons always have one item in the log
+    ScreenReaderAlert("Logging", "The log has been cleared.");
     m_logClearMsgAdded = true;
 
     Tabs->setTabIcon(3, QIcon());
