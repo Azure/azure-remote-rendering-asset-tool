@@ -289,6 +289,9 @@ void StorageAccount::ListContainers(std::vector<QString>& containers) const
 
 void StorageAccount::ListBlobDirectory(const QString& containerName, const QString& prefixPath, std::vector<StorageBlobInfo>& directories, std::vector<StorageBlobInfo>& files) const
 {
+    if (m_azStorageServiceClient == nullptr)
+        return;
+
     const QString cacheKey = containerName + "##" + prefixPath;
 
     auto cacheIt = m_cachedBlobs.find(cacheKey);
@@ -380,4 +383,24 @@ QString StorageAccount::CreateSasURL(const QString& containerName, const QString
     uriAndSas.append(sas);
 
     return uriAndSas;
+}
+
+void StorageAccountMock::ConnectToStorageAccount()
+{
+    m_connectionStatus = StorageConnectionStatus::Authenticated;
+}
+
+bool StorageAccountMock::CreateContainer(const QString&, QString&)
+{
+    return true;
+}
+
+bool StorageAccountMock::DeleteContainer(const QString&, QString&)
+{
+    return true;
+}
+
+bool StorageAccountMock::CreateTextItem(const QString&, const QString&, const QString&, QString&)
+{
+    return true;
 }

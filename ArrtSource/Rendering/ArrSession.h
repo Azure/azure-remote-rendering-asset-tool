@@ -17,6 +17,7 @@ namespace Microsoft::Azure::RemoteRendering
 
 
 class ArrAccount;
+class ArrAccountMock;
 class QTimer;
 class SceneState;
 
@@ -67,7 +68,7 @@ private Q_SLOTS:
     void OnDeinitGrahpcs();
 
 public:
-    ArrSession(ArrAccount* arrClient, SceneState* sceneState);
+    ArrSession(ArrAccount* arrAccount, SceneState* sceneState);
     ~ArrSession();
 
     const ArrConnectionLogic& GetConnectionState() const { return m_ConnectionLogic; }

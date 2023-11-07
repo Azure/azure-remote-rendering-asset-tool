@@ -286,7 +286,10 @@ void SceneState::PickEntity(int x, int y)
         Q_EMIT PickedEntity();
     };
 
-    m_client->RayCastQueryAsync(rc, onRaycastResult);
+    if (m_client)
+    {
+        m_client->RayCastQueryAsync(rc, onRaycastResult);
+    }
 }
 
 void SceneState::RenderTo(ID3D11RenderTargetView* renderTarget)

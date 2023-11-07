@@ -25,7 +25,7 @@
 
 ArrtAppWindow* ArrtAppWindow::s_instance = nullptr;
 
-ArrtAppWindow::ArrtAppWindow()
+ArrtAppWindow::ArrtAppWindow(const ArrtCommandLineOptions& cmdLineOptions)
 {
     setupUi(this);
 
@@ -36,15 +36,27 @@ ArrtAppWindow::ArrtAppWindow()
 
     LoadSettings();
 
-    m_storageAccount = std::make_unique<StorageAccount>([this](int numFiles, float percentage)
-                                                        { FileUploadStatusCallback(numFiles, percentage); });
+    
     m_arrSettings = std::make_unique<ArrSettings>();
     m_arrSettings->LoadSettings();
 
-    m_arrAclient = std::make_unique<ArrAccount>();
+    if (cmdLineOptions.mock)
+    {
+        m_arrAclient = std::make_unique<ArrAccountMock>();
+        m_storageAccount = std::make_unique<StorageAccountMock>();
+        m_conversionManager = std::make_unique<ConversionManagerMock>(m_storageAccount.get());
+    }
+    else
+	{
+        m_arrAclient = std::make_unique<ArrAccount>();
+        m_storageAccount = std::make_unique<StorageAccount>([this](int numFiles, float percentage)
+                                                            { FileUploadStatusCallback(numFiles, percentage); });
+        m_conversionManager = std::make_unique<ConversionManager>(m_storageAccount.get(), m_arrAclient.get());
+	}
+
     m_sceneState = std::make_unique<SceneState>(m_arrSettings.get());
     m_arrSession = std::make_unique<ArrSession>(m_arrAclient.get(), m_sceneState.get());
-    m_conversionManager = std::make_unique<ConversionManager>(m_storageAccount.get(), m_arrAclient.get());
+    
 
     // setup menu bar
     {

@@ -11,10 +11,8 @@
 #include <Storage/UI/StorageBrowserModel.h>
 #include <Utils/Logging.h>
 
-ConversionManager::ConversionManager(StorageAccount* storageAccount, ArrAccount* arrClient)
+ConversionManager::ConversionManager()
 {
-    m_storageAccount = storageAccount;
-    m_arrClient = arrClient;
     m_conversions.resize(1);
 
     m_checkConversionStateTimer.setInterval(10000);
@@ -23,11 +21,20 @@ ConversionManager::ConversionManager(StorageAccount* storageAccount, ArrAccount*
     m_updateConversionListTimer.setInterval(1000);
     connect(&m_updateConversionListTimer, &QTimer::timeout, this, [this]()
             { Q_EMIT ListChanged(); });
+}
 
-    connect(arrClient, &ArrAccount::ConnectionStatusChanged, this, [this]()
+ConversionManager::ConversionManager(StorageAccount* storageAccount, ArrAccount* arrAccount)
+    : ConversionManager()
+{
+    m_storageAccount = storageAccount;
+    m_arrAccount = arrAccount;
+
+    connect(m_arrAccount, &ArrAccount::ConnectionStatusChanged, this, [this]()
             {
-                if (m_arrClient->GetConnectionStatus() != ArrConnectionStatus::Authenticated)
+                if (m_arrAccount->GetConnectionStatus() != ArrConnectionStatus::Authenticated)
+                {
                     return;
+                }
 
                 auto resultCallback = [this](RR::Status status, RR::ApiHandle<RR::ConversionPropertiesArrayResult> result)
                 {
@@ -38,7 +45,7 @@ ConversionManager::ConversionManager(StorageAccount* storageAccount, ArrAccount*
                                               });
                 };
 
-                m_arrClient->GetClient()->GetCurrentConversionsAsync(resultCallback); });
+                m_arrAccount->GetClient()->GetCurrentConversionsAsync(resultCallback); });
 }
 
 ConversionManager::~ConversionManager() = default;
@@ -96,6 +103,7 @@ bool ConversionManager::StartConversion()
     Q_EMIT SelectedChanged();
 
     m_conversions.push_back({});
+    SetupConversion(m_conversions.back());
     Q_EMIT ListChanged();
 
     return true;
@@ -117,18 +125,18 @@ const char* ToString(Axis axis)
 {
     switch (axis)
     {
-    case Axis::PosX:
-        return "+X";
-    case Axis::NegX:
-        return "-X";
-    case Axis::PosY:
-        return "+Y";
-    case Axis::NegY:
-        return "-Y";
-    case Axis::PosZ:
-        return "+Z";
-    case Axis::NegZ:
-        return "-Z";
+        case Axis::PosX:
+            return "+X";
+        case Axis::NegX:
+            return "-X";
+        case Axis::PosY:
+            return "+Y";
+        case Axis::NegY:
+            return "-Y";
+        case Axis::PosZ:
+            return "+Z";
+        case Axis::NegZ:
+            return "-Z";
     }
 
     return "?";
@@ -222,7 +230,14 @@ void ConversionManager::OnCheckConversions()
 
         anyRunning = true;
 
-        m_arrClient->GetClient()->GetConversionPropertiesAsync(conv.m_conversionGuid.toStdString(), [this, conversionIdx](RR::Status status, RR::ApiHandle<RR::ConversionPropertiesResult> result)
+        if (m_arrAccount == nullptr)
+        {
+            // if there is no client, we mock the conversion as being finished
+            conv.m_status = ConversionStatus::Finished;
+            continue;
+        }
+
+        m_arrAccount->GetClient()->GetConversionPropertiesAsync(conv.m_conversionGuid.toStdString(), [this, conversionIdx](RR::Status status, RR::ApiHandle<RR::ConversionPropertiesResult> result)
                                                                { QMetaObject::invokeMethod(QApplication::instance(), [this, conversionIdx, status, result]()
                                                                                            { SetConversionStatus((int)conversionIdx, status, result); }); });
     }
@@ -399,7 +414,10 @@ bool ConversionManager::StartConversionInternal()
                                       Q_EMIT SelectedChanged(); });
     };
 
-    m_arrClient->GetClient()->StartAssetConversionAsync(options, onConversionStartRequestFinished);
+    if (m_arrAccount != nullptr)
+    {
+        m_arrAccount->GetClient()->StartAssetConversionAsync(options, onConversionStartRequestFinished);
+    }
 
     m_checkConversionStateTimer.start();
     m_updateConversionListTimer.start();
@@ -553,6 +571,59 @@ void ConversionManager::GetCurrentConversionsResult(RR::Status status, RR::ApiHa
         m_checkConversionStateTimer.start();
         m_updateConversionListTimer.start();
     }
+}
+
+
+void ConversionManager::SetupConversion(Conversion&)
+{
+}
+
+ConversionManagerMock::ConversionManagerMock(StorageAccount* storageAccount)
+{
+    ConversionManager();
+    m_storageAccount = storageAccount;
+    CreateMockConversion(m_conversions[0]);
+}
+
+
+void ConversionManagerMock::OnCheckConversions()
+{
+    for (size_t conversionIdx = 0; conversionIdx < m_conversions.size(); ++conversionIdx)
+    {
+        auto& conv = m_conversions[conversionIdx];
+
+        if (conv.m_status != ConversionStatus::Running || conv.m_conversionGuid.isEmpty())
+            continue;
+
+        conv.m_status = ConversionStatus::Finished;
+    }
+
+    Q_EMIT ListChanged();
+
+    if (GetSelectedConversion().m_status != ConversionStatus::New)
+    {
+        Q_EMIT SelectedChanged();
+    }
+
+    // no need to keep the timer running
+    m_checkConversionStateTimer.stop();
+    m_updateConversionListTimer.stop();
+
+    QApplication::alert(QApplication::topLevelWidgets()[0], 2000);
+}
+
+void ConversionManagerMock::SetupConversion(Conversion& conv)
+{
+    CreateMockConversion(conv);
+}
+
+void ConversionManagerMock::CreateMockConversion(Conversion& conv)
+{
+    conv.m_sourceAssetContainer = "mock_container";
+    conv.m_sourceAsset = "mock_source.asset";
+    conv.m_inputFolder = "mock/input/folder";
+    conv.m_outputFolder = "mock/output/folder";
+    conv.m_outputFolderContainer = "mock_output_container";
 }
 
 QString Conversion::GetPlaceholderName() const
