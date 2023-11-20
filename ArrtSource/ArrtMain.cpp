@@ -1,6 +1,7 @@
 #include <App/AppWindow.h>
 #include <ArrtVersion.h>
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QPainter>
 #include <QProxyStyle>
 #include <QStyleFactory>
@@ -270,6 +271,54 @@ static void SetStyleSheet(QApplication* /*app*/)
     QApplication::setPalette(palette);
 }
 
+/// Convert command line arguments from WinMain syntax to argc, argv
+struct CommandLineArguments
+{
+    int m_argc;
+    char** m_argv;
+
+    CommandLineArguments()
+    {
+        LPWSTR* szArglist = CommandLineToArgvW(GetCommandLineW(), &m_argc);
+        m_argv = new char*[m_argc];
+
+        for (int i = 0; i < m_argc; i++)
+        {
+            size_t len = wcslen(szArglist[i]);
+            m_argv[i] = new char[len + 1];
+            m_argv[i][len] = '\0';
+            wcstombs(m_argv[i], szArglist[i], len);
+        }
+    }
+
+    ~CommandLineArguments()
+    {
+        for (int i = 0; i < m_argc; i++)
+        {
+            delete[] m_argv[i];
+        }
+        delete[] m_argv;
+    }
+};
+
+ArrtCommandLineOptions GetCommandLineOptions(const QApplication& app)
+{
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Azure Remote Rendering Toolkit");
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    // Mock option (-m, --mock)
+    QCommandLineOption mockOption({"m", "mock"}, "Start ARRT on mock mode.");
+    parser.addOption(mockOption);
+    parser.process(app);
+
+    ArrtCommandLineOptions cmdLineOptions;
+    cmdLineOptions.m_mock = parser.isSet(mockOption);
+    return cmdLineOptions;
+}
+
+
 int WinMain(HINSTANCE, HINSTANCE, char*, int)
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -283,12 +332,13 @@ int WinMain(HINSTANCE, HINSTANCE, char*, int)
     QCoreApplication::setOrganizationDomain("https://github.com/azure/azure-remote-rendering-asset-tool");
     QCoreApplication::setApplicationVersion(ARRT_VERSION);
 
-    int argc = 0;
-    QApplication app(argc, 0);
+    CommandLineArguments cmdLineArgs;
+    QApplication app(cmdLineArgs.m_argc, cmdLineArgs.m_argv);
 
     SetStyleSheet(&app);
+    auto cmdLineOptions = GetCommandLineOptions(app);
 
-    ArrtAppWindow* appWindow = new ArrtAppWindow();
+    ArrtAppWindow* appWindow = new ArrtAppWindow(cmdLineOptions);
     appWindow->setWindowTitle("Azure Remote Rendering Toolkit v" ARRT_VERSION);
     appWindow->show();
 

@@ -50,6 +50,7 @@ public:
 
     void CreateNewSession(RR::ApiHandle<RR::RemoteRenderingClient>& client, const RR::RenderingSessionCreationOptions& info);
     void OpenExistingSession(RR::ApiHandle<RR::RemoteRenderingClient>& client, const QString& sessionID);
+    void MockNewSession();
     void CloseSession(bool keepRunning);
 
     void CleanupSession();

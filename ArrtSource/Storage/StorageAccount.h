@@ -28,8 +28,9 @@ Q_SIGNALS:
     void ConnectionStatusChanged();
 
 public:
+    StorageAccount() = default;
     StorageAccount(FileUploader::UpdateCallback uploadCallback);
-    ~StorageAccount();
+    virtual ~StorageAccount();
 
     FileUploader* GetFileUploader() { return m_fileUploader.get(); }
 
@@ -59,7 +60,7 @@ public:
     ///
     /// When the connection status changes, the signal ConnectionStatusChanged() is emitted.
     /// The current status can be retrieved with GetConnectionStatus().
-    void ConnectToStorageAccount();
+    virtual void ConnectToStorageAccount();
 
     /// If connected to a storage account, this disconnects from it.
     void DisconnectFromStorageAccount();
@@ -73,12 +74,12 @@ public:
     /// Attempts to create a new storage container in the connected storage account.
     ///
     /// There are strict rules for what a valid container name is. In case of failure, 'errorMsg' provides some details.
-    bool CreateContainer(const QString& containerName, QString& errorMsg);
+    virtual bool CreateContainer(const QString& containerName, QString& errorMsg);
 
     /// Attempts to delete the storage container with the given name.
     ///
     /// In case of failure, 'errorMsg' provides some details.
-    bool DeleteContainer(const QString& containerName, QString& errorMsg);
+    virtual bool DeleteContainer(const QString& containerName, QString& errorMsg);
 
     /// Attempts to create a new, "empty" folder in the given storage container and with the given path.
     ///
@@ -96,7 +97,7 @@ public:
     /// Attempts to create a text file in the given container and with the given path and content.
     ///
     /// In case of failure, 'errorMsg' provides some details.
-    bool CreateTextItem(const QString& containerName, const QString& path, const QString& content, QString& errorMsg);
+    virtual bool CreateTextItem(const QString& containerName, const QString& path, const QString& content, QString& errorMsg);
 
     /// Retrieves the names of all storage containers that exist in the connected storage account.
     void ListContainers(std::vector<QString>& containers) const;
@@ -124,7 +125,7 @@ public:
     /// Such a URL is necessary when loading a model into ARR.
     QString CreateSasURL(const QString& containerName, const QString& itemPath, unsigned int minutes = 60 * 24) const;
 
-private:
+protected:
     void SetConnectionStatus(StorageConnectionStatus newStatus);
 
     static void SanitizeSettings(QString& accountName, QString& accountKey, QString& endpointUrl);
@@ -143,9 +144,20 @@ private:
     QString m_accountKey;
     QString m_endpointUrl;
 
-    std::unique_ptr<FileUploader> m_fileUploader;
+    std::unique_ptr<FileUploader> m_fileUploader = nullptr;
     mutable std::map<QString, BlobCache> m_cachedBlobs;
 
     std::shared_ptr<StorageSharedKeyCredential> m_azStorageCredentials;
     std::unique_ptr<BlobServiceClient> m_azStorageServiceClient;
+};
+
+/// Mock implementation of StorageAccount to run ARRT UI without storage account credentials.
+class StorageAccountMock : public StorageAccount
+{
+public:
+    StorageAccountMock() = default;
+    void ConnectToStorageAccount() override;
+    bool CreateContainer(const QString&, QString&) override;
+    bool DeleteContainer(const QString&, QString&) override;
+    bool CreateTextItem(const QString&, const QString&, const QString&, QString&) override;
 };

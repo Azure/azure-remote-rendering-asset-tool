@@ -144,6 +144,13 @@ void ArrConnectionLogic::OpenExistingSession(RR::ApiHandle<RR::RemoteRenderingCl
     client->OpenRenderingSessionAsync(sessionID.toStdString(), callOpenOrCreateSessionResult);
 }
 
+void ArrConnectionLogic::MockNewSession()
+{
+    m_currentState = State::RuntimeConnected;
+    Q_EMIT ConnectionStateChanged();
+    return;
+}
+
 void ArrConnectionLogic::CloseSession(bool keepRunning)
 {
     assert(IsConnectionStoppable());
@@ -155,7 +162,7 @@ void ArrConnectionLogic::CloseSession(bool keepRunning)
 
     DisconnectFromRuntime();
 
-    if (!keepRunning)
+    if (!keepRunning && m_arrSession)
     {
         auto onStop = [](RR::Status, RR::ApiHandle<RR::SessionContextResult>) { /* we could retrieve details here, but there is really no reason why stopping a session should fail, other than if we tried to stop an already stopped or expired session */ };
         m_arrSession->StopAsync(onStop);
@@ -512,5 +519,8 @@ void ArrConnectionLogic::DisconnectFromRuntime()
         m_messageLoggedToken.invalidate();
     }
 
-    m_arrSession->Disconnect();
+    if (m_arrSession)
+    {
+        m_arrSession->Disconnect();
+    }
 }

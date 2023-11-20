@@ -246,7 +246,6 @@ void ArrAccount::GetCurrentRenderingSessionsResult(RR::ApiHandle<RR::RemoteRende
     }
 }
 
-
 void ArrAccount::DisconnectFromArrAccount()
 {
     if (m_rrClient == nullptr)
@@ -315,4 +314,14 @@ void ArrAccount::GetAvailableAccountDomains(std::vector<ArrAccountDomainInfo>& d
 
     std::sort(domains.begin(), domains.end(), [](const ArrAccountDomainInfo& lhs, const ArrAccountDomainInfo& rhs)
               { return lhs.m_name < rhs.m_name; });
+}
+
+void ArrAccountMock::ConnectToArrAccount()
+{
+    SetConnectionStatus(ArrConnectionStatus::Authenticated);
+}
+
+void ArrAccountMock::DisconnectFromArrAccount()
+{
+    SetConnectionStatus(ArrConnectionStatus::NotAuthenticated);
 }

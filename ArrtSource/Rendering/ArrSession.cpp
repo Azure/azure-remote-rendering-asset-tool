@@ -77,9 +77,9 @@ void ArrSession::OnDeinitGrahpcs()
     Q_EMIT ModelLoadProgressChanged();
 }
 
-ArrSession::ArrSession(ArrAccount* arrClient, SceneState* sceneState)
+ArrSession::ArrSession(ArrAccount* arrAccount, SceneState* sceneState)
 {
-    m_arrAccount = arrClient;
+    m_arrAccount = arrAccount;
     m_sceneState = sceneState;
 
     connect(sceneState, &SceneState::SceneRefreshed, this, [this]()
@@ -118,11 +118,21 @@ QString ArrSession::GetSessionID() const
 
 void ArrSession::CreateSession(const RR::RenderingSessionCreationOptions& info)
 {
+    if (m_arrAccount->GetClient() == nullptr)
+    {
+        m_ConnectionLogic.MockNewSession();
+        return;
+    }
     m_ConnectionLogic.CreateNewSession(m_arrAccount->GetClient(), info);
 }
 
 void ArrSession::OpenSession(const QString& sessionID)
 {
+    if (m_arrAccount->GetClient() == nullptr)
+    {
+        m_ConnectionLogic.MockNewSession();
+        return;
+    }
     m_ConnectionLogic.OpenExistingSession(m_arrAccount->GetClient(), sessionID);
 }
 
@@ -449,6 +459,7 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
 
     RR::LoadModelFromSasOptions params;
     params.ModelUri = assetSAS;
+
     api->LoadModelFromSasAsync(params, onModelLoaded, onModelLoadingProgress);
 
     return true;

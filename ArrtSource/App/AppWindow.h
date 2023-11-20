@@ -15,13 +15,18 @@ class ScenegraphModel;
 class QProgressBar;
 class ArrSettings;
 
+struct ArrtCommandLineOptions
+{
+    bool m_mock = false;
+};
+
 /// The applications main window
 class ArrtAppWindow : public QMainWindow, Ui_AppWindow
 {
     Q_OBJECT
 
 public:
-    ArrtAppWindow();
+    ArrtAppWindow(const ArrtCommandLineOptions& cmdLineOptions);
     ~ArrtAppWindow();
 
 private Q_SLOTS:

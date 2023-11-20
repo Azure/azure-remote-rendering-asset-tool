@@ -8,6 +8,7 @@
 
 class StorageAccount;
 class ArrAccount;
+class ArrAccountMock;
 
 /// Manages interactions with the model conversion service
 class ConversionManager : public QObject
@@ -15,7 +16,8 @@ class ConversionManager : public QObject
     Q_OBJECT
 
 public:
-    ConversionManager(StorageAccount* storageAccount, ArrAccount* arrClient);
+    ConversionManager();
+    ConversionManager(StorageAccount* storageAccount, ArrAccount* arrAccount);
     ~ConversionManager();
 
     /// Returns all recent conversions, both running and finished ones.
@@ -52,19 +54,31 @@ Q_SIGNALS:
     void ConversionFailed();
     void ConversionSucceeded();
 
-private Q_SLOTS:
-    void OnCheckConversions();
+protected Q_SLOTS:
+    virtual void OnCheckConversions();
 
-private:
+protected:
+    virtual void SetupConversion(Conversion&);
     bool StartConversionInternal();
     void SetConversionStatus(int conversionIdx, RR::Status status, RR::ApiHandle<RR::ConversionPropertiesResult> result);
     void GetCurrentConversionsResult(RR::Status status, RR::ApiHandle<RR::ConversionPropertiesArrayResult> result);
 
     StorageAccount* m_storageAccount = nullptr;
-    ArrAccount* m_arrClient = nullptr;
+    ArrAccount* m_arrAccount = nullptr;
     QTimer m_checkConversionStateTimer;
     QTimer m_updateConversionListTimer;
 
     int m_selectedConversion = 0;
     std::deque<Conversion> m_conversions;
+};
+
+class ConversionManagerMock : public ConversionManager
+{
+public:
+    ConversionManagerMock(StorageAccount* storageAccount);
+
+private: 
+    void OnCheckConversions() override;
+    void SetupConversion(Conversion& conv) override;
+    void CreateMockConversion(Conversion& conv);
 };

@@ -38,7 +38,7 @@ Q_SIGNALS:
 
 public:
     ArrAccount();
-    ~ArrAccount();
+    virtual ~ArrAccount();
 
     RR::ApiHandle<RR::RemoteRenderingClient>& GetClient() { return m_rrClient; }
 
@@ -51,15 +51,15 @@ public:
     QString GetAccountDomain() const { return m_accountDomain; }
     QString GetRegion() const { return m_region; }
 
-    void ConnectToArrAccount();
-    void DisconnectFromArrAccount();
+    virtual void ConnectToArrAccount();
+    virtual void DisconnectFromArrAccount();
 
     ArrConnectionStatus GetConnectionStatus() const { return m_connectionStatus; }
 
     void GetAvailableRegions(std::vector<ArrRegionInfo>& regions);
     void GetAvailableAccountDomains(std::vector<ArrAccountDomainInfo>& domains);
 
-private:
+protected:
     static void SanitizeSettings(QString& accountId, QString& accountKey, QString& accountDomain, QString& region);
     void SetConnectionStatus(ArrConnectionStatus newStatus);
     void GetCurrentRenderingSessionsResult(RR::ApiHandle<RR::RemoteRenderingClient> client, RR::Status status, RR::ApiHandle<RR::RenderingSessionPropertiesArrayResult> result);
@@ -81,4 +81,12 @@ private:
     std::vector<ArrAccountDomainInfo> m_customAccountDomains;
 
     RR::event_token m_messageLoggedToken;
+};
+
+/// Mock implementation of ArrAccount to run ARRT UI without account credentials.
+class ArrAccountMock : public ArrAccount
+{
+public:
+    void ConnectToArrAccount() override;
+    void DisconnectFromArrAccount() override;
 };

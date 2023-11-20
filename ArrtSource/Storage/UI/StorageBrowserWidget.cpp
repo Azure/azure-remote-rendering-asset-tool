@@ -333,7 +333,10 @@ void StorageBrowserWidget::UploadItems(const QStringList& files)
         return;
     }
 
-    m_storageAccount->GetFileUploader()->UploadFilesAsync(rootDirectory, toUpload, GetSelectedContainer(), dstFolder);
+    if (auto file_uploader = m_storageAccount->GetFileUploader(); file_uploader != nullptr)
+    {
+        file_uploader->UploadFilesAsync(rootDirectory, toUpload, GetSelectedContainer(), dstFolder);
+    }
 }
 
 void StorageBrowserWidget::on_UploadFileButton_clicked()
