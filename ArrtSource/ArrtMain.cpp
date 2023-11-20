@@ -274,31 +274,31 @@ static void SetStyleSheet(QApplication* /*app*/)
 /// Convert command line arguments from WinMain syntax to argc, argv
 struct CommandLineArguments
 {
-    int argc;
-    char** argv;
+    int m_argc;
+    char** m_argv;
 
     CommandLineArguments()
     {
-        LPWSTR* szArglist = CommandLineToArgvW(GetCommandLineW(), &argc);
-        argv = new char*[argc];
+        LPWSTR* szArglist = CommandLineToArgvW(GetCommandLineW(), &m_argc);
+        m_argv = new char*[m_argc];
 
-        for (int i = 0; i < argc; i++)
+        for (int i = 0; i < m_argc; i++)
         {
             size_t len = wcslen(szArglist[i]);
-            argv[i] = new char[len + 1];
-            argv[i][len] = '\0';
-            wcstombs(argv[i], szArglist[i], len);
+            m_argv[i] = new char[len + 1];
+            m_argv[i][len] = '\0';
+            wcstombs(m_argv[i], szArglist[i], len);
         }
     }
 
     ~CommandLineArguments()
-	{
-        for (int i = 0; i < argc; i++)
+    {
+        for (int i = 0; i < m_argc; i++)
         {
-			delete[] argv[i];
-		}
-		delete[] argv;
-	}
+            delete[] m_argv[i];
+        }
+        delete[] m_argv;
+    }
 };
 
 ArrtCommandLineOptions GetCommandLineOptions(const QApplication& app)
@@ -314,7 +314,7 @@ ArrtCommandLineOptions GetCommandLineOptions(const QApplication& app)
     parser.process(app);
 
     ArrtCommandLineOptions cmdLineOptions;
-    cmdLineOptions.mock = parser.isSet(mockOption);
+    cmdLineOptions.m_mock = parser.isSet(mockOption);
     return cmdLineOptions;
 }
 
@@ -333,7 +333,7 @@ int WinMain(HINSTANCE, HINSTANCE, char*, int)
     QCoreApplication::setApplicationVersion(ARRT_VERSION);
 
     CommandLineArguments cmdLineArgs;
-    QApplication app(cmdLineArgs.argc, cmdLineArgs.argv);
+    QApplication app(cmdLineArgs.m_argc, cmdLineArgs.m_argv);
 
     SetStyleSheet(&app);
     auto cmdLineOptions = GetCommandLineOptions(app);

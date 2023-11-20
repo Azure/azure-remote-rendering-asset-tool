@@ -40,7 +40,7 @@ ArrtAppWindow::ArrtAppWindow(const ArrtCommandLineOptions& cmdLineOptions)
     m_arrSettings = std::make_unique<ArrSettings>();
     m_arrSettings->LoadSettings();
 
-    if (cmdLineOptions.mock)
+    if (cmdLineOptions.m_mock)
     {
         m_arrAclient = std::make_unique<ArrAccountMock>();
         m_storageAccount = std::make_unique<StorageAccountMock>();

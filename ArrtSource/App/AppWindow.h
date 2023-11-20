@@ -17,7 +17,7 @@ class ArrSettings;
 
 struct ArrtCommandLineOptions
 {
-    bool mock;
+    bool m_mock = false;
 };
 
 /// The applications main window
