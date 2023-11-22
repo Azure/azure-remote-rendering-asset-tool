@@ -281,6 +281,17 @@ bool StorageBrowserModel::IsSrcAsset(const QString& file)
     return formats.indexOf(extension) >= 0;
 }
 
+bool StorageBrowserModel::IsPointCloud(const QString& file)
+{
+    QString formats = ";e57;ply;xyz;las;laz;";
+    formats = formats.toLower();
+
+    QFileInfo info(file);
+    QString extension = ";" + info.suffix().toLower() + ";";
+
+    return formats.indexOf(extension) >= 0;
+}
+
 bool StorageEntry::IsDifferent(const StorageEntry& rhs) const
 {
     if (m_name != rhs.m_name)

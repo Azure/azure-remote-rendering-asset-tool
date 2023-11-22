@@ -54,6 +54,8 @@ public:
 
     static bool IsArrAsset(const QString& file);
     static bool IsSrcAsset(const QString& file);
+    static bool IsPointCloud(const QString& file);
+
 
 private:
     void FillChildEntries(StorageEntry* entry, const QString& entryPath, std::vector<StorageEntry>& output) const;
