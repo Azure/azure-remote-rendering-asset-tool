@@ -14,7 +14,7 @@ struct StorageEntry
         Other,    ///< All other file types
         Folder,   ///< A folder
         ArrAsset, ///< A file with '.arrAsset' file extension
-        SrcAsset, ///< A file with '.fbx', '.gltf' or '.glb' file extension
+        SrcAsset, ///< A file with '.fbx', '.gltf', '.glb', '.e57', '.ply', '.xyz', '.las', or '.laz' file extension
     };
 
     QString m_fullPath;
@@ -54,6 +54,8 @@ public:
 
     static bool IsArrAsset(const QString& file);
     static bool IsSrcAsset(const QString& file);
+    static bool IsSingleFileAsset(const QString& file);
+
 
 private:
     void FillChildEntries(StorageEntry* entry, const QString& entryPath, std::vector<StorageEntry>& output) const;

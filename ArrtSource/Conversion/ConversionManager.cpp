@@ -284,9 +284,10 @@ bool ConversionManager::StartConversionInternal()
                 }
             }
 
-            if (srcAssets > 1)
+            if (srcAssets > 1 && !StorageBrowserModel::IsSingleFileAsset(conv.m_sourceAsset))
             {
-                if (QMessageBox::warning(nullptr, "Multiple Source Assets Found", QString("The folder of the input asset contains %1 asset files (GLB, GLTF or FBX). The conversion service needs to download the entire folder. The more unrelated data is in that folder, the longer the conversion will take because of this download.\n\nFor best conversion speed, every asset (and its accompanying files, such as textures) should reside in its own folder.\n\nContinue anyway?").arg(srcAssets), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+                // if the source asset is a point cloud, the whole folder won't be downloaded, so the warning isn't needed
+                if (QMessageBox::warning(nullptr, "Multiple Source Assets Found", QString("The folder of the input asset contains %1 asset files (GLB, GLTF, FBX, E57, PLY, XYZ, LAS, LAZ). The conversion service needs to download the entire folder. The more unrelated data is in that folder, the longer the conversion will take because of this download.\n\nFor best conversion speed, every asset (and its accompanying files, such as textures) should reside in its own folder.\n\nContinue anyway?").arg(srcAssets), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
                 {
                     return false;
                 }
