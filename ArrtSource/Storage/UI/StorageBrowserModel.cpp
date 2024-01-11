@@ -281,10 +281,9 @@ bool StorageBrowserModel::IsSrcAsset(const QString& file)
     return formats.indexOf(extension) >= 0;
 }
 
-bool StorageBrowserModel::IsPointCloud(const QString& file)
+bool StorageBrowserModel::IsSingleFileAsset(const QString& file)
 {
     QString formats = ";e57;ply;xyz;las;laz;";
-    formats = formats.toLower();
 
     QFileInfo info(file);
     QString extension = ";" + info.suffix().toLower() + ";";

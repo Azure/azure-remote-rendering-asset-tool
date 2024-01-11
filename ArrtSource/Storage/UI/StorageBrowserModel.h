@@ -54,7 +54,7 @@ public:
 
     static bool IsArrAsset(const QString& file);
     static bool IsSrcAsset(const QString& file);
-    static bool IsPointCloud(const QString& file);
+    static bool IsSingleFileAsset(const QString& file);
 
 
 private:
