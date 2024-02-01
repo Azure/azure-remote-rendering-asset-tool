@@ -411,7 +411,7 @@ void ArrSession::StartArrInspector()
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
+bool ArrSession::LoadModel(const QString& modelName, const std::string& assetSAS, QString accountEndpoint, QString containerName)
 {
     auto api = GetRenderingConnection();
     if (api == nullptr)
@@ -428,10 +428,12 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
 
     qInfo(LoggingCategory::RenderingSession) << "Loading model " << modelName;
 
+    bool loadModelFromSas = !assetSAS.empty();
+
     const QTime startTime = QTime::currentTime();
 
     // the callback is called from the GUI thread
-    auto onModelLoaded = [thisPtr, modelName, loadIdx, startTime](RR::Status status, RR::ApiHandle<RR::LoadModelResult> loadResult)
+    auto onModelLoaded = [thisPtr, modelName, loadIdx, startTime, loadModelFromSas](RR::Status status, RR::ApiHandle<RR::LoadModelResult> loadResult)
     {
         std::lock_guard<std::recursive_mutex> lk(thisPtr->m_modelMutex);
 
@@ -444,12 +446,17 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
         {
             qCritical(LoggingCategory::RenderingSession)
                 << "Loading model " << modelName << " failed: " << status;
+            
+            if (!loadModelFromSas && status == RR::Status::AuthenticationFailed)
+            {
+                qCritical(LoggingCategory::RenderingSession) 
+                    << "Is the storage account linked to the ARR account? Go to: learn.microsoft.com/en-us/azure/remote-rendering/how-tos/create-an-account#link-storage-accounts";
+            }
         }
         else
         {
             if (loadResult.valid())
             {
-
                 auto root = loadResult->GetRoot();
 
                 const float scale = thisPtr->m_modelScale;
@@ -493,11 +500,24 @@ bool ArrSession::LoadModel(const QString& modelName, const char* assetSAS)
         Q_EMIT thisPtr->ModelLoadProgressChanged();
     };
 
-    RR::LoadModelFromSasOptions params;
-    params.ModelUri = assetSAS;
+    if (loadModelFromSas)
+    {
+        RR::LoadModelFromSasOptions params;
+        params.ModelUri = assetSAS;
 
-    api->LoadModelFromSasAsync(params, onModelLoaded, onModelLoadingProgress);
+        api->LoadModelFromSasAsync(params, onModelLoaded, onModelLoadingProgress);
+        return true;
+    }
 
+    RR::LoadFromBlobOptions blob;
+    blob.StorageAccountName = accountEndpoint.toStdString();
+    blob.BlobContainerName = containerName.toStdString();
+    blob.AssetPath = modelName.toStdString();
+
+    RR::LoadModelOptions params_no_sas;
+    params_no_sas.Blob = blob;
+
+    api->LoadModelAsync(params_no_sas, onModelLoaded, onModelLoadingProgress);
     return true;
 }
 

@@ -23,6 +23,7 @@
 		<file>theme-dark/critical.svg</file>
 		<file>theme-dark/error.svg</file>
 		<file>theme-dark/session_error.svg</file>
+		<file>theme-dark/link.svg</file>
 		
 		<file>theme-light/model.svg</file>
 		<file>theme-light/remove.svg</file>
@@ -47,5 +48,6 @@
 		<file>theme-light/critical.svg</file>
 		<file>theme-light/error.svg</file>
 		<file>theme-light/session_error.svg</file>
+		<file>theme-light/link.svg</file>
     </qresource>
 </RCC>

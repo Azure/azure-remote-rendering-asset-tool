@@ -14,7 +14,7 @@ class BrowseStorageDlg : public QDialog, Ui_BrowseStorageDlg
 {
     Q_OBJECT
 public:
-    BrowseStorageDlg(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, const QString& parentFilter, QWidget* parent = {});
+    BrowseStorageDlg(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, const QString& parentFilter, QWidget* parent = {}, const QString& label = "Browse...");
     ~BrowseStorageDlg();
 
     /// Returns the name of the selected storage container.

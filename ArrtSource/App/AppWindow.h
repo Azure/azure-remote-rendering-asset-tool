@@ -48,6 +48,7 @@ private Q_SLOTS:
     void on_EditSessionButton_clicked();
     void on_InspectorButton_clicked();
     void on_ChangeModelButton_clicked();
+    void on_LoadModelLinkedAccountButton_clicked();
     void on_LoadModelSasButton_clicked();
     void on_ClearModelsButton_clicked();
     void on_CameraOptionsButton_clicked();
@@ -115,6 +116,7 @@ private:
     QAction* m_loadFromStorageAction = nullptr;
     QAction* m_clearModelsAction = nullptr;
     QAction* m_loadWithUrlAction = nullptr;
+    QAction* m_loadFromLinkedStorageAction = nullptr;
 
     std::unique_ptr<StorageAccount> m_storageAccount;
     std::unique_ptr<ArrAccount> m_arrAclient;

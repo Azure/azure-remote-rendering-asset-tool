@@ -16,15 +16,26 @@ bool IsVideoDecoderAvailable(std::string& details);
 
 void ArrtAppWindow::on_ChangeModelButton_clicked()
 {
-    BrowseStorageDlg dlg(m_storageAccount.get(), StorageEntry::Type::ArrAsset, m_lastStorageLoadModelContainer, QString(), this);
+    BrowseStorageDlg dlg(m_storageAccount.get(), StorageEntry::Type::ArrAsset, m_lastStorageLoadModelContainer, QString(), this, "Load from storage...");
     if (dlg.exec() == QDialog::Rejected)
         return;
 
     m_lastStorageLoadModelContainer = dlg.GetSelectedContainer();
 
     QString blobUri = m_storageAccount->CreateSasURL(m_lastStorageLoadModelContainer, dlg.GetSelectedItem());
+    m_arrSession->LoadModel(dlg.GetSelectedItem(), blobUri.toStdString());
+}
 
-    m_arrSession->LoadModel(dlg.GetSelectedItem(), blobUri.toStdString().c_str());
+void ArrtAppWindow::on_LoadModelLinkedAccountButton_clicked()
+{
+    BrowseStorageDlg dlg(m_storageAccount.get(), StorageEntry::Type::ArrAsset, m_lastStorageLoadModelContainer, QString(), this, "Load from storage linked to ARR account...");
+    if (dlg.exec() == QDialog::Rejected)
+        return;
+
+    m_lastStorageLoadModelContainer = dlg.GetSelectedContainer();
+
+    std::string blobUri;
+    m_arrSession->LoadModel(dlg.GetSelectedItem(), blobUri, m_storageAccount->GetEndpointUrl(), m_lastStorageLoadModelContainer);
 }
 
 void ArrtAppWindow::on_ClearModelsButton_clicked()
