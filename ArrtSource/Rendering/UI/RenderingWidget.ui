@@ -198,6 +198,16 @@
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_3">
+				<item>
+					<widget class="QLabel" name="FramesPerSecondLabel">
+						<property name="toolTip">
+							<string>Frames per second.</string>
+						</property>
+						<property name="text">
+							<string>Render: N/A</string>
+						</property>
+					</widget>
+				</item>
                  <item>
                   <widget class="QLabel" name="LatencyPoseToReceiveLabel">
                    <property name="toolTip">
@@ -218,6 +228,16 @@
                    </property>
                   </widget>
                  </item>
+				<item>
+					<widget class="QLabel" name="LatencyPresentToDisplayLabel">
+						<property name="toolTip">
+							<string>The latency until the finished frame is displayed.</string>
+						</property>
+						<property name="text">
+							<string>Latency Present To Display: N/A</string>
+						</property>
+					</widget>
+				</item>
                  <item>
                   <widget class="QLabel" name="TimeSinceLastPresentLabel">
                    <property name="toolTip">
