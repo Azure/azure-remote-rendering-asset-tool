@@ -123,11 +123,12 @@ public:
     /// Returns all entities that are currently 'selected'.
     void GetSelectedEntities(std::vector<RR::ApiHandle<RR::Entity>>& selected) const;
 
-    const RR::FrameStatistics& GetFrameStatistics() const { return m_frameStats; }
+    const std::pair<size_t, RR::FrameStatistics> GetFrameStatistics() const { return {m_numFrames, m_frameStats}; }
 
 private:
     void ExtendSessionIfNeeded();
     void OnSceneRefresh();
+    void AggregateStats();
     void UpdatePerformanceStatistics();
     void CheckEntityBounds(RR::ApiHandle<RR::Entity> entity);
     void CheckEntityBoundsResult(RR::Bounds bounds);
@@ -151,8 +152,10 @@ private:
     std::vector<float> m_loadingProgress;
     std::deque<LoadedModel> m_loadedModels;
 
-    int m_frameStatsUpdateDelay = 60;
+    size_t m_numFrames = 0;
     RR::FrameStatistics m_frameStats;
+    std::vector<RR::FrameStatistics> m_frameStatsHistory;
+    QElapsedTimer m_frameStatsTimer;
 
     ArrConnectionLogic::State m_previousState = ArrConnectionLogic::State::Inactive;
     QTime m_previousStateChange = QTime::currentTime();

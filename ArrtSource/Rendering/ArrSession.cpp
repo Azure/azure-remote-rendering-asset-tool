@@ -89,6 +89,8 @@ ArrSession::ArrSession(ArrAccount* arrAccount, SceneState* sceneState)
     connect(&m_ConnectionLogic, &ArrConnectionLogic::InitGraphics, this, &ArrSession::OnInitGrahpcs, Qt::DirectConnection);
     connect(&m_ConnectionLogic, &ArrConnectionLogic::DeinitGraphics, this, &ArrSession::OnDeinitGrahpcs, Qt::DirectConnection);
     connect(&m_ConnectionLogic, &ArrConnectionLogic::SessionPropertiesUpdated, this, &ArrSession::OnSessionPropertiesUpdated);
+
+    m_frameStatsTimer.start();
 }
 
 ArrSession::~ArrSession()
@@ -225,6 +227,55 @@ void ArrSession::CheckEntityBoundsResult(RR::Bounds bounds)
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
+void ArrSession::AggregateStats()
+{
+    m_numFrames = m_frameStatsHistory.size();
+
+    if (m_numFrames == 0)
+    {
+        return;
+    }
+
+    // clean up saved stats
+    m_frameStats = RR::FrameStatistics{};
+
+    for (auto& frameStats : m_frameStatsHistory)
+    {
+        m_frameStats.LatencyPoseToReceive += frameStats.LatencyPoseToReceive;
+        m_frameStats.LatencyReceiveToPresent += frameStats.LatencyReceiveToPresent;
+        m_frameStats.LatencyPresentToDisplay += frameStats.LatencyPresentToDisplay;
+        m_frameStats.TimeSinceLastPresent += frameStats.TimeSinceLastPresent;
+
+        m_frameStats.VideoFrameReusedCount += frameStats.VideoFrameReusedCount > 0 ? 1 : 0;
+        m_frameStats.VideoFramesSkipped += frameStats.VideoFramesSkipped;
+        m_frameStats.VideoFramesReceived += frameStats.VideoFramesReceived;
+        m_frameStats.VideoFramesDiscarded += frameStats.VideoFramesDiscarded;
+
+        if (m_frameStats.VideoFramesReceived > 0)
+        {
+            if (m_frameStats.VideoFrameMinDelta == 0.0f)
+            {
+                m_frameStats.VideoFrameMinDelta = m_frameStats.VideoFrameMinDelta;
+                m_frameStats.VideoFrameMaxDelta = m_frameStats.VideoFrameMaxDelta;
+            }
+            else
+            {
+                m_frameStats.VideoFrameMinDelta = std::min(m_frameStats.VideoFrameMinDelta, frameStats.VideoFrameMinDelta);
+                m_frameStats.VideoFrameMaxDelta = std::max(m_frameStats.VideoFrameMaxDelta, frameStats.VideoFrameMaxDelta);
+            }
+        }
+    }
+
+    const float oneOverNumFrames = 1.0f / m_numFrames;
+    m_frameStats.LatencyPoseToReceive *= oneOverNumFrames;
+    m_frameStats.LatencyReceiveToPresent *= oneOverNumFrames;
+    m_frameStats.LatencyPresentToDisplay *= oneOverNumFrames;
+    m_frameStats.TimeSinceLastPresent *= oneOverNumFrames;
+
+    // clean up the history
+    m_frameStatsHistory.clear();
+}
+
 void ArrSession::UpdatePerformanceStatistics()
 {
     if (!m_ConnectionLogic.GetArrSession() || m_ConnectionLogic.GetArrSession()->GetGraphicsBinding() == nullptr)
@@ -234,31 +285,16 @@ void ArrSession::UpdatePerformanceStatistics()
     if (m_ConnectionLogic.GetArrSession()->GetGraphicsBinding()->GetLastFrameStatistics(&stats) != RR::Result::Success)
         return;
 
-#define accumulate(value) m_frameStats.value = std::max(m_frameStats.value, stats.value);
+    m_frameStatsHistory.push_back(stats);
 
-    accumulate(LatencyPoseToReceive);
-    accumulate(LatencyReceiveToPresent);
-    accumulate(LatencyPresentToDisplay);
-    accumulate(TimeSinceLastPresent);
-    accumulate(VideoFrameReusedCount);
-    accumulate(VideoFramesSkipped);
-    accumulate(VideoFramesReceived);
-    accumulate(VideoFramesDiscarded);
-    accumulate(VideoFrameMinDelta);
-    accumulate(VideoFrameMaxDelta);
-
-#undef accumulate
-
-    if (m_frameStatsUpdateDelay > 0)
+    if (m_frameStatsTimer.elapsed() < 1000)
     {
-        --m_frameStatsUpdateDelay;
         return;
     }
 
-    m_frameStatsUpdateDelay = 60;
+    m_frameStatsTimer.restart();
+    AggregateStats();
     Q_EMIT FrameStatisticsChanged();
-
-    m_frameStats = stats;
 }
 
 

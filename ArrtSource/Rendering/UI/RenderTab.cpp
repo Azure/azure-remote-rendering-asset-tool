@@ -112,10 +112,12 @@ void ArrtAppWindow::on_CameraOptionsButton_clicked()
 
 void ArrtAppWindow::UpdateFrameStatisticsUI()
 {
-    const auto& stats = m_arrSession->GetFrameStatistics();
+    const auto [frames, stats] = m_arrSession->GetFrameStatistics();
 
+    RenderingTab->FramesPerSecondLabel->setText(QString("Render: %1fps").arg((size_t)(frames)));
     RenderingTab->LatencyPoseToReceiveLabel->setText(QString("Latency Pose To Receive: %1ms").arg((int)(stats.LatencyPoseToReceive * 1000)));
     RenderingTab->LatencyReceiveToPresentLabel->setText(QString("Latency Receive To Present: %1ms").arg((int)(stats.LatencyReceiveToPresent * 1000)));
+    RenderingTab->LatencyPresentToDisplayLabel->setText(QString("Latency Present To Display: %1ms").arg((int)(stats.LatencyPresentToDisplay * 1000)));
     RenderingTab->TimeSinceLastPresentLabel->setText(QString("Time Since Last Present: %1ms").arg((int)(stats.TimeSinceLastPresent * 1000)));
     RenderingTab->VideoFrameReusedCountLabel->setText(QString("Video Frame Reused Count: %1").arg(stats.VideoFrameReusedCount));
     RenderingTab->VideoFramesSkippedLabel->setText(QString("Video Frames Skipped: %1").arg(stats.VideoFramesSkipped));
