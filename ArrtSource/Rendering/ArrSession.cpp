@@ -514,6 +514,13 @@ bool ArrSession::LoadModel(const QString& modelName, const std::string& assetSAS
     blob.BlobContainerName = containerName.toStdString();
     blob.AssetPath = modelName.toStdString();
 
+    const std::string httpsPrefix = "https://";
+    if (blob.StorageAccountName.compare(0, httpsPrefix.size(), httpsPrefix) == 0)
+	{
+        // remove the https:// prefix
+		blob.StorageAccountName = blob.StorageAccountName.substr(httpsPrefix.size());
+	}
+
     RR::LoadModelOptions params_no_sas;
     params_no_sas.Blob = blob;
 
