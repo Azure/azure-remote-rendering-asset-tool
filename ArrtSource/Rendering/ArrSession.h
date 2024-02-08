@@ -103,7 +103,7 @@ public:
     };
 
     /// Loads the model from the provided SAS URL.
-    bool LoadModel(const QString& modelName, const char* assetSAS);
+    bool LoadModel(const QString& modelName, const std::string& assetSAS, QString accountEndpoint = "", QString containerName = "");
 
     /// Removes the previously loaded model with the given index.
     void RemoveModel(size_t idx);

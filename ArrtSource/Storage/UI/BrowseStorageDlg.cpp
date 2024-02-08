@@ -3,11 +3,12 @@
 #include <Storage/StorageAccount.h>
 #include <Storage/UI/BrowseStorageDlg.h>
 
-BrowseStorageDlg::BrowseStorageDlg(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, const QString& parentFilter, QWidget* parent /*= {}*/)
+BrowseStorageDlg::BrowseStorageDlg(StorageAccount* account, StorageEntry::Type showTypes, const QString& startContainer, const QString& parentFilter, QWidget* parent /*= {}*/, const QString& label /*= "Browse..."*/)
     : QDialog(parent)
     , m_showTypes(showTypes)
 {
     setupUi(this);
+    this->setWindowTitle(label);
 
     connect(StorageBrowser, &StorageBrowserWidget::ItemSelected, this, &BrowseStorageDlg::ItemSelected);
 

@@ -98,13 +98,16 @@ ArrtAppWindow::ArrtAppWindow(const ArrtCommandLineOptions& cmdLineOptions)
         m_clearModelsAction = new QAction(QIcon::fromTheme("remove"), "Remove all models");
         m_loadFromStorageAction = new QAction(QIcon::fromTheme("upload"), "Load from storage...");
         m_loadWithUrlAction = new QAction(QIcon::fromTheme("model"), "Load with URL...");
+        m_loadFromLinkedStorageAction = new QAction(QIcon::fromTheme("link"), "Load from storage linked to ARR account...");
 
         RenderingTab->ModelsToolbutton->addAction(m_loadFromStorageAction);
         RenderingTab->ModelsToolbutton->addAction(m_loadWithUrlAction);
+        RenderingTab->ModelsToolbutton->addAction(m_loadFromLinkedStorageAction);
         RenderingTab->ModelsToolbutton->addAction(m_clearModelsAction);
 
         connect(m_loadFromStorageAction, &QAction::triggered, this, &ArrtAppWindow::on_ChangeModelButton_clicked);
         connect(m_loadWithUrlAction, &QAction::triggered, this, &ArrtAppWindow::on_LoadModelSasButton_clicked);
+        connect(m_loadFromLinkedStorageAction, &QAction::triggered, this, &ArrtAppWindow::on_LoadModelLinkedAccountButton_clicked);
         connect(m_clearModelsAction, &QAction::triggered, this, &ArrtAppWindow::on_ClearModelsButton_clicked);
     }
 
@@ -409,6 +412,7 @@ void ArrtAppWindow::OnUpdateStatusBar()
 
     RenderingTab->EditSessionButton->setEnabled(m_arrAclient->GetConnectionStatus() == ArrConnectionStatus::Authenticated);
     m_loadFromStorageAction->setEnabled(state.IsConnectionRendering() && m_storageAccount->GetConnectionStatus() == StorageConnectionStatus::Authenticated);
+    m_loadFromLinkedStorageAction->setEnabled(state.IsConnectionRendering() && m_storageAccount->GetConnectionStatus() == StorageConnectionStatus::Authenticated);
     m_loadWithUrlAction->setEnabled(state.IsConnectionRendering());
     RenderingTab->ModelScaleSpinner->setEnabled(state.IsConnectionRendering());
     RenderingTab->CameraOptionsButton->setEnabled(state.IsConnectionRendering());
