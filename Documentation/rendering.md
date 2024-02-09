@@ -39,7 +39,7 @@ From the **Model** dropdown menu, select **Load from storage...** and select a [
 
 ## Loading a model from Azure Storage connected to an ARR Account
 
-If you have an [ARR Account connected to a Storage Account](https://learn.microsoft.com/en-us/azure/remote-rendering/how-tos/create-an-account#link-storage-accounts), a [SAS token](https://docs.microsoft.com/azure/storage/common/storage-sas-overview) isn't needed to load the model. From the **Model** dropdown menu, select **Load from storage linked to ARR account...** and select a [converted](conversion.md) `.arrAsset` file from your connected storage account.
+If you have an [ARR Account connected to a Storage Account](https://learn.microsoft.com/azure/remote-rendering/how-tos/create-an-account#link-storage-accounts), a [SAS token](https://docs.microsoft.com/azure/storage/common/storage-sas-overview) isn't needed to load the model. From the **Model** dropdown menu, select **Load from storage linked to ARR account...** and select a [converted](conversion.md) `.arrAsset` file from your connected storage account.
 
 ## Model rendering
 
