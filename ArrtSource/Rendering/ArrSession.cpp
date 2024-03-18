@@ -160,7 +160,7 @@ void ArrSession::CheckEntityBounds(RR::ApiHandle<RR::Entity> entity)
 {
     entity->QueryWorldBoundsAsync([this](RR::Status status, RR::Bounds bounds)
                                   {
-                                      if (status == RR::Status::OK && bounds.IsValid())
+                                      if (status == RR::Status::OK)
                                       {
                                           // pass the information to the main thread, because we want to interact with the GUI
                                           QMetaObject::invokeMethod(QApplication::instance(), [this, bounds]()
@@ -170,6 +170,12 @@ void ArrSession::CheckEntityBounds(RR::ApiHandle<RR::Entity> entity)
 
 void ArrSession::CheckEntityBoundsResult(RR::Bounds bounds)
 {
+    if (!bounds.IsValid())
+    {
+        qWarning(LoggingCategory::RenderingSession) << "The loaded model's bounding box is invalid.";
+        return;
+    }
+
     const float maxX = (float)bounds.Max.X;
     const float minX = (float)bounds.Min.X;
     const float maxY = (float)bounds.Max.Y;
@@ -180,6 +186,12 @@ void ArrSession::CheckEntityBoundsResult(RR::Bounds bounds)
     const float width = maxX - minX;
     const float height = maxY - minY;
     const float depth = maxZ - minZ;
+
+    if (width < 0 || height < 0 || depth < 0)
+    {
+        qWarning(LoggingCategory::RenderingSession) << "The loaded model's bounding box is invalid.";
+        return;
+    }
 
     const float smallSize = 0.1f;
     const float largeSize = 10.0f;
