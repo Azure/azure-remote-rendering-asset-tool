@@ -36,7 +36,7 @@ private Q_SLOTS:
     void on_ProfileDropDown_currentIndexChanged(int index);
 
 private:
-    void ApplyArr();
+    bool ApplyArr();
     void ApplyStorage();
     void FillProfiles();
     void SetActiveProfile(const QString& name);

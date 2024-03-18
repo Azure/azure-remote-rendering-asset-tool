@@ -48,6 +48,8 @@ void ArrSession::OnConnectionStateChanged()
             m_loadedModels.clear();
             m_selectedEntities.clear();
         }
+
+        m_arrAccount->BlockChanges(m_ConnectionLogic.IsConnectionActive());
     }
 
     Q_EMIT SessionStatusChanged();
