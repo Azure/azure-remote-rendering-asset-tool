@@ -245,10 +245,13 @@ void ArrConnectionLogic::OpenOrCreateSessionResult(RR::Status status, RR::ApiHan
         qCritical(LoggingCategory::RenderingSession)
             << "Session creation failed: " << errorCode;
 
-        qDebug(LoggingCategory::RenderingSession)
-            << "Session context:\n"
-            << result->GetContext();
-
+        auto context = result->GetContext();
+        qDebug(LoggingCategory::RenderingSession) << "Error message: " << context.ErrorMessage.c_str() 
+            << "\nHttp Response Code: " << context.HttpResponseCode 
+            << "\nRequest Correlation Vector: " << context.RequestCorrelationVector.c_str() 
+            << "\nResponse Correlation Vector: " << context.ResponseCorrelationVector.c_str() 
+            << "\nResult: " << context.Result;
+            
         QMessageBox::warning(nullptr, "Session Creation Failed", "Session creation failed.\n\nSee the log for details.", QMessageBox::Ok, QMessageBox::Ok);
     }
 
