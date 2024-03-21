@@ -44,7 +44,7 @@ public:
 
     bool LoadSettings();
     void SaveSettings() const;
-    void SetSettings(QString accountId, QString accountKey, QString accountDomain, QString region);
+    bool SetSettings(QString accountId, QString accountKey, QString accountDomain, QString region);
 
     QString GetAccountId() const { return m_accountId; }
     QString GetAccountKey() const { return m_accountKey; }
@@ -58,6 +58,8 @@ public:
 
     void GetAvailableRegions(std::vector<ArrRegionInfo>& regions);
     void GetAvailableAccountDomains(std::vector<ArrAccountDomainInfo>& domains);
+
+    void BlockChanges(bool block);
 
 protected:
     static void SanitizeSettings(QString& accountId, QString& accountKey, QString& accountDomain, QString& region);
@@ -81,6 +83,7 @@ protected:
     std::vector<ArrAccountDomainInfo> m_customAccountDomains;
 
     RR::event_token m_messageLoggedToken;
+    bool m_blockChanges = false;
 };
 
 /// Mock implementation of ArrAccount to run ARRT UI without account credentials.

@@ -81,7 +81,8 @@ void SettingsDlg::on_Buttons_rejected()
 
 void SettingsDlg::on_TestArr_clicked()
 {
-    ApplyArr();
+    if (!ApplyArr())
+        return;
 
     if (ArrAccountID->text().isEmpty())
     {
@@ -209,9 +210,13 @@ void SettingsDlg::on_ProfileDropDown_currentIndexChanged(int index)
     PushProfile();
 }
 
-void SettingsDlg::ApplyArr()
+bool SettingsDlg::ApplyArr()
 {
-    m_arrClient->SetSettings(ArrAccountID->text(), ArrAccountKey->text(), ArrAccountDomain->currentData().toString(), ArrRegion->currentData().toString());
+    if (!m_arrClient->SetSettings(ArrAccountID->text(), ArrAccountKey->text(), ArrAccountDomain->currentData().toString(), ArrRegion->currentData().toString()))
+    {
+        QMessageBox::warning(this, "ARR account settings", "Cannot change ARR account settings while a session is running.", QMessageBox::Ok);
+        return false;
+    }
     m_arrClient->ConnectToArrAccount();
 }
 

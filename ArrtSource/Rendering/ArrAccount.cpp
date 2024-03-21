@@ -141,12 +141,19 @@ void ArrAccount::SanitizeSettings(QString& accountId, QString& accountKey, QStri
         accountDomain.chop(1);
 }
 
-void ArrAccount::SetSettings(QString accountId, QString accountKey, QString accountDomain, QString region)
+bool ArrAccount::SetSettings(QString accountId, QString accountKey, QString accountDomain, QString region)
 {
     SanitizeSettings(accountId, accountKey, accountDomain, region);
 
     if (m_accountId == accountId && m_accountKey == accountKey && m_accountDomain == accountDomain && m_region == region)
-        return;
+    {
+        return true;
+    }
+
+    if (m_blockChanges)
+    {
+        return false;
+    }
 
     m_accountId = accountId;
     m_accountKey = accountKey;
@@ -156,6 +163,7 @@ void ArrAccount::SetSettings(QString accountId, QString accountKey, QString acco
     SaveSettings();
 
     DisconnectFromArrAccount();
+    return true;
 }
 
 void ArrAccount::SetConnectionStatus(ArrConnectionStatus newStatus)
@@ -314,6 +322,11 @@ void ArrAccount::GetAvailableAccountDomains(std::vector<ArrAccountDomainInfo>& d
 
     std::sort(domains.begin(), domains.end(), [](const ArrAccountDomainInfo& lhs, const ArrAccountDomainInfo& rhs)
               { return lhs.m_name < rhs.m_name; });
+}
+
+void ArrAccount::BlockChanges(bool block)
+{
+	m_blockChanges = block;
 }
 
 void ArrAccountMock::ConnectToArrAccount()
