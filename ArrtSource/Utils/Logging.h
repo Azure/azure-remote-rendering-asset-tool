@@ -9,6 +9,7 @@ namespace LoggingCategory
     extern QLoggingCategory ArrSdk;
     extern QLoggingCategory RenderingSession;
     extern QLoggingCategory AzureStorage;
+    extern QLoggingCategory Logging;
 }; // namespace LoggingCategory
 
 /// Forwards ARR log messages to the Qt log

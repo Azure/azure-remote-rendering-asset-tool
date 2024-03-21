@@ -1,8 +1,13 @@
+#include <Utils/Logging.h>
+
 #include <App/AppWindow.h>
+
 #include <QAccessible>
+#include <QFileDialog>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <Utils/Logging.h>
+#include <QSaveFile>
+
 #include <map>
 
 void ScreenReaderAlert(const char* state, const char* announcement)
@@ -43,6 +48,40 @@ void ArrtAppWindow::on_ClearLogButton_clicked()
     m_maxLogType = QtDebugMsg;
 }
 
+void ArrtAppWindow::on_ExportLogButton_clicked()
+{
+    bool exported = true;
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Log File"),
+                                                    "",
+                                                    tr("Text files (*.txt)"));
+
+    if (fileName.isEmpty() || fileName.isNull())
+    {
+        // the user closed the dialog
+        return;
+    }
+
+    QSaveFile fileOut(fileName);
+    exported &= fileOut.open(QIODeviceBase::WriteOnly);
+    QTextStream out(&fileOut);
+    for (int i = 0; i < LogTab->LogList->count(); i++)
+    {
+        out << LogTab->LogList->item(i)->text() << Qt::endl;
+    }
+    exported &= fileOut.commit();
+
+    if (exported)
+    {
+        ScreenReaderAlert("Logging", "The log file has been exported.");
+        qInfo(LoggingCategory::Logging) << QString("Exported log to file %1").arg(fileName);
+    }
+    else
+    {
+        ScreenReaderAlert("Logging", "Failed to export log to file.");
+        qCritical(LoggingCategory::Logging) << QString("Failed to export log to file %1").arg(fileName);
+    }
+}
+
 void ArrtAppWindow::LogMessageHandlerStatic(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
     // we don't want to show Qt messages
@@ -57,8 +96,7 @@ void ArrtAppWindow::LogMessageHandlerStatic(QtMsgType type, const QMessageLogCon
 
 void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& /*category*/, const QString& msg)
 {
-    QString line;
-
+    QString line = QDateTime::currentDateTime().toString("[dd.MM.yyyy hh:mm:ss.z tt] ");
 
     QListWidgetItem* item = new QListWidgetItem();
 
@@ -68,27 +106,27 @@ void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& /*category*
     {
         case QtDebugMsg:
             item->setIcon(QIcon::fromTheme("debug"));
-            line = "Debug: ";
+            line += "Debug: ";
             break;
         case QtInfoMsg:
             item->setIcon(QIcon::fromTheme("info"));
             m_maxLogType = std::max(m_maxLogType, 1);
-            line = "Info: ";
+            line += "Info: ";
             break;
         case QtWarningMsg:
             item->setIcon(QIcon::fromTheme("warning"));
             m_maxLogType = std::max(m_maxLogType, 2);
-            line = "Warning: ";
+            line += "Warning: ";
             break;
         case QtCriticalMsg:
             item->setIcon(QIcon::fromTheme("critical"));
             m_maxLogType = std::max(m_maxLogType, 3);
-            line = "Critical: ";
+            line += "Critical: ";
             break;
         case QtFatalMsg:
             item->setIcon(QIcon::fromTheme("error"));
             m_maxLogType = std::max(m_maxLogType, 4);
-            line = "Error: ";
+            line += "Error: ";
             break;
     }
 
@@ -128,6 +166,8 @@ void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& /*category*
 QLoggingCategory LoggingCategory::ArrSdk(QT_TR_NOOP("ARR SDK"));
 QLoggingCategory LoggingCategory::RenderingSession(QT_TR_NOOP("SESSION"));
 QLoggingCategory LoggingCategory::AzureStorage(QT_TR_NOOP("STORAGE"));
+QLoggingCategory LoggingCategory::Logging(QT_TR_NOOP("LOGGING"));
+
 
 void ForwardArrLogMsgToQt(RR::LogLevel logLevel, const void* msgPtr)
 {

@@ -24,7 +24,8 @@
 		<file>theme-dark/error.svg</file>
 		<file>theme-dark/session_error.svg</file>
 		<file>theme-dark/link.svg</file>
-		
+		<file>theme-dark/export_log.svg</file>
+
 		<file>theme-light/model.svg</file>
 		<file>theme-light/remove.svg</file>
 		<file>theme-light/upload.svg</file>
@@ -49,5 +50,6 @@
 		<file>theme-light/error.svg</file>
 		<file>theme-light/session_error.svg</file>
 		<file>theme-light/link.svg</file>
-    </qresource>
+		<file>theme-light/export_log.svg</file>
+	</qresource>
 </RCC>
