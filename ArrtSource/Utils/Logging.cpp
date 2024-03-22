@@ -1,6 +1,7 @@
 #include <Utils/Logging.h>
 
 #include <App/AppWindow.h>
+#include <ArrtVersion.h>
 
 #include <QAccessible>
 #include <QFileDialog>
@@ -64,6 +65,8 @@ void ArrtAppWindow::on_ExportLogButton_clicked()
     QSaveFile fileOut(fileName);
     exported &= fileOut.open(QIODeviceBase::WriteOnly);
     QTextStream out(&fileOut);
+    out << "ARRT Version: " << ARRT_VERSION << Qt::endl;
+    out << "ARR client SDK version: " << ARR_CLIENT_SDK_VERSION << Qt::endl;
     for (int i = 0; i < LogTab->LogList->count(); i++)
     {
         out << LogTab->LogList->item(i)->text() << Qt::endl;

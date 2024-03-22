@@ -16,7 +16,6 @@ void ArrSession::OnConnectionStateChanged()
 {
     if (m_previousState != m_ConnectionLogic.GetCurrentState())
     {
-        const int timeDiffMsecs = m_previousStateChange.msecsTo(QTime::currentTime());
         m_previousStateChange = QTime::currentTime();
 
         if (m_previousState == ArrConnectionLogic::State::RuntimeConnected && m_ConnectionLogic.GetCurrentState() == ArrConnectionLogic::State::SessionReady)
@@ -459,8 +458,6 @@ bool ArrSession::LoadModel(const QString& modelName, const std::string& assetSAS
                 }
 
                 Q_EMIT thisPtr->ModelLoaded();
-
-                const int timeDiffMsecs = startTime.msecsTo(QTime::currentTime());
 
                 qInfo(LoggingCategory::RenderingSession) << "Finished loading model " << modelName;
 
