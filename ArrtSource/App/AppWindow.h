@@ -43,6 +43,7 @@ private Q_SLOTS:
 
     // Log Tab UI
     void on_ClearLogButton_clicked();
+    void on_ExportLogButton_clicked();
 
     // Rendering Tab UI
     void on_EditSessionButton_clicked();
