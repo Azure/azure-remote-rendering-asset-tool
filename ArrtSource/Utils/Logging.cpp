@@ -65,8 +65,6 @@ void ArrtAppWindow::on_ExportLogButton_clicked()
     QSaveFile fileOut(fileName);
     exported &= fileOut.open(QIODeviceBase::WriteOnly);
     QTextStream out(&fileOut);
-    out << "ARRT Version: " << ARRT_VERSION << Qt::endl;
-    out << "ARR client SDK version: " << ARR_CLIENT_SDK_VERSION << Qt::endl;
     for (int i = 0; i < LogTab->LogList->count(); i++)
     {
         out << LogTab->LogList->item(i)->text() << Qt::endl;
@@ -161,6 +159,16 @@ void ArrtAppWindow::LogMessageHandler(QtMsgType type, const QString& /*category*
     {
         m_logClearMsgAdded = false;
         LogTab->LogList->clear();
+
+        QListWidgetItem* itemArrtVersion = new QListWidgetItem();
+        itemArrtVersion->setIcon(QIcon::fromTheme("info"));
+        itemArrtVersion->setText(QString("ARRT Version: %1").arg(ARRT_VERSION));
+        LogTab->LogList->addItem(itemArrtVersion);
+
+        QListWidgetItem* itemSdkVersion = new QListWidgetItem();
+        itemSdkVersion->setIcon(QIcon::fromTheme("info"));
+        itemSdkVersion->setText(QString("ARR client SDK version: %1").arg(ARR_CLIENT_SDK_VERSION));
+        LogTab->LogList->addItem(itemSdkVersion);
     }
 
     LogTab->LogList->addItem(item);
