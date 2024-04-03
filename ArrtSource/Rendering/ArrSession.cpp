@@ -12,31 +12,18 @@
 #include <mutex>
 #include <windows.h>
 
-QString FormatTime(int msecs)
-{
-    const int hours = msecs / (60 * 60 * 1000);
-    msecs -= hours * (60 * 60 * 1000);
-    const int minutes = msecs / (60 * 1000);
-    msecs -= minutes * (60 * 1000);
-    const int seconds = msecs / 1000;
-    msecs -= seconds * 1000;
-
-    return QString(" [%1:%2:%3.%4]").arg(hours, 2, 10, (QLatin1Char)'0').arg(minutes, 2, 10, (QLatin1Char)'0').arg(seconds, 2, 10, (QLatin1Char)'0').arg(msecs, 3, 10, (QLatin1Char)'0');
-}
-
 void ArrSession::OnConnectionStateChanged()
 {
     if (m_previousState != m_ConnectionLogic.GetCurrentState())
     {
-        const int timeDiffMsecs = m_previousStateChange.msecsTo(QTime::currentTime());
         m_previousStateChange = QTime::currentTime();
 
         if (m_previousState == ArrConnectionLogic::State::RuntimeConnected && m_ConnectionLogic.GetCurrentState() == ArrConnectionLogic::State::SessionReady)
         {
-            qWarning(LoggingCategory::RenderingSession) << "Rendering session got disconnected, most likely due to a network timeout. Loaded models will be cleared." << FormatTime(timeDiffMsecs).toUtf8().data();
+            qWarning(LoggingCategory::RenderingSession) << "Rendering session got disconnected, most likely due to a network timeout. Loaded models will be cleared.";
         }
 
-        qInfo(LoggingCategory::RenderingSession) << "New connection state: " << ArrConnectionLogic::GetStateString(m_ConnectionLogic.GetCurrentState()) << FormatTime(timeDiffMsecs).toUtf8().data();
+        qInfo(LoggingCategory::RenderingSession) << "New connection state: " << ArrConnectionLogic::GetStateString(m_ConnectionLogic.GetCurrentState());
 
         m_previousState = m_ConnectionLogic.GetCurrentState();
 
@@ -486,9 +473,7 @@ bool ArrSession::LoadModel(const QString& modelName, const std::string& assetSAS
 
                 Q_EMIT thisPtr->ModelLoaded();
 
-                const int timeDiffMsecs = startTime.msecsTo(QTime::currentTime());
-
-                qInfo(LoggingCategory::RenderingSession) << "Finished loading model " << modelName << FormatTime(timeDiffMsecs).toUtf8().data();
+                qInfo(LoggingCategory::RenderingSession) << "Finished loading model " << modelName;
 
                 thisPtr->CheckEntityBounds(root);
             }

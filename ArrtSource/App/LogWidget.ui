@@ -27,13 +27,23 @@
       </widget>
      </item>
      <item>
+	  <widget class="QPushButton" name="ExportLogButton">
+	   <property name="text">
+		<string>Export Log</string>
+	   </property>
+	   <property name="icon">
+		<iconset theme="export_log"/>
+	   </property>
+	  </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
+         <width>30</width>
          <height>20</height>
         </size>
        </property>
@@ -73,6 +83,7 @@
  </widget>
  <tabstops>
   <tabstop>ClearLogButton</tabstop>
+  <tabstop>ExportLogButton</tabstop>
   <tabstop>LogList</tabstop>
  </tabstops>
  <resources>
